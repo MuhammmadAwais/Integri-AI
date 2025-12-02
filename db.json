@@ -1,0 +1,28 @@
+{
+  "chats": [
+    {
+      "id": "1",
+      "title": "New Conversation",
+      "date": "Yesterday",
+      "preview": "How can I help you..."
+    },
+    {
+      "id": "2",
+      "title": "React Best Practices",
+      "date": "Yesterday",
+      "preview": "Components should be..."
+    },
+    {
+      "id": "3",
+      "title": "Debug Redux Toolkit",
+      "date": "Previous 7 Days",
+      "preview": "Check the store config..."
+    }
+  ],
+  "user": {
+    "id": "u1",
+    "name": "Danish Usman",
+    "plan": "Free",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Danish"
+  }
+}
