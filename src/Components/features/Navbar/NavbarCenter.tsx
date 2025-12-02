@@ -3,7 +3,7 @@ import { useAppSelector } from "../../hooks/useRedux";
 
 const NavbarCenter: React.FC = () => {
   const isDark = useAppSelector((state) => state.theme.isDark);
-  const logoSrc = isDark ? "dark-theme-logo.png" : "light-theme-logo.png";
+  const logoSrc = isDark ? "/dark-theme-logo.png" : "/light-theme-logo.png";
 
   return (
     <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">

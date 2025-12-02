@@ -5,6 +5,7 @@ import Badge from "../../ui/Badge";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import { toggleTheme } from "../../../store/themeSlice";
+
 const NavbarLeft: React.FC = () => {
   const isMobile = useMediaQuery("(max-width: 640px)");
   const isDark = useAppSelector((state) => state.theme.isDark);
