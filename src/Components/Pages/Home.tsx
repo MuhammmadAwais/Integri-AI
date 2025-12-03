@@ -1,11 +1,10 @@
 import React, { useEffect } from "react";
-import { Outlet } from "react-router-dom";
-import { useAppSelector } from "../hooks/useRedux";
-import Navbar from "../features/Navbar/Navbar";
+import { Outlet } from "react-router-dom"; // <--- Crucial Import
 import Sidebar from "../features/Sidebar/Sidebar";
+import Navbar from "../features/Navbar/Navbar";
+import { useAppSelector } from "../hooks/useRedux";
 import { cn } from "../../utils/cn";
 
-// Theme Controller to apply global dark mode class
 const ThemeController = ({ children }: { children: React.ReactNode }) => {
   const isDark = useAppSelector((state) => state.theme.isDark);
 
@@ -25,29 +24,23 @@ const Home: React.FC = () => {
 
   return (
     <ThemeController>
-      {/* Outer Container: Full Screen, Column Layout */}
-      <div
-        className={cn(
-          "flex flex-col h-screen w-full overflow-hidden transition-colors duration-300",
-          isDark ? "bg-[#212121]" : "bg-white" // Main background color
-        )}
-      >
-        {/* 1. Navbar: Always on top, full width */}
-        <div className="shrink-0 z-50">
+      <div className="flex h-screen w-full overflow-hidden">
+        {/* 1. Sidebar (Left) */}
+        <Sidebar />
+
+        {/* 2. Main Content Area (Right) */}
+        <div
+          className={cn(
+            "flex-1 flex flex-col h-full overflow-hidden transition-colors duration-300",
+            isDark ? "bg-[#212121] text-white" : "bg-white text-gray-900"
+          )}
+        >
+          {/* Navbar sits inside the main area on top */}
           <Navbar />
-        </div>
 
-        {/* 2. Body Container: Sidebar + Main Content */}
-        <div className="flex flex-1 overflow-hidden relative">
-          {/* Sidebar: Sits below navbar, fixed width on desktop */}
-          <Sidebar />
-
-          {/* Main Content Area */}
-          <main className="flex-1 flex flex-col relative min-w-0">
-            {/* Scrollable content area */}
-            <div className="flex-1 overflow-y-auto scroll-smooth">
-              <Outlet />
-            </div>
+          {/* 3. The Outlet is where Welcome/ChatInterface appears */}
+          <main className="flex-1 overflow-auto relative flex flex-col">
+            <Outlet />
           </main>
         </div>
       </div>

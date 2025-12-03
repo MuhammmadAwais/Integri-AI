@@ -1,36 +1,44 @@
 import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown, Check, Zap, Sparkles, Box } from "lucide-react";
+import { ChevronDown, Check, Zap, Sparkles, Box, Bot } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import { setModel } from "../../../store/chatSlice";
 import { cn } from "../../../utils/cn";
 
 const models = [
   {
-    id: "GPT-4o Mini",
-    label: "GPT-4o Mini",
-    icon: Zap,
-    description: "Small, fast model",
-  },
-  {
     id: "GPT-4o",
     label: "GPT-4o",
     icon: Sparkles,
-    description: "Most capable model",
+    color: "text-purple-400 bg-purple-500/10",
   },
   {
-    id: "GPT-4 Turbo",
-    label: "GPT-4 Turbo",
+    id: "GPT-4o Mini",
+    label: "GPT-4o Mini",
+    icon: Zap,
+    color: "text-yellow-400 bg-yellow-500/10",
+  },
+  {
+    id: "Claude 3.5",
+    label: "Claude 3.5 Sonnet",
     icon: Box,
-    description: "Previous high-intelligence",
+    color: "text-orange-400 bg-orange-500/10",
+  },
+  {
+    id: "Llama 3",
+    label: "Llama 3",
+    icon: Bot,
+    color: "text-blue-400 bg-blue-500/10",
   },
 ];
 
 const ModelSelector: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useAppDispatch();
-  const currentModel = useAppSelector((state:any) => state.chat.currentModel);
+  const currentModelId = useAppSelector((state) => state.chat.currentModel);
   const isDark = useAppSelector((state) => state.theme.isDark);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const activeModel = models.find((m) => m.id === currentModelId) || models[0];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -46,65 +54,84 @@ const ModelSelector: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative px-3 mb-4" ref={dropdownRef}>
+    <div className="relative w-full z-20" ref={dropdownRef}>
+      {/* Trigger */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors duration-200 group",
+          "w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all duration-200 group border cursor-pointer",
           isDark
-            ? "text-gray-300 hover:bg-[#2A2B32] hover:text-white"
-            : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+            ? "bg-[#212121] border-[#2A2B32] hover:bg-[#2A2B32] text-gray-200"
+            : "bg-white border-gray-200 hover:border-gray-300 text-gray-700 shadow-sm"
         )}
       >
-        <span className="flex items-center gap-2 font-medium text-sm">
-          <Zap className="w-4 h-4" />
-          {currentModel}
+        <span className="flex items-center gap-3 font-medium text-sm">
+          <div className={cn("p-1 rounded-md", activeModel.color)}>
+            <activeModel.icon size={14} />
+          </div>
+          {activeModel.label}
         </span>
-        <ChevronDown className="w-4 h-4 opacity-50 group-hover:opacity-100" />
+        <ChevronDown
+          size={14}
+          className={cn(
+            "opacity-50 transition-transform duration-200",
+            isOpen && "rotate-180"
+          )}
+        />
       </button>
 
+      {/* Dropdown Menu */}
       {isOpen && (
         <div
           className={cn(
-            "absolute top-full left-3 right-3 mt-1 rounded-xl border shadow-xl z-50 overflow-hidden",
+            "absolute top-full left-0 right-0 mt-2 rounded-xl border shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-100",
             isDark
-              ? "bg-[#2A2B32] border-gray-700 text-gray-100"
-              : "bg-white border-gray-200 text-gray-900"
+              ? "bg-[#1a1a1a] border-[#2A2B32] text-gray-100"
+              : "bg-white border-gray-100 text-gray-900"
           )}
         >
-          {models.map((model) => (
-            <button
-              key={model.id}
-              onClick={() => {
-                dispatch(setModel(model.id));
-                setIsOpen(false);
-              }}
-              className={cn(
-                "w-full flex items-center justify-between px-4 py-3 text-left transition-colors",
-                isDark ? "hover:bg-[#343541]" : "hover:bg-gray-50",
-                currentModel === model.id &&
-                  (isDark ? "bg-[#343541]" : "bg-gray-50")
-              )}
-            >
-              <div className="flex items-center gap-3">
-                <div
-                  className={cn(
-                    "p-2 rounded-lg",
-                    isDark ? "bg-gray-700" : "bg-gray-100"
-                  )}
-                >
-                  <model.icon className="w-4 h-4" />
+          {/* Header similar to your image */}
+          <div
+            className={cn(
+              "px-4 py-2 text-[10px] font-bold uppercase tracking-wider opacity-50",
+              isDark ? "bg-white/5" : "bg-black/5"
+            )}
+          >
+            Chat Models
+          </div>
+
+          <div className="p-1">
+            {models.map((model) => (
+              <button
+                key={model.id}
+                onClick={() => {
+                  dispatch(setModel(model.id));
+                  setIsOpen(false);
+                }}
+                className={cn(
+                  "w-full flex items-center justify-between px-3 py-2 rounded-lg text-left transition-colors cursor-pointer mb-0.5",
+                  isDark ? "hover:bg-[#2A2B32]" : "hover:bg-gray-100",
+                  currentModelId === model.id &&
+                    (isDark ? "bg-[#2A2B32]" : "bg-gray-100")
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className={cn(
+                      "w-8 h-8 rounded-lg flex items-center justify-center",
+                      model.color
+                    )}
+                  >
+                    <model.icon size={16} />
+                  </div>
+                  <span className="text-sm font-medium">{model.label}</span>
                 </div>
-                <div>
-                  <p className="text-sm font-medium">{model.label}</p>
-                  <p className="text-xs opacity-60">{model.description}</p>
-                </div>
-              </div>
-              {currentModel === model.id && (
-                <Check className="w-4 h-4 text-green-500" />
-              )}
-            </button>
-          ))}
+                {currentModelId === model.id && (
+                  <Check size={14} className="text-indigo-500" />
+                )}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>
