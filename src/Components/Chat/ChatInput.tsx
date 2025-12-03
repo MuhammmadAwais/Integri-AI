@@ -1,93 +1,107 @@
-import React, { useState } from "react";
-import { Globe, Image as ImageIcon, Send } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { Paperclip, Mic, ArrowUp, X, FileText } from "lucide-react";
 import { useAppSelector } from "../hooks/useRedux";
 import { cn } from "../../utils/cn";
 
-const ChatInput: React.FC = () => {
+interface ChatInputProps {
+  onSend?: (text: string) => void;
+}
+
+const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
   const isDark = useAppSelector((state) => state.theme.isDark);
   const [input, setInput] = useState("");
+  const [file, setFile] = useState<File | null>(null); // File state
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleSend = () => {
+    if ((input.trim() || file) && onSend) {
+      const msg = file ? `[Uploaded File: ${file.name}] ${input}` : input;
+      onSend(msg);
+      setInput("");
+      setFile(null);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
 
   return (
-    <div className="w-full max-w-3xl mx-auto p-4 relative z-10">
-      <div className="relative group">
-        {/* Gradient Border Effect (Bottom) */}
-        <div className="absolute -inset-0.5 bg-gradient-to-r from-teal-400 to-blue-600 rounded-2xl opacity-20 group-hover:opacity-40 transition duration-500 blur-[2px]"></div>
+    <div className="w-full max-w-3xl mx-auto">
+      {/* File Preview Badge */}
+      {file && (
+        <div className="mb-2 inline-flex items-center gap-2 p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-sm">
+          <FileText size={14} className="text-indigo-500" />
+          <span className={isDark ? "text-gray-200" : "text-gray-800"}>
+            {file.name}
+          </span>
+          <button title="button" onClick={() => setFile(null)} className="hover:text-red-500">
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
-        <div
+      <div
+        className={cn(
+          "relative flex items-end w-full p-3 rounded-2xl border shadow-lg transition-all",
+          isDark ? "bg-[#2f2f38] border-[#42424e]" : "bg-white border-gray-200"
+        )}
+      >
+        {/* Hidden File Input */}
+        <input
+        title="file input"
+          type="file"
+          ref={fileInputRef}
+          className="hidden"
+          onChange={handleFileSelect}
+        />
+
+        <button
+          title="button"
+          onClick={() => fileInputRef.current?.click()}
           className={cn(
-            "relative flex items-center gap-2 p-2 rounded-2xl border transition-all duration-300",
+            "p-2 rounded-xl mr-2 transition-colors",
             isDark
-              ? "bg-[#2F3139] border-gray-700 focus-within:border-gray-600"
-              : "bg-white border-gray-200 shadow-sm focus-within:border-gray-300"
+              ? "hover:bg-white/10 text-gray-400"
+              : "hover:bg-gray-100 text-gray-500"
           )}
         >
-          {/* Text Input */}
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Message Integri AI..."
-            className={cn(
-              "flex-1 bg-transparent border-none outline-none px-3 py-3 text-sm font-medium h-[52px]",
-              isDark
-                ? "text-gray-100 placeholder-gray-400"
-                : "text-gray-800 placeholder-gray-400"
-            )}
-          />
+          <Paperclip size={20} />
+        </button>
 
-          {/* Action Icons */}
-          <div className="flex items-center gap-1.5 pr-2">
-            {/* Web Search Icon */}
-            <button
-            title="button"
-              className={cn(
-                "p-2 rounded-lg transition-colors group/btn",
-                isDark
-                  ? "hover:bg-gray-700 text-teal-400"
-                  : "hover:bg-gray-100 text-teal-600"
-              )}
-            >
-              <div className="relative">
-                <Globe className="w-5 h-5" />
-                <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full border-2 border-[#2F3139]"></div>
-              </div>
-            </button>
+        <textarea
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) =>
+            e.key === "Enter" &&
+            !e.shiftKey &&
+            (e.preventDefault(), handleSend())
+          }
+          rows={1}
+          placeholder="Message Integri AI..."
+          className={cn(
+            "flex-1 max-h-[150px] py-2 bg-transparent outline-none resize-none text-sm",
+            isDark
+              ? "text-white placeholder-gray-500"
+              : "text-gray-900 placeholder-gray-400"
+          )}
+        />
 
-            {/* Image Upload Icon */}
-            <button
-            title="button"
-              className={cn(
-                "p-2 rounded-lg transition-colors",
-                isDark
-                  ? "hover:bg-gray-700 text-gray-400 hover:text-gray-200"
-                  : "hover:bg-gray-100 text-gray-500"
-              )}
-            >
-              <ImageIcon className="w-5 h-5" />
-            </button>
-
-            {/* Send Button */}
-            <button
-            title="button"
-              disabled={!input.trim()}
-              className={cn(
-                "p-2 rounded-lg transition-all duration-200",
-                input.trim()
-                  ? "bg-teal-500 text-white shadow-md hover:bg-teal-600"
-                  : isDark
-                  ? "bg-gray-700 text-gray-500"
-                  : "bg-gray-200 text-gray-400"
-              )}
-            >
-              <Send className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        {/* Footer Text */}
-        <p className="text-center text-[10px] mt-3 text-gray-400 opacity-70">
-          Integri AI can make mistakes. Check important info.
-        </p>
+        <button
+          title="button"
+          onClick={handleSend}
+          disabled={!input.trim() && !file}
+          className={cn(
+            "p-2 rounded-xl transition-all duration-200 ml-2",
+            input.trim() || file
+              ? "bg-indigo-600 text-white shadow-md hover:scale-105"
+              : "bg-transparent text-gray-400 cursor-not-allowed"
+          )}
+        >
+          <ArrowUp size={20} strokeWidth={3} />
+        </button>
       </div>
     </div>
   );
