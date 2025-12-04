@@ -18,29 +18,28 @@ const Home: React.FC = () => {
 
   return (
     <ThemeController>
-      {/* Use 100dvh for mobile browsers to handle address bar resizing correctly */}
+      {/* Outer Container: Flex Row (Sidebar | Content) */}
       <div
         className={cn(
-          "flex flex-col h-dvh w-full overflow-hidden transition-colors duration-300",
+          "flex h-dvh w-full overflow-hidden transition-colors duration-300",
           isDark ? "bg-[#212121] text-white" : "bg-white text-gray-900"
         )}
       >
-        {/* Navbar - Fixed height, never shrinks */}
-        <div className="shrink-0 z-50">
-          <Navbar />
+        {/* 1. Sidebar: Spans full height on the left */}
+        <div className="shrink-0 h-full z-40">
+          <Sidebar />
         </div>
 
-        {/* Main Body - Takes remaining height */}
-        <div className="flex flex-1 overflow-hidden relative">
-          {/* Sidebar (Hidden on Mobile visually, handled via Portal) */}
-          <Sidebar />
+        {/* 2. Right Content Area: Flex Column (Navbar / Main) */}
+        <div className="flex flex-col flex-1 h-full min-w-0 overflow-hidden relative">
+          {/* Navbar: Sits at the top of the right area */}
+          <div className="shrink-0 z-30 w-full">
+            <Navbar />
+          </div>
 
-          {/* Chat Area */}
-          <main className="flex-1 flex flex-col relative min-w-0 overflow-hidden">
-            {/* Outlet container must scroll internally */}
-            <div className="flex-1 w-full h-full overflow-hidden relative">
-              <Outlet />
-            </div>
+          {/* Main Scrollable Content */}
+          <main className="flex-1 w-full h-full overflow-hidden relative">
+            <Outlet />
           </main>
         </div>
       </div>
