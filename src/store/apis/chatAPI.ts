@@ -23,7 +23,8 @@ export const chatApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:3005",
     prepareHeaders: (headers, { getState }) => {
-      const state = getState();
+      let state = getState();
+      console.log("State:", state);
      
       // Use the userId variable here if needed
       return headers;
