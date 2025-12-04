@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import ChatInput from "../Chat/ChatInput";
 import MessageBubble from "../MessageBubble";
 import SkeletonLoader from "../ui/SkeletonLoader";
@@ -7,14 +7,14 @@ import { useAppSelector } from "../hooks/useRedux";
 import {
   useGetMessagesQuery,
   useAddMessageMutation,
-  useGetChatsQuery,
+ 
 } from "../../store/apis/chatAPI";
 import { generateAIResponse } from "../../utils/openai";
 import { cn } from "../../utils/cn";
 
 const ChatInterface: React.FC = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
+ 
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const isDark = useAppSelector((state) => state.theme.isDark);
