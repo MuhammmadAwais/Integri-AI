@@ -3,131 +3,101 @@ import { useParams, useNavigate } from "react-router-dom";
 import ChatInput from "../Chat/ChatInput";
 import MessageBubble from "../MessageBubble";
 import SkeletonLoader from "../ui/SkeletonLoader";
-import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
-import { addMessageToChat, createNewChat } from "../../store/chatSlice";
-import { generateAIResponse } from "../../utils/openai"; // Import Real API
+import { useAppSelector } from "../hooks/useRedux";
+import {
+  useGetMessagesQuery,
+  useAddMessageMutation,
+  useGetChatsQuery,
+} from "../../store/apis/chatAPI";
+import { generateAIResponse } from "../../utils/openai";
 import { cn } from "../../utils/cn";
 
 const ChatInterface: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const scrollRef = useRef<HTMLDivElement>(null);
+
   const isDark = useAppSelector((state) => state.theme.isDark);
+  const user = useAppSelector((state) => state.auth.user);
 
-  const sessions = useAppSelector((state) => state.chat.sessions);
-  const session = sessions.find((s) => s.id === id);
+  // RTK Query Hooks
+  const { data: messages = [], isLoading } = useGetMessagesQuery(id || "", {
+    skip: !id,
+  });
+  const [addMessage] = useAddMessageMutation();
 
-  const [isLoading, setIsLoading] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
-  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
 
-  // --- 1. Initialization ---
+  // Auto-scroll
   useEffect(() => {
-    if (!id) {
-      navigate("/");
-      return;
-    }
-    setIsLoading(true);
-    setShouldAutoScroll(true);
-
-    const existingSession = sessions.find((s) => s.id === id);
-    if (!existingSession) {
-      dispatch(createNewChat({ id, title: "New Conversation" }));
-    }
-
-    const timer = setTimeout(() => setIsLoading(false), 500);
-    return () => clearTimeout(timer);
-  }, [id, dispatch]);
-
-  // --- 2. Scroll Logic ---
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-    const isAtBottom = scrollHeight - scrollTop - clientHeight < 50;
-    setShouldAutoScroll(isAtBottom);
-  };
-
-  useEffect(() => {
-    if (shouldAutoScroll && scrollRef.current) {
+    if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [session?.messages, isTyping, isLoading, shouldAutoScroll]);
+  }, [messages, isTyping]);
 
-  // --- 3. Send Message Logic (OpenAI Connected) ---
   const handleSendMessage = async (text: string) => {
-    if (!id) return;
-    setShouldAutoScroll(true);
+    if (!id || !user) return;
 
-    // 1. Add User Message
-    const userMessage = {
-      id: Date.now().toString(),
-      role: "user" as const,
-      content: text,
-      timestamp: Date.now(),
-    };
-
-    dispatch(
-      addMessageToChat({
+    try {
+      // 1. Save User Message to DB
+      const userMsgPayload = {
+        id: Date.now().toString(),
         chatId: id,
-        message: userMessage,
-      })
-    );
+        role: "user" as const,
+        content: text,
+        timestamp: Date.now(),
+      };
+      await addMessage(userMsgPayload).unwrap();
 
-    setIsTyping(true);
+      setIsTyping(true);
 
-    // 2. Prepare history for API (Limit to last 6 messages for context to save tokens)
-    const history =
-      session?.messages
-        .slice(-6)
-        .map((m) => ({ role: m.role, content: m.content })) || [];
-    const apiMessages = [...history, { role: "user", content: text }];
+      // 2. Call Real OpenAI API
+      // We pass the last few messages for context
+      const historyContext = messages
+        .slice(-5)
+        .map((m) => ({ role: m.role, content: m.content }));
+      const aiText = await generateAIResponse([
+        ...historyContext,
+        { role: "user", content: text },
+      ]);
 
-    // 3. Call Real OpenAI API
-    const aiResponseText = await generateAIResponse(apiMessages);
-
-    // 4. Add AI Message
-    dispatch(
-      addMessageToChat({
+      // 3. Save AI Message to DB
+      await addMessage({
+        id: (Date.now() + 1).toString(),
         chatId: id,
-        message: {
-          id: (Date.now() + 1).toString(),
-          role: "assistant",
-          content: aiResponseText,
-          timestamp: Date.now(),
-        },
-      })
-    );
-    setIsTyping(false);
+        role: "assistant",
+        content: aiText || "Sorry, I couldn't generate a response.",
+        timestamp: Date.now(),
+      }).unwrap();
+    } catch (error) {
+      console.error("Failed to send message", error);
+    } finally {
+      setIsTyping(false);
+    }
   };
+
+  if (!id) return null;
 
   return (
     <div className="flex flex-col h-full relative max-w-4xl mx-auto w-full overflow-hidden">
       <div
         ref={scrollRef}
-        onScroll={handleScroll}
-        className={cn(
-          "flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6 scroll-smooth",
-          "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"
-        )}
+        className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6 scroll-smooth custom-scrollbar"
       >
         {isLoading ? (
-          <div className="space-y-6 pt-10 px-4 max-w-2xl mx-auto">
-            <div className="flex justify-end">
-              <SkeletonLoader className="w-1/2 h-16 rounded-2xl rounded-tr-none" />
-            </div>
-            <div className="flex justify-start">
-              <SkeletonLoader className="w-3/4 h-24 rounded-2xl rounded-tl-none" />
-            </div>
+          <div className="space-y-6 pt-10 px-4">
+            <SkeletonLoader className="w-1/2 h-16 ml-auto rounded-tr-none" />
+            <SkeletonLoader className="w-3/4 h-24 mr-auto rounded-tl-none" />
           </div>
         ) : (
           <>
-            {!session || session.messages.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center opacity-40 animate-in fade-in duration-500">
+            {messages.length === 0 ? (
+              <div className="h-full flex flex-col items-center justify-center opacity-40 animate-in fade-in">
                 <div className="text-6xl mb-4 grayscale">💬</div>
                 <p className="font-medium text-lg">Start a conversation</p>
               </div>
             ) : (
-              session.messages.map((msg) => (
+              messages.map((msg) => (
                 <MessageBubble
                   key={msg.id}
                   role={msg.role}

@@ -2,20 +2,36 @@ import React from "react";
 import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../hooks/useRedux";
+import { useAddChatMutation } from "../../../store/apis/chatAPI";
 import { cn } from "../../../utils/cn";
 import ModelSelector from "./ModelSelector";
 
 const SidebarHeader: React.FC = () => {
   const isDark = useAppSelector((state) => state.theme.isDark);
+  const user = useAppSelector((state) => state.auth.user);
+  const [addChat] = useAddChatMutation();
   const navigate = useNavigate();
 
-  const handleNewChat = () => {
-    navigate("/");
+  const handleNewChat = async () => {
+    if (!user) return; // Guard clause
+
+    const newChatId = Date.now().toString();
+
+    // Save to DB.JSON with User ID
+    await addChat({
+      id: newChatId,
+      userId: user.id, // <--- PREVENTS DATA LEAK
+      title: "New Conversation",
+      date: new Date().toISOString(),
+      preview: "Start a new chat",
+      model: "GPT-4o",
+    }).unwrap();
+
+    navigate(`/chat/${newChatId}`);
   };
 
   return (
     <div className="flex flex-col pt-4 pb-2">
-      {/* New Chat Button */}
       <div className="px-3 mb-4">
         <button
           onClick={handleNewChat}
@@ -37,8 +53,6 @@ const SidebarHeader: React.FC = () => {
           <span className="font-medium text-sm">New chat</span>
         </button>
       </div>
-
-      {/* Model Selector Dropdown */}
       <ModelSelector />
     </div>
   );
