@@ -48,7 +48,7 @@ const GettingStarted: React.FC = () => {
       {/* Background Image Area */}
       <div className="flex-1 relative w-full h-[65%]">
         {/* Futuristic Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black z-10" />
+        <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-black z-10" />
 
         <img
           ref={imageRef}
@@ -69,7 +69,7 @@ const GettingStarted: React.FC = () => {
       >
         <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight leading-tight">
           The Future of Chat is Here <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-purple-600">
+          <span className="text-transparent bg-clip-text bg-linear-to-r from-red-500 to-purple-600">
             With AI Technology
           </span>
         </h1>
