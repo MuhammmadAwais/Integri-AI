@@ -1,31 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   createBrowserRouter,
   RouterProvider,
   Navigate,
 } from "react-router-dom";
-import { useMediaQuery } from "./Components/hooks/useMediaQuery";
 
 import Home from "./Components/Pages/Home";
 import Login from "./Components/Pages/Login";
 import Signup from "./Components/Pages/Signup";
 import Welcome from "./Components/Pages/Welcome";
 import ChatInterface from "./Components/Pages/ChatInterface";
-import HistoryPage from "./Components/Pages/History";
 import GettingStarted from "./Components/Pages/GettingStarted";
-
-// Guard: Redirect new mobile users to Getting Started
-const MobileGuard = ({ children }: { children: React.ReactNode }) => {
-  const isMobile = useMediaQuery("(max-width: 768px)");
-  const hasSeenIntro = localStorage.getItem("hasSeenGettingStarted");
-
-  if (isMobile && !hasSeenIntro) {
-    return <Navigate to="/getting-started" replace />;
-  }
-  return children;
-};
+import IntroPortal from "./Components/ui/IntroPortal";
+import HistoryPage from "./Components/Pages/History";
 
 const Router = createBrowserRouter([
+  // Standalone Routes
   { path: "/login", element: <Login /> },
   { path: "/signup", element: <Signup /> },
   { path: "/getting-started", element: <GettingStarted /> },
@@ -33,31 +23,46 @@ const Router = createBrowserRouter([
   // Main App
   {
     path: "/",
-    element: (
-      <MobileGuard>
-        <Home />
-      </MobileGuard>
-    ),
+    element: <Home />,
     children: [
       { index: true, element: <Welcome /> },
       { path: "chat/:id", element: <ChatInterface /> },
       { path: "history", element: <HistoryPage /> },
       {
         path: "library",
-        element: <div className="p-10 text-white">Library Page</div>,
+        element: <div className="p-10 text-white">Library</div>,
       },
       {
         path: "settings",
-        element: <div className="p-10 text-white">Settings Page</div>,
+        element: <div className="p-10 text-white">Settings</div>,
       },
     ],
   },
-
   { path: "*", element: <Navigate to="/" replace /> },
 ]);
 
 const App: React.FC = () => {
-  return <RouterProvider router={Router} />;
+  const [introFinished, setIntroFinished] = useState(false);
+
+  return (
+    <>
+      {/* The Galaxy Portal plays first */}
+      {!introFinished && (
+        <IntroPortal onComplete={() => setIntroFinished(true)} />
+      )}
+
+      {/* App content fades in after intro */}
+      <div
+        className={
+          introFinished
+            ? "opacity-100 transition-opacity duration-1000"
+            : "opacity-0"
+        }
+      >
+        <RouterProvider router={Router} />
+      </div>
+    </>
+  );
 };
 
 export default App;
