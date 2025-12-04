@@ -1,5 +1,5 @@
 import React from "react";
-import { Share2, Moon, Sun, MoreVertical, LogOut } from "lucide-react";
+import { Share2, Moon, Sun, MoreVertical} from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import { toggleTheme } from "../../../store/themeSlice";
 import { cn } from "../../../utils/cn";
@@ -63,7 +63,7 @@ const NavbarRight: React.FC = () => {
         onClick={() => console.log("Settings clicked")}
       />
 
-      <div className="w-[1px] h-6 bg-gray-200 dark:bg-gray-700 mx-1" />
+      <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1" />
 
       {/* 4. User Profile / Logout */}
       <button
@@ -72,7 +72,7 @@ const NavbarRight: React.FC = () => {
           isDark ? "hover:bg-white/10" : "hover:bg-black/5"
         )}
       >
-        <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center text-xs text-white font-bold ring-2 ring-transparent group-hover:ring-indigo-500">
+        <div className="w-7 h-7 rounded-full bg-linear-to-tr from-purple-500 to-pink-500 flex items-center justify-center text-xs text-white font-bold ring-2 ring-transparent group-hover:ring-indigo-500">
           DA
         </div>
       </button>

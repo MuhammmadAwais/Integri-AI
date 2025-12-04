@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown, Check, Zap, Sparkles, Box, Bot } from "lucide-react";
+import { ChevronDown, Check, Zap, Sparkles, Box } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import { setModel } from "../../../store/chatSlice";
 import { cn } from "../../../utils/cn";

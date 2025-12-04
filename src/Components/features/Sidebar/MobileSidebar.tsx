@@ -1,5 +1,5 @@
 import React from "react";
-import { X, MessageSquare, Plus } from "lucide-react";
+import { X,  Plus } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import { toggleMobileMenu } from "../../../store/chatSlice";
 import { cn } from "../../../utils/cn";
