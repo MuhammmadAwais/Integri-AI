@@ -15,34 +15,31 @@ const ChatInterface: React.FC = () => {
   const isDark = useAppSelector((state) => state.theme.isDark);
 
   const sessions = useAppSelector((state) => state.chat.sessions);
-
-  // Get Session
   const session = sessions.find((s) => s.id === id);
 
   const [isLoading, setIsLoading] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
-  const [shouldAutoScroll, setShouldAutoScroll] = useState(true); // NEW: Track scroll intent
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
 
-  // 1. Handle ID Change & cleanup
+  // --- 1. Initialization ---
   useEffect(() => {
     if (!id) {
       navigate("/");
       return;
     }
-
     setIsLoading(true);
-    setShouldAutoScroll(true); // Reset scroll on new chat
+    setShouldAutoScroll(true);
 
     const existingSession = sessions.find((s) => s.id === id);
     if (!existingSession) {
       dispatch(createNewChat({ id, title: "New Conversation" }));
     }
 
-    const timer = setTimeout(() => setIsLoading(false), 300); // Faster load
+    const timer = setTimeout(() => setIsLoading(false), 300);
     return () => clearTimeout(timer);
   }, [id, dispatch]);
 
-  // 2. Smart Scroll Logic
+  // --- 2. Scroll Logic ---
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
     const isAtBottom = scrollHeight - scrollTop - clientHeight < 50;
@@ -57,7 +54,7 @@ const ChatInterface: React.FC = () => {
 
   const handleSendMessage = (text: string) => {
     if (!id) return;
-    setShouldAutoScroll(true); // Force scroll on send
+    setShouldAutoScroll(true);
 
     dispatch(
       addMessageToChat({
@@ -80,7 +77,7 @@ const ChatInterface: React.FC = () => {
           message: {
             id: (Date.now() + 1).toString(),
             role: "assistant",
-            content: `Response to: "${text}".\n\n\`\`\`javascript\nconsole.log("Code block test");\n\`\`\``,
+            content: `Response to: "${text}".`,
             timestamp: Date.now(),
           },
         })
@@ -90,11 +87,15 @@ const ChatInterface: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full relative max-w-4xl mx-auto w-full">
+    <div className="flex flex-col h-full relative max-w-4xl mx-auto w-full overflow-hidden">
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto p-4 md:p-6 scroll-smooth"
+        className={cn(
+          "flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6 scroll-smooth",
+          // This hides the scrollbar in Chrome/Safari/Edge but keeps scrolling enabled
+          "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"
+        )}
       >
         {isLoading ? (
           <div className="space-y-6 pt-10 px-4 max-w-2xl mx-auto">
