@@ -5,6 +5,7 @@ import MessageBubble from "../MessageBubble";
 import SkeletonLoader from "../ui/SkeletonLoader";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import { addMessageToChat, createNewChat } from "../../store/chatSlice";
+import { generateAIResponse } from "../../utils/openai"; // Import Real API
 import { cn } from "../../utils/cn";
 
 const ChatInterface: React.FC = () => {
@@ -35,7 +36,7 @@ const ChatInterface: React.FC = () => {
       dispatch(createNewChat({ id, title: "New Conversation" }));
     }
 
-    const timer = setTimeout(() => setIsLoading(false), 300);
+    const timer = setTimeout(() => setIsLoading(false), 500);
     return () => clearTimeout(timer);
   }, [id, dispatch]);
 
@@ -52,38 +53,51 @@ const ChatInterface: React.FC = () => {
     }
   }, [session?.messages, isTyping, isLoading, shouldAutoScroll]);
 
-  const handleSendMessage = (text: string) => {
+  // --- 3. Send Message Logic (OpenAI Connected) ---
+  const handleSendMessage = async (text: string) => {
     if (!id) return;
     setShouldAutoScroll(true);
+
+    // 1. Add User Message
+    const userMessage = {
+      id: Date.now().toString(),
+      role: "user" as const,
+      content: text,
+      timestamp: Date.now(),
+    };
 
     dispatch(
       addMessageToChat({
         chatId: id,
-        message: {
-          id: Date.now().toString(),
-          role: "user",
-          content: text,
-          timestamp: Date.now(),
-        },
+        message: userMessage,
       })
     );
 
     setIsTyping(true);
 
-    setTimeout(() => {
-      dispatch(
-        addMessageToChat({
-          chatId: id,
-          message: {
-            id: (Date.now() + 1).toString(),
-            role: "assistant",
-            content: `Response to: "${text}".`,
-            timestamp: Date.now(),
-          },
-        })
-      );
-      setIsTyping(false);
-    }, 1200);
+    // 2. Prepare history for API (Limit to last 6 messages for context to save tokens)
+    const history =
+      session?.messages
+        .slice(-6)
+        .map((m) => ({ role: m.role, content: m.content })) || [];
+    const apiMessages = [...history, { role: "user", content: text }];
+
+    // 3. Call Real OpenAI API
+    const aiResponseText = await generateAIResponse(apiMessages);
+
+    // 4. Add AI Message
+    dispatch(
+      addMessageToChat({
+        chatId: id,
+        message: {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          content: aiResponseText,
+          timestamp: Date.now(),
+        },
+      })
+    );
+    setIsTyping(false);
   };
 
   return (
@@ -93,7 +107,6 @@ const ChatInterface: React.FC = () => {
         onScroll={handleScroll}
         className={cn(
           "flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6 scroll-smooth",
-          // This hides the scrollbar in Chrome/Safari/Edge but keeps scrolling enabled
           "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"
         )}
       >

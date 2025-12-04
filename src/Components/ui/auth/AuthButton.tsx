@@ -5,32 +5,36 @@ import { cn } from "../../../utils/cn";
 interface AuthButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean;
+  variant?: "primary" | "google" | "apple";
 }
 
 const AuthButton: React.FC<AuthButtonProps> = ({
   children,
   isLoading,
   className,
+  variant = "primary",
   ...props
 }) => {
+  const variants = {
+    primary:
+      "bg-[#DC2626] hover:bg-[#B91C1C] text-white shadow-lg shadow-red-900/20",
+    google:
+      "bg-[#27272A] hover:bg-[#3F3F46] text-white border border-[#3F3F46]",
+    apple: "bg-[#27272A] hover:bg-[#3F3F46] text-white border border-[#3F3F46]",
+  };
+
   return (
     <button
       disabled={isLoading}
       {...props}
       className={cn(
-        "w-full relative flex items-center justify-center py-3.5 px-4 rounded-xl font-bold text-white overflow-hidden group",
-        "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500",
-        "transition-all duration-300 shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5",
-        "disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none",
+        "w-full relative flex items-center justify-center py-4 rounded-xl font-bold text-sm md:text-base transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed",
+        variants[variant],
         className
       )}
     >
-      <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-
       {isLoading ? <Loader2 className="animate-spin mr-2" size={20} /> : null}
-      <span className="relative z-10 flex items-center gap-2">
-        {isLoading ? "Processing..." : children}
-      </span>
+      <span className="flex items-center gap-2">{children}</span>
     </button>
   );
 };
