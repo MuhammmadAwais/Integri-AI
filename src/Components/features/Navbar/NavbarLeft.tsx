@@ -1,6 +1,6 @@
 import React from "react";
 import { Menu } from "lucide-react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import { toggleMobileMenu } from "../../../store/chatSlice";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
@@ -14,12 +14,13 @@ const NavbarLeft: React.FC = () => {
 
   return (
     <div className="flex items-center gap-3">
-      {/* 1. Mobile Toggle Fix */}
+      {/* Mobile Toggle Button */}
       {isMobile && (
         <button
-          title="button"
+          type="button"
+          aria-label="Toggle Sidebar"
           onClick={(e) => {
-            e.stopPropagation(); // Prevent bubbling issues
+            e.stopPropagation(); // Stop click from hitting other elements
             dispatch(toggleMobileMenu(true));
           }}
           className={cn(
@@ -33,10 +34,11 @@ const NavbarLeft: React.FC = () => {
         </button>
       )}
 
-      {/* 2. Logo Fix (Clickable & Aligned) */}
+      {/* Brand Logo - Now Clickable */}
       <div
         onClick={() => navigate("/")}
         className="flex items-center gap-2 select-none cursor-pointer group"
+        title="Go to Home"
       >
         <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-md transition-transform group-hover:rotate-12">
           IA

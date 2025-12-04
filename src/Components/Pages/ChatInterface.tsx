@@ -1,53 +1,64 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import ChatInput from "../Chat/ChatInput";
 import MessageBubble from "../MessageBubble";
-import SkeletonLoader from "../ui/SkeletonLoader"; // Import Skeleton
+import SkeletonLoader from "../ui/SkeletonLoader";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import { addMessageToChat, createNewChat } from "../../store/chatSlice";
 import { cn } from "../../utils/cn";
-import gsap from "gsap";
 
 const ChatInterface: React.FC = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const isDark = useAppSelector((state) => state.theme.isDark);
 
-  // Get chat data from Redux
-  const session = useAppSelector((state) =>
-    state.chat.sessions.find((s) => s.id === id)
-  );
+  const sessions = useAppSelector((state) => state.chat.sessions);
+
+  // Get Session
+  const session = sessions.find((s) => s.id === id);
 
   const [isLoading, setIsLoading] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true); // NEW: Track scroll intent
 
-  // Simulate "Fetching" effect when ID changes
+  // 1. Handle ID Change & cleanup
   useEffect(() => {
-    setIsLoading(true);
+    if (!id) {
+      navigate("/");
+      return;
+    }
 
-    // If ID exists but no session, create one (Handle direct URL access)
-    if (!session && id) {
+    setIsLoading(true);
+    setShouldAutoScroll(true); // Reset scroll on new chat
+
+    const existingSession = sessions.find((s) => s.id === id);
+    if (!existingSession) {
       dispatch(createNewChat({ id, title: "New Conversation" }));
     }
 
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 800); // 800ms "fake" network load
-
+    const timer = setTimeout(() => setIsLoading(false), 300); // Faster load
     return () => clearTimeout(timer);
-  }, [id, dispatch]); // Removed 'session' from dependencies to prevent loop
+  }, [id, dispatch]);
 
-  // Auto-scroll
+  // 2. Smart Scroll Logic
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    const isAtBottom = scrollHeight - scrollTop - clientHeight < 50;
+    setShouldAutoScroll(isAtBottom);
+  };
+
   useEffect(() => {
-    if (scrollRef.current) {
+    if (shouldAutoScroll && scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [session?.messages, isLoading, isTyping]);
+  }, [session?.messages, isTyping, isLoading, shouldAutoScroll]);
 
   const handleSendMessage = (text: string) => {
     if (!id) return;
+    setShouldAutoScroll(true); // Force scroll on send
 
-    // 1. Add User Message
     dispatch(
       addMessageToChat({
         chatId: id,
@@ -62,7 +73,6 @@ const ChatInterface: React.FC = () => {
 
     setIsTyping(true);
 
-    // 2. Simulate AI Response
     setTimeout(() => {
       dispatch(
         addMessageToChat({
@@ -70,45 +80,40 @@ const ChatInterface: React.FC = () => {
           message: {
             id: (Date.now() + 1).toString(),
             role: "assistant",
-            content: `I am an AI response to: "${text}". \n\nI remember this conversation context now!`,
+            content: `Response to: "${text}".\n\n\`\`\`javascript\nconsole.log("Code block test");\n\`\`\``,
             timestamp: Date.now(),
           },
         })
       );
       setIsTyping(false);
-    }, 1500);
+    }, 1200);
   };
 
-  // --- VIEW RENDERING ---
   return (
     <div className="flex flex-col h-full relative max-w-4xl mx-auto w-full">
       <div
         ref={scrollRef}
+        onScroll={handleScroll}
         className="flex-1 overflow-y-auto p-4 md:p-6 scroll-smooth"
       >
-        {/* Case 1: Loading State (Skeleton) */}
         {isLoading ? (
-          <div className="space-y-6 pt-10 px-4">
+          <div className="space-y-6 pt-10 px-4 max-w-2xl mx-auto">
             <div className="flex justify-end">
               <SkeletonLoader className="w-1/2 h-16 rounded-2xl rounded-tr-none" />
             </div>
             <div className="flex justify-start">
               <SkeletonLoader className="w-3/4 h-24 rounded-2xl rounded-tl-none" />
             </div>
-            <div className="flex justify-end">
-              <SkeletonLoader className="w-1/3 h-12 rounded-2xl rounded-tr-none" />
-            </div>
           </div>
         ) : (
-          /* Case 2: Message List */
           <>
-            {session?.messages.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center opacity-40">
-                <div className="text-4xl mb-4">🤖</div>
-                <p>Start chatting with Integri AI</p>
+            {!session || session.messages.length === 0 ? (
+              <div className="h-full flex flex-col items-center justify-center opacity-40 animate-in fade-in duration-500">
+                <div className="text-6xl mb-4 grayscale">💬</div>
+                <p className="font-medium text-lg">Start a conversation</p>
               </div>
             ) : (
-              session?.messages.map((msg) => (
+              session.messages.map((msg) => (
                 <MessageBubble
                   key={msg.id}
                   role={msg.role}
@@ -118,15 +123,19 @@ const ChatInterface: React.FC = () => {
             )}
           </>
         )}
-
         {isTyping && (
           <div className="ml-4 mt-2 text-xs opacity-50 animate-pulse">
-            AI is thinking...
+            Integri AI is thinking...
           </div>
         )}
       </div>
 
-      <div className="w-full pb-6 pt-2 px-4 z-10">
+      <div
+        className={cn(
+          "w-full pb-6 pt-2 px-4 z-10",
+          isDark ? "bg-[#212121]/90" : "bg-white/90"
+        )}
+      >
         <ChatInput onSend={handleSendMessage} />
       </div>
     </div>
