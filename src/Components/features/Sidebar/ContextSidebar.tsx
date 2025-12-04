@@ -119,7 +119,7 @@ const ContextSidebar: React.FC = () => {
             <button
               onClick={handleNewChat}
               className={cn(
-                "flex items-center justify-center gap-2 px-4 py-3 rounded-xl w-full transition-all duration-200 shadow-sm border font-medium text-sm hover:scale-[1.02] active:scale-95",
+                "flex items-center justify-center gap-2 pl-2 pr-5 py-3 rounded-xl w-full transition-all duration-200 shadow-sm border font-medium text-sm hover:scale-[1.02] active:scale-95",
                 isDark
                   ? "bg-white text-black hover:bg-gray-200"
                   : "bg-black text-white hover:bg-gray-800"
@@ -148,7 +148,7 @@ const ContextSidebar: React.FC = () => {
               "w-full pl-9 pr-3 py-2 rounded-lg text-sm outline-none transition-all",
               isDark
                 ? "bg-[#212121] text-white focus:bg-[#2a2a2a]"
-                : "bg-white border focus:border-indigo-500"
+                : "bg-white border border-gray-200 focus:border-indigo-500"
             )}
           />
         </div>
