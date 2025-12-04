@@ -7,10 +7,10 @@
       "preview": "Components should be..."
     }
   ],
-  "user": {
-    "id": "u1",
-    "name": "Danish Usman",
-    "plan": "Free",
-    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Danish"
-  }
+  "user":[{
+        "id": "123",
+        "name":"Awais",
+        "email":"abc@123",
+        "password":"password123"
+      }]
 }

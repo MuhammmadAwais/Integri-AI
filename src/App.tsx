@@ -1,72 +1,63 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   createBrowserRouter,
   RouterProvider,
   Navigate,
 } from "react-router-dom";
+import { useMediaQuery } from "./Components/hooks/useMediaQuery";
+
 import Home from "./Components/Pages/Home";
 import Login from "./Components/Pages/Login";
 import Signup from "./Components/Pages/Signup";
 import Welcome from "./Components/Pages/Welcome";
 import ChatInterface from "./Components/Pages/ChatInterface";
-import IntroPortal from "./Components/ui/IntroPortal"; // Import the portal
 import HistoryPage from "./Components/Pages/History";
+import GettingStarted from "./Components/Pages/GettingStarted";
 
-// -- Placeholder Components for Missing Pages --
-const UserProfile = () => (
-  <div className="p-10 text-center text-2xl font-bold opacity-60">
-    User Profile Settings
-  </div>
-);
-const UpgradePlan = () => (
-  <div className="p-10 text-center text-2xl font-bold opacity-60">
-    Upgrade to Pro
-  </div>
-);
-const Library = () => (
-  <div className="p-10 text-center text-2xl font-bold opacity-60">
-    Prompt Library
-  </div>
-);
+// Guard: Redirect new mobile users to Getting Started
+const MobileGuard = ({ children }: { children: React.ReactNode }) => {
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const hasSeenIntro = localStorage.getItem("hasSeenGettingStarted");
+
+  if (isMobile && !hasSeenIntro) {
+    return <Navigate to="/getting-started" replace />;
+  }
+  return children;
+};
 
 const Router = createBrowserRouter([
   { path: "/login", element: <Login /> },
   { path: "/signup", element: <Signup /> },
+  { path: "/getting-started", element: <GettingStarted /> },
+
+  // Main App
   {
     path: "/",
-    element: <Home />,
+    element: (
+      <MobileGuard>
+        <Home />
+      </MobileGuard>
+    ),
     children: [
       { index: true, element: <Welcome /> },
       { path: "chat/:id", element: <ChatInterface /> },
-      { path: "library", element: <Library /> },
-      { path: "profile", element: <UserProfile /> }, // Fixed Route
-      { path: "upgrade", element: <UpgradePlan /> }, // Fixed Route
       { path: "history", element: <HistoryPage /> },
-      { path: "settings", element: <UserProfile /> }, // Map settings to profile for now
+      {
+        path: "library",
+        element: <div className="p-10 text-white">Library Page</div>,
+      },
+      {
+        path: "settings",
+        element: <div className="p-10 text-white">Settings Page</div>,
+      },
     ],
   },
+
   { path: "*", element: <Navigate to="/" replace /> },
 ]);
 
 const App: React.FC = () => {
-  const [introFinished, setIntroFinished] = useState(false);
-
-  return (
-    <>
-      {!introFinished && (
-        <IntroPortal onComplete={() => setIntroFinished(true)} />
-      )}
-      <div
-        className={
-          introFinished
-            ? "opacity-100 transition-opacity duration-1000"
-            : "opacity-0"
-        }
-      >
-        <RouterProvider router={Router} />
-      </div>
-    </>
-  );
+  return <RouterProvider router={Router} />;
 };
 
 export default App;
