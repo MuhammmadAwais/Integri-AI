@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
-import { cn } from "../../utils/cn";
+
 
 const IntroPortal = ({ onComplete }: { onComplete: () => void }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -36,7 +36,7 @@ const IntroPortal = ({ onComplete }: { onComplete: () => void }) => {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[100] bg-black flex items-center justify-center overflow-hidden"
+      className="fixed inset-0 z-100 bg-black flex items-center justify-center overflow-hidden"
     >
       {/* Stars Background Effect (CSS will handle the twinkle) */}
       <div className="absolute inset-0 bg-[url('https://assets.codepen.io/1462889/stars.png')] animate-pulse opacity-80" />
@@ -44,7 +44,7 @@ const IntroPortal = ({ onComplete }: { onComplete: () => void }) => {
       <div className="relative z-10 flex flex-col items-center">
         <h1
           ref={textRef}
-          className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 opacity-0 tracking-tighter"
+          className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-linear-to-r from-indigo-400 via-purple-400 to-pink-400 opacity-0 tracking-tighter"
         >
           INTEGRI AI
         </h1>
