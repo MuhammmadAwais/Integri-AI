@@ -27,30 +27,31 @@ const MessageBubble: React.FC<MessageProps> = ({ role, content }) => {
 
   const isUser = role === "user";
 
-  // Simple formatter for code blocks
+  // Code Block Formatter
   const renderContent = (text: string) => {
     const parts = text.split(/```/);
     return parts.map((part, index) => {
       if (index % 2 === 1) {
-        // Code Block
         return (
           <div
             key={index}
-            className="my-2 rounded-md overflow-hidden bg-black/80 text-white text-xs font-mono"
+            className="my-2 rounded-md overflow-hidden bg-black/80 text-white text-xs font-mono shadow-sm"
           >
-            <div className="bg-white/10 px-3 py-1 flex justify-between items-center">
+            <div className="bg-white/10 px-3 py-1 flex justify-between items-center select-none">
               <span>Code</span>
-              <Copy size={12} className="cursor-pointer hover:text-white/80" />
+              <div className="flex items-center gap-1 cursor-pointer hover:text-white/80">
+                <Copy size={12} />
+                <span>Copy</span>
+              </div>
             </div>
-            <div className="p-3 overflow-x-auto whitespace-pre">
+            <div className="p-3 overflow-x-auto custom-scrollbar">
               {part.trim()}
             </div>
           </div>
         );
       }
-      // Regular Text
       return (
-        <span key={index} className="whitespace-pre-wrap">
+        <span key={index} className="whitespace-pre-wrap wrap-break-words">
           {part}
         </span>
       );
@@ -65,15 +66,19 @@ const MessageBubble: React.FC<MessageProps> = ({ role, content }) => {
         isUser ? "justify-end" : "justify-start"
       )}
     >
+      {/* Fix: items-start aligns avatar with top of message. 
+         max-w-[85%] limits width. 
+      */}
       <div
         className={cn(
-          "flex max-w-[85%] md:max-w-[75%] gap-4",
+          "flex items-start max-w-[90%] md:max-w-[75%] gap-3 md:gap-4",
           isUser ? "flex-row-reverse" : "flex-row"
         )}
       >
+        {/* Avatar */}
         <div
           className={cn(
-            "w-8 h-8 rounded-lg shrink-0 flex items-center justify-center shadow-sm",
+            "w-8 h-8 rounded-lg shrink-0 flex items-center justify-center shadow-sm select-none",
             isUser
               ? "bg-linear-to-tr from-blue-600 to-indigo-600 text-white"
               : isDark
@@ -84,16 +89,17 @@ const MessageBubble: React.FC<MessageProps> = ({ role, content }) => {
           {isUser ? <User size={16} /> : <Bot size={16} />}
         </div>
 
+        {/* Message Content */}
         <div
           className={cn(
-            "p-4 rounded-2xl text-sm leading-relaxed shadow-sm min-w-[60px]",
+            "p-3 md:p-4 rounded-2xl text-sm leading-relaxed shadow-sm min-w-[60px]",
             isUser
               ? isDark
-                ? "bg-[#3E3F4B] text-white"
-                : "bg-indigo-600 text-white"
+                ? "bg-[#3E3F4B] text-white rounded-tr-sm"
+                : "bg-indigo-600 text-white rounded-tr-sm"
               : isDark
-              ? "bg-[#444654] text-gray-100"
-              : "bg-white border border-gray-100 text-gray-800"
+              ? "bg-[#444654] text-gray-100 rounded-tl-sm"
+              : "bg-white border border-gray-100 text-gray-800 rounded-tl-sm"
           )}
         >
           {renderContent(content)}
