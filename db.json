@@ -1,16 +1,42 @@
 {
-  "chats": [
+  "users": [
     {
-      "id": "2",
-      "title": "React Best Practices",
-      "date": "Yesterday",
-      "preview": "Components should be..."
+      "id": "1",
+      "name": "Demo User",
+      "email": "test@test.com",
+      "password": "password",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
     }
   ],
-  "user":[{
-        "id": "123",
-        "name":"Awais",
-        "email":"abc@123",
-        "password":"password123"
-      }]
+  "chats": [],
+  "messages": [
+    {
+      "id": "1764862962538",
+      "chatId": "1764862386521",
+      "role": "user",
+      "content": "hello",
+      "timestamp": 1764862962538
+    },
+    {
+      "id": "1764862965387",
+      "chatId": "1764862386521",
+      "role": "assistant",
+      "content": "Hello! How can I assist you today?",
+      "timestamp": 1764862965386
+    },
+    {
+      "id": "1764862972341",
+      "chatId": "1764862386521",
+      "role": "user",
+      "content": "how are you doing today",
+      "timestamp": 1764862972341
+    },
+    {
+      "id": "1764862974151",
+      "chatId": "1764862386521",
+      "role": "assistant",
+      "content": "Thank you for asking! I'm just a computer program, so I don't have feelings, but I'm here and ready to help you with whatever you need. How can I assist you today?",
+      "timestamp": 1764862974150
+    }
+  ]
 }
