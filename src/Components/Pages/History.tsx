@@ -1,7 +1,7 @@
 import React from "react";
 import { useAppSelector, useAppDispatch } from "../hooks/useRedux";
 import { useNavigate } from "react-router-dom";
-import { MessageSquare, Calendar, ArrowRight } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import { cn } from "../../utils/cn";
 import { deleteChat } from "../../store/chatSlice";
 

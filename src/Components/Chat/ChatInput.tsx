@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Paperclip, Mic, ArrowUp, X, FileText } from "lucide-react";
+import { Paperclip, ArrowUp, X, FileText } from "lucide-react";
 import { useAppSelector } from "../hooks/useRedux";
 import { cn } from "../../utils/cn";
 
