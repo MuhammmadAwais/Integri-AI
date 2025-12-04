@@ -57,7 +57,7 @@ const NavbarRight: React.FC = () => {
       <div className="hidden sm:block">
         <NavActionBtn icon={Share2} label="Share Chat" onClick={() => {}} />
       </div>
-      <div className="w-[1px] h-6 bg-gray-200 dark:bg-gray-700 mx-1" />
+      <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1" />
 
       {/* Profile Section */}
       <button
@@ -69,7 +69,7 @@ const NavbarRight: React.FC = () => {
             : "hover:bg-black/5 border-transparent hover:border-gray-200"
         )}
       >
-        <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center text-xs text-white font-bold ring-2 ring-transparent group-hover:ring-indigo-500">
+        <div className="w-7 h-7 rounded-full bg-linear-to-tr from-purple-500 to-pink-500 flex items-center justify-center text-xs text-white font-bold ring-2 ring-transparent group-hover:ring-indigo-500">
           {user?.name ? user.name.charAt(0).toUpperCase() : "G"}
         </div>
       </button>

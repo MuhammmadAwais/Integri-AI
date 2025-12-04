@@ -1,8 +1,8 @@
 import React, { useLayoutEffect, useRef } from "react";
-import { useAppSelector } from "./hooks/useRedux";
+
 import { cn } from "../utils/cn";
 import gsap from "gsap";
-import { User, Bot, Copy } from "lucide-react";
+import { User, Bot } from "lucide-react";
 
 interface MessageProps {
   role: "user" | "assistant";
@@ -10,7 +10,7 @@ interface MessageProps {
 }
 
 const MessageBubble: React.FC<MessageProps> = ({ role, content }) => {
-  const isDark = useAppSelector((state) => state.theme.isDark);
+
   const bubbleRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
@@ -47,7 +47,7 @@ const MessageBubble: React.FC<MessageProps> = ({ role, content }) => {
             "w-8 h-8 rounded-full shrink-0 flex items-center justify-center shadow-sm border",
             isUser
               ? "bg-[#2F3136] border-gray-700 text-white"
-              : "bg-gradient-to-tr from-indigo-500 to-purple-600 text-white border-transparent"
+              : "bg-linear-to-tr from-indigo-500 to-purple-600 text-white border-transparent"
           )}
         >
           {isUser ? <User size={14} /> : <Bot size={16} />}

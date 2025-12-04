@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
-import { cn } from "../../../utils/cn";
+
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -70,7 +70,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
       {/* --- RIGHT SIDE: Image (VR Person) --- */}
       <div className="hidden lg:block w-1/2 h-full relative p-4">
         <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl">
-          <div className="absolute inset-0 bg-gradient-to-tr from-purple-900/40 to-indigo-900/20 z-10 mix-blend-overlay" />
+          <div className="absolute inset-0 bg-linear-to-tr from-purple-900/40 to-indigo-900/20 z-10 mix-blend-overlay" />
           <img
             ref={imageRef}
             src="/public/VR_Image.png" // Using your uploaded file
