@@ -11,7 +11,6 @@ import {
   Paperclip,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-// Ensure these are exported from your API file
 import {
   useAddChatMutation,
   useAddMessageMutation,
@@ -19,8 +18,11 @@ import {
 
 const Welcome: React.FC = () => {
   const isDark = useAppSelector((state) => state.theme.isDark);
-  // Safe access to user
   const user = useAppSelector((state) => state.auth?.user);
+
+  // FIX: Get the currently selected model from Redux state
+  const currentModel = useAppSelector((state) => state.chat.currentModel);
+
   const navigate = useNavigate();
   const [inputValue, setInputValue] = useState("");
 
@@ -30,24 +32,23 @@ const Welcome: React.FC = () => {
   const startChat = async (text: string) => {
     if (!text.trim()) return;
 
-    // Fallback ID if user isn't logged in (prevents crash)
     const userId = user?.id || "guest";
-    const newChatId = Date.now().toString();
+    const newChatId = crypto.randomUUID();
 
     try {
-      // 1. Create the Chat
+      // 1. Create Chat with CORRECT Model
       await addChat({
         id: newChatId,
         userId: userId,
         title: text.slice(0, 30) + (text.length > 30 ? "..." : ""),
         date: new Date().toISOString(),
         preview: text.slice(0, 50),
-        model: "Grok-Beta",
+        model: currentModel, // Use dynamic model
       }).unwrap();
 
-      // 2. Create the First Message
+      // 2. Create Initial Message
       await addMessage({
-        id: Date.now().toString(),
+        id: crypto.randomUUID(),
         chatId: newChatId,
         role: "user",
         content: text,
@@ -55,11 +56,9 @@ const Welcome: React.FC = () => {
       }).unwrap();
 
       // 3. Navigate
-      // ChatInterface will detect the user message and trigger AI
       navigate(`/chat/${newChatId}`);
     } catch (error) {
       console.error("Failed to start chat:", error);
-      // Optional: Add a toast notification here
     }
   };
 
@@ -121,7 +120,7 @@ const Welcome: React.FC = () => {
           <div className="relative flex flex-col w-full p-4 min-h-14">
             <div className="flex items-center gap-3 w-full">
               <button
-              title="Attach file"
+              title="Attach File"
                 className={cn(
                   "p-1 rounded-full transition-colors",
                   isDark
@@ -156,10 +155,11 @@ const Welcome: React.FC = () => {
                   )}
                 >
                   <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
-                  <span>G</span>
+                  <span>{currentModel.split("-")[0].toUpperCase()}</span>{" "}
+                  {/* Display reduced model name */}
                 </button>
                 <button
-                
+                title="Use Voice Input"
                   className={cn(
                     "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors",
                     isDark
