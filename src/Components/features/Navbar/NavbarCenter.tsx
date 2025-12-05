@@ -1,29 +1,24 @@
 import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown, Check, Zap, Sparkles, Box } from "lucide-react";
-import { useAppSelector, useAppDispatch } from "../../hooks/useRedux";
+import {
+  ChevronDown,
+  Check,
+  Sparkles,
+  Zap,
+  Box,
+  Bot,
+  
+} from "lucide-react";
+import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import { setModel } from "../../../store/chatSlice";
+import { useGetModelsQuery } from "../../../store/apis/chatAPI";
 import { cn } from "../../../utils/cn";
 
-const models = [
-  {
-    id: "GPT-4o",
-    label: "GPT-4o",
-    icon: Sparkles,
-    color: "text-purple-400 bg-purple-500/10",
-  },
-  {
-    id: "GPT-4o Mini",
-    label: "GPT-4o Mini",
-    icon: Zap,
-    color: "text-yellow-400 bg-yellow-500/10",
-  },
-  {
-    id: "Claude 3.5",
-    label: "Claude 3.5",
-    icon: Box,
-    color: "text-orange-400 bg-orange-500/10",
-  },
-];
+const IconMap: Record<string, React.ElementType> = {
+  Sparkles: Sparkles,
+  Zap: Zap,
+  Box: Box,
+  Bot: Bot,
+};
 
 const NavbarCenter: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,8 +27,16 @@ const NavbarCenter: React.FC = () => {
   const isDark = useAppSelector((state) => state.theme.isDark);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const activeModel = models.find((m) => m.id === currentModelId) || models[0];
+  // Fetch models using RTK Query
+  const { data: models = [], isLoading } = useGetModelsQuery();
 
+  const activeModel = models.find((m) => m.id === currentModelId) || models[0];
+  const ActiveIcon =
+    activeModel && IconMap[activeModel.icon]
+      ? IconMap[activeModel.icon]
+      : Sparkles;
+
+  // Click Outside Handler
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -47,37 +50,36 @@ const NavbarCenter: React.FC = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  if (isLoading) return null;
+
   return (
-    <div
-      ref={dropdownRef}
-      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 max-w-[200px]"
-    >
+    <div className="relative z-50" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-200 group cursor-pointer select-none border border-transparent hover:border-gray-200 dark:hover:border-gray-700",
+          "flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-200 group cursor-pointer select-none border",
           isDark
-            ? "hover:bg-[#2A2B32] text-gray-200"
-            : "hover:bg-gray-100 text-gray-800"
+            ? "bg-[#212121] border-[#2A2B32] hover:bg-[#2A2B32] text-gray-200"
+            : "bg-white border-gray-200 hover:border-gray-300 text-gray-700 shadow-sm"
         )}
       >
-        <span className={cn("shrink-0", activeModel.color.split(" ")[0])}>
-          <activeModel.icon
-            size={16}
-            fill="currentColor"
-            className="opacity-80"
-          />
+        <span
+          className={cn(
+            "flex items-center justify-center",
+            activeModel?.color
+              ? activeModel.color.split(" ")[0]
+              : "text-indigo-500"
+          )}
+        >
+          <ActiveIcon size={16} className="opacity-90" />
         </span>
-
-        {/* Fix: Truncate text so it doesn't overflow */}
-        <span className="font-semibold text-sm truncate max-w-[100px] sm:max-w-[140px]">
-          {activeModel.label}
+        <span className="font-semibold text-sm">
+          {activeModel?.label || "Select Model"}
         </span>
-
         <ChevronDown
           size={14}
           className={cn(
-            "text-gray-500 transition-transform duration-200 shrink-0",
+            "text-gray-500 transition-transform duration-200",
             isOpen ? "rotate-180" : "group-hover:translate-y-0.5"
           )}
         />
@@ -87,38 +89,61 @@ const NavbarCenter: React.FC = () => {
       {isOpen && (
         <div
           className={cn(
-            "absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 rounded-xl border shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-100",
+            "absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 rounded-xl border shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-100 origin-top",
             isDark
-              ? "bg-[#1f1f1f] border-[#2A2B32] text-gray-100"
-              : "bg-white border-gray-200 text-gray-900"
+              ? "bg-[#1a1a1a] border-[#2A2B32] text-gray-100"
+              : "bg-white border-gray-100 text-gray-900"
           )}
         >
-          {models.map((model) => (
-            <button
-              key={model.id}
-              onClick={() => {
-                dispatch(setModel(model.id));
-                setIsOpen(false);
-              }}
-              className={cn(
-                "flex items-center justify-between w-full px-4 py-3 text-left text-sm transition-colors cursor-pointer",
-                isDark ? "hover:bg-[#2A2B32]" : "hover:bg-gray-50",
-                currentModelId === model.id &&
-                  (isDark ? "bg-[#2A2B32]" : "bg-gray-50")
-              )}
-            >
-              <div className="flex items-center gap-3 overflow-hidden">
-                <model.icon
-                  size={16}
-                  className={cn("shrink-0", model.color.split(" ")[0])}
-                />
-                <span className="truncate">{model.label}</span>
-              </div>
-              {currentModelId === model.id && (
-                <Check size={14} className="text-indigo-500 shrink-0" />
-              )}
-            </button>
-          ))}
+          <div
+            className={cn(
+              "px-3 py-2 text-[10px] font-bold uppercase tracking-wider opacity-50",
+              isDark ? "bg-white/5" : "bg-black/5"
+            )}
+          >
+            Available Models
+          </div>
+
+          <div className="p-1 max-h-[300px] overflow-y-auto custom-scrollbar">
+            {models.map((model) => {
+              const Icon = IconMap[model.icon] || Bot;
+              return (
+                <button
+                  key={model.id}
+                  onClick={() => {
+                    dispatch(setModel(model.id));
+                    setIsOpen(false);
+                  }}
+                  className={cn(
+                    "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left transition-colors cursor-pointer mb-0.5",
+                    isDark ? "hover:bg-[#2A2B32]" : "hover:bg-gray-100",
+                    currentModelId === model.id &&
+                      (isDark ? "bg-[#2A2B32]" : "bg-gray-50")
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={cn(
+                        "w-8 h-8 rounded-lg flex items-center justify-center",
+                        model.color
+                      )}
+                    >
+                      <Icon size={16} />
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium">{model.label}</div>
+                      <div className="text-[10px] opacity-50">
+                        {model.provider}
+                      </div>
+                    </div>
+                  </div>
+                  {currentModelId === model.id && (
+                    <Check size={14} className="text-indigo-500" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>

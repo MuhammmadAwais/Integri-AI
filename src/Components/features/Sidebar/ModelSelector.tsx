@@ -6,7 +6,7 @@ import {
   Sparkles,
   Box,
   Bot,
-  Loader2,
+  
 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import { setModel } from "../../../store/chatSlice";

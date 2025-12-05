@@ -1,8 +1,17 @@
-import React, { useLayoutEffect, useRef } from "react";
-
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { cn } from "../utils/cn";
 import gsap from "gsap";
-import { User, Bot } from "lucide-react";
+import {
+  Copy,
+  RotateCcw,
+  Volume2,
+  MessageSquare,
+  Share,
+  ThumbsUp,
+  ThumbsDown,
+  MoreHorizontal,
+  Check,
+} from "lucide-react";
 
 interface MessageProps {
   role: "user" | "assistant";
@@ -10,22 +19,31 @@ interface MessageProps {
 }
 
 const MessageBubble: React.FC<MessageProps> = ({ role, content }) => {
-
   const bubbleRef = useRef<HTMLDivElement>(null);
+  const [copied, setCopied] = useState(false);
 
   useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(bubbleRef.current, {
-        y: 20,
-        opacity: 0,
-        duration: 0.4,
-        ease: "back.out(1.2)",
-      });
-    }, bubbleRef);
-    return () => ctx.revert();
+    // Safety check: ensure ref exists and gsap is available
+    if (bubbleRef.current && gsap) {
+      const ctx = gsap.context(() => {
+        gsap.from(bubbleRef.current, {
+          y: 10,
+          opacity: 0,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      }, bubbleRef);
+      return () => ctx.revert();
+    }
   }, []);
 
   const isUser = role === "user";
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(content);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <div
@@ -35,31 +53,14 @@ const MessageBubble: React.FC<MessageProps> = ({ role, content }) => {
         isUser ? "justify-end" : "justify-start"
       )}
     >
-      <div
-        className={cn(
-          "flex max-w-[85%] gap-3",
-          isUser ? "flex-row-reverse" : "flex-row"
-        )}
-      >
-        {/* Avatar */}
+      <div className={cn("flex flex-col max-w-[90%] md:max-w-[80%] min-w-0")}>
+        {/* Content Bubble */}
         <div
           className={cn(
-            "w-8 h-8 rounded-full shrink-0 flex items-center justify-center shadow-sm border",
+            "px-5 py-3 text-[15px] leading-relaxed shadow-sm overflow-hidden wrap-break-words",
             isUser
-              ? "bg-[#2F3136] border-gray-700 text-white"
-              : "bg-linear-to-tr from-indigo-500 to-purple-600 text-white border-transparent"
-          )}
-        >
-          {isUser ? <User size={14} /> : <Bot size={16} />}
-        </div>
-
-        {/* Bubble */}
-        <div
-          className={cn(
-            "px-5 py-3 text-sm leading-relaxed shadow-md",
-            isUser
-              ? "bg-[#2F3136] text-white rounded-2xl rounded-tr-sm border border-gray-700"
-              : "bg-transparent text-gray-100 pl-0 pt-1" // AI message looks cleaner without background
+              ? "bg-[#212121] text-white rounded-4xl rounded-tr-lg"
+              : "bg-transparent text-gray-100 pl-0 pt-0"
           )}
         >
           {content.split("```").map((part, i) => {
@@ -67,9 +68,9 @@ const MessageBubble: React.FC<MessageProps> = ({ role, content }) => {
               return (
                 <div
                   key={i}
-                  className="bg-black/50 p-3 rounded-md font-mono text-xs my-2 overflow-x-auto"
+                  className="bg-[#1e1e1e] border border-gray-800 p-3 rounded-lg font-mono text-sm my-3 overflow-x-auto w-full"
                 >
-                  {part}
+                  <pre className="whitespace-pre">{part}</pre>
                 </div>
               );
             }
@@ -80,6 +81,50 @@ const MessageBubble: React.FC<MessageProps> = ({ role, content }) => {
             );
           })}
         </div>
+
+        {/* Action Bar (Assistant Only) */}
+        {!isUser && (
+          <div className="flex items-center gap-4 mt-2 ml-0 text-gray-500 select-none">
+            <button
+              className="hover:text-white transition-colors p-1"
+              title="Regenerate"
+            >
+              <RotateCcw size={16} strokeWidth={1.5} />
+            </button>
+            <button
+              className="hover:text-white transition-colors p-1"
+              title="Read Aloud"
+            >
+              <Volume2 size={16} strokeWidth={1.5} />
+            </button>
+            <button title="Reply" className="hover:text-white transition-colors p-1 hidden sm:block">
+              <MessageSquare size={16} strokeWidth={1.5} />
+            </button>
+            <button
+              onClick={handleCopy}
+              className="hover:text-white transition-colors p-1"
+              title="Copy"
+            >
+              {copied ? (
+                <Check size={16} />
+              ) : (
+                <Copy size={16} strokeWidth={1.5} />
+              )}
+            </button>
+            <button title="Share" className="hover:text-white transition-colors p-1 hidden sm:block">
+              <Share size={16} strokeWidth={1.5} />
+            </button>
+            <button title="Like" className="hover:text-white transition-colors p-1">
+              <ThumbsUp size={16} strokeWidth={1.5} />
+            </button>
+            <button title="Dislike" className="hover:text-white transition-colors p-1">
+              <ThumbsDown size={16} strokeWidth={1.5} />
+            </button>
+            <button title="More options" className="hover:text-white transition-colors p-1">
+              <MoreHorizontal size={16} strokeWidth={1.5} />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
