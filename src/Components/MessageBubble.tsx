@@ -12,6 +12,7 @@ import {
   MoreHorizontal,
   Check,
 } from "lucide-react";
+import { useAppSelector } from "./hooks/useRedux";
 
 interface MessageProps {
   role: "user" | "assistant";
@@ -21,6 +22,7 @@ interface MessageProps {
 const MessageBubble: React.FC<MessageProps> = ({ role, content }) => {
   const bubbleRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
+  const isDark = useAppSelector((state) => state.theme.isDark);
 
   useLayoutEffect(() => {
     // Safety check: ensure ref exists and gsap is available
@@ -57,10 +59,14 @@ const MessageBubble: React.FC<MessageProps> = ({ role, content }) => {
         {/* Content Bubble */}
         <div
           className={cn(
-            "px-5 py-3 text-[15px] leading-relaxed shadow-sm overflow-hidden wrap-break-words",
-            isUser
+            "px-5 py-3 text-[15px] leading-relaxed  overflow-hidden wrap-break-words",
+            isDark
+              ? (isUser
+                ? "bg-[#212121] text-white rounded-4xl rounded-tr-lg"
+                : "bg-transparent text-gray-100 pl-0 pt-0")
+              :( isUser
               ? "bg-[#212121] text-white rounded-4xl rounded-tr-lg"
-              : "bg-transparent text-gray-100 pl-0 pt-0"
+              : "bg-transparent text-black pl-0 pt-0")
           )}
         >
           {content.split("```").map((part, i) => {
@@ -97,7 +103,10 @@ const MessageBubble: React.FC<MessageProps> = ({ role, content }) => {
             >
               <Volume2 size={16} strokeWidth={1.5} />
             </button>
-            <button title="Reply" className="hover:text-white transition-colors p-1 hidden sm:block">
+            <button
+              title="Reply"
+              className="hover:text-white transition-colors p-1 hidden sm:block"
+            >
               <MessageSquare size={16} strokeWidth={1.5} />
             </button>
             <button
@@ -111,16 +120,28 @@ const MessageBubble: React.FC<MessageProps> = ({ role, content }) => {
                 <Copy size={16} strokeWidth={1.5} />
               )}
             </button>
-            <button title="Share" className="hover:text-white transition-colors p-1 hidden sm:block">
+            <button
+              title="Share"
+              className="hover:text-white transition-colors p-1 hidden sm:block"
+            >
               <Share size={16} strokeWidth={1.5} />
             </button>
-            <button title="Like" className="hover:text-white transition-colors p-1">
+            <button
+              title="Like"
+              className="hover:text-white transition-colors p-1"
+            >
               <ThumbsUp size={16} strokeWidth={1.5} />
             </button>
-            <button title="Dislike" className="hover:text-white transition-colors p-1">
+            <button
+              title="Dislike"
+              className="hover:text-white transition-colors p-1"
+            >
               <ThumbsDown size={16} strokeWidth={1.5} />
             </button>
-            <button title="More options" className="hover:text-white transition-colors p-1">
+            <button
+              title="More options"
+              className="hover:text-white transition-colors p-1"
+            >
               <MoreHorizontal size={16} strokeWidth={1.5} />
             </button>
           </div>
