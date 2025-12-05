@@ -37,6 +37,176 @@
       "role": "assistant",
       "content": "Thank you for asking! I'm just a computer program, so I don't have feelings, but I'm here and ready to help you with whatever you need. How can I assist you today?",
       "timestamp": 1764862974150
+    },
+    {
+      "id": "1764910844534",
+      "chatId": "1764862958193",
+      "role": "user",
+      "content": "hello",
+      "timestamp": 1764910844534
+    },
+    {
+      "id": "1764910845570",
+      "chatId": "1764862958193",
+      "role": "assistant",
+      "content": "Please set your VITE_OPENAI_API_KEY in .env file to use the real AI.",
+      "timestamp": 1764910845569
+    },
+    {
+      "id": "1764910961217",
+      "chatId": "1764862958193",
+      "role": "user",
+      "content": "hello how are you doing today",
+      "timestamp": 1764910961217
+    },
+    {
+      "id": "1764910962249",
+      "chatId": "1764862958193",
+      "role": "assistant",
+      "content": "Please set your VITE_OPENAI_API_KEY in .env file to use the real AI.",
+      "timestamp": 1764910962248
+    },
+    {
+      "id": "1764911025783",
+      "chatId": "1764862958193",
+      "role": "user",
+      "content": "hello how are you doing today",
+      "timestamp": 1764911025783
+    },
+    {
+      "id": "1764911028587",
+      "chatId": "1764862958193",
+      "role": "assistant",
+      "content": "Hello! I'm just a computer program, so I don't have feelings, but I'm here and ready to help you. How can I assist you today?",
+      "timestamp": 1764911028586
+    },
+    {
+      "id": "1764911073999",
+      "chatId": "1764862386521",
+      "role": "user",
+      "content": "give me 5 reasons of ding busi ess rather then jon",
+      "timestamp": 1764911073999
+    },
+    {
+      "id": "1764911083242",
+      "chatId": "1764862386521",
+      "role": "assistant",
+      "content": "Choosing to start a business rather than pursuing a traditional job can be a significant decision and depends on individual preferences, goals, and circumstances. Here are five reasons why some people might prefer starting a business over working a traditional job:\n\n1. **Autonomy and Control**: As a business owner, you have the freedom to make your own decisions and set the direction for your company. This includes choosing the type of work you do, the projects you take on, and the people you work with.\n\n2. **Potential for Higher Earnings**: While starting a business comes with risks, it also offers the potential for higher earnings. Successful businesses can generate significant income, and as the owner, you benefit directly from the profits.\n\n3. **Pursuing Passion and Creativity**: Owning a business allows you to pursue your passions and bring your creative ideas to life. You have the opportunity to build something unique that reflects your vision and values.\n\n4. **Flexibility and Work-Life Balance**: Business ownership can offer more flexibility in terms of working hours and location. This can lead to a better work-life balance, allowing you to spend more time with family or pursue other interests.\n\n5. **Personal Growth and Learning**: Running a business can be a profound learning experience. It challenges you to develop new skills, adapt to changing circumstances, and grow both personally and professionally. The experience can be incredibly rewarding and fulfilling.\n\nIt's important to note that starting a business also comes with challenges, such as financial risk, uncertainty, and the need for a wide range of skills. Careful consideration and planning are essential before making the leap from employment to entrepreneurship.",
+      "timestamp": 1764911083241
+    },
+    {
+      "id": "1764913593335",
+      "chatId": "1764862958193",
+      "role": "user",
+      "content": "define thermodynamic for 5 year old with 5 examples",
+      "timestamp": 1764913593335
+    },
+    {
+      "id": "1764913619801",
+      "chatId": "1764862958193",
+      "role": "assistant",
+      "content": "I'm having trouble connecting to the galaxy server right now. Please try again.",
+      "timestamp": 1764913619800
+    },
+    {
+      "id": "1764913631759",
+      "chatId": "1764862958193",
+      "role": "user",
+      "content": "how are you",
+      "timestamp": 1764913631759
+    },
+    {
+      "id": "1764913634106",
+      "chatId": "1764862958193",
+      "role": "assistant",
+      "content": "I'm just a computer program, so I don't have feelings, but I'm here to help you with whatever you need. How can I assist you today?",
+      "timestamp": 1764913634105
+    },
+    {
+      "id": "1764913653891",
+      "chatId": "1764862958193",
+      "role": "user",
+      "content": "give me 5 reasons why business is better than job",
+      "timestamp": 1764913653891
+    },
+    {
+      "id": "1764913666568",
+      "chatId": "1764862958193",
+      "role": "assistant",
+      "content": "Whether business is better than a job depends on individual preferences, goals, and circumstances. However, here are five reasons why some people might prefer running a business over having a traditional job:\n\n1. **Independence and Control**: Running a business allows you to be your own boss. You make the decisions about the direction of the company, the products or services offered, and the work environment. This level of control can be very satisfying for those who value autonomy.\n\n2. **Unlimited Earning Potential**: In a business, your income is not capped by a salary. If your business does well, the financial rewards can be significant. Entrepreneurs have the potential to earn much more than they might as an employee in a company.\n\n3. **Flexibility**: Owning a business often provides more flexibility in terms of work hours and location. This can be especially appealing to those who want to balance work with other commitments, such as family or hobbies.\n\n4. **Creative Freedom**: As a business owner, you have the opportunity to innovate and bring your ideas to life. You can create products or services that reflect your vision and values, which can be deeply fulfilling.\n\n5. **Building Something of Your Own**: Running a business allows you to create something that is uniquely yours. This can be a source of pride and accomplishment, as you watch your business grow and evolve over time.\n\nOf course, running a business also comes with its own set of challenges and risks, such as financial uncertainty and the responsibility of managing employees and operations. It's important to weigh these factors carefully when deciding between starting a business and pursuing a traditional job.",
+      "timestamp": 1764913666567
+    },
+    {
+      "id": "1764926279485",
+      "chatId": "1764926274670",
+      "role": "user",
+      "content": "hello",
+      "timestamp": 1764926279485
+    },
+    {
+      "id": "1764926282050",
+      "chatId": "1764926274670",
+      "role": "assistant",
+      "content": "Hello! How can I assist you today?",
+      "timestamp": 1764926282049
+    },
+    {
+      "id": "1764926729813",
+      "chatId": "1764926716461",
+      "role": "user",
+      "content": "hello whats capital of pakistan",
+      "timestamp": 1764926729813
+    },
+    {
+      "id": "1764926731648",
+      "chatId": "1764926716461",
+      "role": "assistant",
+      "content": "The capital of Pakistan is Islamabad.",
+      "timestamp": 1764926731648
+    },
+    {
+      "id": "1764926758314",
+      "chatId": "1764926751068",
+      "role": "user",
+      "content": "whats capital of usa",
+      "timestamp": 1764926758314
+    },
+    {
+      "id": "1764926763760",
+      "chatId": "1764926751068",
+      "role": "assistant",
+      "content": "The capital of the United States is Washington, D.C.",
+      "timestamp": 1764926763759
+    }
+  ],
+  "models": [
+    {
+      "id": "gpt-4o",
+      "label": "GPT-4o",
+      "provider": "OpenAI",
+      "icon": "Sparkles",
+      "color": "text-purple-500 bg-purple-500/10"
+    },
+    {
+      "id": "gpt-4o-mini",
+      "label": "GPT-4o Mini",
+      "provider": "OpenAI",
+      "icon": "Zap",
+      "color": "text-yellow-500 bg-yellow-500/10"
+    },
+    {
+      "id": "claude-3-5-sonnet",
+      "label": "Claude 3.5 Sonnet",
+      "provider": "Anthropic",
+      "icon": "Box",
+      "color": "text-orange-500 bg-orange-500/10"
+    },
+    {
+      "id": "llama-3",
+      "label": "Llama 3",
+      "provider": "Meta",
+      "icon": "Bot",
+      "color": "text-blue-500 bg-blue-500/10"
     }
   ]
 }

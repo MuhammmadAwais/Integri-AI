@@ -1,26 +1,24 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import ChatInput from "../Chat/ChatInput";
 import MessageBubble from "../MessageBubble";
 import SkeletonLoader from "../ui/SkeletonLoader";
-import { useAppSelector } from "../hooks/useRedux";
+import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import {
   useGetMessagesQuery,
   useAddMessageMutation,
- 
 } from "../../store/apis/chatAPI";
 import { generateAIResponse } from "../../utils/openai";
 import { cn } from "../../utils/cn";
 
 const ChatInterface: React.FC = () => {
   const { id } = useParams();
- 
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const isDark = useAppSelector((state) => state.theme.isDark);
   const user = useAppSelector((state) => state.auth.user);
+  const currentModel = useAppSelector((state) => state.chat.currentModel); // Get selected model
 
-  // RTK Query Hooks
   const { data: messages = [], isLoading } = useGetMessagesQuery(id || "", {
     skip: !id,
   });
@@ -39,38 +37,46 @@ const ChatInterface: React.FC = () => {
     if (!id || !user) return;
 
     try {
-      // 1. Save User Message to DB
-      const userMsgPayload = {
+      // 1. User Message
+      await addMessage({
         id: Date.now().toString(),
         chatId: id,
         role: "user" as const,
         content: text,
         timestamp: Date.now(),
-      };
-      await addMessage(userMsgPayload).unwrap();
+      }).unwrap();
 
       setIsTyping(true);
 
-      // 2. Call Real OpenAI API
-      // We pass the last few messages for context
+      // 2. Call OpenAI with Specific Model
       const historyContext = messages
         .slice(-5)
         .map((m) => ({ role: m.role, content: m.content }));
-      const aiText = await generateAIResponse([
-        ...historyContext,
-        { role: "user", content: text },
-      ]);
 
-      // 3. Save AI Message to DB
+      // PASS CURRENT MODEL ID HERE
+      const aiText = await generateAIResponse(
+        [...historyContext, { role: "user", content: text }],
+        currentModel
+      );
+
+      // 3. AI Message
       await addMessage({
         id: (Date.now() + 1).toString(),
         chatId: id,
         role: "assistant",
-        content: aiText || "Sorry, I couldn't generate a response.",
+        content: aiText || "Error generating response.",
         timestamp: Date.now(),
       }).unwrap();
     } catch (error) {
       console.error("Failed to send message", error);
+      await addMessage({
+        id: Date.now().toString(),
+        chatId: id,
+        role: "assistant",
+        content:
+          "I encountered an error processing your request. Please check your connection.",
+        timestamp: Date.now(),
+      });
     } finally {
       setIsTyping(false);
     }
@@ -95,6 +101,7 @@ const ChatInterface: React.FC = () => {
               <div className="h-full flex flex-col items-center justify-center opacity-40 animate-in fade-in">
                 <div className="text-6xl mb-4 grayscale">💬</div>
                 <p className="font-medium text-lg">Start a conversation</p>
+                <p className="text-xs mt-2 opacity-70">Using {currentModel}</p>
               </div>
             ) : (
               messages.map((msg) => (
@@ -108,8 +115,8 @@ const ChatInterface: React.FC = () => {
           </>
         )}
         {isTyping && (
-          <div className="ml-4 mt-2 text-xs opacity-50 animate-pulse">
-            Integri AI is thinking...
+          <div className="ml-4 mt-2 text-xs opacity-50 animate-pulse flex items-center gap-2">
+            <span>{currentModel} is thinking...</span>
           </div>
         )}
       </div>
