@@ -25,7 +25,9 @@ try {
 export const generateAIResponse = async (
   messages: { role: string; content: string }[],
   model: string = "gpt-3.5-turbo"
+  
 ): Promise<string> => {
+  console.log("Generating AI response using model:", model);
   if (!openai) {
     return "Error: API Key is missing or invalid. Please check your Vercel/Environment settings.";
   }
