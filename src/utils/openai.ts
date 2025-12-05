@@ -1,56 +1,51 @@
-const API_KEY = import.meta.env.VITE_OPENAI_API_KEY || "";
+import OpenAI from "openai";
+
+// Safely access the API key
+const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+
+// Log a warning if missing, but DO NOT crash the app
+if (!apiKey) {
+  console.warn("VITE_OPENAI_API_KEY is missing. AI responses will fail.");
+}
+
+// Initialize OpenAI conditionally
+let openai: OpenAI | null = null;
+
+try {
+  if (apiKey) {
+    openai = new OpenAI({
+      apiKey: apiKey,
+      dangerouslyAllowBrowser: true,
+    });
+  }
+} catch (error) {
+  console.error("Failed to initialize OpenAI client:", error);
+}
 
 export const generateAIResponse = async (
   messages: { role: string; content: string }[],
-  modelId: string = "gpt-4o"
-) => {
-  if (!API_KEY) {
-    return new Promise((resolve) =>
-      setTimeout(
-        () =>
-          resolve(
-            "Please set your VITE_OPENAI_API_KEY in .env file to use the real AI."
-          ),
-        1000
-      )
-    );
+  model: string = "gpt-3.5-turbo"
+): Promise<string> => {
+  if (!openai) {
+    return "Error: API Key is missing or invalid. Please check your Vercel/Environment settings.";
   }
 
-  // Map frontend model IDs to actual OpenAI model IDs
-  // Note: Since we only have an OpenAI Key, we force everything to use OpenAI models
-  // but we can tweak system prompts or max_tokens if needed.
-  let actualModel = "gpt-4o";
-  if (modelId === "gpt-4o-mini") actualModel = "gpt-4o-mini";
-  // For "Claude" or "Llama", we still have to use GPT-4o with this key,
-  // unless you have keys for Anthropic/Groq.
-  // We will use gpt-4o as the engine for all to ensure it works.
-
   try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: actualModel,
-        messages: messages.map((m) => ({
-          role: m.role,
-          content: m.content,
-        })),
-        temperature: 0.7,
-      }),
+    const apiMessages = messages.map((msg) => ({
+      role: msg.role === "user" ? ("user" as const) : ("assistant" as const),
+      content: msg.content,
+    }));
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: apiMessages,
+      temperature: 0.7,
+      max_tokens: 500,
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error?.message || "API Error");
-    }
-
-    return data.choices[0].message.content;
-  } catch (error) {
+    return response.choices[0]?.message?.content || "No response received.";
+  } catch (error: any) {
     console.error("OpenAI API Error:", error);
-    return `Error: Unable to connect to ${modelId} service. Please check your connection or API key.`;
+    return `Error generating response: ${error.message || "Unknown error"}`;
   }
 };
