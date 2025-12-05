@@ -112,6 +112,38 @@
       "date": "2025-12-05T13:36:15.577Z",
       "preview": "how are you",
       "model": "Grok-Beta"
+    },
+    {
+      "id": "1764942030748",
+      "userId": "1764938781038",
+      "title": "hello",
+      "date": "2025-12-05T13:40:30.748Z",
+      "preview": "hello",
+      "model": "Grok-Beta"
+    },
+    {
+      "id": "1764943725134",
+      "userId": "guest",
+      "title": "hello",
+      "date": "2025-12-05T14:08:45.134Z",
+      "preview": "hello",
+      "model": "Grok-Beta"
+    },
+    {
+      "id": "1764943814063",
+      "userId": "guest",
+      "title": "share the list of 10 students ...",
+      "date": "2025-12-05T14:10:14.063Z",
+      "preview": "share the list of 10 students the data should be d",
+      "model": "Grok-Beta"
+    },
+    {
+      "id": "1764943848846",
+      "userId": "guest",
+      "title": "share the list of 10 students ...",
+      "date": "2025-12-05T14:10:48.846Z",
+      "preview": "share the list of 10 students  data should be dumm",
+      "model": "Grok-Beta"
     }
   ],
   "messages": [
@@ -562,6 +594,76 @@
       "role": "assistant",
       "content": "Error: API Key is missing or invalid. Please check your Vercel/Environment settings.",
       "timestamp": 1764941775781
+    },
+    {
+      "id": "1764942030769",
+      "chatId": "1764942030748",
+      "role": "user",
+      "content": "hello",
+      "timestamp": 1764942030769
+    },
+    {
+      "id": "1764942032181",
+      "chatId": "1764942030748",
+      "role": "assistant",
+      "content": "Hello! How can I assist you today?",
+      "timestamp": 1764942032181
+    },
+    {
+      "id": "1764942245551",
+      "chatId": "1764942030748",
+      "role": "user",
+      "content": "give me 5 reasons why pyramids might be build by aliens",
+      "timestamp": 1764942245551
+    },
+    {
+      "id": "1764942248666",
+      "chatId": "1764942030748",
+      "role": "assistant",
+      "content": "While the idea of aliens building pyramids is a popular theory, there is currently no scientific evidence to support this claim. However, here are five reasons why some people believe that pyramids might have been built by aliens:\n\n1. Advanced Technology: The precision and engineering of the pyramids, especially considering the time period in which they were built, have led some to believe that the technology required could only have been provided by extraterrestrial beings.\n\n2. Lack of Historical Records: There is a lack of detailed historical records or documentation on how the pyramids were constructed, leading to speculation that aliens may have been involved.\n\n3. Alignment with Celestial Bodies: Some pyramids are aligned with celestial bodies in a way that would require advanced astronomical knowledge, leading to theories that aliens with superior knowledge of the stars were involved in their construction.\n\n4. Massive Scale: The sheer size and scale of the pyramids, as well as the precision of their construction, have led some to believe that human labor alone could not have accomplished such a feat.\n\n5. Quick Construction: Some believe that the speed at which the pyramids were built, along with the lack of evidence of tools or machinery used in their construction, suggests the involvement of a more advanced civilization.\n\nIt's important to note that these are speculative theories and there is currently no concrete evidence to support the idea that aliens were involved in building the pyramids.",
+      "timestamp": 1764942248666
+    },
+    {
+      "id": "1764943725166",
+      "chatId": "1764943725134",
+      "role": "user",
+      "content": "hello",
+      "timestamp": 1764943725166
+    },
+    {
+      "id": "1764943727545",
+      "chatId": "1764943725134",
+      "role": "assistant",
+      "content": "Hello! How can I assist you today?",
+      "timestamp": 1764943727545
+    },
+    {
+      "id": "1764943814080",
+      "chatId": "1764943814063",
+      "role": "user",
+      "content": "share the list of 10 students the data should be dummy",
+      "timestamp": 1764943814080
+    },
+    {
+      "id": "1764943815629",
+      "chatId": "1764943814063",
+      "role": "assistant",
+      "content": "1. Sarah Smith\n2. John Doe\n3. Emily Johnson\n4. Michael Brown\n5. Amanda Miller\n6. David Wilson\n7. Jessica Taylor\n8. Kevin Martinez\n9. Lauren Jones\n10. Brian Davis",
+      "timestamp": 1764943815629
+    },
+    {
+      "id": "1764943848864",
+      "chatId": "1764943848846",
+      "role": "user",
+      "content": "share the list of 10 students  data should be dummy with name class roll no and should return in table",
+      "timestamp": 1764943848864
+    },
+    {
+      "id": "1764943850878",
+      "chatId": "1764943848846",
+      "role": "assistant",
+      "content": "Sure! Here is a list of 10 students with dummy data in a table format:\n\n| Name      | Class | Roll No |\n|-----------|-------|---------|\n| John      | 10    | 101     |\n| Sarah     | 10    | 102     |\n| Michael   | 11    | 201     |\n| Emily     | 11    | 202     |\n| David     | 12    | 301     |\n| Jessica   | 12    | 302     |\n| Ryan      | 9     | 001     |\n| Samantha  | 9     | 002     |\n| Matthew   | 8     | 401     |\n| Ashley    | 8     | 402     |",
+      "timestamp": 1764943850878
     }
   ],
   "models": [

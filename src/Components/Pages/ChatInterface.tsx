@@ -17,51 +17,59 @@ const ChatInterface: React.FC = () => {
   const { id } = useParams();
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Track processed messages to prevent duplicates
+  const processedMessageIds = useRef<Set<string>>(new Set());
+
   const isDark = useAppSelector((state) => state.theme.isDark);
-  const user = useAppSelector((state) => state.auth.user);
+  const user = useAppSelector((state) => state.auth?.user);
+  const currentUserId = user?.id || "guest";
   const currentModel = useAppSelector((state) => state.chat.currentModel);
 
-  // 1. Fetch Messages
   const { data: messages = [], isLoading: isLoadingMessages } =
     useGetMessagesQuery(id || "", { skip: !id });
 
-  const { data: existingChats = [] } = useGetChatsQuery(user?.id || "", {
-    skip: !user,
+  const { data: existingChats = [] } = useGetChatsQuery(currentUserId, {
+    skip: !currentUserId,
   });
 
   const [addMessage] = useAddMessageMutation();
   const [addChat] = useAddChatMutation();
-
-  // State to track if we are currently generating a response to avoid duplicate calls
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Determine typing state: if generating locally or if fetching implies logic
+  // Logic for UI state
   const isTyping =
     isGenerating ||
     (messages.length > 0 && messages[messages.length - 1].role === "user");
 
-  // Auto-scroll
+  // Scroll to bottom
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
 
-  // --- NEW LOGIC: Handle Pending AI Response ---
-  // If the component loads (e.g. from Welcome screen) and the last message is User, trigger AI.
+  // --- SAFE AUTO-RESPONSE LOGIC ---
   useEffect(() => {
-    const processPendingMessage = async () => {
-      if (messages.length === 0) return;
+    const processAI = async () => {
+      if (!id || messages.length === 0) return;
 
       const lastMsg = messages[messages.length - 1];
 
-      // If last message is user and we aren't already generating
-      if (lastMsg.role === "user" && !isGenerating) {
+      // CRITICAL CHECK:
+      // 1. Must be a user message
+      // 2. Must NOT be currently generating
+      // 3. Must NOT have been processed already (deduplication)
+      if (
+        lastMsg.role === "user" &&
+        !isGenerating &&
+        !processedMessageIds.current.has(lastMsg.id)
+      ) {
         setIsGenerating(true);
+        processedMessageIds.current.add(lastMsg.id); // Mark as processed immediately
+
         try {
-          // Prepare history
           const historyContext = messages
-            .slice(-6, -1) // Take previous messages excluding the very last pending one
+            .slice(-6, -1)
             .map((m) => ({ role: m.role, content: m.content }));
 
           const aiText = await generateAIResponse(
@@ -70,56 +78,54 @@ const ChatInterface: React.FC = () => {
           );
 
           await addMessage({
-            id: Date.now().toString(),
-            chatId: id!,
+            id: crypto.randomUUID(), // Unique ID
+            chatId: id,
             role: "assistant",
-            content:
-              aiText ||
-              "I apologize, but I couldn't generate a response at this time.",
+            content: aiText,
             timestamp: Date.now(),
           }).unwrap();
         } catch (error) {
           console.error("Auto-response error:", error);
+          processedMessageIds.current.delete(lastMsg.id); // Allow retry on error
         } finally {
           setIsGenerating(false);
         }
       }
     };
 
-    if (!isLoadingMessages && id) {
-      processPendingMessage();
+    if (!isLoadingMessages) {
+      processAI();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [messages, isLoadingMessages, id, currentModel]); // Check when messages update
+  }, [messages, isLoadingMessages, id, currentModel, addMessage]);
 
   const handleSendMessage = async (text: string) => {
-    if (!id || !user) return;
+    if (!id) return;
 
     try {
-      // FIX: Ensure Chat Parent Record Exists (Redundant if handled by Welcome, but good safety)
+      // 1. Ensure Chat Exists (for Guest/User)
       const chatExists = existingChats.some((c) => c.id === id);
       if (!chatExists) {
         await addChat({
           id: id,
-          userId: user.id,
-          title: text.slice(0, 30) + (text.length > 30 ? "..." : ""),
+          userId: currentUserId,
+          title: text.slice(0, 30) + "...",
           date: new Date().toISOString(),
           preview: text.slice(0, 50),
           model: currentModel,
         }).unwrap();
       }
 
-      // 1. Add User Message
+      // 2. Add User Message
+      const newMessageId = crypto.randomUUID();
       await addMessage({
-        id: Date.now().toString(),
+        id: newMessageId,
         chatId: id,
-        role: "user" as const,
+        role: "user",
         content: text,
         timestamp: Date.now(),
       }).unwrap();
 
-      // The useEffect above will detect this new 'user' message and trigger the AI response automatically.
-      // This keeps logic in one place.
+      // The useEffect above will detect this new message by ID and trigger response
     } catch (error) {
       console.error("Failed to send message", error);
     }
@@ -134,7 +140,6 @@ const ChatInterface: React.FC = () => {
         isDark ? "bg-[#000000]" : "bg-white"
       )}
     >
-      {/* Messages Area */}
       <div
         ref={scrollRef}
         className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-8 scroll-smooth custom-scrollbar"
@@ -142,25 +147,10 @@ const ChatInterface: React.FC = () => {
         <div className="max-w-3xl mx-auto w-full pb-10">
           {isLoadingMessages ? (
             <div className="space-y-8 pt-10">
-              <SkeletonLoader
-                className={cn(
-                  "w-1/3 h-10 ml-auto rounded-3xl",
-                  isDark ? "bg-gray-800" : "bg-gray-200"
-                )}
-              />
+              <SkeletonLoader className="w-1/3 h-10 ml-auto rounded-3xl bg-gray-800" />
               <div className="space-y-2">
-                <SkeletonLoader
-                  className={cn(
-                    "w-3/4 h-4 mr-auto rounded-md",
-                    isDark ? "bg-gray-800" : "bg-gray-200"
-                  )}
-                />
-                <SkeletonLoader
-                  className={cn(
-                    "w-1/2 h-4 mr-auto rounded-md",
-                    isDark ? "bg-gray-800" : "bg-gray-200"
-                  )}
-                />
+                <SkeletonLoader className="w-3/4 h-4 mr-auto rounded-md bg-gray-800" />
+                <SkeletonLoader className="w-1/2 h-4 mr-auto rounded-md bg-gray-800" />
               </div>
             </div>
           ) : (
@@ -193,7 +183,6 @@ const ChatInterface: React.FC = () => {
         </div>
       </div>
 
-      {/* Input Area */}
       <div
         className={cn(
           "w-full pb-6 pt-2 px-4 z-10",
@@ -202,12 +191,7 @@ const ChatInterface: React.FC = () => {
       >
         <div className="max-w-3xl mx-auto">
           <ChatInput onSend={handleSendMessage} />
-          <p
-            className={cn(
-              "text-center text-[10px] mt-2",
-              isDark ? "text-gray-600" : "text-gray-400"
-            )}
-          >
+          <p className="text-center text-[10px] mt-2 text-gray-500">
             AI can make mistakes. Please double check responses.
           </p>
         </div>

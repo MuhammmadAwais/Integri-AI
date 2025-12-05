@@ -73,7 +73,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
           <div className="absolute inset-0 bg-linear-to-tr from-purple-900/40 to-indigo-900/20 z-10 mix-blend-overlay" />
           <img
             ref={imageRef}
-            src="/public/VR_Image.png" // Using your uploaded file
+            src="/VR_Image.png" // Using your uploaded file
             alt="VR Future"
             className="w-full h-full object-cover"
             onError={(e) => {
