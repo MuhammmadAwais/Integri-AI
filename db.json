@@ -80,6 +80,22 @@
       "date": "2025-12-05T13:09:33.569Z",
       "preview": "Create Image",
       "model": "Grok-Beta"
+    },
+    {
+      "id": "1764941630465",
+      "userId": "1",
+      "title": "hello",
+      "date": "2025-12-05T13:33:50.465Z",
+      "preview": "hello",
+      "model": "Grok-Beta"
+    },
+    {
+      "id": "1764941648738",
+      "userId": "1",
+      "title": "hello",
+      "date": "2025-12-05T13:34:08.738Z",
+      "preview": "hello",
+      "model": "Grok-Beta"
     }
   ],
   "messages": [
@@ -474,6 +490,34 @@
       "role": "assistant",
       "content": "I'm sorry, I am a text-based AI and cannot create images. However, I can help you describe an image or suggest ideas for creating one. Let me know how I can assist you!",
       "timestamp": 1764940174496
+    },
+    {
+      "id": "1764941630483",
+      "chatId": "1764941630465",
+      "role": "user",
+      "content": "hello",
+      "timestamp": 1764941630483
+    },
+    {
+      "id": "1764941630635",
+      "chatId": "1764941630465",
+      "role": "assistant",
+      "content": "Error: API Key is missing or invalid. Please check your Vercel/Environment settings.",
+      "timestamp": 1764941630635
+    },
+    {
+      "id": "1764941648758",
+      "chatId": "1764941648738",
+      "role": "user",
+      "content": "hello",
+      "timestamp": 1764941648758
+    },
+    {
+      "id": "1764941649649",
+      "chatId": "1764941648738",
+      "role": "assistant",
+      "content": "Hello! How can I assist you today?",
+      "timestamp": 1764941649649
     }
   ],
   "models": [
