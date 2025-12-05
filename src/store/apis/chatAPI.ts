@@ -1,9 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-
 export interface Chat {
   id: string;
-  userId: string; // <--- Critical for data isolation
+  userId: string;
   title: string;
   date: string;
   preview: string;
@@ -18,60 +17,48 @@ export interface Message {
   timestamp: number;
 }
 
+export interface AIModel {
+  id: string;
+  label: string;
+  provider: string;
+  icon: string;
+  color: string;
+}
+
 export const chatApi = createApi({
   reducerPath: "chatApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:3005",
-    prepareHeaders: (headers, { getState }) => {
-      let state = getState();
-      console.log("State:", state);
-     
-      // Use the userId variable here if needed
-      return headers;
-    },
-  }),
-  tagTypes: ["Chat", "Message"],
+  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:3005" }),
+  tagTypes: ["Chat", "Message", "Model"],
   endpoints: (builder) => ({
-    // 1. Get Chats (Filtered by Logged In User)
+    // --- CHATS ---
     getChats: builder.query<Chat[], string>({
       query: (userId) => `/chats?userId=${userId}&_sort=date&_order=desc`,
       providesTags: ["Chat"],
     }),
-
-    // 2. Create Chat
     addChat: builder.mutation<Chat, Partial<Chat>>({
-      query: (body) => ({
-        url: "/chats",
-        method: "POST",
-        body,
-      }),
+      query: (body) => ({ url: "/chats", method: "POST", body }),
       invalidatesTags: ["Chat"],
     }),
-
-    // 3. Delete Chat
     deleteChat: builder.mutation<void, string>({
-      query: (id) => ({
-        url: `/chats/${id}`,
-        method: "DELETE",
-      }),
+      query: (id) => ({ url: `/chats/${id}`, method: "DELETE" }),
       invalidatesTags: ["Chat"],
     }),
 
-    // 4. Get Messages for a specific Chat
+    // --- MESSAGES ---
     getMessages: builder.query<Message[], string>({
       query: (chatId) =>
         `/messages?chatId=${chatId}&_sort=timestamp&_order=asc`,
       providesTags: ["Message"],
     }),
-
-    // 5. Add Message
     addMessage: builder.mutation<Message, Partial<Message>>({
-      query: (body) => ({
-        url: "/messages",
-        method: "POST",
-        body,
-      }),
+      query: (body) => ({ url: "/messages", method: "POST", body }),
       invalidatesTags: ["Message"],
+    }),
+
+    // --- MODELS ---
+    getModels: builder.query<AIModel[], void>({
+      query: () => "/models",
+      providesTags: ["Model"],
     }),
   }),
 });
@@ -82,4 +69,5 @@ export const {
   useDeleteChatMutation,
   useGetMessagesQuery,
   useAddMessageMutation,
+  useGetModelsQuery, // New Hook
 } = chatApi;
