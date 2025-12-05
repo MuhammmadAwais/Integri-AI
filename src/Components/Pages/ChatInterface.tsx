@@ -17,7 +17,6 @@ const ChatInterface: React.FC = () => {
   const { id } = useParams();
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Track processed messages to prevent duplicates
   const processedMessageIds = useRef<Set<string>>(new Set());
 
   const isDark = useAppSelector((state) => state.theme.isDark);
@@ -36,36 +35,35 @@ const ChatInterface: React.FC = () => {
   const [addChat] = useAddChatMutation();
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Logic for UI state
   const isTyping =
     isGenerating ||
     (messages.length > 0 && messages[messages.length - 1].role === "user");
 
-  // Scroll to bottom
+  // Improved Auto-scroll: Runs when messages change
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      // Use requestAnimationFrame to ensure DOM has updated
+      requestAnimationFrame(() => {
+        if (scrollRef.current) {
+          scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+      });
     }
   }, [messages, isTyping]);
 
-  // --- SAFE AUTO-RESPONSE LOGIC ---
   useEffect(() => {
     const processAI = async () => {
       if (!id || messages.length === 0) return;
 
       const lastMsg = messages[messages.length - 1];
 
-      // CRITICAL CHECK:
-      // 1. Must be a user message
-      // 2. Must NOT be currently generating
-      // 3. Must NOT have been processed already (deduplication)
       if (
         lastMsg.role === "user" &&
         !isGenerating &&
         !processedMessageIds.current.has(lastMsg.id)
       ) {
         setIsGenerating(true);
-        processedMessageIds.current.add(lastMsg.id); // Mark as processed immediately
+        processedMessageIds.current.add(lastMsg.id);
 
         try {
           const historyContext = messages
@@ -78,7 +76,7 @@ const ChatInterface: React.FC = () => {
           );
 
           await addMessage({
-            id: crypto.randomUUID(), // Unique ID
+            id: crypto.randomUUID(),
             chatId: id,
             role: "assistant",
             content: aiText,
@@ -86,7 +84,7 @@ const ChatInterface: React.FC = () => {
           }).unwrap();
         } catch (error) {
           console.error("Auto-response error:", error);
-          processedMessageIds.current.delete(lastMsg.id); // Allow retry on error
+          processedMessageIds.current.delete(lastMsg.id);
         } finally {
           setIsGenerating(false);
         }
@@ -102,7 +100,6 @@ const ChatInterface: React.FC = () => {
     if (!id) return;
 
     try {
-      // 1. Ensure Chat Exists (for Guest/User)
       const chatExists = existingChats.some((c) => c.id === id);
       if (!chatExists) {
         await addChat({
@@ -115,7 +112,6 @@ const ChatInterface: React.FC = () => {
         }).unwrap();
       }
 
-      // 2. Add User Message
       const newMessageId = crypto.randomUUID();
       await addMessage({
         id: newMessageId,
@@ -124,8 +120,6 @@ const ChatInterface: React.FC = () => {
         content: text,
         timestamp: Date.now(),
       }).unwrap();
-
-      // The useEffect above will detect this new message by ID and trigger response
     } catch (error) {
       console.error("Failed to send message", error);
     }
@@ -140,11 +134,13 @@ const ChatInterface: React.FC = () => {
         isDark ? "bg-[#000000]" : "bg-white"
       )}
     >
+      {/* Messages Area */}
       <div
         ref={scrollRef}
         className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-8 scroll-smooth custom-scrollbar"
       >
-        <div className="max-w-3xl mx-auto w-full pb-10">
+        {/* Extra bottom padding allows last message to clear input area */}
+        <div className="max-w-3xl mx-auto w-full pb-24">
           {isLoadingMessages ? (
             <div className="space-y-8 pt-10">
               <SkeletonLoader className="w-1/3 h-10 ml-auto rounded-3xl bg-gray-800" />
@@ -174,7 +170,7 @@ const ChatInterface: React.FC = () => {
             </>
           )}
           {isTyping && (
-            <div className="mt-4 text-gray-400 text-sm flex items-center gap-2 animate-pulse">
+            <div className="mt-4 text-gray-400 text-sm flex items-center gap-2 animate-pulse ml-4">
               <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
               <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-75"></div>
               <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-150"></div>
@@ -183,10 +179,13 @@ const ChatInterface: React.FC = () => {
         </div>
       </div>
 
+      {/* Input Area - Fixed at bottom */}
       <div
         className={cn(
-          "w-full pb-6 pt-2 px-4 z-10",
-          isDark ? "bg-[#000000]" : "bg-white"
+          "absolute bottom-0 left-0 w-full pb-6 pt-2 px-4 z-10",
+          isDark
+            ? "bg-linear-to-t from-[#000000] via-[#000000] to-transparent"
+            : "bg-linear-to-t from-white via-white to-transparent"
         )}
       >
         <div className="max-w-3xl mx-auto">
