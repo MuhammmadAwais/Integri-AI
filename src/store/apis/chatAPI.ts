@@ -105,9 +105,18 @@ export const chatApi = createApi({
           .sort((a: Message, b: Message) => a.timestamp - b.timestamp);
         return { data: chatMsgs };
       },
-      providesTags: (result, error, chatId) => [
-        { type: "Message", id: chatId },
-      ],
+      providesTags: (result, error, chatId) => {
+        if (result) {
+          return [
+            ...result.map(({ id }) => ({ type: "Message" as const, id })),
+            { type: "Message", id: chatId },
+          ];
+        }
+        else if (error) {
+          console.error(error);
+        }
+        return [{ type: "Message", id: chatId }];
+      },
     }),
 
     addMessage: builder.mutation<Message, Partial<Message>>({
@@ -132,10 +141,19 @@ export const chatApi = createApi({
         return { data: newMsg as Message };
       },
       // Invalidate BOTH the specific chat messages AND the sidebar list
-      invalidatesTags: (result, error, { chatId }) => [
-        { type: "Message", id: chatId },
-        { type: "Chat", id: "LIST" },
-      ],
+      invalidatesTags: (result, error, { chatId }) => {
+        if (result) {
+          // Use the result variable here
+          console.log(result);
+        } else if (error) {
+          // Handle the error case
+          console.error(error);
+        }
+        return [
+          { type: "Message", id: chatId },
+          { type: "Chat", id: "LIST" },
+        ];
+      },
     }),
 
     getModels: builder.query<AIModel[], void>({
