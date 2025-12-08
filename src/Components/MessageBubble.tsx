@@ -24,7 +24,7 @@ interface MessageProps {
 const MessageBubble: React.FC<MessageProps> = ({ role, content }) => {
   const bubbleRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
-  const isDark = useAppSelector((state) => state.theme.isDark);
+  const isDark = useAppSelector((state:any) => state.theme.isDark);
 
   useLayoutEffect(() => {
     if (bubbleRef.current && gsap) {
@@ -61,12 +61,13 @@ const MessageBubble: React.FC<MessageProps> = ({ role, content }) => {
         <div
           className={cn(
             "px-5 py-3 text-[15px] leading-relaxed  overflow-hidden wrap-break-words",
-            isDark ? (isUser
+            isDark
+              ? isUser
+                ? "bg-[#212121] text-white rounded-4xl rounded-tr-lg"
+                : "bg-transparent text-white pl-0 pt-0"
+              : isUser
               ? "bg-[#212121] text-white rounded-4xl rounded-tr-lg"
-              : "bg-transparent text-black pl-0 pt-0"):
-            (isUser
-              ? "bg-[#212121] text-white rounded-4xl rounded-tr-lg"
-              : "bg-transparent text-black pl-0 pt-0")
+              : "bg-transparent text-black pl-0 pt-0"
           )}
         >
           {isUser ? (
@@ -107,11 +108,15 @@ const MessageBubble: React.FC<MessageProps> = ({ role, content }) => {
                   ),
                   td: ({ node, ...props }) => (
                     <td
-                      className={cn(isDark ? "px-4 py-3 text-gray-300 whitespace-pre-wrap" : "px-4 py-3 text-black whitespace-pre-wrap")}
+                      className={cn(
+                        isDark
+                          ? "px-4 py-3 text-gray-300 whitespace-pre-wrap"
+                          : "px-4 py-3 text-black whitespace-pre-wrap"
+                      )}
                       {...props}
                     />
                   ),
-                  // Correctly typed code block
+                  // Correctly typed code block with UPDATED styling for Black Text
                   code: (props) => {
                     const { children, className, node, ...rest } = props;
                     const match = /language-(\w+)/.exec(className || "");
@@ -122,10 +127,11 @@ const MessageBubble: React.FC<MessageProps> = ({ role, content }) => {
                             {match[1]}
                           </span>
                         </div>
+                        {/* CHANGED: bg-white and text-black for the code block */}
                         <code
                           {...rest}
                           className={cn(
-                            "block bg-[#1e1e1e] p-3 overflow-x-auto font-mono text-sm",
+                            "block bg-white text-black p-3 overflow-x-auto font-mono text-sm",
                             className
                           )}
                         >
@@ -133,9 +139,10 @@ const MessageBubble: React.FC<MessageProps> = ({ role, content }) => {
                         </code>
                       </div>
                     ) : (
+                      // CHANGED: bg-gray-200 and text-black for inline code
                       <code
                         {...rest}
-                        className="bg-white/10 rounded px-1.5 py-0.5 text-sm font-mono text-pink-400"
+                        className="bg-gray-200 rounded px-1.5 py-0.5 text-sm font-mono text-black border border-gray-300"
                       >
                         {children}
                       </code>
@@ -152,13 +159,22 @@ const MessageBubble: React.FC<MessageProps> = ({ role, content }) => {
         {/* Action Bar (Assistant Only) */}
         {!isUser && (
           <div className="flex items-center gap-4 mt-2 ml-0 text-gray-500 select-none">
-            <button title="button" className="hover:text-white transition-colors p-1">
+            <button
+              title="button"
+              className="hover:text-white transition-colors p-1"
+            >
               <RotateCcw size={16} strokeWidth={1.5} />
             </button>
-            <button title="button" className="hover:text-white transition-colors p-1">
+            <button
+              title="button"
+              className="hover:text-white transition-colors p-1"
+            >
               <Volume2 size={16} strokeWidth={1.5} />
             </button>
-            <button title="button" className="hover:text-white transition-colors p-1 hidden sm:block">
+            <button
+              title="button"
+              className="hover:text-white transition-colors p-1 hidden sm:block"
+            >
               <MessageSquare size={16} strokeWidth={1.5} />
             </button>
             <button
@@ -171,16 +187,28 @@ const MessageBubble: React.FC<MessageProps> = ({ role, content }) => {
                 <Copy size={16} strokeWidth={1.5} />
               )}
             </button>
-            <button title="button" className="hover:text-white transition-colors p-1 hidden sm:block">
+            <button
+              title="button"
+              className="hover:text-white transition-colors p-1 hidden sm:block"
+            >
               <Share size={16} strokeWidth={1.5} />
             </button>
-            <button title="button" className="hover:text-white transition-colors p-1">
+            <button
+              title="button"
+              className="hover:text-white transition-colors p-1"
+            >
               <ThumbsUp size={16} strokeWidth={1.5} />
             </button>
-            <button title="button" className="hover:text-white transition-colors p-1">
+            <button
+              title="button"
+              className="hover:text-white transition-colors p-1"
+            >
               <ThumbsDown size={16} strokeWidth={1.5} />
             </button>
-            <button title="button" className="hover:text-white transition-colors p-1">
+            <button
+              title="button"
+              className="hover:text-white transition-colors p-1"
+            >
               <MoreHorizontal size={16} strokeWidth={1.5} />
             </button>
           </div>

@@ -22,7 +22,7 @@ const Home: React.FC = () => {
       <div
         className={cn(
           "flex h-dvh w-full overflow-hidden transition-colors duration-300",
-          isDark ? "bg-[#212121] text-white" : "bg-white text-gray-900"
+          isDark ? "bg-black text-white" : "bg-white text-black"
         )}
       >
         {/* 1. Sidebar: Spans full height on the left */}

@@ -54,9 +54,7 @@ const NavbarRight: React.FC = () => {
         label="Toggle Theme"
         onClick={() => dispatch(toggleTheme())}
       />
-      <div className="hidden sm:block">
-        <NavActionBtn icon={Share2} label="Share Chat" onClick={() => {}} />
-      </div>
+
       <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1" />
 
       {/* Profile Section */}

@@ -16,7 +16,6 @@ import { cn } from "../../utils/cn";
 const ChatInterface: React.FC = () => {
   const { id } = useParams();
   const scrollRef = useRef<HTMLDivElement>(null);
-
   const processedMessageIds = useRef<Set<string>>(new Set());
 
   const isDark = useAppSelector((state) => state.theme.isDark);
@@ -39,22 +38,28 @@ const ChatInterface: React.FC = () => {
     isGenerating ||
     (messages.length > 0 && messages[messages.length - 1].role === "user");
 
-  // Improved Auto-scroll: Runs when messages change
-  useEffect(() => {
+  // Scroll to bottom efficiently
+  const scrollToBottom = () => {
     if (scrollRef.current) {
-      // Use requestAnimationFrame to ensure DOM has updated
-      requestAnimationFrame(() => {
-        if (scrollRef.current) {
-          scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-        }
-      });
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
   }, [messages, isTyping]);
 
+  // Initial load scroll
+  useEffect(() => {
+    if (!isLoadingMessages) {
+      setTimeout(scrollToBottom, 100);
+    }
+  }, [isLoadingMessages]);
+
+  // AI Response Logic
   useEffect(() => {
     const processAI = async () => {
       if (!id || messages.length === 0) return;
-
       const lastMsg = messages[messages.length - 1];
 
       if (
@@ -83,22 +88,19 @@ const ChatInterface: React.FC = () => {
             timestamp: Date.now(),
           }).unwrap();
         } catch (error) {
-          console.error("Auto-response error:", error);
-          processedMessageIds.current.delete(lastMsg.id);
+          console.error("AI Error:", error);
+          processedMessageIds.current.delete(lastMsg.id); // Allow retry
         } finally {
           setIsGenerating(false);
         }
       }
     };
 
-    if (!isLoadingMessages) {
-      processAI();
-    }
+    if (!isLoadingMessages) processAI();
   }, [messages, isLoadingMessages, id, currentModel, addMessage]);
 
   const handleSendMessage = async (text: string) => {
     if (!id) return;
-
     try {
       const chatExists = existingChats.some((c) => c.id === id);
       if (!chatExists) {
@@ -111,17 +113,15 @@ const ChatInterface: React.FC = () => {
           model: currentModel,
         }).unwrap();
       }
-
-      const newMessageId = crypto.randomUUID();
       await addMessage({
-        id: newMessageId,
+        id: crypto.randomUUID(),
         chatId: id,
         role: "user",
         content: text,
         timestamp: Date.now(),
       }).unwrap();
     } catch (error) {
-      console.error("Failed to send message", error);
+      console.error("Send Error:", error);
     }
   };
 
@@ -134,13 +134,12 @@ const ChatInterface: React.FC = () => {
         isDark ? "bg-[#000000]" : "bg-white"
       )}
     >
-      {/* Messages Area */}
+      {/* Scrollable Messages */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-8 scroll-smooth custom-scrollbar"
+        className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-0 scroll-smooth custom-scrollbar"
       >
-        {/* Extra bottom padding allows last message to clear input area */}
-        <div className="max-w-3xl mx-auto w-full pb-24">
+        <div className="max-w-3xl mx-auto w-full pb-32 pt-6 md:pt-10 px-4 md:px-0">
           {isLoadingMessages ? (
             <div className="space-y-8 pt-10">
               <SkeletonLoader className="w-1/3 h-10 ml-auto rounded-3xl bg-gray-800" />
@@ -152,10 +151,11 @@ const ChatInterface: React.FC = () => {
           ) : (
             <>
               {messages.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center opacity-40 mt-20">
-                  <div className="text-4xl mb-4 grayscale">👋</div>
-                  <p className="font-medium text-lg">
-                    How can I help you today?
+                <div className="h-[60vh] flex flex-col items-center justify-center opacity-40">
+                  <div className="text-6xl mb-6 grayscale">⚡</div>
+                  <h2 className="font-bold text-2xl mb-2">Grok is ready</h2>
+                  <p className="text-sm text-gray-500">
+                    Ask about anything, anytime.
                   </p>
                 </div>
               ) : (
@@ -170,30 +170,23 @@ const ChatInterface: React.FC = () => {
             </>
           )}
           {isTyping && (
-            <div className="mt-4 text-gray-400 text-sm flex items-center gap-2 animate-pulse ml-4">
-              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-75"></div>
-              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-150"></div>
+            <div className="flex items-center gap-2 text-gray-500 ml-4 text-sm font-mono mt-4">
+              <span className="animate-pulse">Thinking...</span>
             </div>
           )}
         </div>
       </div>
 
-      {/* Input Area - Fixed at bottom */}
+      {/* Floating Input Area */}
       <div
         className={cn(
-          "absolute bottom-0 left-0 w-full pb-6 pt-2 px-4 z-10",
+          "absolute bottom-0 left-0 w-full z-20 pt-10 pb-6 px-4",
           isDark
-            ? "bg-linear-to-t from-[#000000] via-[#000000] to-transparent"
-            : "bg-linear-to-t from-white via-white to-transparent"
+            ? "bg-gradient-to-t from-[#000000] via-[#000000] to-transparent"
+            : "bg-gradient-to-t from-white via-white to-transparent"
         )}
       >
-        <div className="max-w-3xl mx-auto">
-          <ChatInput onSend={handleSendMessage} />
-          <p className="text-center text-[10px] mt-2 text-gray-500">
-            AI can make mistakes. Please double check responses.
-          </p>
-        </div>
+        <ChatInput onSend={handleSendMessage} />
       </div>
     </div>
   );
