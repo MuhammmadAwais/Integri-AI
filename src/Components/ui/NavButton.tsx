@@ -23,8 +23,8 @@ const NavButton: React.FC<Props> = ({ oneClick, isOpen }) => {
 const StyledWrapper = styled.div<{ $isOpen: boolean }>`
   /* These were the .burger styles */
   position: relative;
-  width: 40px;
-  height: 30px;
+  width: 30px;
+  height: 25px;
   background: transparent;
   cursor: pointer;
   display: block;
