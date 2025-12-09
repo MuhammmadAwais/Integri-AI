@@ -182,8 +182,8 @@ const ChatInterface: React.FC = () => {
         className={cn(
           "absolute bottom-0 left-0 w-full z-20 pt-10 pb-6 px-4",
           isDark
-            ? "bg-gradient-to-t from-[#000000] via-[#000000] to-transparent"
-            : "bg-gradient-to-t from-white via-white to-transparent"
+            ? "bg-linear-to-t from-[#000000] via-[#000000] to-transparent"
+            : "bg-linear-to-t from-white via-white to-transparent"
         )}
       >
         <ChatInput onSend={handleSendMessage} />

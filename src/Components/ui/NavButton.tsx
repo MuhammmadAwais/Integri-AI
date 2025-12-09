@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { useAppSelector } from "../hooks/useRedux";
 
 interface Props {
   oneClick?: () => void;
@@ -8,15 +9,16 @@ interface Props {
 
 
 const NavButton: React.FC<Props> = ({ oneClick, isOpen }) => {
+  const isDark = useAppSelector((state) => state.theme.isDark);
+  let colorClass = isDark ? "bg-white" : "bg-black";
   return (
     <StyledWrapper onClick={oneClick} $isOpen={isOpen}>
-      <span />
-      <span />
-      <span />
+      <span className={colorClass} />
+      <span className={colorClass} />
+      <span className={colorClass} />
     </StyledWrapper>
   );
 };
-
 
 const StyledWrapper = styled.div<{ $isOpen: boolean }>`
   /* These were the .burger styles */
@@ -33,7 +35,7 @@ const StyledWrapper = styled.div<{ $isOpen: boolean }>`
     position: absolute;
     height: 4px;
     width: 100%;
-    background: black;
+    
     border-radius: 9px;
     opacity: 1;
     left: 0;

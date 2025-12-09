@@ -4,10 +4,7 @@ import {
   Search,
   SquareTerminal,
   Users,
-  Bell,
-  Mail,
-  User,
-  MoreHorizontal,
+  Bell
 } from "lucide-react";
 import { useAppSelector } from "../../hooks/useRedux";
 import { cn } from "../../../utils/cn";

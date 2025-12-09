@@ -129,7 +129,7 @@ const ModelMenu = ({ isOpen, onClose, selected, onSelect, isDark }: any) => {
 
 // --- MAIN WELCOME COMPONENT ---
 const Welcome: React.FC = () => {
-  const isDark = useAppSelector((state) => state.theme?.isDark);
+  const isDark = useAppSelector((state :any) => state.theme?.isDark);
   const user = useAppSelector((state) => state.auth?.user);
 
   // State
@@ -229,7 +229,7 @@ const Welcome: React.FC = () => {
   const features = [
     { icon: Search, label: "DeepSearch" },
     { icon: ImageIcon, label: "Create Image" },
-    { icon: Users, label: "Pick Personas" },
+    { icon: Users, label: "Pick Persons" },
     { icon: Mic, label: "Voice" },
   ];
 
@@ -261,14 +261,14 @@ const Welcome: React.FC = () => {
           ref={logoRef}
           className="mb-12 flex items-center justify-center gap-3 opacity-0"
         >
-          <OrbitLogo isDark={isDark} />
+          <img src={isDark ? "/dark-theme-logo.png" : "/light-theme-logo.png"} alt="logo" className="w-8 h-8" />
           <h1
             className={cn(
               "text-4xl font-bold tracking-tight",
               isDark ? "text-white" : "text-black"
             )}
           >
-            Grok
+            Integri AI
           </h1>
         </div>
 
@@ -276,7 +276,7 @@ const Welcome: React.FC = () => {
         <div
           ref={inputRef}
           className={cn(
-            "w-full relative group rounded-[32px] transition-all duration-300 border shadow-sm opacity-0",
+            "w-full relative group rounded-4xl transition-all duration-300 border shadow-sm opacity-0",
             isDark
               ? "bg-[#121212] border-[#2A2B32] hover:border-gray-700"
               : "bg-gray-50 border-gray-200 hover:border-gray-300"
@@ -345,7 +345,7 @@ const Welcome: React.FC = () => {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask Grok"
+                placeholder="Ask anything you want..."
                 className={cn(
                   "flex-1 bg-transparent outline-none text-lg px-3 placeholder:text-gray-500/80 font-medium z-20",
                   isDark ? "text-gray-100" : "text-gray-900"
@@ -443,7 +443,7 @@ const Welcome: React.FC = () => {
         </div>
 
         <div className="mt-8 text-xs text-gray-500 opacity-60">
-          Grok can make mistakes. Verify important information.
+          Integri AI can make mistakes. Verify the information you receive.
         </div>
       </div>
     </div>
@@ -482,22 +482,7 @@ const GrokIconToggle = ({ isDark }: any) => (
     G
   </div>
 );
-const OrbitLogo = ({ isDark }: any) => (
-  <svg
-    width="42"
-    height="42"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={isDark ? "text-white" : "text-black"}
-  >
-    <circle cx="12" cy="12" r="3"></circle>
-    <path d="M19.4 15a1.1 1.1 0 0 0 .33 1.21c.44.44 1.24.28 1.27-.47L21 6a1.1 1.1 0 0 0-1.2-1.2l-9.73.04c-.75.03-.9.84-.46 1.27l1.21.33"></path>
-    <path d="M4.6 9a1.1 1.1 0 0 0-.33-1.21c-.44-.44-1.24-.28-1.27.47L3 18a1.1 1.1 0 0 0 1.2 1.2l9.73-.04c.75-.03.9-.84.46-1.27l-1.21-.33"></path>
-  </svg>
-);
+
+
 
 export default Welcome;

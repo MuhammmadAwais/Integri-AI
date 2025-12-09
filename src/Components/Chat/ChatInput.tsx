@@ -82,6 +82,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
         )}
       >
         <textarea
+        title="Chat Input"
           ref={textareaRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -89,7 +90,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
           placeholder="Ask anything..."
           rows={1}
           className={cn(
-            "w-full max-h-[160px] py-3 px-4 bg-transparent outline-none resize-none text-[16px] leading-relaxed scrollbar-none",
+            "w-full max-h-40 py-3 px-4 bg-transparent outline-none resize-none text-[16px] leading-relaxed scrollbar-none",
             isDark
               ? "text-white placeholder-gray-500"
               : "text-gray-900 placeholder-gray-500"

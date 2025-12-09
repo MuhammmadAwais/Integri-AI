@@ -6,7 +6,6 @@ import {
 } from "../../../store/apis/chatAPI";
 import { useAppSelector } from "../../hooks/useRedux";
 import { cn } from "../../../utils/cn";
-import { useNavigate } from "react-router-dom";
 import SkeletonLoader from "../../ui/SkeletonLoader";
 
 interface HistoryModalProps {
@@ -19,7 +18,6 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
 
   const user = useAppSelector((state) => state.auth.user);
-  const navigate = useNavigate();
   const isDark = useAppSelector((state) => state.theme.isDark);
 
   // 1. Fetch All Chats
@@ -35,10 +33,6 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
     (c.title || "New Chat").toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleOpenChat = (id: string) => {
-    navigate(`/chat/${id}`);
-    onClose();
-  };
 
   const handleBackToList = () => {
     setSelectedChatId(null);
@@ -48,7 +42,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
     // FIX 1: Add onClick={onClose} to the backdrop
     <div
       onClick={onClose}
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4 animate-in fade-in duration-200"
+      className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4 animate-in fade-in duration-200"
     >
       <div
         // FIX 1 (Cont): Add stopPropagation to prevent closing when clicking inside the modal

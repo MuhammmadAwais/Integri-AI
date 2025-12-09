@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-  Share2,
   Moon,
   Sun,
   LogIn,

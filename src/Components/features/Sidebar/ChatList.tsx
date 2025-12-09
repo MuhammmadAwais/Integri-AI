@@ -4,7 +4,7 @@ import {
   useDeleteChatMutation,
 } from "../../../store/apis/chatAPI";
 import { useAppSelector } from "../../hooks/useRedux";
-import { MessageSquare, Trash2, Loader2, MoreHorizontal } from "lucide-react";
+import { Trash2, Loader2 } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { cn } from "../../../utils/cn";
 
