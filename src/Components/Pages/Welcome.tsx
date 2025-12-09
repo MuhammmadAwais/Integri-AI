@@ -237,7 +237,7 @@ const Welcome: React.FC = () => {
     <div
       ref={containerRef}
       className={cn(
-        "flex flex-col items-center justify-center h-full w-full relative overflow-hidden transition-colors duration-300 font-sans",
+        "flex flex-col items-center justify-center h-dvh w-full relative overflow-hidden transition-colors duration-300 font-sans",
         isDark
           ? "bg-[#000000] selection:bg-gray-800 selection:text-white"
           : "bg-white selection:bg-blue-100 selection:text-black"
