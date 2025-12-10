@@ -1,14 +1,8 @@
 import React, { useState } from "react";
-import {
-  Moon,
-  Sun,
-  LogIn,
-  LogOut,
-  User as UserIcon,
-} from "lucide-react";
+import { Moon, Sun, LogIn, LogOut, User as UserIcon } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import { toggleTheme } from "../theme/themeSlice";
-import { logout } from "../auth/authSlice";
+import { logout } from "../auth/slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import { cn } from "../../lib/utils";
 const NavActionBtn = ({ icon: Icon, onClick, label, active = false }: any) => {
@@ -34,7 +28,7 @@ const NavbarRight: React.FC = () => {
   const isDark = useAppSelector((state) => state.theme.isDark);
   // @ts-ignore - Assuming store update
   const { user, isGuest } = useAppSelector(
-    (state:any ) => state.auth || { user: null, isGuest: true }
+    (state: any) => state.auth || { user: null, isGuest: true }
   );
   const dispatch = useAppDispatch();
   const navigate = useNavigate();

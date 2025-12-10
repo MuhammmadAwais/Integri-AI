@@ -1,47 +1,64 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-export const authApi = createApi({
-  reducerPath: "authApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "/" }), // Base URL ignored due to mock queryFn
-  endpoints: (builder) => ({
-    login: builder.mutation({
-      // MOCK BACKEND LOGIC
-      queryFn: async (credentials) => {
-        //NETWORK DELAY SIMULATION IS ONLY FOR DEVELOPENMENT PURPOSES
-        await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
-        // Simulate success
-        if (credentials.email && credentials.password.length >= 6) {
-          return {
-            data: {
-              user: {
-                id: "1",
-                name: "Integri User",
-                email: credentials.email,
-                avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix",
-              },
-              token: "mock-jwt-token-xyz-123",
-            },
-          };
-        }
-        return { error: { status: 400, data: "Invalid credentials" } };
-      },
-    }),
-    signup: builder.mutation({
-      // MOCK BACKEND LOGIC
-      queryFn: async (userData) => {
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        return {
-          data: {
-            user: {
-              id: Date.now().toString(),
-              name: userData.name,
-              email: userData.email,
-            },
-            token: "mock-jwt-token-new-user",
-          },
-        };
-      },
-    }),
-  }),
-});
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  updateProfile,
+} from "firebase/auth";
+import { auth } from "../../../app/firebase";
 
-export const { useLoginMutation, useSignupMutation } = authApi;
+// Define the shape of our User data to keep things consistent
+export interface UserData {
+  id: string;
+  email: string | null;
+  name: string | null;
+  avatar: string | null;
+}
+
+export const AuthService = {
+  // --- SIGN UP ---
+  register: async (
+    email: string,
+    password: string,
+    name: string
+  ): Promise<UserData> => {
+    // 1. Create account on Firebase
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    const user = userCredential.user;
+
+    // 2. Update their "Display Name" immediately so it shows up in the app
+    await updateProfile(user, { displayName: name });
+
+    // 3. Return formatted data
+    return {
+      id: user.uid,
+      email: user.email,
+      name: name,
+      avatar: user.photoURL,
+    };
+  },
+
+  // --- LOGIN ---
+  login: async (email: string, password: string): Promise<UserData> => {
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    const user = userCredential.user;
+    return {
+      id: user.uid,
+      email: user.email,
+      name: user.displayName,
+      avatar: user.photoURL,
+    };
+  },
+
+  // --- LOGOUT ---
+  logout: async () => {
+    await signOut(auth);
+  },
+};

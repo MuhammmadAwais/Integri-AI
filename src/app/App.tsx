@@ -1,61 +1,88 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   createBrowserRouter,
   RouterProvider,
   Navigate,
 } from "react-router-dom";
-import Home from "../pages/Home"; 
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase";
+import { useAppDispatch } from "../hooks/useRedux";
+import { setAuthUser } from "../features/auth/slices/authSlice";
+
+// --- Components & Pages ---
+import IntroPortal from "../components/ui/IntroPortal"; // Your Animation
+import Home from "../pages/Home";
 import Login from "../pages/LoginPage";
 import Signup from "../pages/SignupPage";
 import Welcome from "../pages/WelcomePage";
 import ChatInterface from "../features/chat/components/ChatInterface";
-import GettingStarted from "../pages/GettingStarted"; 
-import IntroPortal from "../components/ui/IntroPortal";
+import GettingStarted from "../pages/GettingStarted";
 import HistoryPage from "../pages/HistoryPage";
-const Router = createBrowserRouter([
-  // Standalone Routes
+
+// --- Router Setup ---
+const router = createBrowserRouter([
+  // 1. Auth Pages (Standalone - No Sidebar)
   { path: "/login", element: <Login /> },
   { path: "/signup", element: <Signup /> },
   { path: "/getting-started", element: <GettingStarted /> },
-  // Main App
+
+  // 2. Main App (Sidebar + Navbar)
   {
     path: "/",
-    element: <Home />,
+    element: <Home />, // This Layout serves both Guests & Users
     children: [
-      { index: true, element: <Welcome /> },
+      { index: true, element: <Welcome /> }, // Default Home Screen
       { path: "chat/:id", element: <ChatInterface /> },
       { path: "history", element: <HistoryPage /> },
-      {
-        path: "library",
-        element: <div className="p-10 text-white">Library</div>,
-      },
-      {
-        path: "settings",
-        element: <div className="p-10 text-white">Settings</div>,
-      },
     ],
   },
+  // 3. Catch-all (Redirect unknown URLs to Home)
   { path: "*", element: <Navigate to="/" replace /> },
 ]);
+
 const App: React.FC = () => {
+  const dispatch = useAppDispatch();
   const [introFinished, setIntroFinished] = useState(false);
+
+  // --- Auth Listener (Runs in background) ---
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        // User Found -> Save to Redux
+        dispatch(
+          setAuthUser({
+            id: firebaseUser.uid,
+            email: firebaseUser.email,
+            name: firebaseUser.displayName,
+            avatar: firebaseUser.photoURL,
+          })
+        );
+      } else {
+        // No User -> Set Guest Mode
+        dispatch(setAuthUser(null));
+      }
+    });
+    return () => unsubscribe();
+  }, [dispatch]);
+
   return (
     <>
-      {/* The Galaxy Portal plays first */}
+      {/* 1. Show Intro Animation First */}
       {!introFinished && (
         <IntroPortal onComplete={() => setIntroFinished(true)} />
       )}
-      {/* App content fades in after intro */}
+
+      {/* 2. Show App (Fade in) */}
       <div
-        className={
-          introFinished
-            ? "opacity-100 transition-opacity duration-1000"
-            : "opacity-0"
-        }
+        className={`transition-opacity duration-1000 ease-in ${
+          introFinished ? "opacity-100" : "opacity-0"
+        }`}
       >
-        <RouterProvider router={Router} />
+        {/* THIS WAS MISSING -> The Engine! */}
+        <RouterProvider router={router} />
       </div>
     </>
   );
 };
+
 export default App;

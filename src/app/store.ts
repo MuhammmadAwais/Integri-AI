@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import themeReducer from "../features/theme/themeSlice";
 import chatReducer from "../features/chat/chatSlice";
-import authReducer from "../features/auth/authSlice"; 
+import authReducer from "../features/auth/slices/authSlice";
 import { chatApi } from "../features/chat/services/chatService";
 import { authApi } from "../features/auth/services/authService";
 export const store = configureStore({

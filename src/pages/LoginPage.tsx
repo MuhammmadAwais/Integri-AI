@@ -1,34 +1,26 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, LogIn } from "lucide-react";
-import { useLoginMutation } from "../features/auth/services/authService";
-import { useAppDispatch } from "../hooks/useRedux";
-import { setCredentials } from "../features/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
+import { loginUser } from "../features/auth/thunks/authThunk";
 import AuthLayout from "../components/layout/AuthLayout";
 import AuthInput from "../features/auth/components/AuthInput";
 import AuthButton from "../features/auth/components/AuthButton";
 
-
-
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const [login, { isLoading }] = useLoginMutation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [error, setError] = useState("");
+  const { isLoading, error } = useAppSelector((state) => state.auth);
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  try {
-    const result = await login(formData).unwrap();
-    if (result) {
-      dispatch(setCredentials(result));
-      navigate("/");
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const result = await dispatch(loginUser(formData));
+    if (loginUser.fulfilled.match(result)) {
+      navigate("/"); // Success -> Go Home
     }
-  } catch (err) {
-    setError("Invalid email or password.");
-  }
-};
+  };
+
   return (
     <AuthLayout
       title="Welcome Back"
@@ -39,7 +31,6 @@ const handleSubmit = async (e: React.FormEvent) => {
           label="Email"
           icon={Mail}
           type="email"
-          placeholder="name@company.com"
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           required
@@ -48,7 +39,6 @@ const handleSubmit = async (e: React.FormEvent) => {
           label="Password"
           icon={Lock}
           type="password"
-          placeholder="••••••••"
           value={formData.password}
           onChange={(e) =>
             setFormData({ ...formData, password: e.target.value })
@@ -56,45 +46,20 @@ const handleSubmit = async (e: React.FormEvent) => {
           required
         />
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <input
-              id="remember"
-              type="checkbox"
-              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-            />
-            <label
-              htmlFor="remember"
-              className="ml-2 block text-sm text-gray-900 dark:text-gray-300"
-            >
-              Remember me
-            </label>
-          </div>
-          <a
-            href="#"
-            className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
-          >
-            Forgot password?
-          </a>
-        </div>
-
         {error && (
-          <p className="text-red-500 text-sm font-medium animate-pulse">
+          <p className="text-red-500 text-sm font-medium text-center bg-red-500/10 p-2 rounded">
             {error}
           </p>
         )}
 
         <AuthButton isLoading={isLoading}>
-          Sign In <LogIn size={18} />
+          Sign In <LogIn size={18} className="ml-2" />
         </AuthButton>
 
-        <p className="text-center text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-center text-sm text-gray-500">
           Don't have an account?{" "}
-          <Link
-            to="/signup"
-            className="font-semibold text-indigo-600 hover:text-indigo-500 transition-colors"
-          >
-            Sign up for free
+          <Link to="/signup" className="text-indigo-600 font-semibold">
+            Sign up
           </Link>
         </p>
       </form>

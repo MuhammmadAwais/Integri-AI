@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, User, ArrowRight } from "lucide-react";
-import { useSignupMutation } from "../features/auth/services/authService";
-import { useAppDispatch } from "../hooks/useRedux";
-import { setCredentials } from "../features/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
+import { registerUser } from "../features/auth/thunks/authThunk";
 import AuthLayout from "../components/layout/AuthLayout";
 import AuthInput from "../features/auth/components/AuthInput";
 import AuthButton from "../features/auth/components/AuthButton";
@@ -14,19 +13,15 @@ const Signup: React.FC = () => {
     email: "",
     password: "",
   });
-  const [signup, { isLoading }] = useSignupMutation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [error, setError] = useState("");
+  const { isLoading, error } = useAppSelector((state) => state.auth);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const result = await signup(formData).unwrap();
-      dispatch(setCredentials(result));
-      navigate("/");
-    } catch (err) {
-      setError("Failed to create account. Please try again.");
+    const result = await dispatch(registerUser(formData));
+    if (registerUser.fulfilled.match(result)) {
+      navigate("/getting-started"); // <--- The Redirect you wanted
     }
   };
 
@@ -40,16 +35,14 @@ const Signup: React.FC = () => {
           label="Full Name"
           icon={User}
           type="text"
-          placeholder="John Doe"
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           required
         />
         <AuthInput
-          label="Email Address"
+          label="Email"
           icon={Mail}
           type="email"
-          placeholder="john@example.com"
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           required
@@ -58,7 +51,6 @@ const Signup: React.FC = () => {
           label="Password"
           icon={Lock}
           type="password"
-          placeholder="••••••••"
           value={formData.password}
           onChange={(e) =>
             setFormData({ ...formData, password: e.target.value })
@@ -66,18 +58,19 @@ const Signup: React.FC = () => {
           required
         />
 
-        {error && <p className="text-red-500 text-sm font-medium">{error}</p>}
+        {error && (
+          <p className="text-red-500 text-sm font-medium text-center bg-red-500/10 p-2 rounded">
+            {error}
+          </p>
+        )}
 
         <AuthButton isLoading={isLoading}>
-          Create Account <ArrowRight size={18} />
+          Create Account <ArrowRight size={18} className="ml-2" />
         </AuthButton>
 
-        <p className="text-center text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-center text-sm text-gray-500">
           Already have an account?{" "}
-          <Link
-            to="/login"
-            className="font-semibold text-indigo-600 hover:text-indigo-500 transition-colors"
-          >
+          <Link to="/login" className="text-indigo-600 font-semibold">
             Log in
           </Link>
         </p>
