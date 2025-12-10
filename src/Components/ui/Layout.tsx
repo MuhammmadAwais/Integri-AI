@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import Sidebar from "../../features/sidebar/components/Sidebar"; // Ensure this imports your MAIN Sidebar.tsx
-import NavButton from "./NavButton"; // Ensure correct path
+import Sidebar from "../../features/sidebar/components/Sidebar";
+import NavButton from "./NavButton"; 
 import { useAppSelector } from "../../hooks/useRedux";
 import { cn } from "../../lib/utils";
-
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const isDark = useAppSelector((state:any) => state.theme.isDark);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-
   return (
     <div
       className={cn(
@@ -18,7 +16,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       {/* =================================================================
           MOBILE SIDEBAR SYSTEM (Only visible on small screens)
       ================================================================= */}
-
       {/* 1. NAV BUTTON (Hamburger) 
           - Logic: It is VISIBLE only when sidebar is CLOSED (!isMobileOpen).
           - When sidebar opens, this button disappears.
@@ -35,7 +32,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           oneClick={() => setIsMobileOpen(true)}
         />
       </div>
-
       {/* 2. BACKDROP OVERLAY
           - Appears when sidebar is OPEN.
           - Clicking this closes the sidebar.
@@ -50,7 +46,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         )}
         onClick={() => setIsMobileOpen(false)}
       />
-
       {/* 3. MOBILE SIDEBAR DRAWER 
           - z-[70] ensures it is THE HIGHEST element (covers Top Navbar).
           - Solid background prevents "glitchy" transparency.
@@ -67,14 +62,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       >
         <Sidebar />
       </div>
-
       {/* =================================================================
           DESKTOP SIDEBAR (Hidden on mobile, Visible on Desktop)
       ================================================================= */}
       <div className="hidden md:flex h-full shrink-0 z-30 relative ">
         <Sidebar />
       </div>
-
       {/* =================================================================
           MAIN CONTENT AREA
       ================================================================= */}
@@ -86,5 +79,4 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     </div>
   );
 };
-
 export default Layout;

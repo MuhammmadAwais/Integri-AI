@@ -4,13 +4,12 @@ import {
   RouterProvider,
   Navigate,
 } from "react-router-dom";
-
-import Home from "../pages/Home"; // Ensure Home.tsx is in src/pages
+import Home from "../pages/Home"; 
 import Login from "../pages/LoginPage";
 import Signup from "../pages/SignupPage";
 import Welcome from "../pages/WelcomePage";
 import ChatInterface from "../features/chat/components/ChatInterface";
-import GettingStarted from "../pages/GettingStarted"; // Ensure this file exists in src/pages
+import GettingStarted from "../pages/GettingStarted"; 
 import IntroPortal from "../components/ui/IntroPortal";
 import HistoryPage from "../pages/HistoryPage";
 const Router = createBrowserRouter([
@@ -18,7 +17,6 @@ const Router = createBrowserRouter([
   { path: "/login", element: <Login /> },
   { path: "/signup", element: <Signup /> },
   { path: "/getting-started", element: <GettingStarted /> },
-
   // Main App
   {
     path: "/",
@@ -39,17 +37,14 @@ const Router = createBrowserRouter([
   },
   { path: "*", element: <Navigate to="/" replace /> },
 ]);
-
 const App: React.FC = () => {
   const [introFinished, setIntroFinished] = useState(false);
-
   return (
     <>
       {/* The Galaxy Portal plays first */}
       {!introFinished && (
         <IntroPortal onComplete={() => setIntroFinished(true)} />
       )}
-
       {/* App content fades in after intro */}
       <div
         className={
@@ -63,5 +58,4 @@ const App: React.FC = () => {
     </>
   );
 };
-
 export default App;

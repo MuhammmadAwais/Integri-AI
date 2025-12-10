@@ -12,56 +12,45 @@ import {
 } from "../services/chatService";
 import { generateAIResponse } from "../../../lib/openai";
 import { cn } from "../../../lib/utils";
-
 const ChatInterface: React.FC = () => {
   const { id } = useParams();
   const scrollRef = useRef<HTMLDivElement>(null);
   const processedMessageIds = useRef<Set<string>>(new Set());
-
   const isDark = useAppSelector((state:any) => state.theme.isDark);
   const user = useAppSelector((state:any) => state.auth?.user);
   const currentUserId = user?.id || "guest";
   const currentModel = useAppSelector((state:any) => state.chat.currentModel);
-
   const { data: messages = [], isLoading: isLoadingMessages } =
     useGetMessagesQuery(id || "", { skip: !id });
-
   const { data: existingChats = [] } = useGetChatsQuery(currentUserId, {
     skip: !currentUserId,
   });
-
   const [addMessage] = useAddMessageMutation();
   const [addChat] = useAddChatMutation();
   const [isGenerating, setIsGenerating] = useState(false);
-
   const isTyping =
     isGenerating ||
     (messages.length > 0 && messages[messages.length - 1].role === "user");
-
   // Scroll to bottom efficiently
   const scrollToBottom = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   };
-
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping]);
-
   // Initial load scroll
   useEffect(() => {
     if (!isLoadingMessages) {
       setTimeout(scrollToBottom, 100);
     }
   }, [isLoadingMessages]);
-
   // AI Response Logic
   useEffect(() => {
     const processAI = async () => {
       if (!id || messages.length === 0) return;
       const lastMsg = messages[messages.length - 1];
-
       if (
         lastMsg.role === "user" &&
         !isGenerating &&
@@ -191,5 +180,4 @@ const ChatInterface: React.FC = () => {
     </div>
   );
 };
-
 export default ChatInterface;

@@ -1,12 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
-
-
 const IntroPortal = ({ onComplete }: { onComplete: () => void }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLHeadingElement>(null);
   const [remove, setRemove] = useState(false);
-
   useEffect(() => {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
@@ -15,7 +12,6 @@ const IntroPortal = ({ onComplete }: { onComplete: () => void }) => {
           onComplete();
         },
       });
-
       // 1. Text Fade In
       tl.to(textRef.current, { opacity: 1, duration: 1, ease: "power2.out" })
         // 2. Text Scale Up (Warp effect)
@@ -32,7 +28,6 @@ const IntroPortal = ({ onComplete }: { onComplete: () => void }) => {
   }, [onComplete]);
 
   if (remove) return null;
-
   return (
     <div
       ref={containerRef}

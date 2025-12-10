@@ -1,6 +1,5 @@
 import React from "react";
 import { cn } from "../../lib/utils";
-
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "outline" | "glass" | "ghost";
   size?: "sm" | "md" | "lg" | "icon";
@@ -8,7 +7,6 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   ref?: React.Ref<HTMLButtonElement>;
   isActive?: boolean; 
 }
-
 const Button: React.FC<ButtonProps> = ({
   className,
   variant = "primary",
@@ -28,6 +26,7 @@ const Button: React.FC<ButtonProps> = ({
     glass: "bg-transparent text-gray-600 hover:bg-gray-100 border-transparent",
     ghost:
       "bg-transparent hover:bg-black/5 dark:hover:bg-white/10 text-inherit border-transparent",
+      
   };
 
   const sizes = {

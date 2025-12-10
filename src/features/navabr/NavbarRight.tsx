@@ -11,7 +11,6 @@ import { toggleTheme } from "../theme/themeSlice";
 import { logout } from "../auth/authSlice";
 import { useNavigate } from "react-router-dom";
 import { cn } from "../../lib/utils";
-
 const NavActionBtn = ({ icon: Icon, onClick, label, active = false }: any) => {
   const isDark = useAppSelector((state) => state.theme.isDark);
   return (
@@ -136,5 +135,4 @@ const NavbarRight: React.FC = () => {
     </div>
   );
 };
-
 export default NavbarRight;

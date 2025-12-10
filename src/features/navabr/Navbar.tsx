@@ -1,12 +1,9 @@
 import React from "react";
-
 import NavbarRight from "./NavbarRight";
 import { useAppSelector } from "../../hooks/useRedux";
 import {cn} from "../../lib/utils";
-
 const Navbar: React.FC = () => {
   const isDark = useAppSelector((state) => state.theme.isDark);
-
   return (
     <nav
       className={cn(
@@ -27,5 +24,4 @@ const Navbar: React.FC = () => {
     </nav>
   );
 };
-
 export default Navbar;

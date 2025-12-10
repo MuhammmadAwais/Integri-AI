@@ -1,12 +1,10 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-
 export interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
   timestamp: number;
 }
-
 export interface ChatSession {
   id: string;
   title: string;
@@ -14,7 +12,6 @@ export interface ChatSession {
   messages: Message[];
   model: string; // Track model per chat
 }
-
 interface ChatState {
   isMobileMenuOpen: boolean;
   isContextSidebarOpen: boolean;
@@ -23,7 +20,6 @@ interface ChatState {
   sessions: ChatSession[];
   activeSessionId: string | null;
 }
-
 // Load safely from LocalStorage
 const loadSessions = (): ChatSession[] => {
   try {
@@ -130,7 +126,6 @@ export const chatSlice = createSlice({
     },
   },
 });
-
 export const {
   toggleMobileMenu,
   setContextSidebarOpen,
@@ -140,5 +135,4 @@ export const {
   addMessageToChat,
   deleteChat,
 } = chatSlice.actions;
-
 export default chatSlice.reducer;

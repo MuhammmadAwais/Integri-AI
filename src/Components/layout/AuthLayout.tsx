@@ -1,13 +1,10 @@
 import React, { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
-
-
 interface AuthLayoutProps {
   children: React.ReactNode;
   title: string;
   subtitle: string;
 }
-
 const AuthLayout: React.FC<AuthLayoutProps> = ({
   children,
   title,
@@ -15,7 +12,6 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
-
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       // Entrance Animation
@@ -87,5 +83,4 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
     </div>
   );
 };
-
 export default AuthLayout;

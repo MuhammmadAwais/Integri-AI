@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/" }), // Base URL ignored due to mock queryFn
@@ -7,8 +6,8 @@ export const authApi = createApi({
     login: builder.mutation({
       // MOCK BACKEND LOGIC
       queryFn: async (credentials) => {
+        //NETWORK DELAY SIMULATION IS ONLY FOR DEVELOPENMENT PURPOSES
         await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
-
         // Simulate success
         if (credentials.email && credentials.password.length >= 6) {
           return {
@@ -30,7 +29,6 @@ export const authApi = createApi({
       // MOCK BACKEND LOGIC
       queryFn: async (userData) => {
         await new Promise((resolve) => setTimeout(resolve, 1500));
-
         return {
           data: {
             user: {

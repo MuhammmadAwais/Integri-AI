@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
 export interface Chat {
   id: string;
   userId: string;
@@ -8,7 +7,6 @@ export interface Chat {
   preview: string;
   model?: string;
 }
-
 export interface Message {
   id: string;
   chatId: string;
@@ -16,7 +14,6 @@ export interface Message {
   content: string;
   timestamp: number;
 }
-
 export interface AIModel {
   id: string;
   label: string;
@@ -24,7 +21,6 @@ export interface AIModel {
   icon: string;
   color: string;
 }
-
 // --- HELPERS ---
 const getLocalData = (key: string) => {
   try {

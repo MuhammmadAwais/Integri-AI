@@ -1,13 +1,11 @@
 import React from "react";
 import { Loader2 } from "lucide-react";
 import { cn } from "../../../lib/utils";
-
 interface AuthButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean;
   variant?: "primary" | "google" | "apple";
 }
-
 const AuthButton: React.FC<AuthButtonProps> = ({
   children,
   isLoading,
@@ -22,7 +20,6 @@ const AuthButton: React.FC<AuthButtonProps> = ({
       "bg-[#27272A] hover:bg-[#3F3F46] text-white border border-[#3F3F46]",
     apple: "bg-[#27272A] hover:bg-[#3F3F46] text-white border border-[#3F3F46]",
   };
-
   return (
     <button
       disabled={isLoading}
@@ -38,5 +35,4 @@ const AuthButton: React.FC<AuthButtonProps> = ({
     </button>
   );
 };
-
 export default AuthButton;

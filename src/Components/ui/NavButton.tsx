@@ -1,13 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 import { useAppSelector } from "../../hooks/useRedux";
-
 interface Props {
   oneClick?: () => void;
   isOpen: boolean;
 }
-
-
 const NavButton: React.FC<Props> = ({ oneClick, isOpen }) => {
   const isDark = useAppSelector((state:any) => state.theme.isDark);
   let colorClass = isDark ? "bg-white" : "bg-black";

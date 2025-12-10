@@ -13,14 +13,12 @@ import { cn } from "../../../lib/utils";
 interface ChatInputProps {
   onSend?: (text: string) => void;
 }
-
 const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
   const isDark = useAppSelector((state:any) => state.theme.isDark);
   const [input, setInput] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -30,7 +28,6 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
       )}px`;
     }
   }, [input]);
-
   const handleSend = () => {
     if ((input.trim() || file) && onSend) {
       const msg = file ? `[Uploaded File: ${file.name}] ${input}` : input;
@@ -40,14 +37,12 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
       if (textareaRef.current) textareaRef.current.style.height = "auto";
     }
   };
-
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
   };
-
   return (
     <div className="w-full max-w-3xl mx-auto px-2 pb-4">
       {file && (
@@ -70,7 +65,6 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
           </button>
         </div>
       )}
-
       {/* Grok Style Input Container */}
       <div
         className={cn(
@@ -186,5 +180,4 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
     </div>
   );
 };
-
 export default ChatInput;

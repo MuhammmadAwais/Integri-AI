@@ -14,13 +14,11 @@ import {
 } from "lucide-react";
 import { useAppSelector } from "../../hooks/useRedux"; //
 import SkeletonLoader from "./SkeletonLoader";//
-
 interface MessageProps {
   role: "user" | "assistant";
   content: string;
   isLoading?: boolean; // Controls the Skeleton state
 }
-
 const MessageBubble: React.FC<MessageProps> = ({
   role,
   content,
@@ -29,7 +27,6 @@ const MessageBubble: React.FC<MessageProps> = ({
   const bubbleRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
   const isDark = useAppSelector((state: any) => state.theme.isDark);
-
   // Entrance Animation
   useLayoutEffect(() => {
     if (bubbleRef.current && gsap) {
@@ -40,24 +37,19 @@ const MessageBubble: React.FC<MessageProps> = ({
       );
     }
   }, []);
-
   // Copy Handler with Feedback Animation
   const handleCopy = () => {
     navigator.clipboard.writeText(content);
     setCopied(true);
-
     // Quick scale "pop" animation for the icon
     gsap.fromTo(
       ".copy-btn-icon",
       { scale: 0.5 },
       { scale: 1, duration: 0.3, ease: "back.out(1.7)" }
     );
-
     setTimeout(() => setCopied(false), 2000);
   };
-
   const isUser = role === "user";
-
   return (
     <div
       ref={bubbleRef}
@@ -91,7 +83,6 @@ const MessageBubble: React.FC<MessageProps> = ({
             {isUser ? <User size={18} /> : <Bot size={20} />}
           </div>
         </div>
-
         {/* --- CONTENT AREA --- */}
         <div
           className={cn(

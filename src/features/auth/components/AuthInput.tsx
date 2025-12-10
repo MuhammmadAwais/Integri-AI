@@ -1,11 +1,9 @@
 import React from "react";
 import { cn } from "../../../lib/utils";
-
 interface AuthInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   icon?: React.ElementType;
 }
-
 const AuthInput: React.FC<AuthInputProps> = ({
   label,
   icon: Icon,
@@ -37,5 +35,4 @@ const AuthInput: React.FC<AuthInputProps> = ({
     </div>
   );
 };
-
 export default AuthInput;
