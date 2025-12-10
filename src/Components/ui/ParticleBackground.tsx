@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from "react";
-import { useAppSelector } from "../hooks/useRedux";
+import { useAppSelector } from "../../hooks/useRedux";
 
 
 const ParticleBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const isDark = useAppSelector((state) => state.theme?.isDark);
+  const isDark = useAppSelector((state:any) => state.theme?.isDark);
 
   useEffect(() => {
     const canvas = canvasRef.current;

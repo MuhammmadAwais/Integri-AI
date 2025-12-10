@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import Sidebar from "../features/Sidebar/Sidebar"; // Ensure this imports your MAIN Sidebar.tsx
+import Sidebar from "../../features/sidebar/components/Sidebar"; // Ensure this imports your MAIN Sidebar.tsx
 import NavButton from "./NavButton"; // Ensure correct path
-import { useAppSelector } from "../hooks/useRedux";
-import { cn } from "../../utils/cn";
+import { useAppSelector } from "../../hooks/useRedux";
+import { cn } from "../../lib/utils";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  const isDark = useAppSelector((state) => state.theme.isDark);
+  const isDark = useAppSelector((state:any) => state.theme.isDark);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   return (

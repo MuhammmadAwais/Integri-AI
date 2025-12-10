@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { useAppSelector } from "../hooks/useRedux";
+import { useAppSelector } from "../../hooks/useRedux";
 
 interface Props {
   oneClick?: () => void;
@@ -9,7 +9,7 @@ interface Props {
 
 
 const NavButton: React.FC<Props> = ({ oneClick, isOpen }) => {
-  const isDark = useAppSelector((state) => state.theme.isDark);
+  const isDark = useAppSelector((state:any) => state.theme.isDark);
   let colorClass = isDark ? "bg-white" : "bg-black";
   return (
     <StyledWrapper onClick={oneClick} $isOpen={isOpen}>
