@@ -15,7 +15,7 @@ import Home from "../pages/Home";
 import Login from "../pages/LoginPage";
 import Signup from "../pages/SignupPage";
 import Welcome from "../pages/WelcomePage";
-import ChatInterface from "../features/chat/Components/ChatInterface";
+import ChatInterface from "../features/chat/components/ChatInterface";
 import GettingStarted from "../pages/GettingStarted";
 import HistoryPage from "../pages/HistoryPage";
 
