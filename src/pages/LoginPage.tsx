@@ -4,8 +4,8 @@ import { Mail, Lock, LogIn } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import { loginUser } from "../features/auth/thunks/authThunk";
 import AuthLayout from "../Components/layout/AuthLayout";
-import AuthInput from "../features/auth/Components/AuthInput";
-import AuthButton from "../features/auth/Components/AuthButton";
+import AuthInput from "../features/auth/components/AuthInput";
+import AuthButton from "../features/auth/components/AuthButton";
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -32,7 +32,9 @@ const Login: React.FC = () => {
           icon={Mail}
           type="email"
           value={formData.email}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, email: e.target.value })}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setFormData({ ...formData, email: e.target.value })
+          }
           required
         />
         <AuthInput

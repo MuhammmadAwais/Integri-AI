@@ -4,8 +4,8 @@ import { Mail, Lock, User, ArrowRight } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import { registerUser } from "../features/auth/thunks/authThunk";
 import AuthLayout from "../Components/layout/AuthLayout";
-import AuthInput from "../features/auth/Components/AuthInput";
-import AuthButton from "../features/auth/Components/AuthButton";
+import AuthInput from "../features/auth/components/AuthInput";
+import AuthButton from "../features/auth/components/AuthButton";
 
 const Signup: React.FC = () => {
   const [formData, setFormData] = useState({
