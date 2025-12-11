@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, LogIn, Chrome } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
-import { loginUser } from "../features/auth/thunks/authThunk";
+import { loginUser, loginWithGoogle } from "../features/auth/thunks/authThunk"; //
 import AuthLayout from "../Components/layout/AuthLayout";
 import AuthInput from "../features/auth/components/AuthInput";
 import AuthButton from "../features/auth/components/AuthButton";
@@ -17,6 +17,14 @@ const Login: React.FC = () => {
     e.preventDefault();
     const result = await dispatch(loginUser(formData));
     if (loginUser.fulfilled.match(result)) {
+      navigate("/");
+    }
+  };
+
+  // 2. Add Google Login Handler
+  const handleGoogleLogin = async () => {
+    const result = await dispatch(loginWithGoogle());
+    if (loginWithGoogle.fulfilled.match(result)) {
       navigate("/");
     }
   };
@@ -49,7 +57,6 @@ const Login: React.FC = () => {
             }
             required
           />
-          {/* Forgot Password Link */}
           <div className="flex justify-end">
             <Link
               to="/forgot-password"
@@ -70,7 +77,6 @@ const Login: React.FC = () => {
           Sign In <LogIn size={18} />
         </AuthButton>
 
-        {/* Divider */}
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-[#3F3F46]"></div>
@@ -82,11 +88,12 @@ const Login: React.FC = () => {
           </div>
         </div>
 
-        {/* Google Login */}
+        {/* 3. Attach onClick Handler Here */}
         <AuthButton
           type="button"
           variant="google"
           className="hover:cursor-pointer"
+          onClick={handleGoogleLogin}
         >
           <Chrome size={18} className="text-white" />
           <span>Google</span>
