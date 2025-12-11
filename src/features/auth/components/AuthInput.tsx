@@ -1,4 +1,3 @@
-// src/features/auth/components/AuthInput.tsx
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { cn } from "../../../lib/utils";
@@ -35,7 +34,7 @@ const AuthInput: React.FC<AuthInputProps> = ({
           type={isPassword ? (showPassword ? "text" : "password") : type}
           {...props}
           className={cn(
-            "w-full bg-[#27272A] border border-[#3F3F46] rounded-xl py-4 text-white placeholder-gray-500",
+            "w-full bg-[#27272A] border border-[#3F3F46] rounded-xl py-2 text-white placeholder-gray-500",
             "focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 focus:bg-[#303035]",
             "transition-all duration-200 ease-out",
             Icon ? "pl-12" : "pl-4",
@@ -51,7 +50,11 @@ const AuthInput: React.FC<AuthInputProps> = ({
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors cursor-pointer p-1"
           >
-            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            {showPassword ? (
+              <EyeOff className="hover:text-red-500" size={20} />
+            ) : (
+              <Eye size={20} className="hover:text-red-500" />
+            )}
           </button>
         )}
       </div>
