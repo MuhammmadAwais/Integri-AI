@@ -6,7 +6,7 @@ import {
 } from "../../chat/services/chatService";
 import { useAppSelector } from "../../../hooks/useRedux";
 import { cn } from "../../../lib/utils";
-import SkeletonLoader from "../../../components/ui/SkeletonLoader";
+import SkeletonLoader from "../../../Components/ui/SkeletonLoader";
 
 interface HistoryModalProps {
   isOpen: boolean;
@@ -18,7 +18,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
 
   const user = useAppSelector((state) => state.auth.user);
-  const isDark = useAppSelector((state:any) => state.theme.isDark);
+  const isDark = useAppSelector((state: any) => state.theme.isDark);
 
   // 1. Fetch All Chats
   const { data: chats = [] } = useGetChatsQuery(user?.id || "guest");
@@ -32,7 +32,6 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
   const filteredChats = chats.filter((c) =>
     (c.title || "New Chat").toLowerCase().includes(search.toLowerCase())
   );
-
 
   const handleBackToList = () => {
     setSelectedChatId(null);
@@ -56,7 +55,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
       >
         {/* Close Button */}
         <button
-        title="button"
+          title="button"
           onClick={onClose}
           className="absolute top-3 right-3 z-50 p-2 rounded-full hover:bg-white/10 transition-colors cursor-pointer"
         >
@@ -173,7 +172,6 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
             <>
               {/* Preview Header */}
               <div
-
                 className={cn(
                   "px-4 md:px-6 py-4 border-b flex items-center justify-between shrink-0 pr-12 ",
                   isDark ? "border-[#222]" : "border-gray-200"
@@ -181,7 +179,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
               >
                 <div className="flex items-center gap-3 overflow-hidden">
                   <button
-                  title="Back to Chat List"
+                    title="Back to Chat List"
                     onClick={handleBackToList}
                     className={cn(
                       "md:hidden p-1.5 rounded-full mr-1 transition-colors",

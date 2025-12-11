@@ -22,7 +22,7 @@ import {
   useGetModelsQuery,
 } from "../features/chat/services/chatService";
 import gsap from "gsap";
-import ParticleBackground from "../components/ui/ParticleBackground";
+import ParticleBackground from "../Components/ui/ParticleBackground";
 // --- REASONING MENU ---
 const ReasoningMenu = ({
   isOpen,
@@ -128,7 +128,7 @@ const ModelMenu = ({ isOpen, onClose, selected, onSelect, isDark }: any) => {
 
 // --- MAIN WELCOME COMPONENT ---
 const Welcome: React.FC = () => {
-  const isDark = useAppSelector((state :any) => state.theme?.isDark);
+  const isDark = useAppSelector((state: any) => state.theme?.isDark);
   const user = useAppSelector((state) => state.auth?.user);
 
   // State
@@ -246,7 +246,7 @@ const Welcome: React.FC = () => {
       <ParticleBackground />
 
       <input
-      title="file"
+        title="file"
         type="file"
         ref={fileInputRef}
         className="hidden"
@@ -260,7 +260,11 @@ const Welcome: React.FC = () => {
           ref={logoRef}
           className="mb-12 flex items-center justify-center gap-3 opacity-0"
         >
-          <img src={isDark ? "/dark-theme-logo.png" : "/light-theme-logo.png"} alt="logo" className="w-8 h-8" />
+          <img
+            src={isDark ? "/dark-theme-logo.png" : "/light-theme-logo.png"}
+            alt="logo"
+            className="w-8 h-8"
+          />
           <h1
             className={cn(
               "text-4xl font-bold tracking-tight",
@@ -313,7 +317,7 @@ const Welcome: React.FC = () => {
                     {selectedFile.name}
                   </span>
                   <button
-                  title="Remove File"
+                    title="Remove File"
                     onClick={() => setSelectedFile(null)}
                     className="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded-full ml-1"
                   >
@@ -353,7 +357,7 @@ const Welcome: React.FC = () => {
 
               <div className="flex items-center gap-1.5 shrink-0">
                 <button
-                title="Select Model"
+                  title="Select Model"
                   onClick={() => setShowModelMenu(!showModelMenu)}
                   className={cn(
                     "flex items-center justify-center w-8 h-8 rounded-full transition-all",
@@ -390,7 +394,7 @@ const Welcome: React.FC = () => {
 
                 {inputValue.trim().length > 0 || selectedFile ? (
                   <button
-                  title="Send Message"
+                    title="Send Message"
                     onClick={() => startChat(inputValue)}
                     className={cn(
                       "w-8 h-8 rounded-full flex items-center justify-center transition-transform active:scale-95 animate-in zoom-in duration-200",
@@ -403,7 +407,7 @@ const Welcome: React.FC = () => {
                   </button>
                 ) : (
                   <button
-                  title="Voice Input"
+                    title="Voice Input"
                     className={cn(
                       "w-8 h-8 rounded-full flex items-center justify-center transition-colors",
                       isDark
@@ -481,7 +485,5 @@ const GrokIconToggle = ({ isDark }: any) => (
     G
   </div>
 );
-
-
 
 export default Welcome;

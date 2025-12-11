@@ -3,9 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, LogIn } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import { loginUser } from "../features/auth/thunks/authThunk";
-import AuthLayout from "../components/layout/AuthLayout";
-import AuthInput from "../features/auth/components/AuthInput";
-import AuthButton from "../features/auth/components/AuthButton";
+import AuthLayout from "../Components/layout/AuthLayout";
+import AuthInput from "../features/auth/Components/AuthInput";
+import AuthButton from "../features/auth/Components/AuthButton";
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });

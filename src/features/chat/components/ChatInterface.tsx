@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import ChatInput from "./ChatInput";
-import MessageBubble from "../../../components/ui/MessageBubble";
-import SkeletonLoader from "../../../components/ui/SkeletonLoader";// Renamed to Skeleton.tsx
+import MessageBubble from "../../../Components/ui/MessageBubble";
+import SkeletonLoader from "../../../Components/ui/SkeletonLoader"; // Renamed to Skeleton.tsx
 import { useAppSelector } from "../../../hooks/useRedux";
 import {
   useGetMessagesQuery,
@@ -16,10 +16,10 @@ const ChatInterface: React.FC = () => {
   const { id } = useParams();
   const scrollRef = useRef<HTMLDivElement>(null);
   const processedMessageIds = useRef<Set<string>>(new Set());
-  const isDark = useAppSelector((state:any) => state.theme.isDark);
-  const user = useAppSelector((state:any) => state.auth?.user);
+  const isDark = useAppSelector((state: any) => state.theme.isDark);
+  const user = useAppSelector((state: any) => state.auth?.user);
   const currentUserId = user?.id || "guest";
-  const currentModel = useAppSelector((state:any) => state.chat.currentModel);
+  const currentModel = useAppSelector((state: any) => state.chat.currentModel);
   const { data: messages = [], isLoading: isLoadingMessages } =
     useGetMessagesQuery(id || "", { skip: !id });
   const { data: existingChats = [] } = useGetChatsQuery(currentUserId, {

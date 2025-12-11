@@ -10,7 +10,7 @@ import { useAppDispatch } from "../hooks/useRedux";
 import { setAuthUser } from "../features/auth/slices/authSlice";
 
 // --- Components & Pages ---
-import IntroPortal from "../components/ui/IntroPortal"; // Your Animation
+import IntroPortal from "../Components/ui/IntroPortal"; // Ensure path is correct
 import Home from "../pages/Home";
 import Login from "../pages/LoginPage";
 import Signup from "../pages/SignupPage";
@@ -21,34 +21,35 @@ import HistoryPage from "../pages/HistoryPage";
 
 // --- Router Setup ---
 const router = createBrowserRouter([
-  // 1. Auth Pages (Standalone - No Sidebar)
+  // 1. Auth Pages
   { path: "/login", element: <Login /> },
   { path: "/signup", element: <Signup /> },
   { path: "/getting-started", element: <GettingStarted /> },
 
-  // 2. Main App (Sidebar + Navbar)
+  // 2. Main App
   {
     path: "/",
-    element: <Home />, // This Layout serves both Guests & Users
+    element: <Home />,
     children: [
-      { index: true, element: <Welcome /> }, // Default Home Screen
+      { index: true, element: <Welcome /> },
       { path: "chat/:id", element: <ChatInterface /> },
       { path: "history", element: <HistoryPage /> },
     ],
   },
-  // 3. Catch-all (Redirect unknown URLs to Home)
+  // 3. Catch-all
   { path: "*", element: <Navigate to="/" replace /> },
 ]);
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
   const [introFinished, setIntroFinished] = useState(false);
+  // Optional: Add a loading state for initial firebase check if needed
+  // const [isAuthChecked, setIsAuthChecked] = useState(false);
 
-  // --- Auth Listener (Runs in background) ---
+  // --- Auth Listener ---
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
-        // User Found -> Save to Redux
         dispatch(
           setAuthUser({
             id: firebaseUser.uid,
@@ -58,27 +59,29 @@ const App: React.FC = () => {
           })
         );
       } else {
-        // No User -> Set Guest Mode
         dispatch(setAuthUser(null));
       }
+      // setIsAuthChecked(true); // If you want to wait for auth before showing app
     });
     return () => unsubscribe();
   }, [dispatch]);
 
   return (
     <>
-      {/* 1. Show Intro Animation First */}
+      {/* 1. Intro Animation (Fixed Z-Index ensures it's on top) */}
       {!introFinished && (
         <IntroPortal onComplete={() => setIntroFinished(true)} />
       )}
 
-      {/* 2. Show App (Fade in) */}
+      {/* 2. Main App */}
+      {/* We use opacity transition. 'pointer-events-auto' ensures clicks work after intro */}
       <div
-        className={`transition-opacity duration-1000 ease-in ${
-          introFinished ? "opacity-100" : "opacity-0"
+        className={`transition-opacity duration-1000 ease-in min-h-screen bg-[#18181B] ${
+          introFinished
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
         }`}
       >
-        {/* THIS WAS MISSING -> The Engine! */}
         <RouterProvider router={router} />
       </div>
     </>

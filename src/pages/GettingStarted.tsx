@@ -8,46 +8,46 @@ const GettingStarted: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const containerRef = useRef<HTMLDivElement>(null);
-  const imageRef = useRef<HTMLImageElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline();
-      tl.from(imageRef.current, {
-        scale: 1.2,
+
+      // 1. Fade in container background
+      tl.from(containerRef.current, {
         opacity: 0,
-        duration: 1.5,
-        ease: "power3.out",
-      }).from(
-        contentRef.current,
-        { y: 50, opacity: 0, duration: 1, ease: "power3.out" },
-        "-=1"
-      );
+        duration: 1,
+      })
+        // 2. Slide content up
+        .from(contentRef.current, {
+          y: 100,
+          opacity: 0,
+          duration: 1,
+          ease: "power3.out",
+          delay: 0.2,
+        });
     }, containerRef);
     return () => ctx.revert();
   }, []);
 
   const handleGetStarted = () => {
-    dispatch(completeOnboarding()); // Mark as "Old User"
-    navigate("/"); // Go to Home
+    dispatch(completeOnboarding());
+    navigate("/");
   };
 
   return (
-    // FIX: 'md:flex-row-reverse' splits screen on desktop
     <div
       ref={containerRef}
-      className="min-h-screen w-full bg-black relative overflow-hidden flex flex-col md:flex-row-reverse"
+      className="relative min-h-screen w-full bg-black overflow-hidden flex items-center"
     >
-      {/* 1. IMAGE SECTION */}
-      <div className="relative w-full h-[55vh] md:h-screen md:w-1/2">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black md:bg-gradient-to-l z-10" />
+      {/* BACKGROUND IMAGE - Full Screen for Immersive feel */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent z-10" />
         <img
-          ref={imageRef}
           src="/gettingStarted.png"
-          alt="Future VR"
+          alt="Future AI"
           className="w-full h-full object-cover object-center"
-          // Fallback if your image is missing
           onError={(e) => {
             e.currentTarget.src =
               "https://images.unsplash.com/photo-1622979135225-d2ba269fb1ac?q=80&w=2070";
@@ -55,28 +55,43 @@ const GettingStarted: React.FC = () => {
         />
       </div>
 
-      {/* 2. TEXT SECTION */}
-      <div
-        ref={contentRef}
-        className="relative z-20 flex-1 flex flex-col justify-center items-center md:items-start px-6 pb-12 pt-8 md:p-20 md:w-1/2 bg-black text-center md:text-left"
-      >
-        <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-          The Future of Chat <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-purple-600">
-            With AI Technology
-          </span>
-        </h1>
-        <p className="text-gray-400 mb-10 text-sm md:text-lg max-w-lg leading-relaxed">
-          Unlock the potential of next-gen conversational AI. Integrated
-          seamlessly into your workflow.
-        </p>
+      {/* CONTENT - Floating on top (Glass effect) */}
+      <div className="relative z-20 container mx-auto px-6 md:px-12">
+        <div ref={contentRef} className="max-w-2xl text-left">
+          {/* Decorative Tag */}
+          <div className="inline-block px-4 py-1.5 rounded-full border border-gray-700 bg-gray-900/50 backdrop-blur-md mb-6">
+            <span className="text-indigo-400 text-sm font-semibold tracking-wide uppercase">
+              Integri AI v1.0
+            </span>
+          </div>
 
-        <button
-          onClick={handleGetStarted}
-          className="w-full md:w-auto px-10 py-4 rounded-full bg-[#D32F2F] text-white font-bold text-lg shadow-lg shadow-red-900/40 hover:scale-105 hover:bg-[#B71C1C] transition-all duration-300"
-        >
-          Get Started
-        </button>
+          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight tracking-tight">
+            The Future of Chat <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+              Is Here
+            </span>
+          </h1>
+
+          <p className="text-gray-300 mb-10 text-lg md:text-xl max-w-lg leading-relaxed font-light">
+            Unlock the potential of next-gen conversational AI. Integrated
+            seamlessly into your workflow for maximum productivity.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4">
+            <button
+              onClick={handleGetStarted}
+              className="px-8 py-4 rounded-full bg-indigo-600 text-white font-bold text-lg shadow-[0_0_20px_rgba(79,70,229,0.5)] hover:bg-indigo-700 hover:scale-105 hover:shadow-[0_0_30px_rgba(79,70,229,0.6)] transition-all duration-300"
+            >
+              Get Started
+            </button>
+            <button
+              onClick={() => navigate("/login")}
+              className="px-8 py-4 rounded-full border border-gray-700 text-white font-medium text-lg hover:bg-white/10 transition-all duration-300"
+            >
+              Sign In
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

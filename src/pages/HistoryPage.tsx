@@ -17,7 +17,7 @@ type SortKey = "title" | "date" | "model";
 type SortOrder = "asc" | "desc";
 
 const HistoryPage: React.FC = () => {
-  const sessions = useAppSelector((state) => state.chat.sessions);
+  const sessions = useAppSelector((state:any) => state.chat.sessions);
   const isDark = useAppSelector((state:any) => state.theme.isDark);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
