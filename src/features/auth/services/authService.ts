@@ -6,7 +6,7 @@ import {
 } from "firebase/auth";
 import { auth } from "../../../app/firebase";
 
-// Define the shape of our User data to keep things consistent
+// shape of our User data to keep things consistent
 export interface UserData {
   id: string;
   email: string | null;
@@ -28,10 +28,8 @@ export const AuthService = {
       password
     );
     const user = userCredential.user;
-
     // 2. Update their "Display Name" immediately so it shows up in the app
     await updateProfile(user, { displayName: name });
-
     // 3. Return formatted data
     return {
       id: user.uid,

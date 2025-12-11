@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import ChatInput from "./ChatInput";
 import MessageBubble from "../../../Components/ui/MessageBubble";
-import SkeletonLoader from "../../../Components/ui/SkeletonLoader"; // Renamed to Skeleton.tsx
+import SkeletonLoader from "../../../Components/ui/SkeletonLoader"; 
 import { useAppSelector } from "../../../hooks/useRedux";
 import {
   useGetMessagesQuery,

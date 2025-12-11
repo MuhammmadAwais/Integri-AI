@@ -25,7 +25,7 @@ const AuthButton: React.FC<AuthButtonProps> = ({
       disabled={isLoading}
       {...props}
       className={cn(
-        "w-full relative flex items-center justify-center py-4 rounded-xl font-bold text-sm md:text-base transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed",
+        "w-4/5 relative flex items-center justify-center py-4 rounded-xl font-bold text-sm md:text-base transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed",
         variants[variant],
         className
       )}

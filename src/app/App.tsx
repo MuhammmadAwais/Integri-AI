@@ -10,7 +10,7 @@ import { useAppDispatch } from "../hooks/useRedux";
 import { setAuthUser } from "../features/auth/slices/authSlice";
 
 // --- Components & Pages ---
-import IntroPortal from "../Components/ui/IntroPortal"; // Ensure path is correct
+import IntroPortal from "../Components/ui/IntroPortal"; 
 import Home from "../pages/Home";
 import Login from "../pages/LoginPage";
 import Signup from "../pages/SignupPage";
@@ -43,8 +43,6 @@ const router = createBrowserRouter([
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
   const [introFinished, setIntroFinished] = useState(false);
-  // Optional: Add a loading state for initial firebase check if needed
-  // const [isAuthChecked, setIsAuthChecked] = useState(false);
 
   // --- Auth Listener ---
   useEffect(() => {
@@ -61,20 +59,16 @@ const App: React.FC = () => {
       } else {
         dispatch(setAuthUser(null));
       }
-      // setIsAuthChecked(true); // If you want to wait for auth before showing app
     });
     return () => unsubscribe();
   }, [dispatch]);
 
   return (
-    <>
-      {/* 1. Intro Animation (Fixed Z-Index ensures it's on top) */}
+    <>    
       {!introFinished && (
         <IntroPortal onComplete={() => setIntroFinished(true)} />
       )}
-
       {/* 2. Main App */}
-      {/* We use opacity transition. 'pointer-events-auto' ensures clicks work after intro */}
       <div
         className={`transition-opacity duration-1000 ease-in min-h-screen bg-[#18181B] ${
           introFinished
@@ -87,5 +81,4 @@ const App: React.FC = () => {
     </>
   );
 };
-
 export default App;

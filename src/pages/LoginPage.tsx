@@ -56,7 +56,7 @@ const Login: React.FC = () => {
           Sign In <LogIn size={18} className="ml-2" />
         </AuthButton>
 
-        <p className="text-center text-sm text-gray-500">
+        <p className="text-start pl-26 text-sm text-gray-500">
           Don't have an account?{" "}
           <Link to="/signup" className="text-indigo-600 font-semibold">
             Sign up

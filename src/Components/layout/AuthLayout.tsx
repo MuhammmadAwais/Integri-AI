@@ -75,7 +75,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
       <div className="hidden lg:block w-1/2 h-full relative p-4">
         <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl bg-black">
           {/* Overlay for better text contrast if you ever add text here */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-purple-900/50 to-indigo-900/30 z-10 mix-blend-overlay" />
+          <div className="absolute inset-0 bg-linear-to-tr from-purple-900/50 to-indigo-900/30 z-10 mix-blend-overlay" />
           <img
             ref={imageRef}
             src="/VR_Image.png"

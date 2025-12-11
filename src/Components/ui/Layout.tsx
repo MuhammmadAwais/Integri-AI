@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Sidebar from "../../features/sidebar/components/Sidebar";
-import NavButton from "./NavButton"; 
+import NavButton from "./NavButton";
 import { useAppSelector } from "../../hooks/useRedux";
 import { cn } from "../../lib/utils";
 const Layout = ({ children }: { children: React.ReactNode }) => {

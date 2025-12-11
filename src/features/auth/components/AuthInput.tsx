@@ -24,7 +24,7 @@ const AuthInput: React.FC<AuthInputProps> = ({
         <input
           {...props}
           className={cn(
-            "w-full bg-[#27272A] border border-[#3F3F46] rounded-xl px-4 py-4",
+            "w-4/5 bg-[#27272A] border border-[#3F3F46] rounded-xl px-4 py-4",
             Icon ? "pl-12" : "pl-4",
             "text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 focus:bg-[#303035]",
             "transition-all duration-200 ease-out",

@@ -7,7 +7,7 @@ interface AuthState {
   user: UserData | null;
   isLoading: boolean;
   error: string | null;
-  isNewUser: boolean; // <--- The secret ingredient for your redirect flow
+  isNewUser: boolean; // <--- for redirect flow
 }
 
 const initialState: AuthState = {

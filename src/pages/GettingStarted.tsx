@@ -43,7 +43,7 @@ const GettingStarted: React.FC = () => {
     >
       {/* BACKGROUND IMAGE - Full Screen for Immersive feel */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent z-10" />
+        <div className="absolute inset-0 bg-linear-to-r from-black via-black/80 to-transparent z-10" />
         <img
           src="/gettingStarted.png"
           alt="Future AI"
@@ -67,7 +67,7 @@ const GettingStarted: React.FC = () => {
 
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight tracking-tight">
             The Future of Chat <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500">
               Is Here
             </span>
           </h1>

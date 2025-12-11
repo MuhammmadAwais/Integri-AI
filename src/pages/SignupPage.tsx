@@ -68,7 +68,7 @@ const Signup: React.FC = () => {
           Create Account <ArrowRight size={18} className="ml-2" />
         </AuthButton>
 
-        <p className="text-center text-sm text-gray-500">
+        <p className="text-start pl-26 text-sm text-gray-500">
           Already have an account?{" "}
           <Link to="/login" className="text-indigo-600 font-semibold">
             Log in

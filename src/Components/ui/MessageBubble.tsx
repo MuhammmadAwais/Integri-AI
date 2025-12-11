@@ -13,7 +13,7 @@ import {
   Bot,
 } from "lucide-react";
 import { useAppSelector } from "../../hooks/useRedux"; //
-import SkeletonLoader from "./SkeletonLoader";//
+import SkeletonLoader from "./SkeletonLoader";
 interface MessageProps {
   role: "user" | "assistant";
   content: string;
