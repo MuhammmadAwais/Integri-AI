@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, Lock, User, ArrowRight } from "lucide-react";
+import { Mail, Lock, User, ArrowRight, Chrome } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import { registerUser } from "../features/auth/thunks/authThunk";
 import AuthLayout from "../Components/layout/AuthLayout";
@@ -21,7 +21,7 @@ const Signup: React.FC = () => {
     e.preventDefault();
     const result = await dispatch(registerUser(formData));
     if (registerUser.fulfilled.match(result)) {
-      navigate("/getting-started"); // <--- The Redirect you wanted
+      navigate("/getting-started");
     }
   };
 
@@ -30,51 +30,75 @@ const Signup: React.FC = () => {
       title="Create Account"
       subtitle="Join Integri AI to start your journey."
     >
-      <form onSubmit={handleSubmit} className="space-y-6 mt-8">
+      <form onSubmit={handleSubmit} className="space-y-5 mt-6">
         <AuthInput
           label="Full Name"
           icon={User}
           type="text"
+          placeholder="John Doe"
           value={formData.name}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setFormData({ ...formData, name: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           required
         />
         <AuthInput
           label="Email"
           icon={Mail}
           type="email"
+          placeholder="name@example.com"
           value={formData.email}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setFormData({ ...formData, email: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           required
         />
         <AuthInput
           label="Password"
           icon={Lock}
           type="password"
+          placeholder="••••••••"
           value={formData.password}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          onChange={(e) =>
             setFormData({ ...formData, password: e.target.value })
           }
           required
         />
 
         {error && (
-          <p className="text-red-500 text-sm font-medium text-center bg-red-500/10 p-2 rounded">
+          <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-sm p-3 rounded-xl text-center">
             {error}
-          </p>
+          </div>
         )}
 
-        <AuthButton isLoading={isLoading}>
-          Create Account <ArrowRight size={18} className="ml-2" />
+        <AuthButton isLoading={isLoading} className="hover:cursor-pointer">
+          Create Account <ArrowRight size={18} />
         </AuthButton>
 
-        <p className="text-start pl-26 text-sm text-gray-500">
+        {/* Divider */}
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-[#3F3F46]"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-[#18181B] text-gray-500">
+              Or continue with
+            </span>
+          </div>
+        </div>
+
+        {/* Google Login */}
+        <AuthButton
+          type="button"
+          variant="google"
+          className="hover:cursor-pointer"
+        >
+          <Chrome size={18} className="text-white " />
+          <span>Google</span>
+        </AuthButton>
+
+        <p className="text-center text-sm text-gray-500 mt-6">
           Already have an account?{" "}
-          <Link to="/login" className="text-indigo-600 font-semibold">
+          <Link
+            to="/login"
+            className="text-red-500 hover:text-red-400 font-semibold transition-colors hover:cursor-pointer"
+          >
             Log in
           </Link>
         </p>

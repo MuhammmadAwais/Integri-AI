@@ -1,13 +1,18 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type UserData } from "../services/authService";
-import { loginUser, registerUser, logoutUser } from "../thunks/authThunk";
+import {
+  loginUser,
+  registerUser,
+  logoutUser,
+  loginWithGoogle,
+} from "../thunks/authThunk";
 
 // --- STATE ---
 interface AuthState {
   user: UserData | null;
   isLoading: boolean;
   error: string | null;
-  isNewUser: boolean; // <--- for redirect flow
+  isNewUser: boolean;
 }
 
 const initialState: AuthState = {
@@ -21,12 +26,10 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    // Called by App.tsx when the page refreshes
     setAuthUser: (state, action: PayloadAction<UserData | null>) => {
       state.user = action.payload;
       state.isLoading = false;
     },
-    // Called when user clicks "Get Started"
     completeOnboarding: (state) => {
       state.isNewUser = false;
     },
@@ -41,7 +44,7 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload;
-        state.isNewUser = false; // Login = No onboarding needed
+        state.isNewUser = false;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -55,9 +58,25 @@ const authSlice = createSlice({
       .addCase(registerUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload;
-        state.isNewUser = true; // <--- TRIGGER THE REDIRECT TO GETTING STARTED
+        state.isNewUser = true;
       })
       .addCase(registerUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      // Google Login
+      .addCase(loginWithGoogle.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(loginWithGoogle.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+        // We set isNewUser to false for Google login to act as a standard login.
+        // If you want Google users to see the onboarding screens, set this to true.
+        state.isNewUser = false;
+      })
+      .addCase(loginWithGoogle.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       })

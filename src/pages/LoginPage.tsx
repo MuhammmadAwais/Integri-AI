@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, Lock, LogIn } from "lucide-react";
+import { Mail, Lock, LogIn, Chrome } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import { loginUser } from "../features/auth/thunks/authThunk";
 import AuthLayout from "../Components/layout/AuthLayout";
@@ -17,7 +17,7 @@ const Login: React.FC = () => {
     e.preventDefault();
     const result = await dispatch(loginUser(formData));
     if (loginUser.fulfilled.match(result)) {
-      navigate("/"); // Success -> Go Home
+      navigate("/");
     }
   };
 
@@ -26,41 +26,78 @@ const Login: React.FC = () => {
       title="Welcome Back"
       subtitle="Enter your credentials to access your workspace."
     >
-      <form onSubmit={handleSubmit} className="space-y-6 mt-8">
+      <form onSubmit={handleSubmit} className="space-y-5 mt-6">
         <AuthInput
           label="Email"
           icon={Mail}
           type="email"
+          placeholder="name@example.com"
           value={formData.email}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setFormData({ ...formData, email: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           required
         />
-        <AuthInput
-          label="Password"
-          icon={Lock}
-          type="password"
-          value={formData.password}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setFormData({ ...formData, password: e.target.value })
-          }
-          required
-        />
+
+        <div className="space-y-2">
+          <AuthInput
+            label="Password"
+            icon={Lock}
+            type="password"
+            placeholder="••••••••"
+            value={formData.password}
+            onChange={(e) =>
+              setFormData({ ...formData, password: e.target.value })
+            }
+            required
+          />
+          {/* Forgot Password Link */}
+          <div className="flex justify-end">
+            <Link
+              to="/forgot-password"
+              className="text-sm text-gray-400 hover:text-red-500 transition-colors"
+            >
+              Forgot Password?
+            </Link>
+          </div>
+        </div>
 
         {error && (
-          <p className="text-red-500 text-sm font-medium text-center bg-red-500/10 p-2 rounded">
+          <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-sm p-3 rounded-xl text-center">
             {error}
-          </p>
+          </div>
         )}
 
-        <AuthButton isLoading={isLoading}>
-          Sign In <LogIn size={18} className="ml-2" />
+        <AuthButton isLoading={isLoading} className="hover:cursor-pointer">
+          Sign In <LogIn size={18} />
         </AuthButton>
 
-        <p className="text-start pl-26 text-sm text-gray-500">
+        {/* Divider */}
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-[#3F3F46]"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-[#18181B] text-gray-500">
+              Or continue with
+            </span>
+          </div>
+        </div>
+
+        {/* Google Login */}
+        <AuthButton
+          type="button"
+          variant="google"
+          className="hover:cursor-pointer"
+        >
+          <Chrome size={18} className="text-white" />
+          <span>Google</span>
+        </AuthButton>
+
+        <p className="text-center text-sm text-gray-500 mt-6">
           Don't have an account?{" "}
-          <Link to="/signup" className="text-indigo-600 font-semibold">
+          <Link
+            to="/signup"
+            className="text-red-500 hover:text-red-400 font-semibold transition-colors hover:cursor-pointer"
+          >
             Sign up
           </Link>
         </p>

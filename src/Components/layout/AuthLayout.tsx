@@ -19,9 +19,10 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
     const ctx = gsap.context(() => {
       // Entrance Animation
       gsap.from(".auth-content", {
-        x: -50,
+        y: 20, // Move from bottom slightly
         opacity: 0,
-        duration: 1,
+        duration: 0.8,
+        stagger: 0.1,
         ease: "power3.out",
         delay: 0.2,
       });
@@ -40,28 +41,25 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
   return (
     <div
       ref={containerRef}
-      className="flex h-screen w-full overflow-hidden bg-[#18181B]"
+      className="flex max-h-screen items-center w-full bg-[#18181B] overflow-hidden" 
     >
       {/* --- LEFT SIDE: Form --- */}
-      {/* IMPROVEMENT: Changed px-8 to px-6 for better mobile fit. Kept lg:px-24 for desktop. */}
-      <div className="w-full lg:w-1/2 h-full flex flex-col justify-center px-6 sm:px-12 lg:px-24 relative z-10">
-        <div className="w-full max-w-lg mx-auto lg:mx-0">
-          <div className="mb-10">
+      <div className="w-full lg:w-1/2 h-screen md:h-auto flex items-center justify-center p-8 sm:p-12 relative z-10">
+        {/* Decorative Background Blob */}
+        <div className="absolute  top-[-20%] left-[-10%] w-[500px] h-[500px] bg-red-600/5 rounded-full blur-[120px] pointer-events-none" />
+
+        <div className="w-full max-w-md mx-auto">
+          <div className="mb-6 auth-content">
             {/* Logo */}
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-500/30">
-                I
-              </div>
-              <span className="text-2xl font-bold text-white tracking-tight">
-                Integri AI
-              </span>
+            <div className="flex items-center gap-3 mb-3">
+              <img src="/dark-theme-logo.png" alt="Logo" className="w-12 h-12" />
             </div>
 
-            <div className="auth-content">
+            <div>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">
                 {title}
               </h2>
-              <p className="text-gray-400 text-base md:text-lg leading-relaxed">
+              <p className="text-gray-400 text-base leading-relaxed">
                 {subtitle}
               </p>
             </div>
@@ -71,16 +69,15 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
         </div>
       </div>
 
-      {/* --- RIGHT SIDE: Image (VR Person) --- */}
-      <div className="hidden lg:block w-1/2 h-full relative p-4">
-        <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl bg-black">
-          {/* Overlay for better text contrast if you ever add text here */}
-          <div className="absolute inset-0 bg-linear-to-tr from-purple-900/50 to-indigo-900/30 z-10 mix-blend-overlay" />
+      {/* --- RIGHT SIDE: Image --- */}
+      <div className="hidden lg:block w-1/2 relative p-4 h-screen top-0">
+        <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl bg-black border border-[#27272A]">
+          <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent z-10" />
           <img
             ref={imageRef}
             src="/VR_Image.png"
             alt="VR Future"
-            className="w-full h-full object-cover opacity-90"
+            className="w-full h-full object-cover"
             onError={(e) => {
               e.currentTarget.src =
                 "https://images.unsplash.com/photo-1622979135225-d2ba269fb1ac?q=80&w=2070";

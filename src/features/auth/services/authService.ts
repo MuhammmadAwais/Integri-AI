@@ -3,6 +3,8 @@ import {
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from "firebase/auth";
 import { auth } from "../../../app/firebase";
 
@@ -21,16 +23,13 @@ export const AuthService = {
     password: string,
     name: string
   ): Promise<UserData> => {
-    // 1. Create account on Firebase
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
       password
     );
     const user = userCredential.user;
-    // 2. Update their "Display Name" immediately so it shows up in the app
     await updateProfile(user, { displayName: name });
-    // 3. Return formatted data
     return {
       id: user.uid,
       email: user.email,
@@ -46,6 +45,19 @@ export const AuthService = {
       email,
       password
     );
+    const user = userCredential.user;
+    return {
+      id: user.uid,
+      email: user.email,
+      name: user.displayName,
+      avatar: user.photoURL,
+    };
+  },
+
+  // --- GOOGLE LOGIN ---
+  loginWithGoogle: async (): Promise<UserData> => {
+    const provider = new GoogleAuthProvider();
+    const userCredential = await signInWithPopup(auth, provider);
     const user = userCredential.user;
     return {
       id: user.uid,

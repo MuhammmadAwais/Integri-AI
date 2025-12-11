@@ -13,6 +13,7 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+// Register Thunk
 export const registerUser = createAsyncThunk(
   "auth/register",
   async (
@@ -27,9 +28,19 @@ export const registerUser = createAsyncThunk(
   }
 );
 
+// Google Login Thunk
+export const loginWithGoogle = createAsyncThunk(
+  "auth/loginWithGoogle",
+  async (_, { rejectWithValue }) => {
+    try {
+      return await AuthService.loginWithGoogle();
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Google sign-in failed");
+    }
+  }
+);
+
+// Logout Thunk
 export const logoutUser = createAsyncThunk("auth/logout", async () => {
   await AuthService.logout();
 });
-
-// Logout Thunk
-

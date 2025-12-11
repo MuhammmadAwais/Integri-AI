@@ -1,11 +1,14 @@
+// src/features/auth/components/AuthButton.tsx
 import React from "react";
 import { Loader2 } from "lucide-react";
 import { cn } from "../../../lib/utils";
+
 interface AuthButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean;
-  variant?: "primary" | "google" | "apple";
+  variant?: "primary" | "google" | "outline";
 }
+
 const AuthButton: React.FC<AuthButtonProps> = ({
   children,
   isLoading,
@@ -15,17 +18,19 @@ const AuthButton: React.FC<AuthButtonProps> = ({
 }) => {
   const variants = {
     primary:
-      "bg-[#DC2626] hover:bg-[#B91C1C] text-white shadow-lg shadow-red-900/20",
+      "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white shadow-lg shadow-red-900/20 border-transparent",
     google:
-      "bg-[#27272A] hover:bg-[#3F3F46] text-white border border-[#3F3F46]",
-    apple: "bg-[#27272A] hover:bg-[#3F3F46] text-white border border-[#3F3F46]",
+      "bg-[#27272A] hover:bg-[#323236] text-white border border-[#3F3F46] hover:border-gray-500",
+    outline:
+      "bg-transparent hover:bg-[#27272A] text-gray-300 border border-[#3F3F46]",
   };
+
   return (
     <button
       disabled={isLoading}
       {...props}
       className={cn(
-        "w-4/5 relative flex items-center justify-center py-4 rounded-xl font-bold text-sm md:text-base transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed",
+        "w-full relative flex items-center justify-center py-4 rounded-xl font-bold text-sm md:text-base transition-all duration-200 transform active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed",
         variants[variant],
         className
       )}
@@ -35,4 +40,5 @@ const AuthButton: React.FC<AuthButtonProps> = ({
     </button>
   );
 };
+
 export default AuthButton;
