@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "../features/navabr/Navbar";
-import Layout from "../Components/ui/Layout"; // <--- IMPORT THE FIXED LAYOUT
+import Layout from "../Components/layout/Layout"; // <--- IMPORT THE FIXED LAYOUT
 import { useAppSelector } from "../hooks/useRedux";
 
 const ThemeController = ({ children }: { children: React.ReactNode }) => {

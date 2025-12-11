@@ -41,7 +41,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
   return (
     <div
       ref={containerRef}
-      className="flex max-h-screen items-center w-full bg-[#18181B] overflow-hidden" 
+      className="flex min-h-screen items-center w-full bg-[#18181B] overflow-hidden" 
     >
       {/* --- LEFT SIDE: Form --- */}
       <div className="w-full lg:w-1/2 h-screen md:h-auto flex items-center justify-center p-8 sm:p-12 relative z-10">
@@ -71,7 +71,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
 
       {/* --- RIGHT SIDE: Image --- */}
       <div className="hidden lg:block w-1/2 relative p-4 h-screen top-0">
-        <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl bg-black border border-[#27272A]">
+        <div className="relative w-full h-full rounded-3xl overflow-hidden sticky  shadow-2xl bg-black border border-[#27272A]">
           <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent z-10" />
           <img
             ref={imageRef}
