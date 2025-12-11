@@ -32,7 +32,7 @@ const Login: React.FC = () => {
           icon={Mail}
           type="email"
           value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, email: e.target.value })}
           required
         />
         <AuthInput
@@ -40,7 +40,7 @@ const Login: React.FC = () => {
           icon={Lock}
           type="password"
           value={formData.password}
-          onChange={(e) =>
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setFormData({ ...formData, password: e.target.value })
           }
           required

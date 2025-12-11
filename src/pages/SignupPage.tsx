@@ -36,7 +36,9 @@ const Signup: React.FC = () => {
           icon={User}
           type="text"
           value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setFormData({ ...formData, name: e.target.value })
+          }
           required
         />
         <AuthInput
@@ -44,7 +46,9 @@ const Signup: React.FC = () => {
           icon={Mail}
           type="email"
           value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setFormData({ ...formData, email: e.target.value })
+          }
           required
         />
         <AuthInput
@@ -52,7 +56,7 @@ const Signup: React.FC = () => {
           icon={Lock}
           type="password"
           value={formData.password}
-          onChange={(e) =>
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setFormData({ ...formData, password: e.target.value })
           }
           required
