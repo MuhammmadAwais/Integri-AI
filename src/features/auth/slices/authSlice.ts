@@ -7,9 +7,10 @@ import {
   loginWithGoogle,
 } from "../thunks/authThunk";
 
-// --- STATE ---
+// Shape of State
 interface AuthState {
   user: UserData | null;
+  accessToken: string | null; 
   isLoading: boolean;
   error: string | null;
   isNewUser: boolean;
@@ -17,7 +18,8 @@ interface AuthState {
 
 const initialState: AuthState = {
   user: null,
-  isLoading: true,
+  accessToken: null, 
+  isLoading: true, 
   error: null,
   isNewUser: false,
 };
@@ -26,8 +28,15 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setAuthUser: (state, action: PayloadAction<UserData | null>) => {
-      state.user = action.payload;
+    setAuthUser: (
+      state,
+      action: PayloadAction<{
+        user: UserData | null;
+        accessToken: string | null;
+      }>
+    ) => {
+      state.user = action.payload.user;
+      state.accessToken = action.payload.accessToken;
       state.isLoading = false;
     },
     completeOnboarding: (state) => {
@@ -36,53 +45,60 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Login
+      // --- LOGIN ---
       .addCase(loginUser.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload;
+        // Destructure the "Bundle" created in the Thunk
+        state.user = action.payload.user;
+        state.accessToken = action.payload.accessToken; // Save the token!
         state.isNewUser = false;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      // Register
+
+      // --- REGISTER ---
       .addCase(registerUser.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload;
+        state.user = action.payload.user;
+        state.accessToken = action.payload.accessToken; // Save the token!
         state.isNewUser = true;
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      // Google Login
+
+      // --- GOOGLE ---
       .addCase(loginWithGoogle.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
       .addCase(loginWithGoogle.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload;
-        // We set isNewUser to false for Google login to act as a standard login.
-        // If you want Google users to see the onboarding screens, set this to true.
+        state.user = action.payload.user;
+        state.accessToken = action.payload.accessToken; // Save the token!
         state.isNewUser = false;
       })
       .addCase(loginWithGoogle.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      // Logout
+
+      // --- LOGOUT ---
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
+        state.accessToken = null; // Clear the token!
+        state.isLoading = false;
       });
   },
 });

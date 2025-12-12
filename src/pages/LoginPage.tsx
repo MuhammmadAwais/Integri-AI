@@ -92,7 +92,7 @@ const Login: React.FC = () => {
         <AuthButton
           type="button"
           variant="google"
-          className="hover:cursor-pointer"
+          className="hover:cursor-pointer w-full"
           onClick={handleGoogleLogin}
         >
           <Chrome size={18} className="text-white" />

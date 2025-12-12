@@ -8,7 +8,7 @@ import {
 } from "firebase/auth";
 import { auth } from "../../../app/firebase";
 
-// shape of our User data to keep things consistent
+// Define what a User 
 export interface UserData {
   id: string;
   email: string | null;
@@ -17,7 +17,7 @@ export interface UserData {
 }
 
 export const AuthService = {
-  // --- SIGN UP ---
+  // --- REGISTER ---
   register: async (
     email: string,
     password: string,
@@ -30,6 +30,7 @@ export const AuthService = {
     );
     const user = userCredential.user;
     await updateProfile(user, { displayName: name });
+
     return {
       id: user.uid,
       email: user.email,
@@ -46,6 +47,7 @@ export const AuthService = {
       password
     );
     const user = userCredential.user;
+
     return {
       id: user.uid,
       email: user.email,
@@ -59,6 +61,7 @@ export const AuthService = {
     const provider = new GoogleAuthProvider();
     const userCredential = await signInWithPopup(auth, provider);
     const user = userCredential.user;
+
     return {
       id: user.uid,
       email: user.email,

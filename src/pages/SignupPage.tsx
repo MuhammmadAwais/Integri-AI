@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, User, ArrowRight, Chrome } from "lucide-react";
@@ -11,28 +12,48 @@ import AuthInput from "../features/auth/components/AuthInput";
 import AuthButton from "../features/auth/components/AuthButton";
 
 const Signup: React.FC = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+  }>({
     name: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
+  const [confirmPasswordError, setConfirmPasswordError] = useState<string | null>(null);
+
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { isLoading, error } = useAppSelector((state) => state.auth);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const result = await dispatch(registerUser(formData));
-    if (registerUser.fulfilled.match(result)) {
-      navigate("/getting-started");
+    try {
+      e.preventDefault();
+      if (formData.password !== formData.confirmPassword) {
+        setConfirmPasswordError("Passwords do not match.");
+        return;
+      }
+      const result = await dispatch(registerUser(formData));
+      if (registerUser.fulfilled.match(result)) {
+        navigate("/getting-started");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
     }
   };
 
   // 2. Add Google Login Handler
   const handleGoogleLogin = async () => {
-    const result = await dispatch(loginWithGoogle());
-    if (loginWithGoogle.fulfilled.match(result)) {
-      navigate("/getting-started");
+    try {
+      const result = await dispatch(loginWithGoogle());
+      if (loginWithGoogle.fulfilled.match(result)) {
+        navigate("/getting-started");
+      }
+    } catch (error) {
+      console.error("Error logging in with Google:", error);
     }
   };
 
@@ -71,38 +92,56 @@ const Signup: React.FC = () => {
           }
           required
         />
+        <AuthInput
+          label="Confirm Password"
+          icon={Lock}
+          type="password"
+          placeholder="••••••••"
+          value={formData.confirmPassword}
+          onChange={(e) =>
+            setFormData({ ...formData, confirmPassword: e.target.value })
+          }
+          required
+        />
 
-        {error && (
-          <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-sm p-3 rounded-xl text-center">
-            {error}
-          </div>
-        )}
+        {error ||
+          (confirmPasswordError && (
+            <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-sm p-3 rounded-xl text-center">
+              {error || confirmPasswordError}
+            </div>
+          ))}
+        <div className="flex flex-row gap-4 mt-4">
+          <AuthButton
+            isLoading={isLoading}
+            variant="createAccount"
+            className="hover:cursor-pointer"
+          >
+            Create Account <ArrowRight size={18} />
+          </AuthButton>
 
-        <AuthButton isLoading={isLoading} className="hover:cursor-pointer">
-          Create Account <ArrowRight size={18} />
-        </AuthButton>
+          <div className="relative my-2">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-[#3F3F46]"></div>
+            </div>
+            <div className="relative flex justify-center items-center">
+              <span className="px-2 bg-[#18181B] text-gray-500 font-semibold text-4xl">
+                OR
+              </span>
+            </div>
+          </div>
 
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-[#3F3F46]"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-[#18181B] text-gray-500">
-              Or continue with
-            </span>
-          </div>
+          {/* 3. Attach onClick Handler Here */}
+          <AuthButton
+            type="button"
+            variant="google"
+            className="hover:cursor-pointer "
+            onClick={handleGoogleLogin}
+          >
+            <Chrome size={18} className="text-white" />
+
+            <span>Google</span>
+          </AuthButton>
         </div>
-
-        {/* 3. Attach onClick Handler Here */}
-        <AuthButton
-          type="button"
-          variant="google"
-          className="hover:cursor-pointer"
-          onClick={handleGoogleLogin}
-        >
-          <Chrome size={18} className="text-white " />
-          <span>Google</span>
-        </AuthButton>
 
         <p className="text-center text-sm text-gray-500 mt-6">
           Already have an account?{" "}
