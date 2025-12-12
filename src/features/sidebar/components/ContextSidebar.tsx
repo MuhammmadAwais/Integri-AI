@@ -1,20 +1,28 @@
 import React from "react";
 import { SquarePen } from "lucide-react"; // "New Chat" icon
-import { useAppDispatch, useAppSelector } from "../../../hooks/useRedux";
-import { createNewChat } from "../../chat/chatSlice";
-import { cn } from "../../../lib/utils"; // cn.ts moved to lib/utils.ts
+import { useAppSelector } from "../../../hooks/useRedux";
+import { cn } from "../../../lib/utils";
 import ChatList from "./ChatList";
 import { useNavigate } from "react-router-dom";
+import { ChatService } from "../../chat/services/chatService";
 
 const ContextSidebar: React.FC = () => {
   const isDark = useAppSelector((state: any) => state.theme.isDark);
-  const dispatch = useAppDispatch();
+  const user = useAppSelector((state: any) => state.auth.user);
   const navigate = useNavigate();
 
-  const handleNewChat = () => {
-    const newId = Date.now().toString();
-    dispatch(createNewChat({ id: newId, title: "New Conversation" }));
-    navigate(`/chat/${newId}`);
+  const handleNewChat = async () => {
+    if (!user?.id) return;
+    try {
+      const newId = await ChatService.createChat(
+        user.id,
+        "gpt-3.5-turbo",
+        "New Conversation"
+      );
+      navigate(`/chat/${newId}`);
+    } catch (error) {
+      console.error("Failed to create chat:", error);
+    }
   };
 
   return (

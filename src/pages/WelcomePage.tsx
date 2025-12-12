@@ -16,13 +16,10 @@ import {
   FileText,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import {
-  useAddChatMutation,
-  useAddMessageMutation,
-  useGetModelsQuery,
-} from "../features/chat/services/chatService";
+import { ChatService } from "../features/chat/services/chatService";
 import gsap from "gsap";
 import ParticleBackground from "../Components/ui/ParticleBackground";
+
 // --- REASONING MENU ---
 const ReasoningMenu = ({
   isOpen,
@@ -83,7 +80,13 @@ const ReasoningMenu = ({
 
 // --- MODEL MENU ---
 const ModelMenu = ({ isOpen, onClose, selected, onSelect, isDark }: any) => {
-  const { data: models = [], isLoading } = useGetModelsQuery();
+  // Using static models as ChatService doesn't provide a fetch method
+  const models = [
+    { id: "gpt-3.5-turbo", label: "GPT-3.5" },
+    { id: "gpt-4", label: "GPT-4" },
+    { id: "grok-2", label: "Grok 2 (Beta)" },
+  ];
+
   if (!isOpen) return null;
   return (
     <>
@@ -99,28 +102,22 @@ const ModelMenu = ({ isOpen, onClose, selected, onSelect, isDark }: any) => {
         <div className="px-3 py-2 text-[10px] font-bold uppercase opacity-50 tracking-wider">
           System Models
         </div>
-        {isLoading ? (
-          <div className="px-3 py-2 text-xs opacity-50">Loading...</div>
-        ) : models.length > 0 ? (
-          models.map((m) => (
-            <button
-              key={m.id}
-              onClick={() => {
-                onSelect(m.id);
-                onClose();
-              }}
-              className={cn(
-                "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left transition-colors text-sm font-medium",
-                isDark ? "hover:bg-[#2A2B32]" : "hover:bg-gray-100",
-                selected === m.id && (isDark ? "bg-[#2A2B32]" : "bg-gray-100")
-              )}
-            >
-              <span>{m.label || m.id}</span>
-            </button>
-          ))
-        ) : (
-          <div className="px-3 py-2 text-xs opacity-50">No models</div>
-        )}
+        {models.map((m) => (
+          <button
+            key={m.id}
+            onClick={() => {
+              onSelect(m.id);
+              onClose();
+            }}
+            className={cn(
+              "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left transition-colors text-sm font-medium",
+              isDark ? "hover:bg-[#2A2B32]" : "hover:bg-gray-100",
+              selected === m.id && (isDark ? "bg-[#2A2B32]" : "bg-gray-100")
+            )}
+          >
+            <span>{m.label}</span>
+          </button>
+        ))}
       </div>
     </>
   );
@@ -129,12 +126,12 @@ const ModelMenu = ({ isOpen, onClose, selected, onSelect, isDark }: any) => {
 // --- MAIN WELCOME COMPONENT ---
 const Welcome: React.FC = () => {
   const isDark = useAppSelector((state: any) => state.theme?.isDark);
-  const user = useAppSelector((state) => state.auth?.user);
+  const user = useAppSelector((state: any) => state.auth?.user);
 
   // State
   const [inputValue, setInputValue] = useState("");
   const [reasoningMode, setReasoningMode] = useState("Auto");
-  const [modelMode, setModelMode] = useState("grok-2");
+  const [modelMode, setModelMode] = useState("gpt-3.5-turbo");
   const [showReasoningMenu, setShowReasoningMenu] = useState(false);
   const [showModelMenu, setShowModelMenu] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -148,15 +145,12 @@ const Welcome: React.FC = () => {
   const textInputRef = useRef<HTMLInputElement>(null);
 
   const navigate = useNavigate();
-  const [addChat] = useAddChatMutation();
-  const [addMessage] = useAddMessageMutation();
 
   // --- FIXED ANIMATION LOGIC ---
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-      // Using .fromTo prevents the "stuck at opacity: 0" glitch
       tl.fromTo(
         logoRef.current,
         { y: 20, opacity: 0 },
@@ -175,7 +169,6 @@ const Welcome: React.FC = () => {
           "-=0.3"
         );
 
-      // Ensure focus sets after animation starts
       if (textInputRef.current) textInputRef.current.focus();
     }, containerRef);
 
@@ -187,32 +180,30 @@ const Welcome: React.FC = () => {
   };
 
   const startChat = async (text: string) => {
-    if (!text.trim() && !selectedFile) return;
-    if (!user || !user.id) return;
+    if ((!text.trim() && !selectedFile) || !user?.id) return;
 
-    const newChatId = crypto.randomUUID();
     let content = text;
     if (selectedFile) content = `[File: ${selectedFile.name}] ${text}`;
 
     try {
-      await addChat({
-        id: newChatId,
-        userId: user.id,
-        title: text.slice(0, 30) || "New Conversation",
-        date: new Date().toISOString(),
-        preview: content.slice(0, 50),
-        model: modelMode,
-      }).unwrap();
+      // 1. Create the chat document first (Fast)
+      const newChatId = await ChatService.createChat(
+        user.id,
+        modelMode,
+        content
+      );
 
-      await addMessage({
-        id: crypto.randomUUID(),
-        chatId: newChatId,
-        role: "user",
-        content: content,
-        timestamp: Date.now(),
-      }).unwrap();
-
+      // 2. Navigate IMMEDIATELY to the new chat page
+      // We do this before sending the message so the user doesn't wait on the Welcome page
+      // while the AI is generating a response (which ChatService.sendMessage waits for).
       navigate(`/chat/${newChatId}`);
+
+      // 3. Send the first message in the background
+      // Since the component might unmount after navigation, we trigger this promise
+      // but don't await it to block the UI. The Service layer handles the DB writes.
+      ChatService.sendMessage(user.id, newChatId, content, modelMode).catch(
+        (err) => console.error("Background message send failed:", err)
+      );
     } catch (error) {
       console.error("Failed to start chat:", error);
     }
@@ -242,7 +233,7 @@ const Welcome: React.FC = () => {
           : "bg-white selection:bg-blue-100 selection:text-black"
       )}
     >
-      {/* BACKGROUND - z-0 */}
+      {/* BACKGROUND */}
       <ParticleBackground />
 
       <input
@@ -253,7 +244,7 @@ const Welcome: React.FC = () => {
         onChange={handleFileSelect}
       />
 
-      {/* CONTENT - z-10 */}
+      {/* CONTENT */}
       <div className="w-full max-w-[720px] px-4 flex flex-col items-center -mt-16 z-10 relative">
         {/* LOGO */}
         <div

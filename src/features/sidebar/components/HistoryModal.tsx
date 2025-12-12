@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import { X, Search, MessageSquare, Calendar, ChevronLeft } from "lucide-react";
-import {
-  useGetChatsQuery,
-  useGetMessagesQuery,
-} from "../../chat/services/chatService";
+import { useChatList, useMessages } from "../../chat/hooks/useChat";
 import { useAppSelector } from "../../../hooks/useRedux";
 import { cn } from "../../../lib/utils";
 import SkeletonLoader from "../../../Components/ui/SkeletonLoader";
@@ -17,15 +14,15 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
   const [search, setSearch] = useState("");
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
 
-  const user = useAppSelector((state) => state.auth.user);
+  const user = useAppSelector((state: any) => state.auth.user);
   const isDark = useAppSelector((state: any) => state.theme.isDark);
 
   // 1. Fetch All Chats
-  const { data: chats = [] } = useGetChatsQuery(user?.id || "guest");
+  const { chats = [] } = useChatList(user?.id);
 
   // 2. Fetch Messages for Preview
-  const { data: previewMessages = [], isFetching: isPreviewLoading } =
-    useGetMessagesQuery(selectedChatId || "", { skip: !selectedChatId });
+  const { messages: previewMessages = [], loading: isPreviewLoading } =
+    useMessages(user?.id, selectedChatId || undefined);
 
   if (!isOpen) return null;
 
@@ -38,13 +35,11 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
   };
 
   return (
-    // FIX 1: Add onClick={onClose} to the backdrop
     <div
       onClick={onClose}
       className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4 animate-in fade-in duration-200"
     >
       <div
-        // FIX 1 (Cont): Add stopPropagation to prevent closing when clicking inside the modal
         onClick={(e) => e.stopPropagation()}
         className={cn(
           "w-full h-full md:h-[85vh] md:max-w-5xl md:rounded-2xl flex overflow-hidden shadow-2xl relative transition-colors",
@@ -141,14 +136,16 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
                       {chat.title || "New Conversation"}
                     </div>
                     <div className="text-[10px] opacity-40 truncate">
-                      {new Date(
-                        chat.date || new Date().toISOString()
-                      ).toLocaleDateString(undefined, {
-                        month: "short",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {chat.updatedAt
+                        ? new Date(
+                            chat.updatedAt.seconds * 1000
+                          ).toLocaleDateString(undefined, {
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                        : "N/A"}
                     </div>
                   </div>
                   <div className="md:hidden text-gray-500">
@@ -205,10 +202,16 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
                       <Calendar size={12} />
                       <span>
                         Started{" "}
-                        {new Date(
-                          filteredChats.find((c) => c.id === selectedChatId)
-                            ?.date || Date.now()
-                        ).toLocaleDateString()}
+                        {(() => {
+                          const c = filteredChats.find(
+                            (c) => c.id === selectedChatId
+                          );
+                          return c?.updatedAt
+                            ? new Date(
+                                c.updatedAt.seconds * 1000
+                              ).toLocaleDateString()
+                            : "N/A";
+                        })()}
                       </span>
                     </p>
                   </div>

@@ -1,8 +1,6 @@
 import React from "react";
-import {
-  useGetChatsQuery,
-  useDeleteChatMutation,
-} from "../../chat/services/chatService";
+import { useChatList } from "../../chat/hooks/useChat";
+import { ChatService } from "../../chat/services/chatService";
 import { useAppSelector } from "../../../hooks/useRedux";
 import { Trash2, Loader2 } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
@@ -10,24 +8,24 @@ import { cn } from "../../../lib/utils";
 
 const ChatList: React.FC = () => {
   const { id: activeChatId } = useParams();
-  const isDark = useAppSelector((state:any) => state.theme.isDark);
-  const user = useAppSelector((state) => state.auth.user);
-  const currentUserId = user?.id || "guest";
+  const isDark = useAppSelector((state: any) => state.theme.isDark);
+  const user = useAppSelector((state: any) => state.auth.user);
 
-  const { data: chats = [], isLoading } = useGetChatsQuery(currentUserId);
-  const [deleteChat] = useDeleteChatMutation();
+  // Use the hook instead of RTK Query
+  const { chats = [], loading } = useChatList(user?.id);
 
   const handleDelete = async (e: React.MouseEvent, chatId: string) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!user?.id) return;
     try {
-      await deleteChat(chatId).unwrap();
+      await ChatService.deleteChat(user.id, chatId);
     } catch (error) {
       console.error("Failed to delete chat:", error);
     }
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-20 opacity-50">
         <Loader2 className="animate-spin mb-2" size={16} />
@@ -63,7 +61,7 @@ const ChatList: React.FC = () => {
           <span className="truncate flex-1">{chat.title || "New Chat"}</span>
 
           <button
-          title="More Options"
+            title="More Options"
             onClick={(e) => handleDelete(e, chat.id)}
             className={cn(
               "opacity-0 group-hover:opacity-100 p-1.5 rounded-full transition-all",

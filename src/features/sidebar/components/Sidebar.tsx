@@ -1,4 +1,4 @@
-import React, { useState , useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Search,
@@ -9,13 +9,12 @@ import {
   History,
   ChevronsLeft,
   ChevronsRight,
-
   ChevronDown,
   ChevronRight,
 } from "lucide-react";
-import { useAppSelector } from "../../../hooks/useRedux"; // Adjust path if needed
-import { useGetChatsQuery } from "../../chat/services/chatService";// Adjust path if needed
-import { cn } from "../../../lib/utils";// Adjust path if needed
+import { useAppSelector } from "../../../hooks/useRedux";
+import { useChatList } from "../../chat/hooks/useChat";
+import { cn } from "../../../lib/utils";
 import HistoryModal from "./HistoryModal";
 
 // --- NAVIGATION ITEMS CONFIG ---
@@ -35,30 +34,32 @@ const Sidebar: React.FC = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const isDark = useAppSelector((state:any) => state.theme.isDark);
-  const user = useAppSelector((state) => state.auth.user);
+  const isDark = useAppSelector((state: any) => state.theme.isDark);
+  const user = useAppSelector((state: any) => state.auth.user);
   const SearchinputRef = useRef<HTMLInputElement | null>(null);
-   useEffect(() => {
-     const handleKeyDown = (e: KeyboardEvent) => {
-  const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
-  const modKey = isMac ? e.metaKey : e.ctrlKey;
 
-  if (modKey && e.altKey && e.key.toLowerCase() === "i") {
-    e.preventDefault();
-    SearchinputRef.current?.focus();
-  } else if (modKey && e.key.toLowerCase() === "k") {
-    e.preventDefault();
-    SearchinputRef.current?.focus();
-  }
-};
+  // Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
+      const modKey = isMac ? e.metaKey : e.ctrlKey;
 
-     document.addEventListener("keydown", handleKeyDown);
-     return () => document.removeEventListener("keydown", handleKeyDown);
-   }, []);
+      if (
+        modKey &&
+        (e.key.toLowerCase() === "k" ||
+          (e.altKey && e.key.toLowerCase() === "i"))
+      ) {
+        e.preventDefault();
+        SearchinputRef.current?.focus();
+      }
+    };
 
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
-  // Data
-  const { data: chats = [] } = useGetChatsQuery(user?.id || "guest");
+  // Data Fetching
+  const { chats = [] } = useChatList(user?.id);
 
   // Filter Logic
   const filteredChats = chats
@@ -82,11 +83,9 @@ const Sidebar: React.FC = () => {
         className={cn(
           // CORE LAYOUT & ANIMATION
           "flex flex-col h-full border-r transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] relative z-40 select-none",
-
           // WIDTH LOGIC
           isExpanded ? "w-60" : "w-[60px]",
-
-          // BACKGROUND COLORS (Crucial for fixing glitches)
+          // BACKGROUND COLORS
           isDark
             ? "bg-[#000000] border-[#1F1F1F] text-[#E7E9EA]"
             : "bg-white border-gray-200 text-gray-900"
@@ -112,16 +111,16 @@ const Sidebar: React.FC = () => {
         <div className="px-3 mb-2">
           {isExpanded ? (
             <div
-            className={cn(
-              "flex items-center gap-2.5 px-3 py-1.5 rounded-full border transition-all group",
-              isDark
+              className={cn(
+                "flex items-center gap-2.5 px-3 py-1.5 rounded-full border transition-all group",
+                isDark
                   ? "bg-[#101010] border-[#1F1F1F] focus-within:border-gray-700 focus-within:bg-black"
                   : "bg-gray-50 border-gray-200 focus-within:bg-white focus-within:border-gray-300"
-                )}
-                >
+              )}
+            >
               <Search size={14} className="text-gray-500" />
               <input
-              ref={SearchinputRef}
+                ref={SearchinputRef}
                 type="text"
                 placeholder="Search"
                 className={cn(

@@ -11,11 +11,9 @@ import {
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../hooks/useRedux";
-import {
-  toggleMobileMenu,
-  createNewChat,
-  deleteChat,
-} from "../../chat/chatSlice";
+import { toggleMobileMenu } from "../../chat/chatSlice";
+import { ChatService } from "../../chat/services/chatService";
+import { useChatList } from "../../chat/hooks/useChat";
 import { cn } from "../../../lib/utils";
 
 const MobileSidebar: React.FC = () => {
@@ -23,9 +21,12 @@ const MobileSidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isOpen = useAppSelector((state) => state.chat.isMobileMenuOpen);
+  const isOpen = useAppSelector((state: any) => state.chat.isMobileMenuOpen);
   const isDark = useAppSelector((state: any) => state.theme.isDark);
-  const sessions = useAppSelector((state) => state.chat.sessions);
+  const user = useAppSelector((state: any) => state.auth.user);
+
+  // Fetch chats using hook
+  const { chats: sessions = [] } = useChatList(user?.id);
 
   // --- ACTIONS ---
   const handleNavigation = (path: string) => {
@@ -33,11 +34,29 @@ const MobileSidebar: React.FC = () => {
     dispatch(toggleMobileMenu(false));
   };
 
-  const handleNewChat = () => {
-    const newId = Date.now().toString();
-    dispatch(createNewChat({ id: newId, title: "New Conversation" }));
-    dispatch(toggleMobileMenu(false));
-    navigate(`/chat/${newId}`);
+  const handleNewChat = async () => {
+    if (!user?.id) return;
+    try {
+      const newId = await ChatService.createChat(
+        user.id,
+        "gpt-3.5-turbo",
+        "New Conversation"
+      );
+      dispatch(toggleMobileMenu(false));
+      navigate(`/chat/${newId}`);
+    } catch (error) {
+      console.error("Failed to create chat:", error);
+    }
+  };
+
+  const handleDeleteChat = async (e: React.MouseEvent, chatId: string) => {
+    e.stopPropagation();
+    if (!user?.id) return;
+    try {
+      await ChatService.deleteChat(user.id, chatId);
+    } catch (error) {
+      console.error("Failed to delete chat:", error);
+    }
   };
 
   return (
@@ -151,14 +170,11 @@ const MobileSidebar: React.FC = () => {
                 >
                   <div className="flex items-center gap-3 overflow-hidden">
                     <MessageSquare size={16} className="shrink-0 opacity-60" />
-                    <span className="truncate">{chat.title}</span>
+                    <span className="truncate">{chat.title || "New Chat"}</span>
                   </div>
                   <button
                     title="Delete Chat"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      dispatch(deleteChat(chat.id));
-                    }}
+                    onClick={(e) => handleDeleteChat(e, chat.id)}
                     className="p-1 opacity-50 hover:opacity-100 hover:text-red-500 cursor-pointer"
                   >
                     <Trash2 size={14} />
