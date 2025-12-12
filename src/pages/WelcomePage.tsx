@@ -44,7 +44,8 @@ const ReasoningMenu = ({
       <div className="fixed inset-0 z-40" onClick={onClose} />
       <div
         className={cn(
-          "absolute bottom-16 right-0 w-[260px] rounded-2xl border shadow-2xl z-50 overflow-hidden animate-in zoom-in-95 duration-100 p-2",
+          // Changed width to responsive [w-90vw] for mobile safety, right-0 alignment
+          "absolute bottom-16 right-0 w-[90vw] sm:w-[260px] rounded-2xl border shadow-2xl z-50 overflow-hidden animate-in zoom-in-95 duration-100 p-2",
           isDark
             ? "bg-[#181818] border-[#2A2B32] text-gray-200"
             : "bg-white border-gray-200 text-gray-900"
@@ -80,7 +81,6 @@ const ReasoningMenu = ({
 
 // --- MODEL MENU ---
 const ModelMenu = ({ isOpen, onClose, selected, onSelect, isDark }: any) => {
-  // Using static models as ChatService doesn't provide a fetch method
   const models = [
     { id: "gpt-3.5-turbo", label: "GPT-3.5" },
     { id: "gpt-4", label: "GPT-4" },
@@ -93,7 +93,8 @@ const ModelMenu = ({ isOpen, onClose, selected, onSelect, isDark }: any) => {
       <div className="fixed inset-0 z-40" onClick={onClose} />
       <div
         className={cn(
-          "absolute bottom-16 right-16 w-[220px] rounded-2xl border shadow-2xl z-50 overflow-hidden animate-in zoom-in-95 duration-100 p-1.5",
+          // Adjusted positioning: right-2 on mobile (to stay on screen), right-16 on desktop
+          "absolute bottom-16 right-2 sm:right-16 w-[220px] rounded-2xl border shadow-2xl z-50 overflow-hidden animate-in zoom-in-95 duration-100 p-1.5",
           isDark
             ? "bg-[#181818] border-[#2A2B32] text-gray-200"
             : "bg-white border-gray-200 text-gray-900"
@@ -186,21 +187,14 @@ const Welcome: React.FC = () => {
     if (selectedFile) content = `[File: ${selectedFile.name}] ${text}`;
 
     try {
-      // 1. Create the chat document first (Fast)
       const newChatId = await ChatService.createChat(
         user.id,
         modelMode,
         content
       );
 
-      // 2. Navigate IMMEDIATELY to the new chat page
-      // We do this before sending the message so the user doesn't wait on the Welcome page
-      // while the AI is generating a response (which ChatService.sendMessage waits for).
       navigate(`/chat/${newChatId}`);
 
-      // 3. Send the first message in the background
-      // Since the component might unmount after navigation, we trigger this promise
-      // but don't await it to block the UI. The Service layer handles the DB writes.
       ChatService.sendMessage(user.id, newChatId, content, modelMode).catch(
         (err) => console.error("Background message send failed:", err)
       );
@@ -341,7 +335,8 @@ const Welcome: React.FC = () => {
                 onKeyDown={handleKeyDown}
                 placeholder="Ask anything you want..."
                 className={cn(
-                  "flex-1 bg-transparent outline-none text-lg px-3 placeholder:text-gray-500/80 font-medium z-20",
+                  // Added min-w-0 to allow shrinking in flex container
+                  "flex-1 min-w-0 bg-transparent outline-none text-lg px-3 placeholder:text-gray-500/80 font-medium z-20",
                   isDark ? "text-gray-100" : "text-gray-900"
                 )}
               />
