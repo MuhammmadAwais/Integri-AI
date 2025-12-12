@@ -276,7 +276,7 @@ const Sidebar: React.FC = () => {
             <button
               onClick={() => setIsExpanded(!isExpanded)}
               className={cn(
-                "w-8 h-8 flex items-center justify-center rounded-full transition-colors",
+                "w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:cursor-pointer",
                 isDark
                   ? "hover:bg-[#1A1A1A] text-[#555]"
                   : "hover:bg-gray-100 text-gray-400"
@@ -307,7 +307,7 @@ const NavItem = ({
   <button
     onClick={onClick}
     className={cn(
-      "flex items-center gap-3 py-2 rounded-lg transition-all duration-150 group w-full text-left",
+      "flex items-center gap-3 py-2 rounded-lg transition-all duration-150 group w-full text-left hover:cursor-pointer",
       isExpanded ? "px-3" : "justify-center px-0",
       isActive
         ? isDark
@@ -318,9 +318,9 @@ const NavItem = ({
         : "text-gray-600 hover:bg-gray-50"
     )}
   >
-    <Icon size={18} strokeWidth={2} className="shrink-0" />
+    <Icon size={18} strokeWidth={2} className="shrink-0 hover:cursor-pointer" />
     {isExpanded && (
-      <span className="text-[13.5px] font-medium leading-none pt-0.5">
+      <span className="text-[13.5px] font-medium leading-none pt-0.5 ">
         {label}
       </span>
     )}

@@ -240,7 +240,7 @@ const HistoryPage: React.FC = () => {
                           <button
                             onClick={() => navigate(`/chat/${session.id}`)}
                             className={cn(
-                              "p-2 rounded-lg transition-colors",
+                              "p-2 rounded-lg transition-colors hover:cursor-pointer",
                               isDark
                                 ? "hover:bg-indigo-500/20 text-indigo-400"
                                 : "hover:bg-indigo-50 text-indigo-600"
@@ -252,7 +252,7 @@ const HistoryPage: React.FC = () => {
                           <button
                             onClick={(e) => handleDelete(e, session.id)}
                             className={cn(
-                              "p-2 rounded-lg transition-colors",
+                              "p-2 rounded-lg transition-colors hover:cursor-pointer",
                               isDark
                                 ? "hover:bg-red-500/20 text-red-400"
                                 : "hover:bg-red-50 text-red-600"

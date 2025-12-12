@@ -31,24 +31,24 @@ const ContextSidebar: React.FC = () => {
       <div className="flex items-center justify-between px-4 py-3 min-h-[53px]">
         <h2
           className={cn(
-            "text-xl font-extrabold ml-2",
+            "text-xl font-extrabold ml-2 hover:cursor-pointer",
             isDark ? "text-[#E7E9EA]" : "text-black"
           )}
         >
-          Grok
+          Integri-AI
         </h2>
 
         <button
           onClick={handleNewChat}
           className={cn(
-            "p-2 rounded-full transition-colors",
+            "p-2 rounded-full transition-color hover:cursor-pointers",
             isDark
               ? "text-[#E7E9EA] hover:bg-[#181818]"
               : "text-black hover:bg-gray-100"
           )}
           title="New Chat"
         >
-          <SquarePen size={20} />
+          <SquarePen className="hover:cursor-pointer" size={20} />
         </button>
       </div>
 

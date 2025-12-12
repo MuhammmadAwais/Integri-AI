@@ -250,7 +250,11 @@ const MessageBubble: React.FC<MessageProps> = ({
                                     : "text-gray-600 hover:text-black"
                                 )}
                               >
-                                <Copy size={12} /> Copy
+                                <Copy
+                                  className="hover:cursor-pointer"
+                                  size={12}
+                                />{" "}
+                                Copy
                               </button>
                             </div>
                             <pre
@@ -377,7 +381,7 @@ const MessageBubble: React.FC<MessageProps> = ({
                     {copied ? (
                       <Check size={16} className="copy-btn-icon" />
                     ) : (
-                      <Copy size={16} />
+                      <Copy className="hover:cursor-pointer" size={16} />
                     )}
                   </button>
 

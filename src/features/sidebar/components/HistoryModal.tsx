@@ -1,5 +1,17 @@
 import React, { useState } from "react";
-import { X, Search, MessageSquare, Calendar, ChevronLeft } from "lucide-react";
+import {
+  X,
+  Search,
+  MessageSquare,
+  Calendar,
+  ChevronLeft,
+  User,
+  Bot,
+  Copy,
+  Check,
+} from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { useChatList, useMessages } from "../../chat/hooks/useChat";
 import { useAppSelector } from "../../../hooks/useRedux";
 import { cn } from "../../../lib/utils";
@@ -13,6 +25,7 @@ interface HistoryModalProps {
 const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
   const [search, setSearch] = useState("");
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const user = useAppSelector((state: any) => state.auth.user);
   const isDark = useAppSelector((state: any) => state.theme.isDark);
@@ -34,10 +47,16 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
     setSelectedChatId(null);
   };
 
+  const handleCopy = (content: string, id: string) => {
+    navigator.clipboard.writeText(content);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4 animate-in fade-in duration-200"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4 animate-in fade-in duration-200"
     >
       <div
         onClick={(e) => e.stopPropagation()}
@@ -50,7 +69,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
       >
         {/* Close Button */}
         <button
-          title="button"
+          title="Close"
           onClick={onClose}
           className="absolute top-3 right-3 z-50 p-2 rounded-full hover:bg-white/10 transition-colors cursor-pointer"
         >
@@ -114,7 +133,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
                   key={chat.id}
                   onClick={() => setSelectedChatId(chat.id)}
                   className={cn(
-                    "w-full text-left px-3 py-3 rounded-lg text-sm transition-colors mb-1 flex items-center gap-3 group relative",
+                    "w-full text-left px-3 py-3 rounded-lg text-sm transition-colors mb-1 flex items-center gap-3 group relative hover:cursor-pointer",
                     selectedChatId === chat.id
                       ? isDark
                         ? "bg-[#1F1F1F] text-white"
@@ -170,8 +189,10 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
               {/* Preview Header */}
               <div
                 className={cn(
-                  "px-4 md:px-6 py-4 border-b flex items-center justify-between shrink-0 pr-12 ",
-                  isDark ? "border-[#222]" : "border-gray-200"
+                  "px-4 md:px-6 py-4 border-b flex items-center justify-between shrink-0 pr-12 backdrop-blur-md z-10 sticky top-0",
+                  isDark
+                    ? "border-[#222] bg-[#090909]/80"
+                    : "border-gray-200 bg-white/80"
                 )}
               >
                 <div className="flex items-center gap-3 overflow-hidden">
@@ -219,7 +240,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
               </div>
 
               {/* Messages Content */}
-              <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+              <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 scroll-smooth">
                 {isPreviewLoading ? (
                   <div className="space-y-4 max-w-2xl mx-auto pt-10">
                     <SkeletonLoader className="h-16 w-3/4 rounded-xl opacity-20" />
@@ -231,39 +252,182 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
                     No messages yet.
                   </div>
                 ) : (
-                  <div className="flex flex-col gap-6 max-w-3xl mx-auto">
-                    {previewMessages.slice(0, 10).map((msg: any) => (
-                      <div key={msg.id} className="flex gap-4">
+                  <div className="flex flex-col gap-6 max-w-3xl mx-auto pb-10">
+                    {previewMessages.map((msg: any) => {
+                      const isUser = msg.role === "user";
+                      return (
                         <div
+                          key={msg.id}
                           className={cn(
-                            "w-8 h-8 rounded-full flex items-center justify-center shrink-0 font-bold text-xs mt-1",
-                            msg.role === "user"
-                              ? "bg-gray-600 text-white"
-                              : "bg-white text-black border border-gray-300"
+                            "flex w-full relative group",
+                            isUser ? "justify-end" : "justify-start"
                           )}
                         >
-                          {msg.role === "user" ? "U" : "G"}
-                        </div>
-                        <div className="flex-1 space-y-1">
-                          <div className="font-bold text-xs opacity-50 uppercase tracking-wide">
-                            {msg.role}
-                          </div>
                           <div
                             className={cn(
-                              "text-[15px] leading-relaxed whitespace-pre-wrap",
-                              isDark ? "text-gray-300" : "text-gray-800"
+                              "flex max-w-[95%] md:max-w-[85%] gap-4",
+                              isUser ? "flex-row-reverse" : "flex-row"
                             )}
                           >
-                            {msg.content}
+                            {/* Avatar */}
+                            <div className="shrink-0 mt-1">
+                              <div
+                                className={cn(
+                                  "w-8 h-8 rounded-full flex items-center justify-center shadow-sm border transition-transform select-none",
+                                  isUser
+                                    ? isDark
+                                      ? "bg-[#2F3336] border-[#2F3336] text-white"
+                                      : "bg-white border-gray-200 text-gray-700"
+                                    : isDark
+                                    ? "bg-white text-black border-transparent"
+                                    : "bg-black text-white border-transparent"
+                                )}
+                              >
+                                {isUser ? (
+                                  <User size={16} />
+                                ) : (
+                                  <Bot size={18} />
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Content */}
+                            <div
+                              className={cn(
+                                "flex flex-col min-w-0 w-full",
+                                isUser ? "items-end" : "items-start"
+                              )}
+                            >
+                              <div
+                                className={cn(
+                                  "text-[14px] md:text-[15px] leading-7 w-full overflow-hidden",
+                                  isUser
+                                    ? cn(
+                                        "px-4 py-2.5 rounded-2xl rounded-tr-sm shadow-sm",
+                                        isDark
+                                          ? "bg-[#2F3336] text-[#E7E9EA]"
+                                          : "bg-[#F3F4F6] text-[#111827]"
+                                      )
+                                    : cn(
+                                        "px-1 py-0 bg-transparent",
+                                        isDark
+                                          ? "text-[#E7E9EA]"
+                                          : "text-[#0F1419]"
+                                      )
+                                )}
+                              >
+                                {isUser ? (
+                                  <p className="whitespace-pre-wrap wrap-break-words font-medium">
+                                    {msg.content}
+                                  </p>
+                                ) : (
+                                  <ReactMarkdown
+                                    remarkPlugins={[remarkGfm]}
+                                    components={{
+                                      // Minimalist Markdown Components for History
+                                      h1: ({ children }) => (
+                                        <h1 className="text-xl font-bold mb-2 mt-4 pb-1 border-b opacity-80">
+                                          {children}
+                                        </h1>
+                                      ),
+                                      h2: ({ children }) => (
+                                        <h2 className="text-lg font-bold mb-2 mt-4 opacity-90">
+                                          {children}
+                                        </h2>
+                                      ),
+                                      p: ({ children }) => (
+                                        <p className="mb-3 last:mb-0 leading-relaxed">
+                                          {children}
+                                        </p>
+                                      ),
+                                      ul: ({ children }) => (
+                                        <ul className="list-disc pl-5 mb-3 space-y-1">
+                                          {children}
+                                        </ul>
+                                      ),
+                                      ol: ({ children }) => (
+                                        <ol className="list-decimal pl-5 mb-3 space-y-1">
+                                          {children}
+                                        </ol>
+                                      ),
+                                      code: ({
+                                        node,
+                                        inline,
+                                        className,
+                                        children,
+                                        ...props
+                                      }: any) => {
+                                        return inline ? (
+                                          <code
+                                            className={cn(
+                                              "px-1 py-0.5 rounded text-xs font-mono border mx-0.5",
+                                              isDark
+                                                ? "bg-[#16181C] border-[#333]"
+                                                : "bg-white border-gray-200"
+                                            )}
+                                            {...props}
+                                          >
+                                            {children}
+                                          </code>
+                                        ) : (
+                                          <div
+                                            className={cn(
+                                              "relative my-3 rounded-lg overflow-hidden border shadow-sm",
+                                              isDark
+                                                ? "border-[#333] bg-[#16181C]"
+                                                : "border-gray-200 bg-gray-50"
+                                            )}
+                                          >
+                                            <div className="flex items-center justify-between px-3 py-1.5 border-b border-inherit">
+                                              <span className="text-[10px] uppercase font-mono opacity-50">
+                                                Code
+                                              </span>
+                                              <button
+                                                onClick={() =>
+                                                  handleCopy(
+                                                    String(children),
+                                                    msg.id
+                                                  )
+                                                }
+                                                className="opacity-50 hover:opacity-100 transition-opacity"
+                                              >
+                                                {copiedId === msg.id ? (
+                                                  <Check
+                                                    size={12}
+                                                    className="text-green-500"
+                                                  />
+                                                ) : (
+                                                  <Copy size={12} />
+                                                )}
+                                              </button>
+                                            </div>
+                                            <pre className="p-3 overflow-x-auto text-xs font-mono">
+                                              <code>{children}</code>
+                                            </pre>
+                                          </div>
+                                        );
+                                      },
+                                      a: ({ href, children }) => (
+                                        <a
+                                          href={href}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-blue-500 hover:underline"
+                                        >
+                                          {children}
+                                        </a>
+                                      ),
+                                    }}
+                                  >
+                                    {msg.content}
+                                  </ReactMarkdown>
+                                )}
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                    {previewMessages.length > 10 && (
-                      <div className="text-center text-xs opacity-40 pt-4 pb-8">
-                        ... and {previewMessages.length - 10} more messages
-                      </div>
-                    )}
+                      );
+                    })}
                   </div>
                 )}
               </div>

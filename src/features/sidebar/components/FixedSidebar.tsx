@@ -49,7 +49,7 @@ const FixedSidebar: React.FC<FixedSidebarProps> = ({
         <div className={cn("py-3 mb-2", !isExpanded && "flex justify-center")}>
           <div
             className={cn(
-              "w-8 h-8 flex items-center justify-center text-2xl font-bold rounded-full transition-colors",
+              "w-8 h-8 flex items-center justify-center text-2xl font-bold rounded-full transition-colors hover:cursor-pointer",
               isDark
                 ? "text-white hover:bg-[#181818]"
                 : "text-black hover:bg-gray-200"
@@ -60,15 +60,15 @@ const FixedSidebar: React.FC<FixedSidebarProps> = ({
         </div>
 
         {/* Navigation Links */}
-        <nav className="flex flex-col gap-1">
+        <nav className="flex flex-col gap-1 hover:cursor-pointer">
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => onTabChange(item.id)}
               className={cn(
-                "flex items-center gap-5 p-3 rounded-full transition-colors duration-200 outline-none",
+                "flex items-center gap-5 p-3 rounded-full transition-colors duration-200 outline-none hover:cursor-pointer",
                 isExpanded ? "w-full" : "w-[50px] h-[50px] justify-center",
-                // Active State Styling (Bold text, no background change typically in Grok/X, just hover)
+                // Active State Styling (Bold text, no background change just hover)
                 activeTab === item.id ? "font-bold" : "font-normal",
                 isDark
                   ? "text-[#E7E9EA] hover:bg-[#181818]"
@@ -76,6 +76,7 @@ const FixedSidebar: React.FC<FixedSidebarProps> = ({
               )}
             >
               <item.icon
+                className="hover:cursor-pointer"
                 size={26}
                 strokeWidth={activeTab === item.id ? 3 : 2} // Thicker icon when active
               />
@@ -90,7 +91,7 @@ const FixedSidebar: React.FC<FixedSidebarProps> = ({
       </div>
 
       {/* --- BOTTOM SECTION (Profile) --- */}
-      <div className="w-full pb-2">
+      <div className="w-full pb-2 hover:cursor-pointer">
         <UserProfile isExpanded={isExpanded} onToggle={onToggle} />
       </div>
     </div>

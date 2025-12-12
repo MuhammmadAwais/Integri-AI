@@ -15,7 +15,7 @@ import {
   X as XIcon,
   FileText,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ChatService } from "../features/chat/services/chatService";
 import gsap from "gsap";
 import ParticleBackground from "../Components/ui/ParticleBackground";
@@ -44,8 +44,7 @@ const ReasoningMenu = ({
       <div className="fixed inset-0 z-40" onClick={onClose} />
       <div
         className={cn(
-          // Changed width to responsive [w-90vw] for mobile safety, right-0 alignment
-          "absolute bottom-16 right-0 w-[90vw] sm:w-[260px] rounded-2xl border shadow-2xl z-50 overflow-hidden animate-in zoom-in-95 duration-100 p-2",
+          "absolute bottom-16 right-0 w-[90vw] sm:w-[260px] rounded-2xl border shadow-2xl z-50 overflow-hidden animate-in zoom-in-95 duration-100 p-2 ",
           isDark
             ? "bg-[#181818] border-[#2A2B32] text-gray-200"
             : "bg-white border-gray-200 text-gray-900"
@@ -59,7 +58,7 @@ const ReasoningMenu = ({
               onClose();
             }}
             className={cn(
-              "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors",
+              "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors hover:cursor-pointer",
               isDark ? "hover:bg-[#2A2B32]" : "hover:bg-gray-100",
               selected === opt.id && (isDark ? "bg-[#2A2B32]" : "bg-gray-100")
             )}
@@ -111,12 +110,12 @@ const ModelMenu = ({ isOpen, onClose, selected, onSelect, isDark }: any) => {
               onClose();
             }}
             className={cn(
-              "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left transition-colors text-sm font-medium",
+              "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left transition-colors text-sm font-medium hover:cursor-pointer",
               isDark ? "hover:bg-[#2A2B32]" : "hover:bg-gray-100",
               selected === m.id && (isDark ? "bg-[#2A2B32]" : "bg-gray-100")
             )}
           >
-            <span>{m.label}</span>
+            <span className="hover:cursor-pointer">{m.label}</span>
           </button>
         ))}
       </div>
@@ -248,16 +247,18 @@ const Welcome: React.FC = () => {
           <img
             src={isDark ? "/dark-theme-logo.png" : "/light-theme-logo.png"}
             alt="logo"
-            className="w-8 h-8"
+            className="w-8 h-8 hover:cursor-pointer"
           />
-          <h1
-            className={cn(
-              "text-4xl font-bold tracking-tight",
-              isDark ? "text-white" : "text-black"
-            )}
-          >
-            Integri AI
-          </h1>
+          <Link to="/">
+            <h1
+              className={cn(
+                "text-4xl font-bold tracking-tight hover:cursor-pointer",
+                isDark ? "text-white" : "text-black"
+              )}
+            >
+              Integri AI
+            </h1>
+          </Link>
         </div>
 
         {/* INPUT CONTAINER */}
@@ -297,7 +298,7 @@ const Welcome: React.FC = () => {
                       : "bg-white border-gray-200 text-gray-800"
                   )}
                 >
-                  <FileText size={16} />
+                  <FileText className="hover:cursor-pointer" size={16} />
                   <span className="max-w-[150px] truncate">
                     {selectedFile.name}
                   </span>
@@ -317,7 +318,7 @@ const Welcome: React.FC = () => {
                 title="Attach File"
                 onClick={() => fileInputRef.current?.click()}
                 className={cn(
-                  "p-2.5 rounded-full transition-colors shrink-0 ml-1",
+                  "p-2.5 rounded-full transition-colors shrink-0 ml-1 hover:cursor-pointer",
                   isDark
                     ? "text-gray-400 hover:text-white hover:bg-white/10"
                     : "text-gray-500 hover:text-black hover:bg-black/5",
@@ -346,18 +347,18 @@ const Welcome: React.FC = () => {
                   title="Select Model"
                   onClick={() => setShowModelMenu(!showModelMenu)}
                   className={cn(
-                    "flex items-center justify-center w-8 h-8 rounded-full transition-all",
+                    "flex items-center justify-center w-8 h-8 rounded-full transition-all hover:cursor-pointer",
                     isDark ? "hover:bg-white/10" : "hover:bg-black/5",
                     showModelMenu && "bg-white/10"
                   )}
                 >
-                  <GrokIconToggle isDark={isDark} />
+                  <ModalToggle isDark={isDark} />
                 </button>
 
                 <button
                   onClick={() => setShowReasoningMenu(!showReasoningMenu)}
                   className={cn(
-                    "flex items-center gap-1 px-2 py-1.5 rounded-lg transition-all text-sm font-semibold",
+                    "flex items-center gap-1 px-2 py-1.5 rounded-lg transition-all text-sm font-semibold hover:cursor-pointer",
                     isDark
                       ? "text-gray-400 hover:text-gray-200 hover:bg-white/10"
                       : "text-gray-500 hover:text-black hover:bg-black/5"
@@ -383,7 +384,7 @@ const Welcome: React.FC = () => {
                     title="Send Message"
                     onClick={() => startChat(inputValue)}
                     className={cn(
-                      "w-8 h-8 rounded-full flex items-center justify-center transition-transform active:scale-95 animate-in zoom-in duration-200",
+                      "w-8 h-8 rounded-full flex items-center justify-center transition-transform active:scale-95 animate-in zoom-in duration-200 hover:cursor-pointer",
                       isDark
                         ? "bg-white text-black hover:bg-gray-200"
                         : "bg-black text-white hover:bg-gray-800"
@@ -395,7 +396,7 @@ const Welcome: React.FC = () => {
                   <button
                     title="Voice Input"
                     className={cn(
-                      "w-8 h-8 rounded-full flex items-center justify-center transition-colors",
+                      "w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:cursor-pointer",
                       isDark
                         ? "text-gray-400 hover:bg-white/10 hover:text-white"
                         : "text-gray-500 hover:bg-black/5 hover:text-black"
@@ -419,7 +420,7 @@ const Welcome: React.FC = () => {
               key={idx}
               onClick={() => startChat(feat.label)}
               className={cn(
-                "flex items-center gap-2 px-3.5 py-2 rounded-full text-sm font-semibold border transition-all duration-200",
+                "flex items-center gap-2 px-3.5 py-2 rounded-full text-sm font-semibold border transition-all duration-200 hover:cursor-pointer",
                 isDark
                   ? "bg-transparent border-[#2A2B32] text-gray-400 hover:text-white hover:bg-[#181818] hover:border-gray-600"
                   : "bg-white border-gray-200 text-gray-600 hover:text-black hover:bg-gray-50 hover:border-gray-300"
@@ -459,7 +460,7 @@ const RocketIcon = ({ className, size = 16 }: any) => (
     <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"></path>
   </svg>
 );
-const GrokIconToggle = ({ isDark }: any) => (
+const ModalToggle = ({ isDark }: any) => (
   <div
     className={cn(
       "w-5 h-5 rounded flex items-center justify-center font-bold text-xs select-none border transition-colors",

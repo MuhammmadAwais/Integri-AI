@@ -75,7 +75,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
         )}
       >
         <textarea
-        title="Chat Input"
+          title="Chat Input"
           ref={textareaRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -94,7 +94,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
         <div className="flex items-center justify-between pl-2 pr-2 pb-1">
           <div className="flex items-center gap-1">
             <input
-            title="file"
+              title="file"
               type="file"
               ref={fileInputRef}
               className="hidden"
@@ -104,10 +104,10 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
             />
 
             <button
-            title="Attach File"
+              title="Attach File"
               onClick={() => fileInputRef.current?.click()}
               className={cn(
-                "p-2 rounded-full transition-colors",
+                "p-2 rounded-full transition-colors hover:cursor-pointer",
                 isDark
                   ? "text-gray-400 hover:text-[#1d9bf0] hover:bg-[#1d9bf0]/10"
                   : "text-gray-500 hover:bg-black/5"
@@ -116,9 +116,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
               <Paperclip size={20} strokeWidth={1.5} />
             </button>
             <button
-            title="Insert Image"
+              title="Insert Image"
               className={cn(
-                "p-2 rounded-full transition-colors",
+                "p-2 rounded-full transition-colors hover:cursor-pointer",
                 isDark
                   ? "text-gray-400 hover:text-[#1d9bf0] hover:bg-[#1d9bf0]/10"
                   : "text-gray-500 hover:bg-black/5"
@@ -127,9 +127,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
               <ImageIcon size={20} strokeWidth={1.5} />
             </button>
             <button
-            title="Translate"
+              title="Translate"
               className={cn(
-                "p-2 rounded-full transition-colors hidden sm:block",
+                "p-2 rounded-full transition-colors hidden sm:block hover:cursor-pointer",
                 isDark
                   ? "text-gray-400 hover:text-[#1d9bf0] hover:bg-[#1d9bf0]/10"
                   : "text-gray-500 hover:bg-black/5"
@@ -138,9 +138,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
               <Globe size={20} strokeWidth={1.5} />
             </button>
             <button
-            title="Voice Input"
+              title="Voice Input"
               className={cn(
-                "p-2 rounded-full transition-colors hidden sm:block",
+                "p-2 rounded-full transition-colors hidden sm:block hover:cursor-pointer",
                 isDark
                   ? "text-gray-400 hover:text-[#1d9bf0] hover:bg-[#1d9bf0]/10"
                   : "text-gray-500 hover:bg-black/5"
@@ -160,13 +160,13 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
               {input.length} / 2000
             </span>
             <button
-            title="Send Message"
+              title="Send Message"
               onClick={handleSend}
               disabled={!input.trim() && !file}
               className={cn(
-                "p-2 rounded-full transition-all duration-200 flex items-center justify-center",
+                "p-2 rounded-full transition-all duration-200 flex items-center justify-center ",
                 input.trim() || file
-                  ? "bg-[#1d9bf0] text-white hover:bg-[#1a8cd8] shadow-md transform hover:scale-105" // Grok Blue
+                  ? "bg-[#1d9bf0] text-white hover:bg-[#1a8cd8] shadow-md transform hover:scale-105 hover:cursor-pointer"
                   : isDark
                   ? "bg-[#2f2f2f] text-gray-500 cursor-not-allowed"
                   : "bg-[#e5e5e5] text-gray-400 cursor-not-allowed"
