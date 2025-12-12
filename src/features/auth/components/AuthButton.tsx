@@ -1,8 +1,6 @@
-// src/features/auth/components/AuthButton.tsx
 import React from "react";
 import { Loader2 } from "lucide-react";
 import { cn } from "../../../lib/utils";
-import { create } from "domain";
 
 interface AuthButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
