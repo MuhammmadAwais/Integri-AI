@@ -12,8 +12,7 @@ class WebSocketService {
   private messageHandler: ((data: any) => void) | null = null;
   // Use env var or default
   private readonly socketUrl =
-    import.meta.env.VITE_APP_WEBSOCKET_BASE_URL ||
-    "wss://integri.cloud/api/v1/";
+    import.meta.env.VITE_APP_WEBSOCKET_BASE_URL;
 
   // FIX: Queue for messages sent before connection is ready
   private messageQueue: WebSocketMessage[] = [];

@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Custom Backend URL
 const API_URL =
-  import.meta.env.VITE_APP_BACKEND_API_BASE_URL || "https://integri.cloud";
+  import.meta.env.VITE_APP_BACKEND_API_BASE_URL ;
 
 console.log("🌐 [API] Base URL configured as:", API_URL); // DEBUG LOG
 
