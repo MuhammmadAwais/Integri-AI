@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-// Make sure this path matches where you saved WebSocketService.ts
 import { socketService } from "../../../services/WebSocketsService";
 import { SessionService } from "../../../api/backendApi";
 import { useAppSelector } from "../../../hooks/useRedux";
@@ -8,9 +7,7 @@ export interface Message {
   id?: string;
   role: "user" | "assistant";
   content: string;
-  createdAt?: string;
 }
-
 // Hook to fetch the list of chats (Sidebar)
 export const useChatList = (userId: string | undefined) => {
   const [chats, setChats] = useState<any[]>([]);
@@ -41,32 +38,32 @@ export const useChatList = (userId: string | undefined) => {
 };
 
 // Hook to handle the Active Chat (Messages + WebSocket)
+
+
+
 export const useChat = (sessionId: string | undefined) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
 
-  const token = useAppSelector((state: any) => state.auth.token);
+  const token = useAppSelector((state: any) => state.auth.accessToken);
   const currentModel = useAppSelector((state: any) => state.chat.currentModel);
 
-  // 1. Initialize: Load History & Connect Socket
+  // 1. Initialize
   useEffect(() => {
     if (!sessionId || !token) return;
 
     const initChat = async () => {
       setIsLoading(true);
       try {
-        // A. Load History via REST API
         const history = await SessionService.getSessionMessages(
           token,
           sessionId
         );
         setMessages(history);
-
-        // B. Connect WebSocket
         socketService.connect(token, sessionId);
       } catch (error) {
-        console.error("Error initializing chat:", error);
+        console.error("❌ Error initializing chat:", error);
       } finally {
         setIsLoading(false);
       }
@@ -74,19 +71,12 @@ export const useChat = (sessionId: string | undefined) => {
 
     initChat();
 
-    // Cleanup: Disconnect when leaving the page
-    return () => {
-      socketService.disconnect();
-    };
+    return () => socketService.disconnect();
   }, [sessionId, token]);
 
-  // 2. Listen for Incoming Stream
-  // 2. Listen for Incoming Stream (ROBUST FIX)
+  // 2. Listen for Messages (ROBUST FIX)
   useEffect(() => {
     socketService.onMessage((data) => {
-      // 🕵️‍♂️ DEBUG: Uncomment this to see exactly what the backend sends
-      // console.log("Incoming WS Data:", data);
-
       if (data.type === "stream") {
         setIsStreaming(true);
 
@@ -95,25 +85,20 @@ export const useChat = (sessionId: string | undefined) => {
           return;
         }
 
-        // 🛡️ ROBUST FIX: Check all possible names for the text chunk
-        // If 'content' is empty, it checks 'chunk', then 'text', then 'token'
+        // 🛡️ FIX: Check ALL possible names for the text
         const incomingText =
           data.content || data.chunk || data.text || data.token || "";
 
-        if (!incomingText) return; // Don't update if no text found
+        if (!incomingText) return;
 
         setMessages((prev) => {
           const lastMsg = prev[prev.length - 1];
-
-          // Option A: Append to existing assistant message
           if (lastMsg && lastMsg.role === "assistant") {
             return [
               ...prev.slice(0, -1),
               { ...lastMsg, content: lastMsg.content + incomingText },
             ];
-          }
-          // Option B: Start new assistant message
-          else {
+          } else {
             return [...prev, { role: "assistant", content: incomingText }];
           }
         });
@@ -121,24 +106,14 @@ export const useChat = (sessionId: string | undefined) => {
     });
   }, []);
 
-  // 3. Send Message
   const sendMessage = useCallback(
     (content: string) => {
       if (!content.trim()) return;
-
-      // Optimistic Update (Show user message immediately)
       setMessages((prev) => [...prev, { role: "user", content }]);
-
-      // Send via WebSocket
       socketService.sendMessage(content, currentModel || "gpt-4o");
     },
     [currentModel]
   );
 
-  return {
-    messages,
-    sendMessage,
-    isLoading,
-    isStreaming,
-  };
+  return { messages, sendMessage, isLoading, isStreaming };
 };

@@ -16,7 +16,7 @@ import { useChatList } from "../../chat/hooks/useChat";
 import { useAppSelector } from "../../../hooks/useRedux";
 import { cn } from "../../../lib/utils";
 import SkeletonLoader from "../../../Components/ui/SkeletonLoader";
-import { SessionService } from "../../../api/backendApi"; // NEW LOGIC
+import { SessionService } from "../../../api/backendApi"; 
 
 interface HistoryModalProps {
   isOpen: boolean;
@@ -92,7 +92,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4 animate-in fade-in duration-200"
+      className="fixed inset-0 z-100flex items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4 animate-in fade-in duration-200"
     >
       <div
         onClick={(e) => e.stopPropagation()}
@@ -105,6 +105,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
       >
         {/* Close Button */}
         <button
+        title="button-close"
           onClick={onClose}
           className="absolute top-3 right-3 z-50 p-2 rounded-full hover:bg-white/10 transition-colors cursor-pointer"
         >
@@ -210,6 +211,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
               >
                 <div className="flex items-center gap-3">
                   <button
+                  title="button-back"
                     onClick={() => setSelectedChatId(null)}
                     className="md:hidden"
                   >

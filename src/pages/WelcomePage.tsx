@@ -9,9 +9,7 @@ import {
   Users,
   Mic,
   AudioLines,
-  Zap,
   ChevronDown,
-  Sparkles,
   X as XIcon,
   FileText,
 } from "lucide-react";
@@ -19,125 +17,20 @@ import { Link, useNavigate } from "react-router-dom";
 import { ChatService } from "../features/chat/services/chatService";
 import gsap from "gsap";
 import ParticleBackground from "../Components/ui/ParticleBackground";
+import ReasoningMenu from "../Components/ui/ReasoningMenu";
+import { RocketIcon } from "../Components/ui/ReasoningMenu";
+import ModelMenu from "../Components/ui/ModelMenu";
+import { ModalToggle } from "../Components/ui/ModelMenu";
 
-// --- REASONING MENU ---
-const ReasoningMenu = ({
-  isOpen,
-  onClose,
-  selected,
-  onSelect,
-  isDark,
-}: any) => {
-  if (!isOpen) return null;
-  const options = [
-    {
-      id: "Auto",
-      label: "Auto",
-      desc: "Chooses Fast or Expert",
-      icon: RocketIcon,
-    },
-    { id: "Fast", label: "Fast", desc: "Quick responses", icon: Zap },
-    { id: "Expert", label: "Expert", desc: "Thinks hard", icon: Sparkles },
-  ];
-  return (
-    <>
-      <div className="fixed inset-0 z-40" onClick={onClose} />
-      <div
-        className={cn(
-          "absolute bottom-16 right-0 w-[90vw] sm:w-[260px] rounded-2xl border shadow-2xl z-50 overflow-hidden animate-in zoom-in-95 duration-100 p-2 ",
-          isDark
-            ? "bg-[#181818] border-[#2A2B32] text-gray-200"
-            : "bg-white border-gray-200 text-gray-900"
-        )}
-      >
-        {options.map((opt) => (
-          <button
-            key={opt.id}
-            onClick={() => {
-              onSelect(opt.id);
-              onClose();
-            }}
-            className={cn(
-              "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors hover:cursor-pointer",
-              isDark ? "hover:bg-[#2A2B32]" : "hover:bg-gray-100",
-              selected === opt.id && (isDark ? "bg-[#2A2B32]" : "bg-gray-100")
-            )}
-          >
-            <opt.icon
-              size={18}
-              className={isDark ? "text-gray-400" : "text-gray-600"}
-            />
-            <div className="flex flex-col">
-              <span className="text-sm font-bold">{opt.label}</span>
-              <span className="text-xs opacity-50">{opt.desc}</span>
-            </div>
-          </button>
-        ))}
-      </div>
-    </>
-  );
-};
-
-// --- MODEL MENU ---
-const ModelMenu = ({ isOpen, onClose, selected, onSelect, isDark }: any) => {
-  const models = [
-    { id: "gpt-3.5-turbo", label: "GPT-3.5" },
-    { id: "gpt-4", label: "GPT-4" },
-    { id: "grok-2", label: "Grok 2 (Beta)" },
-  ];
-
-  if (!isOpen) return null;
-  return (
-    <>
-      <div className="fixed inset-0 z-40" onClick={onClose} />
-      <div
-        className={cn(
-          // Adjusted positioning: right-2 on mobile (to stay on screen), right-16 on desktop
-          "absolute bottom-16 right-2 sm:right-16 w-[220px] rounded-2xl border shadow-2xl z-50 overflow-hidden animate-in zoom-in-95 duration-100 p-1.5",
-          isDark
-            ? "bg-[#181818] border-[#2A2B32] text-gray-200"
-            : "bg-white border-gray-200 text-gray-900"
-        )}
-      >
-        <div className="px-3 py-2 text-[10px] font-bold uppercase opacity-50 tracking-wider">
-          System Models
-        </div>
-        {models.map((m) => (
-          <button
-            key={m.id}
-            onClick={() => {
-              onSelect(m.id);
-              onClose();
-            }}
-            className={cn(
-              "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left transition-colors text-sm font-medium hover:cursor-pointer",
-              isDark ? "hover:bg-[#2A2B32]" : "hover:bg-gray-100",
-              selected === m.id && (isDark ? "bg-[#2A2B32]" : "bg-gray-100")
-            )}
-          >
-            <span className="hover:cursor-pointer">{m.label}</span>
-          </button>
-        ))}
-      </div>
-    </>
-  );
-};
-
-// --- MAIN WELCOME COMPONENT ---
 const Welcome: React.FC = () => {
   const isDark = useAppSelector((state: any) => state.theme?.isDark);
-
-  // FIX 1: We now grab accessToken from Redux
   const { user, accessToken } = useAppSelector((state: any) => state.auth);
-
-  // State
   const [inputValue, setInputValue] = useState("");
   const [reasoningMode, setReasoningMode] = useState("Auto");
-  const [modelMode, setModelMode] = useState("gpt-3.5-turbo");
+  const [modelMode, setModelMode] = useState("gpt-4o");
   const [showReasoningMenu, setShowReasoningMenu] = useState(false);
   const [showModelMenu, setShowModelMenu] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
   // Refs
   const fileInputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -145,9 +38,7 @@ const Welcome: React.FC = () => {
   const inputRef = useRef<HTMLDivElement>(null);
   const chipsRef = useRef<HTMLDivElement>(null);
   const textInputRef = useRef<HTMLInputElement>(null);
-
   const navigate = useNavigate();
-
   // --- FIXED ANIMATION LOGIC ---
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -182,18 +73,12 @@ const Welcome: React.FC = () => {
   };
 
   const startChat = async (text: string) => {
-    // FIX 2: Check for accessToken, not just user.id
     if ((!text.trim() && !selectedFile) || !accessToken) return;
-
     let content = text;
     if (selectedFile) content = `[File: ${selectedFile.name}] ${text}`;
-
     try {
-      // FIX 3: Use accessToken here. The backend doesn't need 'content' during creation, only the model.
       const newChatId = await ChatService.createChat(accessToken, modelMode);
-
-      // FIX 4: Navigate to chat and pass the message in state.
-      // Your ChatPage will handle sending this message via WebSocket.
+      // ChatPage will handle sending this message via WebSocket.
       navigate(`/chat/${newChatId}`, {
         state: {
           initialMessage: content,
@@ -201,7 +86,7 @@ const Welcome: React.FC = () => {
         },
       });
     } catch (error) {
-      console.error("Failed to start chat:", error);
+      console.error(`Hey ${user?.name} Failed to start your chat:`, error );
     }
   };
 
@@ -442,38 +327,5 @@ const Welcome: React.FC = () => {
     </div>
   );
 };
-
-// ICONS
-const RocketIcon = ({ className, size = 16 }: any) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path>
-    <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path>
-    <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"></path>
-    <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"></path>
-  </svg>
-);
-const ModalToggle = ({ isDark }: any) => (
-  <div
-    className={cn(
-      "w-5 h-5 rounded flex items-center justify-center font-bold text-xs select-none border transition-colors",
-      isDark
-        ? "bg-[#1A1A1A] border-gray-600 text-gray-300"
-        : "bg-gray-100 border-gray-300 text-gray-600"
-    )}
-  >
-    G
-  </div>
-);
 
 export default Welcome;

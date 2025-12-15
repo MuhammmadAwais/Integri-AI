@@ -67,7 +67,7 @@ const MobileSidebar: React.FC = () => {
       {/* Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/60 z-[90] backdrop-blur-sm transition-opacity"
+          className="fixed inset-0 bg-black/60 z-90 backdrop-blur-sm transition-opacity"
           onClick={() => dispatch(toggleMobileMenu(false))}
         />
       )}
@@ -75,7 +75,7 @@ const MobileSidebar: React.FC = () => {
       {/* Sidebar Panel */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-[100] w-[85%] max-w-[320px] transition-transform duration-300 ease-out transform flex flex-col",
+          "fixed inset-y-0 left-0 z-100 w-[85%] max-w-[320px] transition-transform duration-300 ease-out transform flex flex-col",
           isOpen ? "translate-x-0" : "-translate-x-full",
           isDark
             ? "bg-[#090909] border-r border-[#222]"
@@ -93,6 +93,8 @@ const MobileSidebar: React.FC = () => {
             Integri-AI
           </h2>
           <button
+            type="button"
+            aria-label="Close"
             onClick={() => dispatch(toggleMobileMenu(false))}
             className={cn(
               "p-2 rounded-full",
