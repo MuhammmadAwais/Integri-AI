@@ -81,8 +81,12 @@ export const useChat = (sessionId: string | undefined) => {
   }, [sessionId, token]);
 
   // 2. Listen for Incoming Stream
+  // 2. Listen for Incoming Stream (ROBUST FIX)
   useEffect(() => {
     socketService.onMessage((data) => {
+      // 🕵️‍♂️ DEBUG: Uncomment this to see exactly what the backend sends
+      // console.log("Incoming WS Data:", data);
+
       if (data.type === "stream") {
         setIsStreaming(true);
 
@@ -91,18 +95,26 @@ export const useChat = (sessionId: string | undefined) => {
           return;
         }
 
+        // 🛡️ ROBUST FIX: Check all possible names for the text chunk
+        // If 'content' is empty, it checks 'chunk', then 'text', then 'token'
+        const incomingText =
+          data.content || data.chunk || data.text || data.token || "";
+
+        if (!incomingText) return; // Don't update if no text found
+
         setMessages((prev) => {
           const lastMsg = prev[prev.length - 1];
-          // Append to existing assistant message
+
+          // Option A: Append to existing assistant message
           if (lastMsg && lastMsg.role === "assistant") {
             return [
               ...prev.slice(0, -1),
-              { ...lastMsg, content: lastMsg.content + data.content },
+              { ...lastMsg, content: lastMsg.content + incomingText },
             ];
           }
-          // Start new assistant message
+          // Option B: Start new assistant message
           else {
-            return [...prev, { role: "assistant", content: data.content }];
+            return [...prev, { role: "assistant", content: incomingText }];
           }
         });
       }

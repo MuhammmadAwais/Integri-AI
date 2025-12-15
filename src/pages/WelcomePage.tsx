@@ -126,7 +126,9 @@ const ModelMenu = ({ isOpen, onClose, selected, onSelect, isDark }: any) => {
 // --- MAIN WELCOME COMPONENT ---
 const Welcome: React.FC = () => {
   const isDark = useAppSelector((state: any) => state.theme?.isDark);
-  const user = useAppSelector((state: any) => state.auth?.user);
+
+  // FIX 1: We now grab accessToken from Redux
+  const { user, accessToken } = useAppSelector((state: any) => state.auth);
 
   // State
   const [inputValue, setInputValue] = useState("");
@@ -180,23 +182,24 @@ const Welcome: React.FC = () => {
   };
 
   const startChat = async (text: string) => {
-    if ((!text.trim() && !selectedFile) || !user?.id) return;
+    // FIX 2: Check for accessToken, not just user.id
+    if ((!text.trim() && !selectedFile) || !accessToken) return;
 
     let content = text;
     if (selectedFile) content = `[File: ${selectedFile.name}] ${text}`;
 
     try {
-      const newChatId = await ChatService.createChat(
-        user.id,
-        modelMode,
-        content
-      );
+      // FIX 3: Use accessToken here. The backend doesn't need 'content' during creation, only the model.
+      const newChatId = await ChatService.createChat(accessToken, modelMode);
 
-      navigate(`/chat/${newChatId}`);
-
-      ChatService.sendMessage(user.id, newChatId, content, modelMode).catch(
-        (err) => console.error("Background message send failed:", err)
-      );
+      // FIX 4: Navigate to chat and pass the message in state.
+      // Your ChatPage will handle sending this message via WebSocket.
+      navigate(`/chat/${newChatId}`, {
+        state: {
+          initialMessage: content,
+          model: modelMode,
+        },
+      });
     } catch (error) {
       console.error("Failed to start chat:", error);
     }
