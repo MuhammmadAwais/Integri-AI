@@ -1,16 +1,17 @@
-// src/api/backendApi.ts
 import axios from "axios";
 
-// axios instance custom backend
+// Custom Backend URL
+const API_URL =
+  import.meta.env.VITE_APP_BACKEND_API_BASE_URL ;
+
 const backendApi = axios.create({
-  baseURL:
-    import.meta.env.VITE_APP_BACKEND_API_BASE_URL || "https://integri.cloud",
+  baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// 1. Auth API
+// --- AUTH ---
 export const getBackendToken = async (userId: any, email: any) => {
   try {
     const response = await backendApi.post("/api/v1/auth/token", {
@@ -24,27 +25,28 @@ export const getBackendToken = async (userId: any, email: any) => {
   }
 };
 
-// 2. Session Service (This was missing!)
+// --- SESSIONS (CHATS) ---
 export const SessionService = {
-  // Get all chat sessions for the sidebar
+  // Get list of chats
   getSessions: async (token: string) => {
     const response = await backendApi.get("/api/v1/sessions", {
       headers: { Authorization: `Bearer ${token}` },
     });
+    // Handle { items: [] } or [] response format
     return response.data;
   },
 
-  // Create a new chat session
+  // Create new chat
   createSession: async (token: string, model: string = "gpt-4o") => {
     const response = await backendApi.post(
       "/api/v1/sessions",
-      { model, provider: "openai" },
+      { model, provider: "openai", is_voice_session: false },
       { headers: { Authorization: `Bearer ${token}` } }
     );
     return response.data;
   },
 
-  // Get message history for a specific session
+  // Get message history
   getSessionMessages: async (token: string, sessionId: string) => {
     const response = await backendApi.get(
       `/api/v1/sessions/${sessionId}/messages`,
@@ -53,7 +55,7 @@ export const SessionService = {
     return response.data;
   },
 
-  // Delete a session
+  // Delete chat
   deleteSession: async (token: string, sessionId: string) => {
     const response = await backendApi.delete(`/api/v1/sessions/${sessionId}`, {
       headers: { Authorization: `Bearer ${token}` },

@@ -12,7 +12,7 @@ const initialState: ChatState = {
   isMobileMenuOpen: false,
   isContextSidebarOpen: true,
   activeSidebarTab: "home",
-  currentModel: "gpt-3.5-turbo",
+  currentModel: "gpt-4o",
   activeChatId: null,
 };
 

@@ -1,26 +1,20 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import ChatInput from "./ChatInput";
 import MessageBubble from "../../../Components/ui/MessageBubble";
 import SkeletonLoader from "../../../Components/ui/SkeletonLoader";
 import { useAppSelector } from "../../../hooks/useRedux";
-import { useMessages } from "../hooks/useChat";
-import { ChatService } from "../services/chatService";
+import { useChat } from "../hooks/useChat"; // NEW HOOK
 import { cn } from "../../../lib/utils";
 
 const ChatInterface: React.FC = () => {
-  const { id } = useParams();
+  const { id } = useParams(); // Session ID
   const scrollRef = useRef<HTMLDivElement>(null);
-
   const isDark = useAppSelector((state: any) => state.theme.isDark);
-  const user = useAppSelector((state: any) => state.auth?.user);
-  const currentModel = useAppSelector((state: any) => state.chat.currentModel);
 
-  // Data Fetching
-  const { messages, loading: isLoadingMessages } = useMessages(user?.id, id);
-  const [isGenerating, setIsGenerating] = useState(false);
+  // Use new hook
+  const { messages, sendMessage, isLoading, isStreaming } = useChat(id);
 
-  // Scroll to bottom efficiently
   const scrollToBottom = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -29,27 +23,10 @@ const ChatInterface: React.FC = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isGenerating]);
+  }, [messages, isStreaming]);
 
-  // Initial load scroll
-  useEffect(() => {
-    if (!isLoadingMessages) {
-      setTimeout(scrollToBottom, 100);
-    }
-  }, [isLoadingMessages]);
-
-  const handleSendMessage = async (text: string) => {
-    if (!id || !user?.id) return;
-
-    setIsGenerating(true);
-    try {
-      // ChatService handles DB saving and AI response generation
-      await ChatService.sendMessage(user.id, id, text, currentModel);
-    } catch (error) {
-      console.error("Send Error:", error);
-    } finally {
-      setIsGenerating(false);
-    }
+  const handleSendMessage = (text: string) => {
+    sendMessage(text);
   };
 
   if (!id) return null;
@@ -61,13 +38,12 @@ const ChatInterface: React.FC = () => {
         isDark ? "bg-[#000000]" : "bg-white"
       )}
     >
-      {/* Scrollable Messages */}
       <div
         ref={scrollRef}
         className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-0 scroll-smooth custom-scrollbar"
       >
         <div className="max-w-3xl mx-auto w-full pb-32 pt-6 md:pt-10 px-4 md:px-0">
-          {isLoadingMessages ? (
+          {isLoading && messages.length === 0 ? (
             <div className="space-y-8 pt-10">
               <SkeletonLoader className="w-1/3 h-10 ml-auto rounded-3xl bg-gray-800" />
               <div className="space-y-2">
@@ -86,9 +62,9 @@ const ChatInterface: React.FC = () => {
                   </p>
                 </div>
               ) : (
-                messages.map((msg) => (
+                messages.map((msg, index) => (
                   <MessageBubble
-                    key={msg.id}
+                    key={index}
                     role={msg.role}
                     content={msg.content}
                   />
@@ -96,15 +72,14 @@ const ChatInterface: React.FC = () => {
               )}
             </>
           )}
-          {isGenerating && (
+          {isStreaming && (
             <div className="flex items-center gap-2 text-gray-500 ml-4 text-sm font-mono mt-4">
-              <span className="animate-pulse">Thinking...</span>
+              <span className="animate-pulse">Generating...</span>
             </div>
           )}
         </div>
       </div>
 
-      {/* Floating Input Area */}
       <div
         className={cn(
           "absolute bottom-0 left-0 w-full z-20 pt-10 pb-6 px-4",
@@ -118,4 +93,5 @@ const ChatInterface: React.FC = () => {
     </div>
   );
 };
+
 export default ChatInterface;

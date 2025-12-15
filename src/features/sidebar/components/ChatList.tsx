@@ -1,6 +1,6 @@
 import React from "react";
-import { useChatList } from "../../chat/hooks/useChat"; //
-import { ChatService } from "../../chat/services/chatService";
+import { useChatList } from "../../chat/hooks/useChat";
+import { SessionService } from "../../../api/backendApi"; // NEW LOGIC
 import { useAppSelector } from "../../../hooks/useRedux";
 import { Trash2, Loader2, MessageSquare } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -11,6 +11,7 @@ const ChatList: React.FC = () => {
   const navigate = useNavigate();
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   const user = useAppSelector((state: any) => state.auth.user);
+  const token = useAppSelector((state: any) => state.auth.token); // NEW LOGIC
 
   // Fetch chats
   const { chats = [], loading } = useChatList(user?.id);
@@ -18,15 +19,18 @@ const ChatList: React.FC = () => {
   const handleDelete = async (e: React.MouseEvent, chatId: string) => {
     e.preventDefault();
     e.stopPropagation(); // Critical: Stop click from bubbling to the row
-    if (!user?.id) return;
+    if (!token) return; // NEW LOGIC
 
     if (window.confirm("Are you sure you want to delete this chat?")) {
       try {
-        await ChatService.deleteChat(user.id, chatId);
+        // NEW LOGIC: Call backend
+        await SessionService.deleteSession(token, chatId);
+
         // If deleting the currently active chat, redirect to home
         if (activeChatId === chatId) {
           navigate("/");
         }
+        window.location.reload(); // Refresh list
       } catch (error) {
         console.error("Failed to delete chat:", error);
       }
@@ -54,7 +58,6 @@ const ChatList: React.FC = () => {
       {chats.map((chat) => (
         <div
           key={chat.id}
-          // Handle navigation manually to allow button inside to work safely
           onClick={() => navigate(`/chat/${chat.id}`)}
           className={cn(
             "group relative flex items-center gap-3 px-4 py-3 rounded-full transition-all duration-200 text-sm cursor-pointer",

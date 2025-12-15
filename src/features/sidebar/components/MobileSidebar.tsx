@@ -12,7 +12,7 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../hooks/useRedux";
 import { toggleMobileMenu } from "../../chat/chatSlice";
-import { ChatService } from "../../chat/services/chatService";
+import { SessionService } from "../../../api/backendApi"; // NEW LOGIC
 import { useChatList } from "../../chat/hooks/useChat";
 import { cn } from "../../../lib/utils";
 
@@ -24,6 +24,7 @@ const MobileSidebar: React.FC = () => {
   const isOpen = useAppSelector((state: any) => state.chat.isMobileMenuOpen);
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   const user = useAppSelector((state: any) => state.auth.user);
+  const token = useAppSelector((state: any) => state.auth.token); // NEW LOGIC
 
   // Fetch chats using hook
   const { chats: sessions = [] } = useChatList(user?.id);
@@ -35,15 +36,14 @@ const MobileSidebar: React.FC = () => {
   };
 
   const handleNewChat = async () => {
-    if (!user?.id) return;
+    if (!token) return; // NEW LOGIC
     try {
-      const newId = await ChatService.createChat(
-        user.id,
-        "gpt-3.5-turbo",
-        "New Conversation"
-      );
-      dispatch(toggleMobileMenu(false));
-      navigate(`/chat/${newId}`);
+      // NEW LOGIC
+      const response = await SessionService.createSession(token, "gpt-4o");
+      if (response && response.session_id) {
+        navigate(`/chat/${response.session_id}`);
+        dispatch(toggleMobileMenu(false));
+      }
     } catch (error) {
       console.error("Failed to create chat:", error);
     }
@@ -51,57 +51,78 @@ const MobileSidebar: React.FC = () => {
 
   const handleDeleteChat = async (e: React.MouseEvent, chatId: string) => {
     e.stopPropagation();
-    if (!user?.id) return;
-    try {
-      await ChatService.deleteChat(user.id, chatId);
-    } catch (error) {
-      console.error("Failed to delete chat:", error);
+    if (!token) return; // NEW LOGIC
+    if (window.confirm("Delete this chat?")) {
+      try {
+        await SessionService.deleteSession(token, chatId); // NEW LOGIC
+        window.location.reload();
+      } catch (error) {
+        console.error("Delete failed", error);
+      }
     }
   };
 
   return (
     <>
-      {/* Backdrop */}
-      <div
-        className={cn(
-          "fixed inset-0 z-60 bg-black/60 backdrop-blur-sm transition-opacity duration-300 lg:hidden",
-          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        )}
-        onClick={() => dispatch(toggleMobileMenu(false))}
-      />
+      {/* Overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 z-[90] backdrop-blur-sm transition-opacity"
+          onClick={() => dispatch(toggleMobileMenu(false))}
+        />
+      )}
 
-      {/* Slide-out Panel */}
+      {/* Sidebar Panel */}
       <div
         className={cn(
-          "fixed top-0 left-0 z-70 h-dvh w-[85%] max-w-[300px] shadow-2xl transition-transform duration-300 ease-out lg:hidden flex flex-col",
+          "fixed inset-y-0 left-0 z-[100] w-[85%] max-w-[320px] transition-transform duration-300 ease-out transform flex flex-col",
+          isOpen ? "translate-x-0" : "-translate-x-full",
           isDark
-            ? "bg-[#171717] border-r border-[#2A2B32]"
-            : "bg-white border-r border-gray-200",
-          isOpen ? "translate-x-0" : "-translate-x-full"
+            ? "bg-[#090909] border-r border-[#222]"
+            : "bg-white border-r border-gray-200"
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-[#2A2B32]">
-          <span
+        <div className="p-4 flex items-center justify-between border-b border-transparent">
+          <h2
             className={cn(
-              "font-bold text-lg tracking-tight",
+              "text-xl font-bold",
               isDark ? "text-white" : "text-gray-900"
             )}
           >
-            Integri AI
-          </span>
+            Integri-AI
+          </h2>
           <button
-            type="button"
-            aria-label="Close sidebar"
             onClick={() => dispatch(toggleMobileMenu(false))}
-            className="p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+            className={cn(
+              "p-2 rounded-full",
+              isDark
+                ? "text-gray-400 hover:bg-[#222]"
+                : "text-gray-600 hover:bg-gray-100"
+            )}
           >
-            <X size={20} />
+            <X size={24} />
           </button>
         </div>
 
-        {/* --- MAIN NAVIGATION TILES --- */}
-        <div className="grid grid-cols-4 gap-2 p-3 border-b border-gray-100 dark:border-[#2A2B32]">
+        {/* Action: New Chat */}
+        <div className="px-4 mt-4">
+          <button
+            onClick={handleNewChat}
+            className={cn(
+              "w-full flex items-center justify-center gap-2 py-3 rounded-full font-medium transition-all shadow-sm active:scale-95",
+              isDark
+                ? "bg-white text-black hover:bg-gray-200"
+                : "bg-black text-white hover:bg-gray-800"
+            )}
+          >
+            <Plus size={20} />
+            <span>New Chat</span>
+          </button>
+        </div>
+
+        {/* Navigation Links */}
+        <div className="p-4 grid grid-cols-4 gap-2 border-b border-transparent">
           <NavTile
             icon={Home}
             label="Home"
@@ -132,37 +153,26 @@ const MobileSidebar: React.FC = () => {
           />
         </div>
 
-        {/* Content Area */}
-        <div className="flex-1 overflow-y-auto p-3 custom-scrollbar">
-          {/* New Chat Button */}
-          <button
-            onClick={handleNewChat}
+        {/* Recent Chats */}
+        <div className="flex-1 overflow-y-auto px-4 py-4">
+          <h3
             className={cn(
-              "flex items-center justify-center gap-2 w-full py-3 rounded-xl font-medium mb-6 transition-all shadow-sm cursor-pointer active:scale-95",
-              isDark ? "bg-white text-black" : "bg-black text-white"
+              "text-xs font-bold uppercase mb-3",
+              isDark ? "text-gray-500" : "text-gray-400"
             )}
           >
-            <Plus size={18} strokeWidth={2.5} />
-            <span>New Chat</span>
-          </button>
-
-          {/* Recent Chats List */}
+            Recent Conversations
+          </h3>
           <div className="space-y-1">
-            <div className="px-2 mb-2 text-xs font-bold uppercase opacity-50 tracking-wider">
-              Recent Chats
-            </div>
-
             {sessions.length === 0 ? (
-              <div className="text-center opacity-40 text-sm py-4">
-                No history yet
-              </div>
+              <p className="text-sm opacity-50 italic">No recent chats</p>
             ) : (
               sessions.map((chat) => (
                 <div
                   key={chat.id}
                   onClick={() => handleNavigation(`/chat/${chat.id}`)}
                   className={cn(
-                    "flex items-center justify-between p-3 rounded-lg text-sm cursor-pointer transition-colors",
+                    "flex items-center justify-between p-3 rounded-xl text-sm transition-colors cursor-pointer",
                     isDark
                       ? "hover:bg-[#2A2B32] text-gray-200"
                       : "hover:bg-gray-100 text-gray-700"
@@ -200,11 +210,11 @@ const NavTile = ({ icon: Icon, label, active, onClick, isDark }: any) => (
           ? "bg-indigo-600 text-white"
           : "bg-black text-white"
         : isDark
-        ? "text-gray-400 hover:bg-[#2A2B32]"
-        : "text-gray-600 hover:bg-gray-100"
+        ? "text-gray-400 hover:bg-[#1A1A1A]"
+        : "text-gray-500 hover:bg-gray-100"
     )}
   >
-    <Icon size={20} />
+    <Icon size={20} strokeWidth={2.5} />
     <span className="text-[10px] font-medium">{label}</span>
   </button>
 );

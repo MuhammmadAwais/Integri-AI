@@ -1,96 +1,37 @@
-import {
-  collection,
-  addDoc,
-  doc,
-  setDoc,
-  updateDoc,
-  serverTimestamp,
-  deleteDoc,
-} from "firebase/firestore";
-import { db } from "../../../app/firebase";
-import { generateAIResponse } from "../../../lib/openai";
+import { SessionService } from "../../../api/backendApi";
 
-// Types
-export interface Message {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-  createdAt: any;
-}
-
-export interface ChatSession {
-  id: string;
-  title: string;
-  model: string;
-  updatedAt: any;
-}
-
+/**
+ * REFACTORED: This service now communicates with your Custom Backend.
+ * OpenAI and Firebase logic has been completely removed.
+ */
 export const ChatService = {
-  // 1. Create a New Chat
-  createChat: async (userId: string, model: string, firstMessage: string) => {
-    const newChatRef = doc(collection(db, "users", userId, "chats"));
-    await setDoc(newChatRef, {
-      title: firstMessage.slice(0, 30) + "...",
-      model: model,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    });
-    return newChatRef.id;
-  },
-
-  // 2. Send Message & Get AI Response
-  sendMessage: async (
-    userId: string,
-    chatId: string,
-    content: string,
-    model: string
-  ) => {
-    // A. Save User Message to DB
-    const messagesRef = collection(
-      db,
-      "users",
-      userId,
-      "chats",
-      chatId,
-      "messages"
-    );
-    await addDoc(messagesRef, {
-      role: "user",
-      content,
-      createdAt: serverTimestamp(),
-    });
-
-    // B. Update Chat Timestamp (so it moves to top of sidebar)
-    const chatRef = doc(db, "users", userId, "chats", chatId);
-    await updateDoc(chatRef, { updatedAt: serverTimestamp() });
-
-    // C. Call AI (Frontend Logic)
-    // Note: In a production app, you'd move this part to a Cloud Function
+  // 1. Create a New Chat (Uses Backend API)
+  createChat: async (token: string, model: string = "gpt-4o") => {
     try {
-      // Fetch previous messages for context (optional optimization)
-      const aiResponse = await generateAIResponse(
-        [{ role: "user", content }],
-        model
-      );
-
-      // D. Save AI Response to DB
-      await addDoc(messagesRef, {
-        role: "assistant",
-        content: aiResponse,
-        createdAt: serverTimestamp(),
-      });
+      const response = await SessionService.createSession(token, model);
+      return response.session_id;
     } catch (error) {
-      console.error("AI Generation Failed:", error);
-      await addDoc(messagesRef, {
-        role: "assistant",
-        content: "Sorry, I encountered an error connecting to the AI.",
-        createdAt: serverTimestamp(),
-      });
+      console.error("Backend: Failed to create chat", error);
+      throw error;
     }
   },
 
-  // 3. Delete Chat
-  deleteChat: async (userId: string, chatId: string) => {
-    await deleteDoc(doc(db, "users", userId, "chats", chatId));
+  // 2. Delete Chat (Uses Backend API)
+  deleteChat: async (token: string, chatId: string) => {
+    try {
+      await SessionService.deleteSession(token, chatId);
+    } catch (error) {
+      console.error("Backend: Failed to delete chat", error);
+      throw error;
+    }
+  },
+
+  // 3. Send Message -> DEPRECATED
+  // Real-time messages must go through WebSocket (see useChat.ts), not a REST API service.
+  sendMessage: async () => {
+    console.warn(
+      "⚠️ ChatService.sendMessage is deprecated. Messages are now sent via WebSocket in the useChat hook."
+    );
+    return null;
   },
 };

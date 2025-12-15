@@ -4,22 +4,26 @@ import { useAppSelector } from "../../../hooks/useRedux";
 import { cn } from "../../../lib/utils";
 import ChatList from "./ChatList";
 import { useNavigate } from "react-router-dom";
-import { ChatService } from "../../chat/services/chatService";
+import { SessionService } from "../../../api/backendApi"; // NEW LOGIC
 
 const ContextSidebar: React.FC = () => {
   const isDark = useAppSelector((state: any) => state.theme.isDark);
-  const user = useAppSelector((state: any) => state.auth.user);
+  const token = useAppSelector((state: any) => state.auth.token); // NEW LOGIC
+  const currentModel = useAppSelector((state: any) => state.chat.currentModel); // NEW LOGIC
   const navigate = useNavigate();
 
   const handleNewChat = async () => {
-    if (!user?.id) return;
+    if (!token) return; // NEW LOGIC
     try {
-      const newId = await ChatService.createChat(
-        user.id,
-        "gpt-3.5-turbo",
-        "New Conversation"
+      // NEW LOGIC: Create Session via API
+      const response = await SessionService.createSession(
+        token,
+        currentModel || "gpt-4o"
       );
-      navigate(`/chat/${newId}`);
+
+      if (response && response.session_id) {
+        navigate(`/chat/${response.session_id}`);
+      }
     } catch (error) {
       console.error("Failed to create chat:", error);
     }
@@ -60,18 +64,6 @@ const ContextSidebar: React.FC = () => {
       {/* Chat List Scroll Area */}
       <div className="flex-1 overflow-y-auto px-2 mt-1">
         <ChatList />
-      </div>
-
-      {/* Footer */}
-      <div
-        className={cn(
-          "p-4 border-t",
-          isDark ? "border-[#2F3336]" : "border-gray-200"
-        )}
-      >
-        <button className="text-[#1D9BF0] text-sm hover:underline">
-          View all
-        </button>
       </div>
     </div>
   );

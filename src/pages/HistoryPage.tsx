@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import { useChatList } from "../features/chat/hooks/useChat";
-import { ChatService } from "../features/chat/services/chatService";
+import { SessionService } from "../api/backendApi"; // NEW LOGIC
 
 // Types
 type SortKey = "title" | "date" | "model";
@@ -20,6 +20,7 @@ type SortOrder = "asc" | "desc";
 
 const HistoryPage: React.FC = () => {
   const user = useAppSelector((state: any) => state.auth.user);
+  const token = useAppSelector((state: any) => state.auth.token); // NEW LOGIC
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   const navigate = useNavigate();
 
@@ -40,34 +41,48 @@ const HistoryPage: React.FC = () => {
     }
   };
 
-  // Handle Delete
   const handleDelete = async (e: React.MouseEvent, chatId: string) => {
     e.stopPropagation();
-    if (!user?.id) return;
-    try {
-      await ChatService.deleteChat(user.id, chatId);
-    } catch (error) {
-      console.error("Failed to delete chat:", error);
+    if (!token) return; // NEW LOGIC
+    if (window.confirm("Are you sure?")) {
+      try {
+        await SessionService.deleteSession(token, chatId); // NEW LOGIC
+        window.location.reload();
+      } catch (error) {
+        console.error("Delete failed", error);
+      }
     }
   };
 
-  // Derived Sorted Data
+  // Helper for Date parsing (API or Timestamp)
+  const getDate = (item: any) => {
+    const val = item.updated_at || item.updatedAt || item.created_at;
+    if (!val) return 0;
+    return typeof val === "string"
+      ? new Date(val).getTime()
+      : val.seconds * 1000;
+  };
+
+  const formatDate = (item: any) => {
+    const val = item.updated_at || item.updatedAt || item.created_at;
+    if (!val) return "N/A";
+    const date =
+      typeof val === "string" ? new Date(val) : new Date(val.seconds * 1000);
+    return date.toLocaleDateString();
+  };
+
   const sortedSessions = useMemo(() => {
     return [...sessions].sort((a, b) => {
       let valA: any;
       let valB: any;
 
-      // Handle missing model/date fields safely
       if (sortKey === "title") {
-        valA = a.title || "";
-        valB = b.title || "";
-      }
-      if (sortKey === "date") {
-        // ChatSession uses updatedAt or createdAt
-        valA = a.updatedAt ? new Date(a.updatedAt.seconds * 1000).getTime() : 0;
-        valB = b.updatedAt ? new Date(b.updatedAt.seconds * 1000).getTime() : 0;
-      }
-      if (sortKey === "model") {
+        valA = (a.title || "").toLowerCase();
+        valB = (b.title || "").toLowerCase();
+      } else if (sortKey === "date") {
+        valA = getDate(a);
+        valB = getDate(b);
+      } else if (sortKey === "model") {
         valA = a.model || "";
         valB = b.model || "";
       }
@@ -78,7 +93,6 @@ const HistoryPage: React.FC = () => {
     });
   }, [sessions, sortKey, sortOrder]);
 
-  // Render Sort Icon
   const SortIcon = ({ column }: { column: SortKey }) => {
     if (sortKey !== column)
       return <ArrowUpDown size={14} className="opacity-30" />;
@@ -92,10 +106,11 @@ const HistoryPage: React.FC = () => {
   return (
     <div
       className={cn(
-        "max-w-6xl mx-auto p-4 md:p-8 animate-in fade-in duration-500 h-full overflow-y-auto",
+        "max-w-6xl mx-auto p-4 md:p-8 h-full overflow-y-auto",
         isDark ? "bg-black text-white" : "bg-white text-black"
       )}
     >
+      {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <h1
           className={cn(
@@ -117,6 +132,7 @@ const HistoryPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Table Container */}
       <div
         className={cn(
           "w-full overflow-hidden rounded-xl border shadow-sm",
@@ -131,7 +147,6 @@ const HistoryPage: React.FC = () => {
             </div>
           ) : (
             <table className="w-full text-left text-sm">
-              {/* Table Header */}
               <thead>
                 <tr
                   className={cn(
@@ -142,7 +157,7 @@ const HistoryPage: React.FC = () => {
                   )}
                 >
                   <th
-                    className="p-4 font-semibold cursor-pointer select-none hover:bg-black/5 transition-colors w-[40%]"
+                    className="p-4 font-medium cursor-pointer select-none hover:opacity-70 transition-opacity"
                     onClick={() => handleSort("title")}
                   >
                     <div className="flex items-center gap-2">
@@ -150,7 +165,7 @@ const HistoryPage: React.FC = () => {
                     </div>
                   </th>
                   <th
-                    className="p-4 font-semibold cursor-pointer select-none hover:bg-black/5 transition-colors w-[20%]"
+                    className="p-4 font-medium cursor-pointer select-none hover:opacity-70 transition-opacity"
                     onClick={() => handleSort("model")}
                   >
                     <div className="flex items-center gap-2">
@@ -158,20 +173,16 @@ const HistoryPage: React.FC = () => {
                     </div>
                   </th>
                   <th
-                    className="p-4 font-semibold cursor-pointer select-none hover:bg-black/5 transition-colors w-[25%]"
+                    className="p-4 font-medium cursor-pointer select-none hover:opacity-70 transition-opacity"
                     onClick={() => handleSort("date")}
                   >
                     <div className="flex items-center gap-2">
                       Date <SortIcon column="date" />
                     </div>
                   </th>
-                  <th className="p-4 font-semibold text-right w-[15%]">
-                    Actions
-                  </th>
+                  <th className="p-4 font-medium text-right">Actions</th>
                 </tr>
               </thead>
-
-              {/* Table Body */}
               <tbody
                 className={cn(
                   "divide-y",
@@ -181,7 +192,7 @@ const HistoryPage: React.FC = () => {
                 {sortedSessions.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="p-8 text-center opacity-50">
-                      No conversations found.
+                      No conversation history found.
                     </td>
                   </tr>
                 ) : (
@@ -190,53 +201,28 @@ const HistoryPage: React.FC = () => {
                       key={session.id}
                       onClick={() => navigate(`/chat/${session.id}`)}
                       className={cn(
-                        "group transition-colors cursor-pointer",
-                        isDark
-                          ? "hover:bg-[#2A2B32] text-gray-300"
-                          : "hover:bg-gray-50 text-gray-700"
+                        "group cursor-pointer transition-colors",
+                        isDark ? "hover:bg-[#2A2B32]" : "hover:bg-gray-50"
                       )}
                     >
                       <td className="p-4">
                         <div className="flex items-center gap-3">
-                          <div
-                            className={cn(
-                              "p-2 rounded-lg shrink-0",
-                              isDark
-                                ? "bg-black/20"
-                                : "bg-indigo-50 text-indigo-600"
-                            )}
-                          >
-                            <MessageSquare size={16} />
-                          </div>
-                          <span className="font-medium truncate max-w-[200px] md:max-w-xs">
+                          <MessageSquare size={16} className="opacity-50" />
+                          <span className="font-medium truncate max-w-[200px]">
                             {session.title || "New Chat"}
                           </span>
                         </div>
                       </td>
                       <td className="p-4">
-                        <span
-                          className={cn(
-                            "text-xs px-2 py-1 rounded-md border",
-                            isDark
-                              ? "border-gray-700 bg-gray-800"
-                              : "border-gray-200 bg-gray-100"
-                          )}
-                        >
-                          {session.model || "gpt-3.5-turbo"}
+                        <span className="opacity-70 border px-2 py-1 rounded-md text-xs">
+                          {session.model || "gpt-4o"}
                         </span>
                       </td>
                       <td className="p-4 text-xs font-mono opacity-70">
-                        {session.updatedAt
-                          ? new Date(
-                              session.updatedAt.seconds * 1000
-                            ).toLocaleDateString()
-                          : "N/A"}
+                        {formatDate(session)}
                       </td>
-                      <td
-                        className="p-4 text-right"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <div className="flex items-center justify-end gap-2">
+                      <td className="p-4 text-right">
+                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button
                             onClick={() => navigate(`/chat/${session.id}`)}
                             className={cn(

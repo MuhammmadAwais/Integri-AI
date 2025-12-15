@@ -1,67 +1,132 @@
-import { useState, useEffect } from "react";
-import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
-import { db } from "../../../app/firebase";
-import { type Message, type ChatSession } from "../services/chatService";
+import { useState, useEffect, useCallback } from "react";
+// Make sure this path matches where you saved WebSocketService.ts
+import { socketService } from "../../../services/WebSocketsService";
+import { SessionService } from "../../../api/backendApi";
+import { useAppSelector } from "../../../hooks/useRedux";
 
-// Hook 1: Listen to the list of chats (For Sidebar)
+export interface Message {
+  id?: string;
+  role: "user" | "assistant";
+  content: string;
+  createdAt?: string;
+}
+
+// Hook to fetch the list of chats (Sidebar)
 export const useChatList = (userId: string | undefined) => {
-  const [chats, setChats] = useState<ChatSession[]>([]);
+  const [chats, setChats] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const token = useAppSelector((state: any) => state.auth.token);
 
   useEffect(() => {
-    if (!userId) {
-      setChats([]);
-      return;
-    }
+    const fetchChats = async () => {
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const data = await SessionService.getSessions(token);
+        const sessionList = Array.isArray(data) ? data : data.items || [];
+        setChats(sessionList);
+      } catch (error) {
+        console.error("Failed to fetch sessions", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    // Subscribe to the "chats" collection
-    const q = query(
-      collection(db, "users", userId, "chats"),
-      orderBy("updatedAt", "desc")
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const chatData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as ChatSession[];
-      setChats(chatData);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, [userId]);
+    fetchChats();
+  }, [userId, token]);
 
   return { chats, loading };
 };
 
-// Hook 2: Listen to specific messages (For Chat Interface)
-export const useMessages = (
-  userId: string | undefined,
-  chatId: string | undefined
-) => {
+// Hook to handle the Active Chat (Messages + WebSocket)
+export const useChat = (sessionId: string | undefined) => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
 
+  const token = useAppSelector((state: any) => state.auth.token);
+  const currentModel = useAppSelector((state: any) => state.chat.currentModel);
+
+  // 1. Initialize: Load History & Connect Socket
   useEffect(() => {
-    if (!userId || !chatId) return;
+    if (!sessionId || !token) return;
 
-    const q = query(
-      collection(db, "users", userId, "chats", chatId, "messages"),
-      orderBy("createdAt", "asc")
-    );
+    const initChat = async () => {
+      setIsLoading(true);
+      try {
+        // A. Load History via REST API
+        const history = await SessionService.getSessionMessages(
+          token,
+          sessionId
+        );
+        setMessages(history);
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const msgs = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Message[];
-      setMessages(msgs);
-      setLoading(false);
+        // B. Connect WebSocket
+        socketService.connect(token, sessionId);
+      } catch (error) {
+        console.error("Error initializing chat:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initChat();
+
+    // Cleanup: Disconnect when leaving the page
+    return () => {
+      socketService.disconnect();
+    };
+  }, [sessionId, token]);
+
+  // 2. Listen for Incoming Stream
+  useEffect(() => {
+    socketService.onMessage((data) => {
+      if (data.type === "stream") {
+        setIsStreaming(true);
+
+        if (data.done) {
+          setIsStreaming(false);
+          return;
+        }
+
+        setMessages((prev) => {
+          const lastMsg = prev[prev.length - 1];
+          // Append to existing assistant message
+          if (lastMsg && lastMsg.role === "assistant") {
+            return [
+              ...prev.slice(0, -1),
+              { ...lastMsg, content: lastMsg.content + data.content },
+            ];
+          }
+          // Start new assistant message
+          else {
+            return [...prev, { role: "assistant", content: data.content }];
+          }
+        });
+      }
     });
+  }, []);
 
-    return () => unsubscribe();
-  }, [userId, chatId]);
+  // 3. Send Message
+  const sendMessage = useCallback(
+    (content: string) => {
+      if (!content.trim()) return;
 
-  return { messages, loading };
+      // Optimistic Update (Show user message immediately)
+      setMessages((prev) => [...prev, { role: "user", content }]);
+
+      // Send via WebSocket
+      socketService.sendMessage(content, currentModel || "gpt-4o");
+    },
+    [currentModel]
+  );
+
+  return {
+    messages,
+    sendMessage,
+    isLoading,
+    isStreaming,
+  };
 };
