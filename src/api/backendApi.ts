@@ -2,9 +2,9 @@ import axios from "axios";
 
 // Custom Backend URL
 const API_URL =
-  import.meta.env.VITE_APP_BACKEND_API_BASE_URL ;
+  import.meta.env.VITE_APP_BACKEND_API_BASE_URL || "https://integri.cloud";
 
-console.log("🌐 [API] Base URL configured as:", API_URL); // DEBUG LOG
+console.log("🌐 [API] Base URL configured as:", API_URL);
 
 const backendApi = axios.create({
   baseURL: API_URL,
@@ -36,12 +36,13 @@ export const getBackendToken = async (userId: any, email: any) => {
 export const SessionService = {
   // Get list of chats
   getSessions: async (token: string) => {
-    // console.log("📂 [API] Fetching Sessions..."); // Optional: Uncomment if too noisy
     try {
       const response = await backendApi.get("/api/v1/sessions", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      return response.data;
+      return Array.isArray(response.data)
+        ? response.data
+        : response.data.items || [];
     } catch (error) {
       console.error("❌ [API] Failed to get sessions", error);
       throw error;
@@ -57,7 +58,6 @@ export const SessionService = {
         { model, provider: "openai", is_voice_session: false },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      console.log("✅ [API] Session Created:", response.data);
       return response.data;
     } catch (error) {
       console.error("❌ [API] Failed to create session", error);
@@ -65,9 +65,21 @@ export const SessionService = {
     }
   },
 
+  // --- NEW: Rename Session (Fixes "New Chat") ---
+  updateSession: async (token: string, sessionId: string, title: string) => {
+    try {
+      await backendApi.patch(
+        `/api/v1/sessions/${sessionId}`,
+        { title: title },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } catch (e) {
+      console.error("Failed to update session title", e);
+    }
+  },
+
   // Get message history
   getSessionMessages: async (token: string, sessionId: string) => {
-    console.log(`📜 [API] Fetching history for ${sessionId}`);
     const response = await backendApi.get(
       `/api/v1/sessions/${sessionId}/messages`,
       { headers: { Authorization: `Bearer ${token}` } }
@@ -78,6 +90,14 @@ export const SessionService = {
   // Delete chat
   deleteSession: async (token: string, sessionId: string) => {
     const response = await backendApi.delete(`/api/v1/sessions/${sessionId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
+
+  // --- NEW: Delete Message ---
+  deleteMessage: async (token: string, messageId: string) => {
+    const response = await backendApi.delete(`/api/v1/messages/${messageId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;

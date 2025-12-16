@@ -8,39 +8,73 @@ export interface Message {
   role: "user" | "assistant";
   content: string;
 }
-// Hook to fetch the list of chats (Sidebar)
-export const useChatList = (userId: string | undefined) => {
-  const [chats, setChats] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const token = useAppSelector((state: any) => state.auth.token);
 
-  useEffect(() => {
-    const fetchChats = async () => {
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-      try {
-        const data = await SessionService.getSessions(token);
-        const sessionList = Array.isArray(data) ? data : data.items || [];
-        setChats(sessionList);
-      } catch (error) {
-        console.error("Failed to fetch sessions", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchChats();
-  }, [userId, token]);
-
-  return { chats, loading };
+// 1. GLOBAL EVENT TRIGGER (Ensures Sidebar updates when History deletes)
+export const triggerChatUpdate = () => {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("chat-updated"));
+  }
 };
 
-// Hook to handle the Active Chat (Messages + WebSocket)
+// --- HOOK FOR CHAT LIST (SIDEBAR & HISTORY) ---
+export const useChatList = (userId?: string) => {
+  const [chats, setChats] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const token = useAppSelector((state: any) => state.auth.accessToken);
 
+  const fetchChats = useCallback(async () => {
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+    try {
+      const data = await SessionService.getSessions(token);
+      // Ensure we treat the response correctly based on backend structure
+      const sessionList = Array.isArray(data) ? data : data.items || [];
+      setChats(sessionList);
+    } catch (error) {
+      console.error("Failed to fetch sessions", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
 
+  // 2. SYNC LISTENER (Updates list when 'chat-updated' fires)
+  useEffect(() => {
+    fetchChats();
 
+    const handleUpdate = () => fetchChats();
+    window.addEventListener("chat-updated", handleUpdate);
+
+    return () => {
+      window.removeEventListener("chat-updated", handleUpdate);
+    };
+  }, [fetchChats]);
+
+  const handleDeleteChat = async (sessionId: string) => {
+    if (!token) return;
+    try {
+      // Optimistic Update: Remove immediately from UI
+      setChats((prev) =>
+        prev.filter((c) => (c.session_id || c.id) !== sessionId)
+      );
+
+      // Call Backend
+      await SessionService.deleteSession(token, sessionId);
+
+      // Trigger Sync for other components
+      triggerChatUpdate();
+    } catch (error) {
+      console.error("Failed to delete session", error);
+      // Revert/Refetch on error
+      fetchChats();
+    }
+  };
+
+  return { chats, loading, refreshChats: fetchChats, handleDeleteChat };
+};
+
+// --- HOOK FOR ACTIVE CHAT ---
 export const useChat = (sessionId: string | undefined) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -49,7 +83,7 @@ export const useChat = (sessionId: string | undefined) => {
   const token = useAppSelector((state: any) => state.auth.accessToken);
   const currentModel = useAppSelector((state: any) => state.chat.currentModel);
 
-  // 1. Initialize
+  // Initialize Chat
   useEffect(() => {
     if (!sessionId || !token) return;
 
@@ -74,21 +108,19 @@ export const useChat = (sessionId: string | undefined) => {
     return () => socketService.disconnect();
   }, [sessionId, token]);
 
-  // 2. Listen for Messages (ROBUST FIX)
+  // Listen for Stream
   useEffect(() => {
     socketService.onMessage((data) => {
       if (data.type === "stream") {
         setIsStreaming(true);
-
         if (data.done) {
           setIsStreaming(false);
+          triggerChatUpdate(); // Refresh sidebar title
           return;
         }
 
-        // 🛡️ FIX: Check ALL possible names for the text
         const incomingText =
           data.content || data.chunk || data.text || data.token || "";
-
         if (!incomingText) return;
 
         setMessages((prev) => {
@@ -115,5 +147,15 @@ export const useChat = (sessionId: string | undefined) => {
     [currentModel]
   );
 
-  return { messages, sendMessage, isLoading, isStreaming };
+  const deleteMessage = async (messageId: string) => {
+    if (!token || !messageId) return;
+    try {
+      setMessages((prev) => prev.filter((m) => m.id !== messageId));
+      await SessionService.deleteMessage(token, messageId);
+    } catch (err) {
+      console.error("Failed to delete message", err);
+    }
+  };
+
+  return { messages, sendMessage, deleteMessage, isLoading, isStreaming };
 };

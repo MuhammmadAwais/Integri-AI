@@ -7,8 +7,6 @@ import {
   ChevronLeft,
   User,
   Bot,
-  Copy,
-  Check,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -16,7 +14,7 @@ import { useChatList } from "../../chat/hooks/useChat";
 import { useAppSelector } from "../../../hooks/useRedux";
 import { cn } from "../../../lib/utils";
 import SkeletonLoader from "../../../Components/ui/SkeletonLoader";
-import { SessionService } from "../../../api/backendApi"; 
+import { SessionService } from "../../../api/backendApi";
 
 interface HistoryModalProps {
   isOpen: boolean;
@@ -26,20 +24,18 @@ interface HistoryModalProps {
 const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
   const [search, setSearch] = useState("");
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  // NEW LOGIC: Local state for preview messages
+  // LOGIC: Local state for preview messages
   const [previewMessages, setPreviewMessages] = useState<any[]>([]);
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
 
-  const user = useAppSelector((state: any) => state.auth.user);
-  const token = useAppSelector((state: any) => state.auth.token); // NEW LOGIC
+  const token = useAppSelector((state: any) => state.auth.accessToken);
   const isDark = useAppSelector((state: any) => state.theme.isDark);
 
-  // 1. Fetch All Chats
-  const { chats = [] } = useChatList(user?.id);
+  // LOGIC: Fetch chats from hook
+  const { chats } = useChatList();
 
-  // 2. Fetch Messages for Preview (NEW LOGIC)
+  // LOGIC: Fetch Preview Messages when a chat is clicked
   useEffect(() => {
     const fetchPreview = async () => {
       if (!selectedChatId || !token) {
@@ -66,24 +62,14 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
-  const filteredChats = chats.filter((c) =>
+  // Filter logic
+  const filteredChats = (chats || []).filter((c: any) =>
     (c.title || "New Chat").toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleCopy = (content: string, id: string) => {
-    navigator.clipboard.writeText(content);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
-  };
-
-  // Helper for dates
   const formatDate = (dateVal: any) => {
     if (!dateVal) return "";
-    const date =
-      typeof dateVal === "string"
-        ? new Date(dateVal)
-        : new Date(dateVal.seconds * 1000);
-    return date.toLocaleDateString(undefined, {
+    return new Date(dateVal).toLocaleDateString(undefined, {
       month: "short",
       day: "numeric",
     });
@@ -92,7 +78,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-100flex items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4 animate-in fade-in duration-200"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4 animate-in fade-in duration-200"
     >
       <div
         onClick={(e) => e.stopPropagation()}
@@ -103,9 +89,8 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
             : "bg-white border-gray-200 md:border"
         )}
       >
-        {/* Close Button */}
         <button
-        title="button-close"
+          title="Close"
           onClick={onClose}
           className="absolute top-3 right-3 z-50 p-2 rounded-full hover:bg-white/10 transition-colors cursor-pointer"
         >
@@ -152,13 +137,13 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
           </div>
 
           <div className="flex-1 overflow-y-auto p-2">
-            {filteredChats.map((chat) => (
+            {filteredChats.map((chat: any) => (
               <button
-                key={chat.id}
-                onClick={() => setSelectedChatId(chat.id)}
+                key={chat.session_id}
+                onClick={() => setSelectedChatId(chat.session_id)}
                 className={cn(
                   "w-full text-left px-3 py-3 rounded-lg text-sm transition-colors mb-1 flex items-center gap-3 group relative hover:cursor-pointer",
-                  selectedChatId === chat.id
+                  selectedChatId === chat.session_id
                     ? isDark
                       ? "bg-[#1F1F1F] text-white"
                       : "bg-gray-200 text-black"
@@ -171,7 +156,9 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
                   size={16}
                   className={cn(
                     "shrink-0",
-                    selectedChatId === chat.id ? "opacity-100" : "opacity-50"
+                    selectedChatId === chat.session_id
+                      ? "opacity-100"
+                      : "opacity-50"
                   )}
                 />
                 <div className="flex-1 overflow-hidden">
@@ -180,9 +167,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
                   </div>
                   <div className="text-[10px] opacity-40 truncate flex items-center gap-1">
                     <Calendar size={10} />
-                    {formatDate(
-                      chat.updated_at || chat.created_at || chat.createdAt
-                    )}
+                    {formatDate(chat.created_at)}
                   </div>
                 </div>
               </button>
@@ -200,7 +185,6 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
         >
           {selectedChatId ? (
             <>
-              {/* Preview Header */}
               <div
                 className={cn(
                   "px-4 md:px-6 py-4 border-b flex items-center justify-between shrink-0",
@@ -211,7 +195,6 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
               >
                 <div className="flex items-center gap-3">
                   <button
-                  title="button-back"
                     onClick={() => setSelectedChatId(null)}
                     className="md:hidden"
                   >
@@ -224,127 +207,71 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
                         isDark ? "text-gray-100" : "text-gray-900"
                       )}
                     >
-                      {filteredChats.find((c) => c.id === selectedChatId)
-                        ?.title || "Chat Preview"}
+                      {filteredChats.find(
+                        (c: any) => c.session_id === selectedChatId
+                      )?.title || "Chat Preview"}
                     </h3>
                   </div>
                 </div>
               </div>
 
-              {/* Messages Area */}
               <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
                 {isPreviewLoading ? (
                   <div className="space-y-4 max-w-2xl mx-auto pt-10">
                     <SkeletonLoader className="h-16 w-3/4 rounded-xl opacity-20" />
                     <SkeletonLoader className="h-24 w-full rounded-xl opacity-20" />
-                    <SkeletonLoader className="h-16 w-5/6 rounded-xl opacity-20" />
                   </div>
                 ) : (
                   <div className="flex flex-col gap-6 max-w-3xl mx-auto pb-10">
-                    {previewMessages.map((msg: any, idx: number) => {
-                      const msgId = msg.id || idx;
-                      return (
+                    {previewMessages.map((msg: any, idx: number) => (
+                      <div
+                        key={idx}
+                        className={cn(
+                          "flex w-full relative group",
+                          msg.role === "user" ? "justify-end" : "justify-start"
+                        )}
+                      >
                         <div
-                          key={msgId}
                           className={cn(
-                            "flex w-full relative group",
+                            "flex gap-3 max-w-[85%]",
                             msg.role === "user"
-                              ? "justify-end"
-                              : "justify-start"
+                              ? "flex-row-reverse"
+                              : "flex-row"
                           )}
                         >
                           <div
                             className={cn(
-                              "flex gap-3 max-w-[85%]",
+                              "w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-1",
                               msg.role === "user"
-                                ? "flex-row-reverse"
-                                : "flex-row"
+                                ? "bg-indigo-600 text-white"
+                                : isDark
+                                ? "bg-gray-700 text-white"
+                                : "bg-black text-white"
                             )}
                           >
-                            {/* Avatar */}
-                            <div
-                              className={cn(
-                                "w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-1",
-                                msg.role === "user"
-                                  ? "bg-indigo-600 text-white"
-                                  : isDark
-                                  ? "bg-gray-700 text-white"
-                                  : "bg-black text-white"
-                              )}
-                            >
-                              {msg.role === "user" ? (
-                                <User size={14} />
-                              ) : (
-                                <Bot size={14} />
-                              )}
-                            </div>
-
-                            {/* Bubble */}
-                            <div
-                              className={cn(
-                                "px-4 py-2.5 rounded-2xl text-sm leading-relaxed relative group-hover:shadow-sm transition-shadow",
-                                msg.role === "user"
-                                  ? isDark
-                                    ? "bg-[#2F3336] text-gray-100 rounded-tr-sm"
-                                    : "bg-gray-200 text-gray-900 rounded-tr-sm"
-                                  : "bg-transparent text-gray-800 dark:text-gray-200 pl-0"
-                              )}
-                            >
-                              <div className="markdown-content">
-                                {msg.role === "user" ? (
-                                  <p>{msg.content}</p>
-                                ) : (
-                                  <ReactMarkdown
-                                    remarkPlugins={[remarkGfm]}
-                                    components={{
-                                      code: ({
-                                        node,
-                                        className,
-                                        children,
-                                        ...props
-                                      }: any) => {
-                                        const match = /language-(\w+)/.exec(
-                                          className || ""
-                                        );
-                                        return match ? (
-                                          <div className="rounded-md bg-black/50 p-2 my-2 overflow-x-auto">
-                                            <code
-                                              className={className}
-                                              {...props}
-                                            >
-                                              {children}
-                                            </code>
-                                          </div>
-                                        ) : (
-                                          <code
-                                            className="bg-black/10 dark:bg-white/10 px-1 rounded"
-                                            {...props}
-                                          >
-                                            {children}
-                                          </code>
-                                        );
-                                      },
-                                      a: ({ href, children }) => (
-                                        <a
-                                          href={href}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="text-blue-500 hover:underline"
-                                        >
-                                          {children}
-                                        </a>
-                                      ),
-                                    }}
-                                  >
-                                    {msg.content}
-                                  </ReactMarkdown>
-                                )}
-                              </div>
-                            </div>
+                            {msg.role === "user" ? (
+                              <User size={14} />
+                            ) : (
+                              <Bot size={14} />
+                            )}
+                          </div>
+                          <div
+                            className={cn(
+                              "px-4 py-2.5 rounded-2xl text-sm leading-relaxed",
+                              msg.role === "user"
+                                ? isDark
+                                  ? "bg-[#2F3336] text-gray-100"
+                                  : "bg-gray-200 text-gray-900"
+                                : "bg-transparent text-gray-800 dark:text-gray-200 pl-0"
+                            )}
+                          >
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                              {msg.content}
+                            </ReactMarkdown>
                           </div>
                         </div>
-                      );
-                    })}
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
