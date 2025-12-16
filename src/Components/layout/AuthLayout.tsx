@@ -71,7 +71,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
 
       {/* --- RIGHT SIDE: Image --- */}
       <div className="hidden lg:block w-1/2 relative p-4 h-screen top-0">
-        <div className="relative w-full h-full rounded-3xl overflow-hidden sticky  shadow-2xl bg-black border border-[#27272A]">
+        <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl bg-black border border-[#27272A]">
           <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent z-10" />
           <img
             ref={imageRef}

@@ -10,7 +10,6 @@ import {
   ExternalLink,
   Loader2,
   AlertTriangle,
-  X,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import { useChatList } from "../features/chat/hooks/useChat";

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import ChatInput from "./ChatInput";
 import MessageBubble from "../../../Components/ui/MessageBubble";
@@ -88,15 +88,7 @@ const ChatInterface: React.FC = () => {
           ) : (
             <>
               {messages.length === 0 && !hasInitialized.current ? (
-                <div className="h-[60vh] flex flex-col items-center justify-center opacity-40">
-                  <div className="text-6xl mb-6 grayscale">⚡</div>
-                  <h2 className="font-bold text-2xl mb-2">
-                    Integri AI is ready
-                  </h2>
-                  <p className="text-sm text-gray-500">
-                    Ask about anything, anytime.
-                  </p>
-                </div>
+                console.error("❌ No messages found")                
               ) : (
                 messages.map((msg, index) => (
                   <MessageBubble
@@ -128,8 +120,8 @@ const ChatInterface: React.FC = () => {
         className={cn(
           "absolute bottom-0 left-0 w-full z-30 pt-10 pb-6 px-4",
           isDark
-            ? "bg-gradient-to-t from-black via-black to-transparent"
-            : "bg-gradient-to-t from-white via-white to-transparent"
+            ? "bg-linear-to-t from-black via-black to-transparent"
+            : "bg-linear-to-t from-white via-white to-transparent"
         )}
       >
         <div className="w-full max-w-3xl mx-auto">

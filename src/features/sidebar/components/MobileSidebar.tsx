@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   X,
   MessageSquare,
@@ -12,36 +12,51 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../hooks/useRedux";
 import { toggleMobileMenu } from "../../chat/chatSlice";
-import { SessionService } from "../../../api/backendApi"; // NEW LOGIC
+import { SessionService } from "../../../api/backendApi";
 import { useChatList } from "../../chat/hooks/useChat";
 import { cn } from "../../../lib/utils";
+import DeleteModal from "../../../Components/ui/DeleteModal"; 
 
 const MobileSidebar: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Redux State
   const isOpen = useAppSelector((state: any) => state.chat.isMobileMenuOpen);
+  {isOpen} // FOR VERCEL FIX
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   const user = useAppSelector((state: any) => state.auth.user);
-  const token = useAppSelector((state: any) => state.auth.token); // NEW LOGIC
+  const token = useAppSelector((state: any) => state.auth.token);
+  const currentModel = useAppSelector((state: any) => state.chat.currentModel);
 
-  // Fetch chats using hook
-  const { chats: sessions = [] } = useChatList(user?.id);
+  // Local State for Deletion
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [chatToDelete, setChatToDelete] = useState<string | null>(null);
+
+  // Data Fetching
+  const { chats, handleDeleteChat, refreshChats } = useChatList(user?.id);
 
   // --- ACTIONS ---
+
   const handleNavigation = (path: string) => {
     navigate(path);
     dispatch(toggleMobileMenu(false));
   };
 
   const handleNewChat = async () => {
-    if (!token) return; // NEW LOGIC
+    if (!token) return;
     try {
-      // NEW LOGIC
-      const response = await SessionService.createSession(token, "gpt-4o");
-      if (response && response.session_id) {
-        navigate(`/chat/${response.session_id}`);
+      const response = await SessionService.createSession(
+        token,
+        currentModel || "gpt-4o"
+      );
+      const newSessionId =
+        response?.session_id || response?.id || response?._id;
+
+      if (newSessionId) {
+        if (refreshChats) refreshChats(); // Ensure list updates
+        navigate(`/chat/${newSessionId}`);
         dispatch(toggleMobileMenu(false));
       }
     } catch (error) {
@@ -49,150 +64,207 @@ const MobileSidebar: React.FC = () => {
     }
   };
 
-  const handleDeleteChat = async (e: React.MouseEvent, chatId: string) => {
+  // --- DELETE HANDLERS ---
+
+  const requestDelete = (e: React.MouseEvent, sessionId: string) => {
+    e.preventDefault();
     e.stopPropagation();
-    if (!token) return; // NEW LOGIC
-    if (window.confirm("Delete this chat?")) {
-      try {
-        await SessionService.deleteSession(token, chatId); // NEW LOGIC
-        window.location.reload();
-      } catch (error) {
-        console.error("Delete failed", error);
+    setChatToDelete(sessionId);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (chatToDelete && handleDeleteChat) {
+      await handleDeleteChat(chatToDelete);
+
+      // If we are currently on the deleted page, go home
+      if (location.pathname.includes(chatToDelete)) {
+        navigate("/");
       }
+
+      setChatToDelete(null);
+      setIsDeleteModalOpen(false);
     }
   };
 
   return (
     <>
-      {/* Overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/60 z-90 backdrop-blur-sm transition-opacity"
-          onClick={() => dispatch(toggleMobileMenu(false))}
-        />
-      )}
+      {/* Scrollbar Styles (Same as Desktop) */}
+      <style>{`
+        .mobile-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: transparent transparent;
+          transition: scrollbar-color 0.3s;
+        }
+        .mobile-scrollbar:hover {
+          scrollbar-color: ${isDark ? "#333" : "#CCC"} transparent;
+        }
+        .mobile-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .mobile-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .mobile-scrollbar::-webkit-scrollbar-thumb {
+          background-color: transparent;
+          border-radius: 10px;
+        }
+        .mobile-scrollbar:hover::-webkit-scrollbar-thumb {
+          background-color: ${isDark ? "#333" : "#CCC"};
+        }
+      `}</style>
 
-      {/* Sidebar Panel */}
-      <div
-        className={cn(
-          "fixed inset-y-0 left-0 z-100 w-[85%] max-w-[320px] transition-transform duration-300 ease-out transform flex flex-col",
-          isOpen ? "translate-x-0" : "-translate-x-full",
-          isDark
-            ? "bg-[#090909] border-r border-[#222]"
-            : "bg-white border-r border-gray-200"
-        )}
-      >
-        {/* Header */}
-        <div className="p-4 flex items-center justify-between border-b border-transparent">
-          <h2
-            className={cn(
-              "text-xl font-bold",
-              isDark ? "text-white" : "text-gray-900"
-            )}
-          >
-            Integri-AI
-          </h2>
+      {/* Delete Modal */}
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+        isDark={isDark}
+      />
+
+      <div className="flex flex-col h-full w-full relative">
+        {/* 1. Header */}
+        <div className="flex items-center justify-between px-4 py-4 shrink-0">
+          <div className="flex items-center gap-2">
+            <History
+              size={20}
+              className={isDark ? "text-white" : "text-black"}
+            />
+            <h2
+              className={cn(
+                "text-lg font-bold",
+                isDark ? "text-white" : "text-black"
+              )}
+            >
+              History
+            </h2>
+          </div>
           <button
-            type="button"
-            aria-label="Close"
+          title="button"
             onClick={() => dispatch(toggleMobileMenu(false))}
             className={cn(
-              "p-2 rounded-full",
+              "p-2 rounded-full transition-colors",
               isDark
-                ? "text-gray-400 hover:bg-[#222]"
-                : "text-gray-600 hover:bg-gray-100"
+                ? "hover:bg-[#1A1A1A] text-white"
+                : "hover:bg-gray-100 text-black"
             )}
           >
-            <X size={24} />
+            <X size={20} />
           </button>
         </div>
 
-        {/* Action: New Chat */}
-        <div className="px-4 mt-4">
+        {/* 2. Navigation Grid & New Chat */}
+        <div className="px-4 mb-2 shrink-0">
+          {/* New Chat Button */}
           <button
             onClick={handleNewChat}
             className={cn(
-              "w-full flex items-center justify-center gap-2 py-3 rounded-full font-medium transition-all shadow-sm active:scale-95",
+              "flex items-center justify-center gap-2 w-full py-3 rounded-xl font-medium mb-4 transition-all active:scale-[0.98]",
               isDark
-                ? "bg-white text-black hover:bg-gray-200"
+                ? "bg-white text-black hover:bg-gray-100"
                 : "bg-black text-white hover:bg-gray-800"
             )}
           >
-            <Plus size={20} />
+            <Plus size={18} strokeWidth={2.5} />
             <span>New Chat</span>
           </button>
+
+          {/* Quick Nav Grid */}
+          <div className="grid grid-cols-4 gap-2 mb-4">
+            <NavTile
+              icon={Home}
+              label="Home"
+              active={location.pathname === "/"}
+              onClick={() => handleNavigation("/")}
+              isDark={isDark}
+            />
+            <NavTile
+              icon={History}
+              label="History"
+              active={location.pathname === "/history"}
+              onClick={() => handleNavigation("/history")}
+              isDark={isDark}
+            />
+            <NavTile
+              icon={Library}
+              label="Library"
+              active={location.pathname === "/library"}
+              onClick={() => handleNavigation("/library")}
+              isDark={isDark}
+            />
+            <NavTile
+              icon={Settings}
+              label="Settings"
+              active={location.pathname === "/settings"}
+              onClick={() => handleNavigation("/settings")}
+              isDark={isDark}
+            />
+          </div>
         </div>
 
-        {/* Navigation Links */}
-        <div className="p-4 grid grid-cols-4 gap-2 border-b border-transparent">
-          <NavTile
-            icon={Home}
-            label="Home"
-            active={location.pathname === "/"}
-            onClick={() => handleNavigation("/")}
-            isDark={isDark}
-          />
-          <NavTile
-            icon={History}
-            label="History"
-            active={location.pathname === "/history"}
-            onClick={() => handleNavigation("/history")}
-            isDark={isDark}
-          />
-          <NavTile
-            icon={Library}
-            label="Library"
-            active={location.pathname === "/library"}
-            onClick={() => handleNavigation("/library")}
-            isDark={isDark}
-          />
-          <NavTile
-            icon={Settings}
-            label="Settings"
-            active={location.pathname === "/settings"}
-            onClick={() => handleNavigation("/settings")}
-            isDark={isDark}
-          />
+        {/* 3. Recent Chats Header */}
+        <div className="px-6 py-2 shrink-0">
+          <span className="text-[#71767B] text-xs font-bold uppercase tracking-wider">
+            Recent Chats
+          </span>
         </div>
 
-        {/* Recent Chats */}
-        <div className="flex-1 overflow-y-auto px-4 py-4">
-          <h3
-            className={cn(
-              "text-xs font-bold uppercase mb-3",
-              isDark ? "text-gray-500" : "text-gray-400"
-            )}
-          >
-            Recent Conversations
-          </h3>
+        {/* 4. Scrollable Chat List */}
+        <div className="flex-1 overflow-y-auto px-3 pb-4 mobile-scrollbar min-h-0">
           <div className="space-y-1">
-            {sessions.length === 0 ? (
-              <p className="text-sm opacity-50 italic">No recent chats</p>
+            {chats.length === 0 ? (
+              <div className="text-center py-8 opacity-50 text-sm">
+                No recent conversations
+              </div>
             ) : (
-              sessions.map((chat) => (
-                <div
-                  key={chat.id}
-                  onClick={() => handleNavigation(`/chat/${chat.id}`)}
-                  className={cn(
-                    "flex items-center justify-between p-3 rounded-xl text-sm transition-colors cursor-pointer",
-                    isDark
-                      ? "hover:bg-[#2A2B32] text-gray-200"
-                      : "hover:bg-gray-100 text-gray-700"
-                  )}
-                >
-                  <div className="flex items-center gap-3 overflow-hidden">
-                    <MessageSquare size={16} className="shrink-0 opacity-60" />
-                    <span className="truncate">{chat.title || "New Chat"}</span>
-                  </div>
-                  <button
-                    title="Delete Chat"
-                    onClick={(e) => handleDeleteChat(e, chat.id)}
-                    className="p-1 opacity-50 hover:opacity-100 hover:text-red-500 cursor-pointer"
+              chats.map((chat) => {
+                const sessionId = chat.session_id || chat.id;
+                if (!sessionId) return null; // Skip invalid
+
+                return (
+                  <div
+                    key={sessionId}
+                    onClick={() => {
+                      navigate(`/chat/${sessionId}`);
+                      dispatch(toggleMobileMenu(false));
+                    }}
+                    className={cn(
+                      "group relative flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-200 cursor-pointer text-sm",
+                      location.pathname.includes(sessionId)
+                        ? isDark
+                          ? "bg-[#2A2B32] text-white font-medium"
+                          : "bg-gray-100 text-gray-900 font-medium"
+                        : isDark
+                        ? "text-[#9CA3AF] hover:bg-[#1A1A1A] hover:text-white"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                    )}
                   >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-              ))
+                    <div className="flex items-center gap-3 overflow-hidden flex-1">
+                      <MessageSquare
+                        size={16}
+                        className="shrink-0 opacity-60"
+                      />
+                      <span className="truncate pr-2">
+                        {chat.title || "New Chat"}
+                      </span>
+                    </div>
+
+                    {/* Delete Button - Visible on Mobile usually always, or we can keep standard opacity logic */}
+                    <button
+                      title="Delete Chat"
+                      onClick={(e) => requestDelete(e, sessionId)}
+                      className={cn(
+                        "p-2 rounded-full transition-colors shrink-0 z-10",
+                        isDark
+                          ? "text-gray-500 hover:text-red-400 hover:bg-[#3A3B42]"
+                          : "text-gray-400 hover:text-red-600 hover:bg-gray-200"
+                      )}
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
+                );
+              })
             )}
           </div>
         </div>
@@ -201,23 +273,34 @@ const MobileSidebar: React.FC = () => {
   );
 };
 
-// Helper Component for the 4-grid Icons
+// Helper Component for the 4-grid Icons (Unchanged UI)
 const NavTile = ({ icon: Icon, label, active, onClick, isDark }: any) => (
   <button
     onClick={onClick}
     className={cn(
-      "flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all cursor-pointer",
+      "flex flex-col items-center justify-center gap-1.5 p-2 rounded-xl transition-all cursor-pointer h-[70px]",
       active
         ? isDark
-          ? "bg-indigo-600 text-white"
-          : "bg-black text-white"
+          ? "bg-[#1A1A1A] text-white"
+          : "bg-gray-100 text-black"
         : isDark
-        ? "text-gray-400 hover:bg-[#1A1A1A]"
-        : "text-gray-500 hover:bg-gray-100"
+        ? "text-gray-500 hover:bg-[#111] hover:text-gray-300"
+        : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
     )}
   >
-    <Icon size={20} strokeWidth={2.5} />
-    <span className="text-[10px] font-medium">{label}</span>
+    <Icon
+      size={20}
+      strokeWidth={active ? 2.5 : 2}
+      className={active ? "text-indigo-500" : "opacity-70"}
+    />
+    <span
+      className={cn(
+        "text-[10px] font-medium",
+        active ? "opacity-100" : "opacity-60"
+      )}
+    >
+      {label}
+    </span>
   </button>
 );
 

@@ -18,6 +18,7 @@ export const triggerChatUpdate = () => {
 
 // --- HOOK FOR CHAT LIST (SIDEBAR & HISTORY) ---
 export const useChatList = (userId?: string) => {
+  {userId} //FOR VERCEL FIX
   const [chats, setChats] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const token = useAppSelector((state: any) => state.auth.accessToken);

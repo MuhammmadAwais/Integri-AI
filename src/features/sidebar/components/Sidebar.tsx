@@ -11,11 +11,13 @@ import {
   ChevronsRight,
   ChevronDown,
   ChevronRight,
+  Trash2,
 } from "lucide-react";
 import { useAppSelector } from "../../../hooks/useRedux";
 import { useChatList } from "../../chat/hooks/useChat";
 import { cn } from "../../../lib/utils";
 import HistoryModal from "./HistoryModal";
+import DeleteModal from "../../../Components/ui/DeleteModal";
 
 // --- NAVIGATION ITEMS CONFIG ---
 const NAV_ITEMS = [
@@ -30,7 +32,11 @@ const Sidebar: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isHistoryOpen, setIsHistoryOpen] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [showModal, setShowModal] = useState(false);
+
+  // Modal States
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [chatToDelete, setChatToDelete] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -59,33 +65,80 @@ const Sidebar: React.FC = () => {
   }, []);
 
   // Data Fetching
-  const { chats = [] } = useChatList(user?.id);
+  const { chats = [], handleDeleteChat } = useChatList(user?.id);
 
   // Filter Logic
-  const filteredChats = chats
-    .filter((c) =>
-      (c.title || "").toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    .slice(0, 5);
-
-  // Styling Constants
-  const COLLAPSED_ICON_SIZE = 20;
+  const filteredChats = chats.filter((c) =>
+    (c.title || "").toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleNavClick = (path: string) => {
     navigate(path);
   };
 
+  // --- DELETE HANDLERS ---
+  const requestDelete = (e: React.MouseEvent, sessionId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setChatToDelete(sessionId);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (chatToDelete && handleDeleteChat) {
+      await handleDeleteChat(chatToDelete);
+      if (location.pathname.includes(chatToDelete)) {
+        navigate("/");
+      }
+      setChatToDelete(null);
+      setIsDeleteModalOpen(false);
+    }
+  };
+
   return (
     <>
-      <HistoryModal isOpen={showModal} onClose={() => setShowModal(false)} />
+      <style>{`
+        .custom-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: transparent transparent;
+          transition: scrollbar-color 0.3s;
+        }
+        .custom-scrollbar:hover {
+          scrollbar-color: ${isDark ? "#333" : "#CCC"} transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background-color: transparent;
+          border-radius: 10px;
+        }
+        .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+          background-color: ${isDark ? "#333" : "#CCC"};
+        }
+      `}</style>
+
+      {/* History Modal (Now Rendered via Portal) */}
+      <HistoryModal
+        isOpen={showHistoryModal}
+        onClose={() => setShowHistoryModal(false)}
+      />
+
+      {/* Delete Modal (Now Rendered via Portal) */}
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+        isDark={isDark}
+      />
 
       <div
         className={cn(
-          // CORE LAYOUT & ANIMATION
           "flex flex-col h-full border-r transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] relative z-40 select-none",
-          // WIDTH LOGIC
           isExpanded ? "w-60" : "w-[60px]",
-          // BACKGROUND COLORS
           isDark
             ? "bg-[#000000] border-[#1F1F1F] text-[#E7E9EA]"
             : "bg-white border-gray-200 text-gray-900"
@@ -145,7 +198,7 @@ const Sidebar: React.FC = () => {
                   : "hover:bg-gray-100"
               )}
             >
-              <Search size={COLLAPSED_ICON_SIZE} />
+              <Search size={20} />
             </button>
           )}
         </div>
@@ -200,36 +253,57 @@ const Sidebar: React.FC = () => {
 
               {/* Dropdown Content */}
               {isHistoryOpen && (
-                <div className="pl-2 space-y-4">
+                <div className="pl-2 space-y-1">
                   <div>
-                    <h4 className="text-[11px] font-semibold text-[#505050] px-2 mb-1">
-                      Today
+                    <h4 className="text-[11px] font-semibold text-[#505050] px-2 mb-1 mt-2">
+                      Recent
                     </h4>
                     {filteredChats.length === 0 ? (
                       <div className="text-[12px] text-gray-600 px-2 py-1">
                         No chats found
                       </div>
                     ) : (
-                      filteredChats.map((chat) => (
-                        <Link
-                          key={chat.id}
-                          to={`/chat/${chat.session_id}`}
-                          className={cn(
-                            "block px-2 py-1 rounded text-[13px] truncate transition-colors",
-                            isDark
-                              ? "text-[#E7E9EA] hover:bg-[#1A1A1A]"
-                              : "text-gray-700 hover:bg-gray-100"
-                          )}
-                        >
-                          {chat.title || "New Conversation"}
-                        </Link>
-                      ))
+                      filteredChats.map((chat) => {
+                        const sessionId = chat.session_id || chat.id;
+                        if (!sessionId) return null;
+
+                        return (
+                          <div key={sessionId} className="group relative">
+                            <Link
+                              to={`/chat/${sessionId}`}
+                              className={cn(
+                                "block px-2 py-1 rounded text-[13px] truncate transition-colors pr-8",
+                                isDark
+                                  ? "text-[#E7E9EA] hover:bg-[#1A1A1A]"
+                                  : "text-gray-700 hover:bg-gray-100",
+                                location.pathname.includes(sessionId) &&
+                                  (isDark ? "bg-[#1A1A1A]" : "bg-gray-100")
+                              )}
+                            >
+                              {chat.title || "New Conversation"}
+                            </Link>
+
+                            <button
+                              onClick={(e) => requestDelete(e, sessionId)}
+                              className={cn(
+                                "hover:cursor-pointer absolute right-1 top-1/2 -translate-y-1/2 p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity",
+                                isDark
+                                  ? "hover:bg-[#2C2C2C] text-gray-400 hover:text-red-400"
+                                  : "hover:bg-gray-200 text-gray-500 hover:text-red-500"
+                              )}
+                              title="Delete chat"
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </div>
+                        );
+                      })
                     )}
                   </div>
                   <button
-                    onClick={() => setShowModal(true)}
+                    onClick={() => setShowHistoryModal(true)}
                     className={cn(
-                      "text-[12px] text-[#71767B]  px-2 py-1 hover:underline text-left block w-full hover:cursor-pointer",
+                      "text-[12px] text-[#71767B] px-2 py-1 hover:underline text-left block w-full hover:cursor-pointer mt-2",
                       isDark ? "hover:text-white" : "hover:text-black"
                     )}
                   >
@@ -249,7 +323,7 @@ const Sidebar: React.FC = () => {
                   : "hover:bg-gray-100"
               )}
             >
-              <History size={COLLAPSED_ICON_SIZE} />
+              <History size={20} />
             </button>
           )}
         </div>
@@ -295,7 +369,6 @@ const Sidebar: React.FC = () => {
   );
 };
 
-// --- HELPER COMPONENT ---
 const NavItem = ({
   icon: Icon,
   label,
