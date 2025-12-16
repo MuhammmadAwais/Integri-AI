@@ -213,7 +213,7 @@ const Sidebar: React.FC = () => {
                       filteredChats.map((chat) => (
                         <Link
                           key={chat.id}
-                          to={`/chat/${chat.id}`}
+                          to={`/chat/${chat.session_id}`}
                           className={cn(
                             "block px-2 py-1 rounded text-[13px] truncate transition-colors",
                             isDark
