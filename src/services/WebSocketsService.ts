@@ -11,10 +11,9 @@ class WebSocketService {
   private socket: WebSocket | null = null;
   private messageHandler: ((data: any) => void) | null = null;
   // Use env var or default
-  private readonly socketUrl =
-    import.meta.env.VITE_APP_WEBSOCKET_BASE_URL;
+  private readonly socketUrl = import.meta.env.VITE_APP_WEBSOCKET_BASE_URL;
 
-  // FIX: Queue for messages sent before connection is ready
+  // Queue for messages sent before connection is ready
   private messageQueue: WebSocketMessage[] = [];
 
   connect(token: string, sessionId: string) {
@@ -51,7 +50,7 @@ class WebSocketService {
 
     this.socket.onmessage = (event) => {
       try {
-        console.log("📩 [WS] Raw Message Received:", event.data); // DEBUG LOG
+        // console.log("📩 [WS] Raw Message Received:", event.data); // Uncomment for verbose logging
         const data = JSON.parse(event.data);
         if (this.messageHandler) {
           this.messageHandler(data);
@@ -70,15 +69,16 @@ class WebSocketService {
     };
   }
 
-  sendMessage(content: string, model: string = "gpt-5.1") {
+  // UPDATED: Accepts provider argument
+  sendMessage(content: string, model: string, provider: string) {
     const message: WebSocketMessage = {
       type: "message",
       content: content,
-      provider: "openai",
+      provider: provider, // Dynamic provider
       model: model,
     };
 
-    // FIX: Check if ready. If not, queue it.
+    // Check if ready. If not, queue it.
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       console.log("📤 [WS] Sending message immediately:", content);
       this.send(message);

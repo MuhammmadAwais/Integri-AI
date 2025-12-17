@@ -1,14 +1,20 @@
 import { SessionService } from "../../../api/backendApi";
+import AVAILABLE_MODELS from "../../../../Constants"; // Adjust path
 
-/**
- * REFACTORED: This service now communicates with your Custom Backend.
- * OpenAI and Firebase logic has been completely removed.
- */
 export const ChatService = {
   // 1. Create a New Chat (Uses Backend API)
-  createChat: async (token: string, model: string = "gpt-5.1") => {
+  createChat: async (token: string, modelId: string = "gpt-5.1") => {
     try {
-      const response = await SessionService.createSession(token, model);
+      // Lookup the provider
+      const selectedModel = AVAILABLE_MODELS.find((m) => m.id === modelId);
+      const provider = selectedModel ? selectedModel.provider : "openai";
+
+      // Pass token, model, AND provider to backendApi
+      const response = await SessionService.createSession(
+        token,
+        modelId,
+        provider
+      );
       return response.session_id;
     } catch (error) {
       console.error("Backend: Failed to create chat", error);
@@ -27,7 +33,6 @@ export const ChatService = {
   },
 
   // 3. Send Message -> DEPRECATED
-  // Real-time messages must go through WebSocket (see useChat.ts), not a REST API service.
   sendMessage: async () => {
     console.warn(
       "⚠️ ChatService.sendMessage is deprecated. Messages are now sent via WebSocket in the useChat hook."

@@ -49,13 +49,19 @@ export const SessionService = {
     }
   },
 
-  // Create new chat
-  createSession: async (token: string, model: string = "gpt-5.1") => {
-    console.log("✨ [API] Creating New Session with model:", model);
+  // Create new chat (UPDATED)
+  createSession: async (token: string, model: string, provider: string) => {
+    console.log(
+      `✨ [API] Creating New Session. Model: ${model}, Provider: ${provider}`
+    );
     try {
       const response = await backendApi.post(
         "/api/v1/sessions",
-        { model, provider: "openai", is_voice_session: false },
+        {
+          model,
+          provider: provider, // Now dynamic
+          is_voice_session: false,
+        },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       return response.data;
@@ -65,7 +71,7 @@ export const SessionService = {
     }
   },
 
-  // --- NEW: Rename Session (Fixes "New Chat") ---
+  // Rename Session
   updateSession: async (token: string, sessionId: string, title: string) => {
     try {
       await backendApi.patch(
@@ -95,7 +101,7 @@ export const SessionService = {
     return response.data;
   },
 
-  // --- NEW: Delete Message ---
+  // Delete Message
   deleteMessage: async (token: string, messageId: string) => {
     const response = await backendApi.delete(`/api/v1/messages/${messageId}`, {
       headers: { Authorization: `Bearer ${token}` },

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { socketService } from "../../../services/WebSocketsService";
 import { SessionService } from "../../../api/backendApi";
 import { useAppSelector } from "../../../hooks/useRedux";
+import AVAILABLE_MODELS from "../../../../Constants";; // Adjust path
 
 export interface Message {
   id?: string;
@@ -18,7 +19,9 @@ export const triggerChatUpdate = () => {
 
 // --- HOOK FOR CHAT LIST (SIDEBAR & HISTORY) ---
 export const useChatList = (userId?: string) => {
-  {userId} //FOR VERCEL FIX
+  {
+    userId;
+  } //FOR VERCEL FIX
   const [chats, setChats] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const token = useAppSelector((state: any) => state.auth.accessToken);
@@ -143,7 +146,15 @@ export const useChat = (sessionId: string | undefined) => {
     (content: string) => {
       if (!content.trim()) return;
       setMessages((prev) => [...prev, { role: "user", content }]);
-      socketService.sendMessage(content, currentModel || "gpt-5.1");
+
+      const modelId = currentModel || "gpt-5.1";
+
+      // LOOKUP PROVIDER LOGIC
+      const selectedModel = AVAILABLE_MODELS.find((m) => m.id === modelId);
+      const provider = selectedModel ? selectedModel.provider : "openai";
+
+      // Pass provider to socket service
+      socketService.sendMessage(content, modelId, provider);
     },
     [currentModel]
   );
