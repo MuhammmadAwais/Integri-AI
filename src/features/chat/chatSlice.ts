@@ -4,7 +4,7 @@ interface ChatState {
   isMobileMenuOpen: boolean;
   isContextSidebarOpen: boolean;
   activeSidebarTab: "home" | "history" | "library" | "settings";
-  currentModel: string; // e.g., "gpt-4o"
+  currentModel: string; // e.g., "gpt-5.1"
   activeChatId: string | null; // Tracks which chat user is looking at
 }
 
@@ -12,7 +12,7 @@ const initialState: ChatState = {
   isMobileMenuOpen: false,
   isContextSidebarOpen: true,
   activeSidebarTab: "home",
-  currentModel: "gpt-4o",
+  currentModel: "gpt-5.1",
   activeChatId: null,
 };
 

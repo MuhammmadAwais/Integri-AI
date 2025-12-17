@@ -314,7 +314,7 @@ const HistoryPage: React.FC = () => {
                           </td>
                           <td className="p-4">
                             <span className="opacity-70 border px-2 py-1 rounded-md text-xs">
-                              {session.model || "gpt-4o"}
+                              {session.model || "gpt-5.1"}
                             </span>
                           </td>
                           <td className="p-4 text-xs font-mono opacity-70">

@@ -11,7 +11,7 @@ interface ReasoningMenuProps {
 const ModelMenu : React.FC<ReasoningMenuProps> = ({ isOpen, onClose, selected, onSelect, isDark }) => {
   const models = [
     { id: "gpt-3.5-turbo", label: "GPT-3.5" },
-    { id: "gpt-4o", label: "GPT-4o" },
+    { id: "gpt-5.1", label: "GPT-5.1" },
     { id: "grok-2", label: "Grok 2 (Beta)" },
   ];
 

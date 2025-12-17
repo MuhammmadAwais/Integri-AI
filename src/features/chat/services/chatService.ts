@@ -6,7 +6,7 @@ import { SessionService } from "../../../api/backendApi";
  */
 export const ChatService = {
   // 1. Create a New Chat (Uses Backend API)
-  createChat: async (token: string, model: string = "gpt-4o") => {
+  createChat: async (token: string, model: string = "gpt-5.1") => {
     try {
       const response = await SessionService.createSession(token, model);
       return response.session_id;

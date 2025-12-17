@@ -70,7 +70,7 @@ class WebSocketService {
     };
   }
 
-  sendMessage(content: string, model: string = "gpt-4o") {
+  sendMessage(content: string, model: string = "gpt-5.1") {
     const message: WebSocketMessage = {
       type: "message",
       content: content,

@@ -50,7 +50,7 @@ export const SessionService = {
   },
 
   // Create new chat
-  createSession: async (token: string, model: string = "gpt-4o") => {
+  createSession: async (token: string, model: string = "gpt-5.1") => {
     console.log("✨ [API] Creating New Session with model:", model);
     try {
       const response = await backendApi.post(

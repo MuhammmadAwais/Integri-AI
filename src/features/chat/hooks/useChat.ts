@@ -143,7 +143,7 @@ export const useChat = (sessionId: string | undefined) => {
     (content: string) => {
       if (!content.trim()) return;
       setMessages((prev) => [...prev, { role: "user", content }]);
-      socketService.sendMessage(content, currentModel || "gpt-4o");
+      socketService.sendMessage(content, currentModel || "gpt-5.1");
     },
     [currentModel]
   );

@@ -49,7 +49,7 @@ const MobileSidebar: React.FC = () => {
     try {
       const response = await SessionService.createSession(
         token,
-        currentModel || "gpt-4o"
+        currentModel || "gpt-5.1"
       );
       const newSessionId =
         response?.session_id || response?.id || response?._id;

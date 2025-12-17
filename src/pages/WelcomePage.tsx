@@ -27,7 +27,7 @@ const Welcome: React.FC = () => {
   const { user, accessToken } = useAppSelector((state: any) => state.auth);
   const [inputValue, setInputValue] = useState("");
   const [reasoningMode, setReasoningMode] = useState("Auto");
-  const [modelMode, setModelMode] = useState("gpt-4o");
+  const [modelMode, setModelMode] = useState("gpt-5.1");
   const [showReasoningMenu, setShowReasoningMenu] = useState(false);
   const [showModelMenu, setShowModelMenu] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
