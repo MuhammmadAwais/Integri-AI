@@ -13,6 +13,7 @@ import {
   ChevronRight,
   Trash2,
 } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 import { useAppSelector } from "../../../hooks/useRedux";
 import { useChatList } from "../../chat/hooks/useChat";
 import { cn } from "../../../lib/utils";
@@ -25,6 +26,7 @@ const NAV_ITEMS = [
   { id: "voice", label: "Voice", icon: AudioWaveform, path: "/voice" },
   { id: "imagine", label: "Imagine", icon: ImageIcon, path: "/imagine" },
   { id: "projects", label: "Projects", icon: FolderOpen, path: "/projects" },
+  { id: "library", label: "Library", icon: CheckCircle, path: "/library" },
 ];
 
 const Sidebar: React.FC = () => {
