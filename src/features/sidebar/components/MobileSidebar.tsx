@@ -15,7 +15,9 @@ import { toggleMobileMenu } from "../../chat/chatSlice";
 import { SessionService } from "../../../api/backendApi";
 import { useChatList } from "../../chat/hooks/useChat";
 import { cn } from "../../../lib/utils";
-import DeleteModal from "../../../Components/ui/DeleteModal"; 
+import DeleteModal from "../../../Components/ui/DeleteModal";
+// 1. Import AVAILABLE_MODELS to lookup the provider
+import  AVAILABLE_MODELS  from "../../../../Constants";
 
 const MobileSidebar: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -24,7 +26,9 @@ const MobileSidebar: React.FC = () => {
 
   // Redux State
   const isOpen = useAppSelector((state: any) => state.chat.isMobileMenuOpen);
-  {isOpen} // FOR VERCEL FIX
+  {
+    isOpen;
+  } // FOR VERCEL FIX
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   const user = useAppSelector((state: any) => state.auth.user);
   const token = useAppSelector((state: any) => state.auth.token);
@@ -47,10 +51,18 @@ const MobileSidebar: React.FC = () => {
   const handleNewChat = async () => {
     if (!token) return;
     try {
+      // 2. Resolve the correct Provider for the current model
+      const modelId = currentModel || "gpt-5.1";
+      const modelConfig = AVAILABLE_MODELS.find((m) => m.id === modelId);
+      const provider = modelConfig ? modelConfig.provider : "openai";
+
+      // 3. Pass 'provider' to the createSession call
       const response = await SessionService.createSession(
         token,
-        currentModel || "gpt-5.1"
+        modelId,
+        provider
       );
+
       const newSessionId =
         response?.session_id || response?.id || response?._id;
 
@@ -140,7 +152,7 @@ const MobileSidebar: React.FC = () => {
             </h2>
           </div>
           <button
-          title="button"
+            title="Close Menu"
             onClick={() => dispatch(toggleMobileMenu(false))}
             className={cn(
               "p-2 rounded-full transition-colors",
@@ -155,7 +167,7 @@ const MobileSidebar: React.FC = () => {
 
         {/* 2. Navigation Grid & New Chat */}
         <div className="px-4 mb-2 shrink-0">
-          {/* New Chat Button */}
+          {/* New Chat Button - Now uses correct Provider logic */}
           <button
             onClick={handleNewChat}
             className={cn(
@@ -249,7 +261,7 @@ const MobileSidebar: React.FC = () => {
                       </span>
                     </div>
 
-                    {/* Delete Button - Visible on Mobile usually always, or we can keep standard opacity logic */}
+                    {/* Delete Button */}
                     <button
                       title="Delete Chat"
                       onClick={(e) => requestDelete(e, sessionId)}
