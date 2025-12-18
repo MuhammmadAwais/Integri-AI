@@ -1,6 +1,5 @@
 import axios from "axios";
 
-// Custom Backend URL
 const API_URL =
   import.meta.env.VITE_APP_BACKEND_API_BASE_URL || "https://integri.cloud";
 
@@ -15,56 +14,44 @@ const backendApi = axios.create({
 
 // --- AUTH ---
 export const getBackendToken = async (userId: any, email: any) => {
-  console.log("🔐 [API] Requesting Backend Token for:", email);
   try {
     const response = await backendApi.post("/api/v1/auth/token", {
       user_id: userId,
       email: email,
     });
-    console.log("✅ [API] Token Received:", response.data);
     return response.data;
   } catch (error: any) {
-    console.error(
-      "❌ [API] Auth Failed:",
-      error.response?.data || error.message
-    );
+    console.error("❌ [API] Auth Failed:", error);
     throw error;
   }
 };
 
-// --- SESSIONS (CHATS) ---
+// --- SESSIONS ---
 export const SessionService = {
-  // Get list of chats
   getSessions: async (token: string) => {
     try {
       const response = await backendApi.get("/api/v1/sessions", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      return Array.isArray(response.data)
-        ? response.data
-        : response.data.items || [];
+      return response.data;
     } catch (error) {
       console.error("❌ [API] Failed to get sessions", error);
       throw error;
     }
   },
 
-  // Create new chat (UPDATED)
+  // Critical: Accepts provider to support Claude/Gemini etc.
   createSession: async (token: string, model: string, provider: string) => {
-    console.log(
-      `✨ [API] Creating New Session. Model: ${model}, Provider: ${provider}`
-    );
     try {
       const response = await backendApi.post(
         "/api/v1/sessions",
         {
           model,
-          provider: provider, // Now dynamic
+          provider,
           is_voice_session: false,
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      console.log("✅ [API] Session Created:", response);
       return response.data;
     } catch (error) {
       console.error("❌ [API] Failed to create session", error);
@@ -72,7 +59,6 @@ export const SessionService = {
     }
   },
 
-  // Rename Session
   updateSession: async (token: string, sessionId: string, title: string) => {
     try {
       await backendApi.patch(
@@ -81,11 +67,10 @@ export const SessionService = {
         { headers: { Authorization: `Bearer ${token}` } }
       );
     } catch (e) {
-      console.error("Failed to update session title", e);
+      console.error("❌ [API] Failed to rename session", e);
     }
   },
 
-  // Get message history
   getSessionMessages: async (token: string, sessionId: string) => {
     const response = await backendApi.get(
       `/api/v1/sessions/${sessionId}/messages`,
@@ -94,15 +79,21 @@ export const SessionService = {
     return response.data;
   },
 
-  // Delete chat
   deleteSession: async (token: string, sessionId: string) => {
-    const response = await backendApi.delete(`/api/v1/sessions/${sessionId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data;
+    try {
+      const response = await backendApi.delete(
+        `/api/v1/sessions/${sessionId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("❌ [API] Failed to delete session", error);
+      throw error;
+    }
   },
 
-  // Delete Message
   deleteMessage: async (token: string, messageId: string) => {
     const response = await backendApi.delete(`/api/v1/messages/${messageId}`, {
       headers: { Authorization: `Bearer ${token}` },

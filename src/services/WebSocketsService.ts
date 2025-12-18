@@ -7,83 +7,62 @@ type WebSocketMessage = {
   model?: string;
 };
 
-class WebSocketService {
+// 1. Export class for multiple instances (Playground)
+export class WebSocketService {
   private socket: WebSocket | null = null;
   private messageHandler: ((data: any) => void) | null = null;
-  // Use env var or default
   private readonly socketUrl = import.meta.env.VITE_APP_WEBSOCKET_BASE_URL;
-
-  // Queue for messages sent before connection is ready
   private messageQueue: WebSocketMessage[] = [];
 
+  // Connect to a specific session
   connect(token: string, sessionId: string) {
-    // 1. Log connection attempt
-    console.log(`🔌 [WS] Attempting to connect to: ${this.socketUrl}`);
-    console.log(`🔌 [WS] Session ID: ${sessionId}`);
-
-    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      console.log("🔌 [WS] Already connected, skipping...");
-      return;
-    }
-
     if (this.socket) {
-      console.log("🔌 [WS] Closing existing socket before new connection...");
       this.disconnect();
     }
 
+    console.log(`🔌 [WS] Connecting to session: ${sessionId}`);
     this.socket = new WebSocket(this.socketUrl);
 
     this.socket.onopen = () => {
-      console.log("✅ [WS] Connection OPENED!");
-
-      // 2. Authenticate immediately
-      console.log("🔌 [WS] Sending Auth Packet...");
+      // Authenticate immediately
       this.send({
         type: "auth",
         token: token,
         session_id: sessionId,
       });
-
-      // 3. Send any queued messages
       this.flushQueue();
     };
 
     this.socket.onmessage = (event) => {
       try {
-        // console.log("📩 [WS] Raw Message Received:", event.data); // Uncomment for verbose logging
         const data = JSON.parse(event.data);
         if (this.messageHandler) {
           this.messageHandler(data);
         }
       } catch (e) {
-        console.error("❌ [WS] Failed to parse message:", e);
+        console.error("❌ [WS] Parse error:", e);
       }
     };
 
-    this.socket.onerror = (error) => {
-      console.error("❌ [WS] Socket Error:", error);
-    };
+    this.socket.onerror = (error) => console.error("❌ [WS] Error:", error);
 
-    this.socket.onclose = (event) => {
-      console.log(`⚠️ [WS] Connection Closed (Code: ${event.code})`);
+    this.socket.onclose = () => {
+      // Optional: Auto-reconnect logic could go here
     };
   }
 
-  // UPDATED: Accepts provider argument
+  // Send message with explicit Provider routing
   sendMessage(content: string, model: string, provider: string) {
     const message: WebSocketMessage = {
       type: "message",
       content: content,
-      provider: provider, // Dynamic provider
+      provider: provider, // Critical for routing to Claude/Gemini
       model: model,
     };
 
-    // Check if ready. If not, queue it.
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      console.log("📤 [WS] Sending message immediately:", content);
       this.send(message);
     } else {
-      console.warn("⏳ [WS] Socket not ready. Queueing message:", content);
       this.messageQueue.push(message);
     }
   }
@@ -94,7 +73,6 @@ class WebSocketService {
 
   disconnect() {
     if (this.socket) {
-      console.log("🔌 [WS] Disconnecting...");
       this.socket.close();
       this.socket = null;
     }
@@ -105,19 +83,12 @@ class WebSocketService {
   }
 
   private flushQueue() {
-    if (this.messageQueue.length > 0) {
-      console.log(
-        `🚀 [WS] Flushing ${this.messageQueue.length} queued messages...`
-      );
-      while (this.messageQueue.length > 0) {
-        const msg = this.messageQueue.shift();
-        if (msg) {
-          console.log("📤 [WS] Sending queued message:", msg.content);
-          this.send(msg);
-        }
-      }
+    while (this.messageQueue.length > 0) {
+      const msg = this.messageQueue.shift();
+      if (msg) this.send(msg);
     }
   }
 }
 
+// 2. Default Singleton for Main Chat (preserves existing app functionality)
 export const socketService = new WebSocketService();

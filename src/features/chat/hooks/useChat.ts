@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { socketService } from "../../../services/WebSocketsService";
 import { SessionService } from "../../../api/backendApi";
 import { useAppSelector } from "../../../hooks/useRedux";
-import AVAILABLE_MODELS from "../../../../Constants";; // Adjust path
+import AVAILABLE_MODELS from "../../../../Constants";// Correct path to src/Constants.ts
 
 export interface Message {
   id?: string;
@@ -10,7 +10,7 @@ export interface Message {
   content: string;
 }
 
-// 1. GLOBAL EVENT TRIGGER (Ensures Sidebar updates when History deletes)
+// 1. GLOBAL EVENT TRIGGER (Syncs Sidebar & Playground)
 export const triggerChatUpdate = () => {
   if (typeof window !== "undefined") {
     window.dispatchEvent(new Event("chat-updated"));
@@ -21,7 +21,7 @@ export const triggerChatUpdate = () => {
 export const useChatList = (userId?: string) => {
   {
     userId;
-  } //FOR VERCEL FIX
+  } // Prevent unused var warning if applicable
   const [chats, setChats] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const token = useAppSelector((state: any) => state.auth.accessToken);
@@ -33,9 +33,17 @@ export const useChatList = (userId?: string) => {
     }
     try {
       const data = await SessionService.getSessions(token);
-      // Ensure we treat the response correctly based on backend structure
+      // Handle both array or paginated object response
       const sessionList = Array.isArray(data) ? data : data.items || [];
-      setChats(sessionList);
+
+      // Sort by newest first
+      const sorted = sessionList.sort(
+        (a: any, b: any) =>
+          new Date(b.created_at || 0).getTime() -
+          new Date(a.created_at || 0).getTime()
+      );
+
+      setChats(sorted);
     } catch (error) {
       console.error("Failed to fetch sessions", error);
     } finally {
@@ -43,34 +51,34 @@ export const useChatList = (userId?: string) => {
     }
   }, [token]);
 
-  // 2. SYNC LISTENER (Updates list when 'chat-updated' fires)
+  // Sync Listener (Listens for 'chat-updated' event)
   useEffect(() => {
     fetchChats();
-
     const handleUpdate = () => fetchChats();
     window.addEventListener("chat-updated", handleUpdate);
-
-    return () => {
-      window.removeEventListener("chat-updated", handleUpdate);
-    };
+    return () => window.removeEventListener("chat-updated", handleUpdate);
   }, [fetchChats]);
 
+  // FIX: Robust Delete Handler
   const handleDeleteChat = async (sessionId: string) => {
     if (!token) return;
-    try {
-      // Optimistic Update: Remove immediately from UI
-      setChats((prev) =>
-        prev.filter((c) => (c.session_id || c.id) !== sessionId)
-      );
 
-      // Call Backend
+    // 1. Optimistic Update (Remove immediately from UI)
+    const previousChats = [...chats];
+    setChats((prev) =>
+      prev.filter((c) => (c.session_id || c.id) !== sessionId)
+    );
+
+    try {
+      // 2. API Call
       await SessionService.deleteSession(token, sessionId);
 
-      // Trigger Sync for other components
+      // 3. Trigger Global Update (Ensure other components know)
       triggerChatUpdate();
     } catch (error) {
-      console.error("Failed to delete session", error);
-      // Revert/Refetch on error
+      console.error("Failed to delete session, reverting UI", error);
+      // Revert if failed
+      setChats(previousChats);
       fetchChats();
     }
   };
@@ -78,7 +86,7 @@ export const useChatList = (userId?: string) => {
   return { chats, loading, refreshChats: fetchChats, handleDeleteChat };
 };
 
-// --- HOOK FOR ACTIVE CHAT ---
+// --- HOOK FOR ACTIVE CHAT (SINGLE MODE) ---
 export const useChat = (sessionId: string | undefined) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -108,23 +116,21 @@ export const useChat = (sessionId: string | undefined) => {
     };
 
     initChat();
-
     return () => socketService.disconnect();
   }, [sessionId, token]);
 
-  // Listen for Stream
+  // Stream Listener
   useEffect(() => {
     socketService.onMessage((data) => {
       if (data.type === "stream") {
         setIsStreaming(true);
         if (data.done) {
           setIsStreaming(false);
-          triggerChatUpdate(); // Refresh sidebar title
+          triggerChatUpdate(); // Refresh title when done
           return;
         }
 
-        const incomingText =
-          data.content || data.chunk || data.text || data.token || "";
+        const incomingText = data.content || data.chunk || data.text || "";
         if (!incomingText) return;
 
         setMessages((prev) => {
@@ -149,11 +155,10 @@ export const useChat = (sessionId: string | undefined) => {
 
       const modelId = currentModel || "gpt-5.1";
 
-      // LOOKUP PROVIDER LOGIC
+      // LOOKUP PROVIDER
       const selectedModel = AVAILABLE_MODELS.find((m) => m.id === modelId);
       const provider = selectedModel ? selectedModel.provider : "openai";
 
-      // Pass provider to socket service
       socketService.sendMessage(content, modelId, provider);
     },
     [currentModel]
