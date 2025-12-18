@@ -21,6 +21,7 @@ import Welcome from "../pages/WelcomePage";
 import ChatInterface from "../features/chat/components/ChatInterface";
 import GettingStarted from "../pages/GettingStarted";
 import HistoryPage from "../pages/HistoryPage";
+import Playground from "../pages/Playground";
 
 // --- Router Setup ---
 const router = createBrowserRouter([
@@ -37,6 +38,7 @@ const router = createBrowserRouter([
       { index: true, element: <Welcome /> },
       { path: "chat/:id", element: <ChatInterface /> },
       { path: "history", element: <HistoryPage /> },
+      { path: "playground", element: <Playground /> },
     ],
   },
   // 3. Catch-all

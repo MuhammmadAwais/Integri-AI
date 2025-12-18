@@ -18,6 +18,7 @@ const ChatInterface: React.FC = () => {
   // Hook handles fetching history
   const { messages, sendMessage, deleteMessage, isLoading, isStreaming } =
     useChat(id);
+    console.log("ChatInterface Rendered with ID:", messages, id);
 
   // REF prevents duplicate sends in React Strict Mode
   const hasInitialized = useRef(false);

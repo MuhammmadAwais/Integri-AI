@@ -24,7 +24,7 @@ import DeleteModal from "../../../Components/ui/DeleteModal";
 const NAV_ITEMS = [
   { id: "chat", label: "Chat", icon: PenSquare, path: "/" },
   { id: "voice", label: "Voice", icon: AudioWaveform, path: "/voice" },
-  { id: "imagine", label: "Imagine", icon: ImageIcon, path: "/imagine" },
+  { id: "playground", label: "Playground", icon: ImageIcon, path: "/playground" },
   { id: "projects", label: "Projects", icon: FolderOpen, path: "/projects" },
   { id: "library", label: "Library", icon: CheckCircle, path: "/library" },
 ];

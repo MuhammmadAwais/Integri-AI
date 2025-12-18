@@ -64,6 +64,7 @@ export const SessionService = {
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      console.log("✅ [API] Session Created:", response);
       return response.data;
     } catch (error) {
       console.error("❌ [API] Failed to create session", error);
