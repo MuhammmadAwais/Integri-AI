@@ -28,6 +28,7 @@ export const getBackendToken = async (userId: any, email: any) => {
 
 // --- SESSIONS ---
 export const SessionService = {
+  // Get List of Sessions
   getSessions: async (token: string) => {
     try {
       const response = await backendApi.get("/api/v1/sessions", {
@@ -40,14 +41,27 @@ export const SessionService = {
     }
   },
 
-  // Critical: Accepts provider to support Claude/Gemini etc.
+  // Get Single Session Details (CRITICAL NEW FUNCTION)
+  getSession: async (token: string, sessionId: string) => {
+    try {
+      const response = await backendApi.get(`/api/v1/sessions/${sessionId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("❌ [API] Failed to get single session", error);
+      throw error;
+    }
+  },
+
+  // Create Session (Fixed to ensure provider is sent)
   createSession: async (token: string, model: string, provider: string) => {
     try {
       const response = await backendApi.post(
         "/api/v1/sessions",
         {
           model,
-          provider,
+          provider, // Backend needs this to route to Anthropic/Google/etc
           is_voice_session: false,
         },
         { headers: { Authorization: `Bearer ${token}` } }

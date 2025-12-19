@@ -12,7 +12,7 @@ const triggerGlobalUpdate = () => {
 
 export const usePlaygroundLane = (modelConfig: {
   id: string;
-  provider: string;
+  provider: string; // Ensure this is passed correctly from Playground.tsx
 }) => {
   // 1. Setup State
   const token = useAppSelector((state: any) => state.auth.accessToken);
@@ -35,7 +35,7 @@ export const usePlaygroundLane = (modelConfig: {
     async (text: string) => {
       if (!text.trim()) return;
 
-      // A. Optimistic Update (Show user message immediately)
+      // A. Optimistic Update
       setMessages((prev) => [...prev, { role: "user", content: text }]);
 
       let currentSessionId = sessionId;
@@ -49,6 +49,7 @@ export const usePlaygroundLane = (modelConfig: {
           setIsLoading(true);
 
           // 1. Create Session via API
+          // FIXED: Explicitly use the provider from props. Do NOT lookup in constants.
           const res = await SessionService.createSession(
             token,
             modelConfig.id,
@@ -59,12 +60,16 @@ export const usePlaygroundLane = (modelConfig: {
             currentSessionId = res.session_id;
             setSessionId(currentSessionId);
 
-            // 2. Generate Title: "Prompt... [PL]"
+            // 2. Generate Title
             const shortTitle =
               text.slice(0, 20) + (text.length > 20 ? "..." : "");
             const title = `${shortTitle} [PL]`;
 
-            await SessionService.updateSession(token, currentSessionId as any, title);
+            await SessionService.updateSession(
+              token,
+              currentSessionId as any,
+              title
+            );
 
             // 3. Refresh Sidebar
             triggerGlobalUpdate();
@@ -106,11 +111,11 @@ export const usePlaygroundLane = (modelConfig: {
         }
       }
 
-      // C. Send Message via Socket (Wait briefly if socket is just connecting)
+      // C. Send Message via Socket
       if (currentSocket) {
-        // Small delay to ensure socket is open if just created
         setTimeout(
           () => {
+            // FIXED: Pass strict provider/model to ensure backend routing
             currentSocket?.sendMessage(
               text,
               modelConfig.id,

@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { socketService } from "../../../services/WebSocketsService";
 import { SessionService } from "../../../api/backendApi";
-import { useAppSelector } from "../../../hooks/useRedux";
-import AVAILABLE_MODELS from "../../../../Constants";// Correct path to src/Constants.ts
+import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux";
+import { setActiveSessionConfig } from "../chatSlice";
 
 export interface Message {
   id?: string;
@@ -10,7 +10,7 @@ export interface Message {
   content: string;
 }
 
-// 1. GLOBAL EVENT TRIGGER (Syncs Sidebar & Playground)
+// 1. GLOBAL EVENT TRIGGER
 export const triggerChatUpdate = () => {
   if (typeof window !== "undefined") {
     window.dispatchEvent(new Event("chat-updated"));
@@ -21,7 +21,7 @@ export const triggerChatUpdate = () => {
 export const useChatList = (userId?: string) => {
   {
     userId;
-  } // Prevent unused var warning if applicable
+  }
   const [chats, setChats] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const token = useAppSelector((state: any) => state.auth.accessToken);
@@ -33,16 +33,12 @@ export const useChatList = (userId?: string) => {
     }
     try {
       const data = await SessionService.getSessions(token);
-      // Handle both array or paginated object response
       const sessionList = Array.isArray(data) ? data : data.items || [];
-
-      // Sort by newest first
       const sorted = sessionList.sort(
         (a: any, b: any) =>
           new Date(b.created_at || 0).getTime() -
           new Date(a.created_at || 0).getTime()
       );
-
       setChats(sorted);
     } catch (error) {
       console.error("Failed to fetch sessions", error);
@@ -51,7 +47,6 @@ export const useChatList = (userId?: string) => {
     }
   }, [token]);
 
-  // Sync Listener (Listens for 'chat-updated' event)
   useEffect(() => {
     fetchChats();
     const handleUpdate = () => fetchChats();
@@ -59,25 +54,18 @@ export const useChatList = (userId?: string) => {
     return () => window.removeEventListener("chat-updated", handleUpdate);
   }, [fetchChats]);
 
-  // FIX: Robust Delete Handler
   const handleDeleteChat = async (sessionId: string) => {
     if (!token) return;
-
-    // 1. Optimistic Update (Remove immediately from UI)
     const previousChats = [...chats];
     setChats((prev) =>
       prev.filter((c) => (c.session_id || c.id) !== sessionId)
     );
 
     try {
-      // 2. API Call
       await SessionService.deleteSession(token, sessionId);
-
-      // 3. Trigger Global Update (Ensure other components know)
       triggerChatUpdate();
     } catch (error) {
       console.error("Failed to delete session, reverting UI", error);
-      // Revert if failed
       setChats(previousChats);
       fetchChats();
     }
@@ -92,21 +80,52 @@ export const useChat = (sessionId: string | undefined) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
 
+  const dispatch = useAppDispatch();
   const token = useAppSelector((state: any) => state.auth.accessToken);
-  const currentModel = useAppSelector((state: any) => state.chat.currentModel);
 
-  // Initialize Chat
+  // Use specific selectors
+  const activeConfig = useAppSelector(
+    (state: any) => state.chat.activeSessionConfig
+  );
+  const newChatPref = useAppSelector((state: any) => state.chat.newChatModel);
+
+  // Initialize Chat (Load Messages & Config)
   useEffect(() => {
-    if (!sessionId || !token) return;
+    if (!sessionId || !token) {
+      setMessages([]);
+      return;
+    }
 
     const initChat = async () => {
       setIsLoading(true);
       try {
+        // 1. Fetch Messages
         const history = await SessionService.getSessionMessages(
           token,
           sessionId
         );
         setMessages(history);
+
+        // 2. Fetch Session Details (Lock the model/provider)
+        // Try to find in cache first or fetch fresh
+        try {
+          const details = await SessionService.getSession(token, sessionId);
+          if (details) {
+            dispatch(
+              setActiveSessionConfig({
+                modelId: details.model,
+                provider: details.provider,
+              })
+            );
+          }
+        } catch (e) {
+          console.warn(
+            "Could not fetch session details, UI might be desync",
+            e
+          );
+        }
+
+        // 3. Connect Socket
         socketService.connect(token, sessionId);
       } catch (error) {
         console.error("❌ Error initializing chat:", error);
@@ -117,7 +136,7 @@ export const useChat = (sessionId: string | undefined) => {
 
     initChat();
     return () => socketService.disconnect();
-  }, [sessionId, token]);
+  }, [sessionId, token, dispatch]);
 
   // Stream Listener
   useEffect(() => {
@@ -126,7 +145,7 @@ export const useChat = (sessionId: string | undefined) => {
         setIsStreaming(true);
         if (data.done) {
           setIsStreaming(false);
-          triggerChatUpdate(); // Refresh title when done
+          triggerChatUpdate();
           return;
         }
 
@@ -153,15 +172,19 @@ export const useChat = (sessionId: string | undefined) => {
       if (!content.trim()) return;
       setMessages((prev) => [...prev, { role: "user", content }]);
 
-      const modelId = currentModel || "gpt-5.1";
+      // LOGIC: Use Active Session Config if exists, otherwise New Chat Pref
+      const modelToUse =
+        sessionId && activeConfig ? activeConfig.modelId : newChatPref.id;
+      const providerToUse =
+        sessionId && activeConfig
+          ? activeConfig.provider
+          : newChatPref.provider;
 
-      // LOOKUP PROVIDER
-      const selectedModel = AVAILABLE_MODELS.find((m) => m.id === modelId);
-      const provider = selectedModel ? selectedModel.provider : "openai";
+      console.log(`🚀 Sending (${providerToUse}/${modelToUse}):`, content);
 
-      socketService.sendMessage(content, modelId, provider);
+      socketService.sendMessage(content, modelToUse, providerToUse);
     },
-    [currentModel]
+    [sessionId, activeConfig, newChatPref]
   );
 
   const deleteMessage = async (messageId: string) => {

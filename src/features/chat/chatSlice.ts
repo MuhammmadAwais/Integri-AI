@@ -4,16 +4,28 @@ interface ChatState {
   isMobileMenuOpen: boolean;
   isContextSidebarOpen: boolean;
   activeSidebarTab: "home" | "history" | "library" | "settings";
-  currentModel: string; // e.g., "gpt-5.1"
-  activeChatId: string | null; // Tracks which chat user is looking at
+
+  // GLOBAL PREFERENCE: What model to use when starting a NEW chat
+  newChatModel: {
+    id: string;
+    provider: string;
+  };
+
+  // ACTIVE SESSION: The locked configuration of the current chat
+  activeChatId: string | null;
+  activeSessionConfig: {
+    modelId: string;
+    provider: string;
+  } | null;
 }
 
 const initialState: ChatState = {
   isMobileMenuOpen: false,
   isContextSidebarOpen: true,
   activeSidebarTab: "home",
-  currentModel: "gpt-5.1",
+  newChatModel: { id: "gpt-4o-mini", provider: "openai" }, // Default
   activeChatId: null,
+  activeSessionConfig: null,
 };
 
 const chatSlice = createSlice({
@@ -29,16 +41,44 @@ const chatSlice = createSlice({
     },
     setActiveSidebarTab: (state, action: PayloadAction<any>) => {
       state.activeSidebarTab = action.payload;
-      // Auto-open sidebar when switching tabs so user sees content
       state.isContextSidebarOpen = true;
     },
 
     // 2. Chat Controls
-    setModel: (state, action: PayloadAction<string>) => {
-      state.currentModel = action.payload;
+    // Called when user selects from Dropdown
+    setNewChatModel: (
+      state,
+      action: PayloadAction<{ id: string; provider: string }>
+    ) => {
+      state.newChatModel = action.payload;
+
+      // If we are in "New Chat" mode (no ID), update the UI immediately
+      if (!state.activeChatId) {
+        state.activeSessionConfig = {
+          modelId: action.payload.id,
+          provider: action.payload.provider,
+        };
+      }
     },
+
+    // Called when clicking a chat in history
     setActiveChat: (state, action: PayloadAction<string | null>) => {
       state.activeChatId = action.payload;
+      if (action.payload === null) {
+        // Reset to global preference if clearing chat
+        state.activeSessionConfig = {
+          modelId: state.newChatModel.id,
+          provider: state.newChatModel.provider,
+        };
+      }
+    },
+
+    // Called by useChat when session details are loaded
+    setActiveSessionConfig: (
+      state,
+      action: PayloadAction<{ modelId: string; provider: string }>
+    ) => {
+      state.activeSessionConfig = action.payload;
     },
   },
 });
@@ -47,8 +87,9 @@ export const {
   toggleMobileMenu,
   setContextSidebarOpen,
   setActiveSidebarTab,
-  setModel,
+  setNewChatModel,
   setActiveChat,
+  setActiveSessionConfig,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;
