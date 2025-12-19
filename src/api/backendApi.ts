@@ -3,8 +3,6 @@ import axios from "axios";
 const API_URL =
   import.meta.env.VITE_APP_BACKEND_API_BASE_URL || "https://integri.cloud";
 
-console.log("🌐 [API] Base URL configured as:", API_URL);
-
 const backendApi = axios.create({
   baseURL: API_URL,
   headers: {
@@ -28,20 +26,22 @@ export const getBackendToken = async (userId: any, email: any) => {
 
 // --- SESSIONS ---
 export const SessionService = {
-  // Get List of Sessions
   getSessions: async (token: string) => {
     try {
       const response = await backendApi.get("/api/v1/sessions", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      return response.data;
+      // Handle both pagination { items: [] } and array []
+      return Array.isArray(response.data)
+        ? response.data
+        : response.data.items || [];
     } catch (error) {
       console.error("❌ [API] Failed to get sessions", error);
       throw error;
     }
   },
 
-  // Get Single Session Details (CRITICAL NEW FUNCTION)
+  // Added: Get specific session to lock the model correctly
   getSession: async (token: string, sessionId: string) => {
     try {
       const response = await backendApi.get(`/api/v1/sessions/${sessionId}`, {
@@ -50,18 +50,19 @@ export const SessionService = {
       return response.data;
     } catch (error) {
       console.error("❌ [API] Failed to get single session", error);
-      throw error;
+      // Return null so we can fallback gracefully
+      return null;
     }
   },
 
-  // Create Session (Fixed to ensure provider is sent)
+  // Fixed: Ensure PROVIDER is passed to backend
   createSession: async (token: string, model: string, provider: string) => {
     try {
       const response = await backendApi.post(
         "/api/v1/sessions",
         {
           model,
-          provider, // Backend needs this to route to Anthropic/Google/etc
+          provider,
           is_voice_session: false,
         },
         { headers: { Authorization: `Bearer ${token}` } }

@@ -1,127 +1,104 @@
 import React from "react";
 import { cn } from "../../lib/utils";
-import AVAILABLE_MODELS from "../../../Constants"; // Ensure this matches your file structure
+import AVAILABLE_MODELS from "../../../Constants";
 
-interface ReasoningMenuProps {
+interface ModelMenuProps {
   isOpen: boolean;
   onClose: () => void;
   selected: string;
-  onSelect: React.Dispatch<React.SetStateAction<string>>;
-  isDark: any;
+  onSelect: (id: string) => void; // Fixed type to be more flexible
+  isDark: boolean;
+  position?: "top" | "bottom"; // Added position control
 }
 
-const ModelMenu: React.FC<ReasoningMenuProps> = ({
+const ModelMenu: React.FC<ModelMenuProps> = ({
   isOpen,
   onClose,
   selected,
   onSelect,
   isDark,
+  position = "bottom", // Default to bottom (for Chat Input)
 }) => {
   if (!isOpen) return null;
 
   return (
     <>
-      {/* 1. Backdrop: Closes menu when clicking outside */}
-      <div className="fixed inset-0 z-40 bg-transparent" onClick={onClose} />
+      {/* Backdrop */}
+      <div className="fixed inset-0 z-[100] bg-transparent" onClick={onClose} />
 
       {/* Menu Container */}
       <div
         className={cn(
-          // Layout & Animation
-          "absolute bottom-16 right-2 sm:right-16 w-[240px] z-50 flex flex-col p-1.5",
-          "animate-in zoom-in-95 duration-100 ease-out origin-bottom-right",
-          "rounded-2xl border shadow-2xl overflow-hidden",
+          "absolute w-[280px] z-[101] flex flex-col p-1.5",
+          "animate-in zoom-in-95 duration-100 ease-out",
+          "rounded-2xl border shadow-2xl overflow-hidden backdrop-blur-xl",
 
-          // Responsive Height Constraints (Fixes "out of screen" issue)
-          "max-h-[55vh] sm:max-h-[450px]",
+          // Dynamic Positioning
+          position === "bottom"
+            ? "bottom-full mb-2 right-0 origin-bottom-right" // Opens Upwards
+            : "top-full mt-2 right-0 origin-top-right", // Opens Downwards
 
-          // Theme Styling
+          // Theme
           isDark
-            ? "bg-[#181818] border-[#2A2B32] text-gray-200"
-            : "bg-white border-gray-200 text-gray-900"
+            ? "bg-[#1a1b26]/95 border-[#2A2B32] shadow-black/50"
+            : "bg-white/95 border-gray-200 shadow-xl"
         )}
       >
-        {/* Fixed Header */}
-        <div className="px-3 py-2.5 text-[10px] font-bold uppercase opacity-50 tracking-wider flex-shrink-0 border-b border-dashed border-gray-500/20 mb-1">
-          System Models
-        </div>
+        <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
+          <div className="px-2 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider sticky top-0 bg-inherit z-10">
+            Select Model
+          </div>
 
-        {/* Scrollable List Area */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0 max-h-60 pr-0.5">
-          {AVAILABLE_MODELS.map((m: any) => (
-            <button
-              title={m.label}
-              key={m.id}
-              onClick={() => {
-                onSelect(m.id);
-                onClose();
-              }}
-              className={cn(
-                "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left transition-all duration-200 text-sm font-medium hover:cursor-pointer mb-0.5",
-                isDark ? "hover:bg-[#2A2B32]" : "hover:bg-gray-100",
-                selected === m.id &&
-                  (isDark
-                    ? "bg-[#2A2B32] text-white"
-                    : "bg-gray-100 text-black")
-              )}
-            >
-              <span className="truncate mr-2">{m.label || m.name}</span>
-              {m.badge && (
-                <span
-                  className={cn(
-                    "text-[9px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wide shadow-sm flex-shrink-0",
-                    isDark
-                      ? "bg-[#3A3B42] text-gray-300"
-                      : "bg-gray-200 text-gray-600"
-                  )}
-                >
-                  {m.badge}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
+          {AVAILABLE_MODELS.map((m) => {
+            const isSelected = m.id === selected;
+            return (
+              <button
+                key={m.id}
+                onClick={() => {
+                  onSelect(m.id);
+                  onClose();
+                }}
+                className={cn(
+                  "w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all duration-200 flex items-center justify-between group mb-0.5",
+                  isSelected
+                    ? isDark
+                      ? "bg-white/10 text-white"
+                      : "bg-black/5 text-black"
+                    : isDark
+                    ? "text-gray-300 hover:bg-white/5"
+                    : "text-gray-700 hover:bg-black/5"
+                )}
+              >
+                <div>
+                  <div className="font-medium">{m.label || m.id}</div>
+                  <div className="text-[10px] opacity-60 capitalize">
+                    {m.provider}
+                  </div>
+                </div>
 
-        {/* Beautiful Scrollbar Styles (Scoped to this component) */}
-        <style>{`
-          .custom-scrollbar::-webkit-scrollbar {
-            width: 4px; /* Slim width */
-          }
-          .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-          }
-          .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: transparent; /* Hidden by default */
-            border-radius: 20px;
-          }
-          /* Show scrollbar only on hover */
-          .custom-scrollbar:hover::-webkit-scrollbar-thumb {
-            background: ${
-              isDark ? "rgba(255, 255, 255, 0.15)" : "rgba(0, 0, 0, 0.15)"
-            };
-          }
-          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: ${
-              isDark ? "rgba(255, 255, 255, 0.3)" : "rgba(0, 0, 0, 0.3)"
-            };
-          }
-        `}</style>
+                {/* Badge or Checkmark */}
+                {isSelected && (
+                  <span className="w-2 h-2 rounded-full bg-green-500 shadow-green-500/50 shadow-lg" />
+                )}
+                {!isSelected && m.badge && (
+                  <span
+                    className={cn(
+                      "text-[10px] px-1.5 py-0.5 rounded border opacity-60 group-hover:opacity-100 transition-opacity",
+                      isDark
+                        ? "border-white/20 bg-white/5"
+                        : "border-black/10 bg-black/5"
+                    )}
+                  >
+                    {m.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
     </>
   );
 };
-
-export const ModalToggle = ({ isDark }: any) => (
-  <div
-    className={cn(
-      "w-5 h-5 rounded flex items-center justify-center font-bold text-xs select-none border transition-colors",
-      isDark
-        ? "bg-[#1A1A1A] border-gray-600 text-gray-300"
-        : "bg-gray-100 border-gray-300 text-gray-600"
-    )}
-  >
-    G
-  </div>
-);
 
 export default ModelMenu;

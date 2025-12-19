@@ -15,108 +15,72 @@ const ChatInterface: React.FC = () => {
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   const token = useAppSelector((state: any) => state.auth.accessToken);
 
-  // Hook handles fetching history
-  const { messages, sendMessage, deleteMessage, isLoading, isStreaming } =
-    useChat(id);
-    console.log("ChatInterface Rendered with ID:", messages, id);
+  const {
+    messages,
+    sendMessage,
+    deleteMessage,
+    isLoading,
+    isStreaming,
+    isThinking,
+  } = useChat(id);
 
-  // REF prevents duplicate sends in React Strict Mode
   const hasInitialized = useRef(false);
 
-  // 1. ROBUST WELCOME MESSAGE LOGIC
+  // 1. Handle Welcome Page Transition
   useEffect(() => {
-    // Only run if we have an ID, a welcome message exists, and we haven't run this yet.
     if (id && location.state?.initialMessage && !hasInitialized.current) {
-      hasInitialized.current = true; // Lock immediately
+      hasInitialized.current = true;
+      const initialText = location.state.initialMessage;
 
-      const msg = location.state.initialMessage;
+      // Optimistically show and send
+      sendMessage(initialText);
 
-      console.log("🚀 Sending Welcome Message:", msg);
-      sendMessage(msg);
-
-      // Rename Chat (API Call)
+      // Update Title in background
       if (token) {
-        SessionService.updateSession(token, id, msg.substring(0, 30));
+        SessionService.updateSession(token, id, initialText.substring(0, 30));
       }
-
-      // Clear navigation state so refresh doesn't resend
-      window.history.replaceState({}, document.title);
     }
-  }, [id, location.state, token, sendMessage]);
-
-  // Auto-scroll to bottom
-  const scrollToBottom = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  };
+  }, [id, location.state, sendMessage, token]);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, isStreaming]);
-
-  // Regenerate Logic
-  const handleRegenerate = () => {
-    const lastUserMsg = [...messages].reverse().find((m) => m.role === "user");
-    if (lastUserMsg) {
-      sendMessage(lastUserMsg.content);
-    }
-  };
-
-  if (!id) return null;
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isStreaming, isThinking]);
 
   return (
-    <div
-      className={cn(
-        "flex flex-col h-full relative w-full overflow-hidden",
-        isDark ? "bg-[#000000]" : "bg-white"
-      )}
-    >
-      {/* Messages Area - Added extra padding bottom (pb-48) to clear the input */}
-      <div
-        className="flex-1 overflow-y-auto scrollbar-hide w-full"
-        ref={scrollRef}
-      >
-        <div className="w-full max-w-3xl mx-auto pt-20 pb-48">
+    <div className="flex flex-col h-full relative">
+      <div className="flex-1 overflow-y-auto px-4 pt-4 pb-32 custom-scrollbar">
+        <div className="max-w-3xl mx-auto space-y-6">
+          {/* Messages */}
           {isLoading && messages.length === 0 ? (
-            <div className="space-y-6 px-4">
-              <SkeletonLoader className="h-12 w-3/4 rounded-r-xl rounded-bl-xl ml-auto bg-gray-200 dark:bg-gray-800" />
-              <div className="flex gap-4">
-                <SkeletonLoader className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-800 shrink-0" />
-                <SkeletonLoader className="h-24 w-full rounded-r-xl rounded-bl-xl bg-gray-200 dark:bg-gray-800" />
-              </div>
+            <div className="space-y-4 mt-8">
+              <SkeletonLoader />
+              <SkeletonLoader />
             </div>
           ) : (
-            <>
-              {messages.length === 0 && !hasInitialized.current ? (
-                console.error("❌ No messages found")                
-              ) : (
-                messages.map((msg, index) => (
-                  <MessageBubble
-                    // Prefer actual ID, fallback to index for temp messages
-                    key={msg.id || index}
-                    id={msg.id}
-                    role={msg.role}
-                    content={msg.content}
-                    // IMPORTANT: Pass the delete function explicitly
-                    onDelete={deleteMessage}
-                    onRegenerate={handleRegenerate}
-                  />
-                ))
-              )}
-            </>
+            messages.map((msg, idx) => (
+              <MessageBubble
+                key={msg.id || idx}
+                role={msg.role}
+                content={msg.content}
+                onDelete={deleteMessage}
+              />
+            ))
           )}
 
-          {isStreaming && (
+          {/* Thinking / Streaming Indicator */}
+          {(isThinking || isStreaming) && (
             <div className="flex items-center gap-2 text-gray-500 ml-16 text-sm font-mono mt-2 mb-4">
-              <span className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" />
-              <span className="animate-pulse">Thinking...</span>
+              <span className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" />
+              <span className="animate-pulse">
+                {isStreaming ? "Generating..." : "Thinking..."}
+              </span>
             </div>
           )}
+
+          <div ref={scrollRef} />
         </div>
       </div>
 
-      {/* Input Area - z-index ensures it sits on top */}
       <div
         className={cn(
           "absolute bottom-0 left-0 w-full z-30 pt-10 pb-6 px-4",
@@ -129,14 +93,16 @@ const ChatInterface: React.FC = () => {
           <ChatInput
             onSend={(text) => {
               sendMessage(text);
-              if (messages.length === 0 && token) {
+              // Set title for fresh chats
+              if (messages.length === 0 && token && id) {
                 SessionService.updateSession(token, id, text.substring(0, 30));
               }
             }}
+            disabled={isThinking || isStreaming}
           />
           <div className="text-center mt-3">
-            <span className="text-[10px] text-gray-400">
-              Integri AI can make mistakes. Check important info.
+            <span className="text-xs text-gray-500">
+              AI can make mistakes. Check important info.
             </span>
           </div>
         </div>

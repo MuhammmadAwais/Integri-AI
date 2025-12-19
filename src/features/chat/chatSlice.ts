@@ -5,13 +5,13 @@ interface ChatState {
   isContextSidebarOpen: boolean;
   activeSidebarTab: "home" | "history" | "library" | "settings";
 
-  // GLOBAL PREFERENCE: What model to use when starting a NEW chat
+  // 1. User Preference (For NEW chats)
   newChatModel: {
     id: string;
     provider: string;
   };
 
-  // ACTIVE SESSION: The locked configuration of the current chat
+  // 2. Active Session Data (LOCKED to the session)
   activeChatId: string | null;
   activeSessionConfig: {
     modelId: string;
@@ -23,7 +23,7 @@ const initialState: ChatState = {
   isMobileMenuOpen: false,
   isContextSidebarOpen: true,
   activeSidebarTab: "home",
-  newChatModel: { id: "gpt-4o-mini", provider: "openai" }, // Default
+  newChatModel: { id: "gpt-4o-mini", provider: "openai" }, // Default must exist in Constants
   activeChatId: null,
   activeSessionConfig: null,
 };
@@ -32,7 +32,6 @@ const chatSlice = createSlice({
   name: "chat",
   initialState,
   reducers: {
-    // 1. Sidebar Controls
     toggleMobileMenu: (state, action: PayloadAction<boolean>) => {
       state.isMobileMenuOpen = action.payload;
     },
@@ -44,15 +43,14 @@ const chatSlice = createSlice({
       state.isContextSidebarOpen = true;
     },
 
-    // 2. Chat Controls
-    // Called when user selects from Dropdown
+    // User selects model from Dropdown (Only affects future chats)
     setNewChatModel: (
       state,
       action: PayloadAction<{ id: string; provider: string }>
     ) => {
       state.newChatModel = action.payload;
 
-      // If we are in "New Chat" mode (no ID), update the UI immediately
+      // Visual feedback: if on "New Chat" screen, update the UI immediately
       if (!state.activeChatId) {
         state.activeSessionConfig = {
           modelId: action.payload.id,
@@ -61,11 +59,11 @@ const chatSlice = createSlice({
       }
     },
 
-    // Called when clicking a chat in history
+    // Navigate to a chat
     setActiveChat: (state, action: PayloadAction<string | null>) => {
       state.activeChatId = action.payload;
       if (action.payload === null) {
-        // Reset to global preference if clearing chat
+        // Reset config to user preference when clearing
         state.activeSessionConfig = {
           modelId: state.newChatModel.id,
           provider: state.newChatModel.provider,
@@ -73,7 +71,7 @@ const chatSlice = createSlice({
       }
     },
 
-    // Called by useChat when session details are loaded
+    // Lock the state when session details are loaded
     setActiveSessionConfig: (
       state,
       action: PayloadAction<{ modelId: string; provider: string }>
