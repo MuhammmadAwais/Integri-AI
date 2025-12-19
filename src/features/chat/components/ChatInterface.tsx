@@ -30,39 +30,41 @@ const ChatInterface: React.FC = () => {
   useEffect(() => {
     if (id && location.state?.initialMessage && !hasInitialized.current) {
       hasInitialized.current = true;
-      const initialText = location.state.initialMessage;
+      const { initialMessage, initialFile } = location.state;
 
-      // Optimistically show and send
-      sendMessage(initialText);
+      // Optimistically show and send (Pass File if present)
+      sendMessage(initialMessage, initialFile);
 
       // Update Title in background
-      if (token) {
-        SessionService.updateSession(token, id, initialText.substring(0, 30));
+      if (token && initialMessage) {
+        SessionService.updateSession(
+          token,
+          id,
+          initialMessage.substring(0, 30)
+        );
       }
     }
   }, [id, location.state, sendMessage, token]);
 
+  // 2. Auto Scroll
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isStreaming, isThinking]);
+  }, [messages, isThinking, isStreaming]);
 
   return (
     <div className="flex flex-col h-full relative">
-      <div className="flex-1 overflow-y-auto px-4 pt-4 pb-32 custom-scrollbar">
+      {/* Scrollable Message Area */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar pt-4 pb-40 px-4">
         <div className="max-w-3xl mx-auto space-y-6">
-          {/* Messages */}
           {isLoading && messages.length === 0 ? (
-            <div className="space-y-4 mt-8">
-              <SkeletonLoader />
-              <SkeletonLoader />
-            </div>
+            <SkeletonLoader count={3} />
           ) : (
             messages.map((msg, idx) => (
               <MessageBubble
                 key={msg.id || idx}
                 role={msg.role}
                 content={msg.content}
-                onDelete={deleteMessage}
+                onDelete={() => msg.id && deleteMessage(msg.id)}
               />
             ))
           )}
@@ -90,9 +92,11 @@ const ChatInterface: React.FC = () => {
         )}
       >
         <div className="w-full max-w-3xl mx-auto">
+          {/* Fixed: Pass (text, file) to sendMessage */}
           <ChatInput
-            onSend={(text) => {
-              sendMessage(text);
+            onSend={(text, file) => {
+              sendMessage(text, file);
+
               // Set title for fresh chats
               if (messages.length === 0 && token && id) {
                 SessionService.updateSession(token, id, text.substring(0, 30));
@@ -101,7 +105,7 @@ const ChatInterface: React.FC = () => {
             disabled={isThinking || isStreaming}
           />
           <div className="text-center mt-3">
-            <span className="text-xs text-gray-500">
+            <span className="text-[10px] text-gray-500">
               AI can make mistakes. Check important info.
             </span>
           </div>

@@ -10,7 +10,6 @@ export interface Message {
   content: string;
 }
 
-// Helper to trigger updates across components (e.g., Sidebar)
 export const triggerChatUpdate = () => {
   if (typeof window !== "undefined") {
     window.dispatchEvent(new Event("chat-updated"));
@@ -33,7 +32,6 @@ export const useChatList = (userId?: string) => {
     }
     try {
       const data = await SessionService.getSessions(token);
-      // Sort: Newest first
       const sorted = (data || []).sort(
         (a: any, b: any) =>
           new Date(b.created_at || 0).getTime() -
@@ -47,29 +45,25 @@ export const useChatList = (userId?: string) => {
     }
   }, [token]);
 
-  // Listen for deletions/creations
   useEffect(() => {
     fetchChats();
-    const handleUpdate = () => setTimeout(fetchChats, 300); // Delay for backend sync
+    const handleUpdate = () => setTimeout(fetchChats, 300);
     window.addEventListener("chat-updated", handleUpdate);
     return () => window.removeEventListener("chat-updated", handleUpdate);
   }, [fetchChats]);
 
   const handleDeleteChat = async (sessionId: string) => {
     if (!token) return;
-
-    // Optimistic Update
     const prevChats = [...chats];
     setChats((prev) =>
       prev.filter((c) => (c.session_id || c.id) !== sessionId)
     );
-
     try {
       await SessionService.deleteSession(token, sessionId);
       triggerChatUpdate();
     } catch (error) {
       console.error("Failed to delete", error);
-      setChats(prevChats); // Revert
+      setChats(prevChats);
     }
   };
 
@@ -80,13 +74,12 @@ export const useChatList = (userId?: string) => {
 export const useChat = (sessionId: string | undefined) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isThinking, setIsThinking] = useState(false); // UI State
+  const [isThinking, setIsThinking] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
 
   const dispatch = useAppDispatch();
   const token = useAppSelector((state: any) => state.auth.accessToken);
 
-  // Selectors
   const activeConfig = useAppSelector(
     (state: any) => state.chat.activeSessionConfig
   );
@@ -102,14 +95,16 @@ export const useChat = (sessionId: string | undefined) => {
     const initChat = async () => {
       setIsLoading(true);
       try {
-        // A. Load Messages
         const history = await SessionService.getSessionMessages(
           token,
           sessionId
         );
-        setMessages(history);
+        if (Array.isArray(history)) {
+          setMessages(history);
+        } else {
+          setMessages([]);
+        }
 
-        // B. Lock Model (CRITICAL FIX)
         const details = await SessionService.getSession(token, sessionId);
         if (details) {
           dispatch(
@@ -120,7 +115,6 @@ export const useChat = (sessionId: string | undefined) => {
           );
         }
 
-        // C. Connect Socket
         socketService.connect(token, sessionId);
       } catch (error) {
         console.error("Error initializing chat:", error);
@@ -137,7 +131,7 @@ export const useChat = (sessionId: string | undefined) => {
   useEffect(() => {
     socketService.onMessage((data) => {
       if (data.type === "stream") {
-        setIsThinking(false); // Stop thinking once stream starts
+        setIsThinking(false);
         setIsStreaming(true);
 
         if (data.done) {
@@ -164,27 +158,60 @@ export const useChat = (sessionId: string | undefined) => {
     });
   }, []);
 
+  // 3. Send Message (Updated for File Upload)
   const sendMessage = useCallback(
-    (content: string) => {
-      if (!content.trim()) return;
+    async (content: string, file?: File | null) => {
+      if (!content.trim() && !file) return;
 
-      setMessages((prev) => [...prev, { role: "user", content }]);
-      setIsThinking(true); // Show "Thinking..."
+      // Optimistic Update
+      const displayContent = file
+        ? `[Uploaded File: ${file.name}] ${content}`
+        : content;
 
-      // Use Active Config (if chat exists) OR New Preference (if new)
-      const model =
-        sessionId && activeConfig ? activeConfig.modelId : newChatPref.id;
-      const provider =
-        sessionId && activeConfig
-          ? activeConfig.provider
-          : newChatPref.provider;
+      setMessages((prev) => [
+        ...prev,
+        { role: "user", content: displayContent },
+      ]);
+      setIsThinking(true);
 
-      console.log(`Sending to ${provider}/${model}`);
-      if (sessionId) {
-        socketService.sendMessage(content, model, provider);
+      try {
+        const model =
+          sessionId && activeConfig ? activeConfig.modelId : newChatPref.id;
+        const provider =
+          sessionId && activeConfig
+            ? activeConfig.provider
+            : newChatPref.provider;
+
+        let fileIds: string[] = [];
+
+        // --- UPLOAD LOGIC START ---
+        if (file && token) {
+          try {
+            console.log("Uploading file...");
+            // Upload first, get ID
+            const uploadedId = await SessionService.uploadFile(token, file);
+            if (uploadedId) {
+              fileIds.push(uploadedId);
+              console.log("File uploaded, ID:", uploadedId);
+            }
+          } catch (uploadError) {
+            console.error("File upload failed:", uploadError);
+            // Decide if you want to abort message sending here or continue with just text
+            // Continuing for now, but you could add UI error handling
+          }
+        }
+        // --- UPLOAD LOGIC END ---
+
+        console.log(`Sending to ${provider}/${model} with fileIds:`, fileIds);
+        if (sessionId) {
+          socketService.sendMessage(content, model, provider, fileIds);
+        }
+      } catch (err) {
+        console.error("Send message flow failed", err);
+        setIsThinking(false);
       }
     },
-    [sessionId, activeConfig, newChatPref]
+    [sessionId, activeConfig, newChatPref, token]
   );
 
   const deleteMessage = async (messageId: string) => {

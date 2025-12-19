@@ -5,16 +5,15 @@ type WebSocketMessage = {
   session_id?: string;
   provider?: string;
   model?: string;
+  file_ids?: string[]; // Added file_ids support
 };
 
-// 1. Export class for multiple instances (Playground)
 export class WebSocketService {
   private socket: WebSocket | null = null;
   private messageHandler: ((data: any) => void) | null = null;
   private readonly socketUrl = import.meta.env.VITE_APP_WEBSOCKET_BASE_URL;
   private messageQueue: WebSocketMessage[] = [];
 
-  // Connect to a specific session
   connect(token: string, sessionId: string) {
     if (this.socket) {
       this.disconnect();
@@ -24,7 +23,6 @@ export class WebSocketService {
     this.socket = new WebSocket(this.socketUrl);
 
     this.socket.onopen = () => {
-      // Authenticate immediately
       this.send({
         type: "auth",
         token: token,
@@ -51,13 +49,19 @@ export class WebSocketService {
     };
   }
 
-  // Send message with explicit Provider routing
-  sendMessage(content: string, model: string, provider: string) {
+  // Updated signature to accept fileIds
+  sendMessage(
+    content: string,
+    model: string,
+    provider: string,
+    fileIds: string[] = []
+  ) {
     const message: WebSocketMessage = {
       type: "message",
       content: content,
-      provider: provider, // Critical for routing to Claude/Gemini
+      provider: provider,
       model: model,
+      file_ids: fileIds, // Include file IDs in the payload
     };
 
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
@@ -79,7 +83,9 @@ export class WebSocketService {
   }
 
   private send(data: WebSocketMessage) {
-    this.socket?.send(JSON.stringify(data));
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+      this.socket.send(JSON.stringify(data));
+    }
   }
 
   private flushQueue() {
@@ -90,5 +96,4 @@ export class WebSocketService {
   }
 }
 
-// 2. Default Singleton for Main Chat (preserves existing app functionality)
 export const socketService = new WebSocketService();

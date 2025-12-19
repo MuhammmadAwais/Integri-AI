@@ -41,7 +41,6 @@ export const SessionService = {
     }
   },
 
-  // Added: Get specific session to lock the model correctly
   getSession: async (token: string, sessionId: string) => {
     try {
       const response = await backendApi.get(`/api/v1/sessions/${sessionId}`, {
@@ -50,12 +49,10 @@ export const SessionService = {
       return response.data;
     } catch (error) {
       console.error("❌ [API] Failed to get single session", error);
-      // Return null so we can fallback gracefully
       return null;
     }
   },
 
-  // Fixed: Ensure PROVIDER is passed to backend
   createSession: async (token: string, model: string, provider: string) => {
     try {
       const response = await backendApi.post(
@@ -87,11 +84,21 @@ export const SessionService = {
   },
 
   getSessionMessages: async (token: string, sessionId: string) => {
-    const response = await backendApi.get(
-      `/api/v1/sessions/${sessionId}/messages`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    return response.data;
+    try {
+      const response = await backendApi.get(
+        `/api/v1/sessions/${sessionId}/messages`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const data = response.data;
+      if (Array.isArray(data)) return data;
+      if (data && Array.isArray(data.messages)) return data.messages;
+      if (data && Array.isArray(data.items)) return data.items;
+      return [];
+    } catch (error) {
+      console.error("❌ [API] Failed to fetch session messages", error);
+      return [];
+    }
   },
 
   deleteSession: async (token: string, sessionId: string) => {
@@ -114,6 +121,34 @@ export const SessionService = {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
+  },
+
+  // NEW: Upload File Logic matching your Dart snippet requirements
+  uploadFile: async (token: string, file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file); // Standard key 'file'
+
+      const response = await backendApi.post("/api/v1/files", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      // Matches logic: e["file_id"] ?? e["id"]
+      const data = response.data;
+      const fileId = data.file_id || data.id || (data.data && data.data.id);
+
+      if (!fileId) {
+        throw new Error("No file ID returned from upload");
+      }
+
+      return fileId.toString();
+    } catch (error) {
+      console.error("❌ [API] File Upload Failed:", error);
+      throw error;
+    }
   },
 };
 

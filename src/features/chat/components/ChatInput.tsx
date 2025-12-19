@@ -12,8 +12,10 @@ import { useAppSelector } from "../../../hooks/useRedux";
 import { cn } from "../../../lib/utils";
 
 interface ChatInputProps {
-  onSend?: (text: string) => void;
-  disabled?: boolean; // Fixed: Added disabled prop definition
+  // Updated signature to accept optional file object
+  onSend?: (text: string, file?: File | null) => void;
+  // Fixed: Added disabled prop definition
+  disabled?: boolean;
 }
 
 const ChatInput: React.FC<ChatInputProps> = ({ onSend, disabled }) => {
@@ -34,13 +36,16 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend, disabled }) => {
   }, [input]);
 
   const handleSend = () => {
-    if (disabled) return; // Prevent send if disabled
+    if (disabled) return;
     if ((input.trim() || file) && onSend) {
+      // Pass the input text AND the file object
       const msg = file ? `[Uploaded File: ${file.name}] ${input}` : input;
-      onSend(msg);
+      onSend(msg, file);
+
       setInput("");
       setFile(null);
       if (textareaRef.current) textareaRef.current.style.height = "auto";
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -74,14 +79,13 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend, disabled }) => {
           </button>
         </div>
       )}
-      {/* Grok Style Input Container */}
       <div
         className={cn(
           "relative flex flex-col w-full p-2 rounded-[26px] border transition-all duration-200 shadow-sm group",
           isDark
             ? "bg-[#181818] border-[#2f2f2f] focus-within:border-gray-600 focus-within:shadow-lg focus-within:shadow-blue-900/5"
             : "bg-[#f4f4f4] border-[#e5e5e5] focus-within:border-gray-300",
-          disabled && "opacity-70 pointer-events-none" // Visual feedback for disabled state
+          disabled && "opacity-70 pointer-events-none"
         )}
       >
         <textarea
@@ -178,7 +182,6 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend, disabled }) => {
             <button
               title="Send Message"
               onClick={handleSend}
-              // Logic check: if disabled is true, button is disabled. If no input/file, button is disabled.
               disabled={(!input.trim() && !file) || disabled}
               className={cn(
                 "p-2 rounded-full transition-all duration-200 flex items-center justify-center ",
