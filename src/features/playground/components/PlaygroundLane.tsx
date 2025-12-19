@@ -28,7 +28,9 @@ const PlaygroundLane: React.FC<PlaygroundLaneProps> = ({
   });
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const lastTriggerRef = useRef(0);
+
+  // FIX 1: Initialize ref with current triggerId to prevent auto-send on mount
+  const lastTriggerRef = useRef(triggerId);
   const [showMenu, setShowMenu] = useState(false);
 
   // Auto-scroll
@@ -40,6 +42,7 @@ const PlaygroundLane: React.FC<PlaygroundLaneProps> = ({
 
   // Handle Global Trigger
   useEffect(() => {
+    // Only fire if triggerId has INCREASED (new send)
     if (triggerId > 0 && triggerId !== lastTriggerRef.current) {
       lastTriggerRef.current = triggerId;
       sendMessage(globalPrompt);

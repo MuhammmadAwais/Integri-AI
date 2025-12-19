@@ -1,15 +1,27 @@
 import React from "react";
 import { cn } from "../../lib/utils";
 import AVAILABLE_MODELS from "../../../Constants";
+import { Bot } from "lucide-react"; // Imported Icon for ModalToggle
 
 interface ModelMenuProps {
   isOpen: boolean;
   onClose: () => void;
   selected: string;
-  onSelect: (id: string) => void; // Fixed type to be more flexible
+  onSelect: (id: string) => void;
   isDark: boolean;
-  position?: "top" | "bottom"; // Added position control
+  position?: "top" | "bottom";
 }
+
+// Fixed: Added and Exported ModalToggle Component
+export const ModalToggle = ({ isDark }: { isDark: boolean }) => {
+  return (
+    <Bot
+      size={20}
+      strokeWidth={1.5}
+      className={isDark ? "text-gray-300" : "text-gray-600"}
+    />
+  );
+};
 
 const ModelMenu: React.FC<ModelMenuProps> = ({
   isOpen,
@@ -17,7 +29,7 @@ const ModelMenu: React.FC<ModelMenuProps> = ({
   selected,
   onSelect,
   isDark,
-  position = "bottom", // Default to bottom (for Chat Input)
+  position = "bottom",
 }) => {
   if (!isOpen) return null;
 

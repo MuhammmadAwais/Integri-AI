@@ -43,11 +43,11 @@ const MessageMarkdown: React.FC<{
           </h2>
         ),
 
-        // 2. PARAGRAPHS
+        // 2. PARAGRAPHS - FIX: Added whitespace-pre-wrap to preserve newlines
         p: ({ children }) => (
           <p
             className={cn(
-              "mb-4 last:mb-0 leading-relaxed font-normal",
+              "mb-4 last:mb-0 leading-relaxed font-normal whitespace-pre-wrap",
               isDark ? "text-[#E7E9EA]" : "text-[#0F1419]"
             )}
           >

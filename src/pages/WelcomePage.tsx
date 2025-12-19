@@ -22,7 +22,7 @@ import { RocketIcon } from "../Components/ui/ReasoningMenu";
 import ModelMenu from "../Components/ui/ModelMenu";
 import { ModalToggle } from "../Components/ui/ModelMenu";
 
-const Welcome: React.FC = () => {
+const WelcomePage: React.FC = () => {
   const isDark = useAppSelector((state: any) => state.theme?.isDark);
   const { user, accessToken } = useAppSelector((state: any) => state.auth);
   const [inputValue, setInputValue] = useState("");
@@ -39,11 +39,14 @@ const Welcome: React.FC = () => {
   const chipsRef = useRef<HTMLDivElement>(null);
   const textInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+
   // --- FIXED ANIMATION LOGIC ---
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
+      // FIX: Ensure elements start visible if animation fails (removed opacity-0 from JSX)
+      // We force opacity 0 -> 1 here instead.
       tl.fromTo(
         logoRef.current,
         { y: 20, opacity: 0 },
@@ -86,7 +89,7 @@ const Welcome: React.FC = () => {
         },
       });
     } catch (error) {
-      console.error(`Hey ${user?.name} Failed to start your chat:`, error );
+      console.error(`Hey ${user?.name} Failed to start your chat:`, error);
     }
   };
 
@@ -127,10 +130,10 @@ const Welcome: React.FC = () => {
 
       {/* CONTENT */}
       <div className="w-full max-w-[720px] px-4 flex flex-col items-center -mt-16 z-10 relative">
-        {/* LOGO */}
+        {/* LOGO - Removed 'opacity-0' class */}
         <div
           ref={logoRef}
-          className="mb-12 flex items-center justify-center gap-3 opacity-0"
+          className="mb-12 flex items-center justify-center gap-3"
         >
           <img
             src={isDark ? "/dark-theme-logo.png" : "/light-theme-logo.png"}
@@ -149,11 +152,11 @@ const Welcome: React.FC = () => {
           </Link>
         </div>
 
-        {/* INPUT CONTAINER */}
+        {/* INPUT CONTAINER - Removed 'opacity-0' class */}
         <div
           ref={inputRef}
           className={cn(
-            "w-full relative group rounded-4xl transition-all duration-300 border shadow-sm opacity-0",
+            "w-full relative group rounded-4xl transition-all duration-300 border shadow-sm",
             isDark
               ? "bg-[#121212] border-[#2A2B32] hover:border-gray-700"
               : "bg-gray-50 border-gray-200 hover:border-gray-300"
@@ -298,10 +301,10 @@ const Welcome: React.FC = () => {
           </div>
         </div>
 
-        {/* FEATURE CHIPS */}
+        {/* FEATURE CHIPS - Removed 'opacity-0' class */}
         <div
           ref={chipsRef}
-          className="flex flex-wrap justify-center gap-2 mt-6 opacity-0"
+          className="flex flex-wrap justify-center gap-2 mt-6"
         >
           {features.map((feat, idx) => (
             <button
@@ -328,4 +331,4 @@ const Welcome: React.FC = () => {
   );
 };
 
-export default Welcome;
+export default WelcomePage;

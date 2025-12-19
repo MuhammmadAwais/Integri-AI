@@ -10,15 +10,19 @@ import {
 } from "lucide-react";
 import { useAppSelector } from "../../../hooks/useRedux";
 import { cn } from "../../../lib/utils";
+
 interface ChatInputProps {
   onSend?: (text: string) => void;
+  disabled?: boolean; // Fixed: Added disabled prop definition
 }
-const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
-  const isDark = useAppSelector((state:any) => state.theme.isDark);
+
+const ChatInput: React.FC<ChatInputProps> = ({ onSend, disabled }) => {
+  const isDark = useAppSelector((state: any) => state.theme.isDark);
   const [input, setInput] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -28,7 +32,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
       )}px`;
     }
   }, [input]);
+
   const handleSend = () => {
+    if (disabled) return; // Prevent send if disabled
     if ((input.trim() || file) && onSend) {
       const msg = file ? `[Uploaded File: ${file.name}] ${input}` : input;
       onSend(msg);
@@ -37,12 +43,14 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
       if (textareaRef.current) textareaRef.current.style.height = "auto";
     }
   };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
   };
+
   return (
     <div className="w-full max-w-3xl mx-auto px-2 pb-4">
       {file && (
@@ -59,7 +67,8 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
           <button
             title="Remove File"
             onClick={() => setFile(null)}
-            className="ml-2 p-1 hover:bg-[#333] rounded-full text-gray-500 hover:text-gray-300"
+            disabled={disabled}
+            className="ml-2 p-1 hover:bg-[#333] rounded-full text-gray-500 hover:text-gray-300 disabled:opacity-50"
           >
             <X size={16} />
           </button>
@@ -71,16 +80,18 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
           "relative flex flex-col w-full p-2 rounded-[26px] border transition-all duration-200 shadow-sm group",
           isDark
             ? "bg-[#181818] border-[#2f2f2f] focus-within:border-gray-600 focus-within:shadow-lg focus-within:shadow-blue-900/5"
-            : "bg-[#f4f4f4] border-[#e5e5e5] focus-within:border-gray-300"
+            : "bg-[#f4f4f4] border-[#e5e5e5] focus-within:border-gray-300",
+          disabled && "opacity-70 pointer-events-none" // Visual feedback for disabled state
         )}
       >
         <textarea
           title="Chat Input"
           ref={textareaRef}
           value={input}
+          disabled={disabled}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Ask anything..."
+          placeholder={disabled ? "Please wait..." : "Ask anything..."}
           rows={1}
           className={cn(
             "w-full max-h-40 py-3 px-4 bg-transparent outline-none resize-none text-[16px] leading-relaxed scrollbar-none",
@@ -101,13 +112,15 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
               onChange={(e) =>
                 e.target.files?.[0] && setFile(e.target.files[0])
               }
+              disabled={disabled}
             />
 
             <button
               title="Attach File"
               onClick={() => fileInputRef.current?.click()}
+              disabled={disabled}
               className={cn(
-                "p-2 rounded-full transition-colors hover:cursor-pointer",
+                "p-2 rounded-full transition-colors hover:cursor-pointer disabled:cursor-not-allowed",
                 isDark
                   ? "text-gray-400 hover:text-[#1d9bf0] hover:bg-[#1d9bf0]/10"
                   : "text-gray-500 hover:bg-black/5"
@@ -117,8 +130,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
             </button>
             <button
               title="Insert Image"
+              disabled={disabled}
               className={cn(
-                "p-2 rounded-full transition-colors hover:cursor-pointer",
+                "p-2 rounded-full transition-colors hover:cursor-pointer disabled:cursor-not-allowed",
                 isDark
                   ? "text-gray-400 hover:text-[#1d9bf0] hover:bg-[#1d9bf0]/10"
                   : "text-gray-500 hover:bg-black/5"
@@ -128,8 +142,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
             </button>
             <button
               title="Translate"
+              disabled={disabled}
               className={cn(
-                "p-2 rounded-full transition-colors hidden sm:block hover:cursor-pointer",
+                "p-2 rounded-full transition-colors hidden sm:block hover:cursor-pointer disabled:cursor-not-allowed",
                 isDark
                   ? "text-gray-400 hover:text-[#1d9bf0] hover:bg-[#1d9bf0]/10"
                   : "text-gray-500 hover:bg-black/5"
@@ -139,8 +154,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
             </button>
             <button
               title="Voice Input"
+              disabled={disabled}
               className={cn(
-                "p-2 rounded-full transition-colors hidden sm:block hover:cursor-pointer",
+                "p-2 rounded-full transition-colors hidden sm:block hover:cursor-pointer disabled:cursor-not-allowed",
                 isDark
                   ? "text-gray-400 hover:text-[#1d9bf0] hover:bg-[#1d9bf0]/10"
                   : "text-gray-500 hover:bg-black/5"
@@ -162,10 +178,11 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
             <button
               title="Send Message"
               onClick={handleSend}
-              disabled={!input.trim() && !file}
+              // Logic check: if disabled is true, button is disabled. If no input/file, button is disabled.
+              disabled={(!input.trim() && !file) || disabled}
               className={cn(
                 "p-2 rounded-full transition-all duration-200 flex items-center justify-center ",
-                input.trim() || file
+                (input.trim() || file) && !disabled
                   ? "bg-[#1d9bf0] text-white hover:bg-[#1a8cd8] shadow-md transform hover:scale-105 hover:cursor-pointer"
                   : isDark
                   ? "bg-[#2f2f2f] text-gray-500 cursor-not-allowed"
