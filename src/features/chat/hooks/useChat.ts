@@ -164,12 +164,12 @@ export const useChat = (sessionId: string | undefined) => {
     });
   }, []);
 
-  // 3. Send Message (Updated for File Upload)
+  // 3. Send Message (Fixed for Sequential Upload -> Send)
   const sendMessage = useCallback(
     async (content: string, file?: File | null) => {
       if (!content.trim() && !file) return;
 
-      // Create attachment object for local preview
+      // Optimistic Update: Show message immediately in UI
       const attachment = file
         ? {
             name: file.name,
@@ -180,7 +180,6 @@ export const useChat = (sessionId: string | undefined) => {
           }
         : undefined;
 
-      // Optimistic Update: Clean content + structured attachment
       setMessages((prev) => [
         ...prev,
         { role: "user", content: content, attachment },
@@ -197,22 +196,30 @@ export const useChat = (sessionId: string | undefined) => {
 
         let fileIds: string[] = [];
 
-        // --- UPLOAD LOGIC START ---
+        // --- UPLOAD LOGIC ---
         if (file && token) {
           try {
             console.log("Uploading file...");
-            // Upload first, get ID
+            // Step 1: Upload and wait for response
             const uploadedId = await SessionService.uploadFile(token, file);
+
+            // Step 2: Validate ID (matches Dart: where(id => id.isNotEmpty))
             if (uploadedId) {
               fileIds.push(uploadedId);
               console.log("File uploaded, ID:", uploadedId);
             }
           } catch (uploadError) {
             console.error("File upload failed:", uploadError);
+            // Matches Dart logic: if (fileIds.isEmpty) throw Exception...
+            // We stop the process here so we don't send a message without the required context
+            setIsThinking(false);
+            // Optional: You could add a toast notification here
+            return;
           }
         }
-        // --- UPLOAD LOGIC END ---
 
+        // --- SEND LOGIC ---
+        // Step 3: Send message ONLY after upload is processed
         console.log(`Sending to ${provider}/${model} with fileIds:`, fileIds);
         if (sessionId) {
           socketService.sendMessage(content, model, provider, fileIds);

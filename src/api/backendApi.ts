@@ -123,22 +123,35 @@ export const SessionService = {
     return response.data;
   },
 
-  // NEW: Upload File Logic matching your Dart snippet requirements
+  // FIXED: Upload File Logic matching Documentation and Dart snippet
   uploadFile: async (token: string, file: File) => {
     try {
       const formData = new FormData();
-      formData.append("file", file); // Standard key 'file'
+      // FIX 1: Documentation image shows param name is 'files' (plural/array)
+      formData.append("files", file);
 
-      const response = await backendApi.post("/api/v1/files", formData, {
+      // FIX 2: Endpoint is /api/v1/files/upload (not /api/v1/files)
+      const response = await backendApi.post("/api/v1/files/upload", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });
 
-      // Matches logic: e["file_id"] ?? e["id"]
       const data = response.data;
-      const fileId = data.file_id || data.id || (data.data && data.data.id);
+      console.log("File upload response data:", data);
+      // FIX 3: Parse Array Response [{ "file_id": "...", ... }]
+      // Logic mirrors Dart: e["file_id"] ?? e["id"]
+      let uploadedItem;
+      if (Array.isArray(data) && data.length > 0) {
+        uploadedItem = data[0];
+      } else if (!Array.isArray(data)) {
+        // Fallback for single object response just in case
+        uploadedItem = data;
+      }
+
+      const fileId =
+        uploadedItem?.file_id || uploadedItem?.id || uploadedItem?.data?.id;
 
       if (!fileId) {
         throw new Error("No file ID returned from upload");
