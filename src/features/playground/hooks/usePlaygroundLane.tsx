@@ -26,17 +26,31 @@ export const usePlaygroundLane = (modelConfig: {
   }, []);
 
   const sendMessage = useCallback(
-    async (text: string) => {
-      // 1. Strict Guard: No empty sends
-      if (!text || !text.trim()) return;
+    async (text: string, file?: File | null) => {
+      // 1. Strict Guard: No empty sends (unless file exists)
+      if ((!text || !text.trim()) && !file) return;
 
-      // 2. Optimistic Update
-      setMessages((prev) => [...prev, { role: "user", content: text }]);
+      // 2. Create Attachment Object for Optimistic Preview
+      const attachment = file
+        ? {
+            name: file.name,
+            type: file.type.startsWith("image/")
+              ? ("image" as const)
+              : ("file" as const),
+            url: URL.createObjectURL(file), // Creates a local preview URL
+          }
+        : undefined;
+
+      // 3. Optimistic Update (Immediate Preview)
+      setMessages((prev) => [
+        ...prev,
+        { role: "user", content: text, attachment },
+      ]);
 
       let currentSessionId = sessionId;
       let currentSocket = socketRef.current;
 
-      // 3. Lazy Create Session
+      // 4. Lazy Create Session if needed
       if (!currentSessionId) {
         if (!token) return;
 
@@ -45,7 +59,7 @@ export const usePlaygroundLane = (modelConfig: {
           const res = await SessionService.createSession(
             token,
             modelConfig.id,
-            modelConfig.provider // Pass correct provider
+            modelConfig.provider
           );
 
           if (res?.session_id) {
@@ -53,7 +67,8 @@ export const usePlaygroundLane = (modelConfig: {
             setSessionId(currentSessionId);
 
             // Set Title & Notify Sidebar
-            const title = text.slice(0, 20) + "... [PL]";
+            const title =
+              (text ? text.slice(0, 20) : "Attachment") + "... [PL]";
             await SessionService.updateSession(
               token,
               currentSessionId as any,
@@ -94,18 +109,41 @@ export const usePlaygroundLane = (modelConfig: {
         }
       }
 
-      // 4. Send Message via Socket
+      // 5. Handle File Upload & Send
       if (currentSocket) {
-        setTimeout(
-          () => {
-            currentSocket?.sendMessage(
-              text,
-              modelConfig.id,
-              modelConfig.provider
-            );
-          },
-          currentSessionId === sessionId ? 0 : 500
-        ); // Delay if fresh socket
+        try {
+          let fileIds: string[] = [];
+
+          // Upload if file exists
+          if (file && token) {
+            console.log("Playground: Uploading file...", file.name);
+            try {
+              const uploadedId = await SessionService.uploadFile(token, file);
+              if (uploadedId) {
+                fileIds.push(uploadedId);
+                console.log("Playground: File uploaded, ID:", uploadedId);
+              }
+            } catch (err) {
+              console.error("Playground: File upload failed", err);
+              // We continue sending text even if upload fails, or you could return here
+            }
+          }
+
+          // Delay slightly if socket was just created to ensure connection is open
+          setTimeout(
+            () => {
+              currentSocket?.sendMessage(
+                text,
+                modelConfig.id,
+                modelConfig.provider,
+                fileIds // Pass the file IDs here
+              );
+            },
+            currentSessionId === sessionId ? 0 : 1000
+          );
+        } catch (err) {
+          console.error("Message sending failed", err);
+        }
       }
     },
     [sessionId, token, modelConfig]

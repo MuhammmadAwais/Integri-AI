@@ -1,7 +1,7 @@
 import React from "react";
 import { cn } from "../../lib/utils";
 import AVAILABLE_MODELS from "../../../Constants";
-import { Bot } from "lucide-react"; // Imported Icon for ModalToggle
+import { Bot, Check } from "lucide-react";
 
 interface ModelMenuProps {
   isOpen: boolean;
@@ -10,9 +10,9 @@ interface ModelMenuProps {
   onSelect: (id: string) => void;
   isDark: boolean;
   position?: "top" | "bottom";
+  align?: "left" | "right";
 }
 
-// Fixed: Added and Exported ModalToggle Component
 export const ModalToggle = ({ isDark }: { isDark: boolean }) => {
   return (
     <Bot
@@ -30,35 +30,58 @@ const ModelMenu: React.FC<ModelMenuProps> = ({
   onSelect,
   isDark,
   position = "bottom",
+  align = "right",
 }) => {
   if (!isOpen) return null;
 
   return (
     <>
-      {/* Backdrop */}
-      <div className="fixed inset-0 z-[100] bg-transparent" onClick={onClose} />
+      {/* FIX: Backdrop to handle "Click Outside". 
+        Uses z-[100] to ensure it sits above the Playground header (z-20).
+      */}
+      <div
+        className="fixed inset-0 z-[100] bg-transparent cursor-default"
+        onClick={onClose}
+      />
 
       {/* Menu Container */}
       <div
         className={cn(
           "absolute w-[280px] z-[101] flex flex-col p-1.5",
           "animate-in zoom-in-95 duration-100 ease-out",
-          "rounded-2xl border shadow-2xl overflow-hidden backdrop-blur-xl",
+          "rounded-2xl border shadow-2xl overflow-hidden",
 
           // Dynamic Positioning
           position === "bottom"
-            ? "bottom-full mb-2 right-0 origin-bottom-right" // Opens Upwards
-            : "top-full mt-2 right-0 origin-top-right", // Opens Downwards
+            ? cn(
+                "bottom-full mb-2",
+                align === "left"
+                  ? "left-0 origin-bottom-left"
+                  : "right-0 origin-bottom-right"
+              )
+            : cn(
+                "top-full mt-2",
+                align === "left"
+                  ? "left-0 origin-top-left"
+                  : "right-0 origin-top-right"
+              ),
 
-          // Theme
+          // Theme Colors
           isDark
-            ? "bg-[#1a1b26]/95 border-[#2A2B32] shadow-black/50"
-            : "bg-white/95 border-gray-200 shadow-xl"
+            ? "bg-[#18181b] border-[#27272a] shadow-black/50"
+            : "bg-white border-gray-200 shadow-xl"
         )}
       >
-        <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
-          <div className="px-2 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider sticky top-0 bg-inherit z-10">
-            Select Model
+        <div className="max-h-[320px] overflow-y-auto custom-scrollbar relative">
+          <div
+            className={cn(
+              "px-2 py-2 text-[11px] font-bold uppercase tracking-wider sticky top-0 z-10 mb-1 backdrop-blur-md",
+              isDark
+                ? "bg-[#18181b]/95 text-gray-500 border-b border-[#27272a]"
+                : "bg-white/95 text-gray-400 border-b border-gray-100"
+            )}
+          >
+            Available Models
           </div>
 
           {AVAILABLE_MODELS.map((m) => {
@@ -71,38 +94,37 @@ const ModelMenu: React.FC<ModelMenuProps> = ({
                   onClose();
                 }}
                 className={cn(
-                  "w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all duration-200 flex items-center justify-between group mb-0.5",
+                  "w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all duration-200 flex items-center justify-between group mb-0.5 relative",
                   isSelected
                     ? isDark
-                      ? "bg-white/10 text-white"
-                      : "bg-black/5 text-black"
+                      ? "bg-indigo-500/10 text-indigo-400"
+                      : "bg-indigo-50 text-indigo-600"
                     : isDark
-                    ? "text-gray-300 hover:bg-white/5"
-                    : "text-gray-700 hover:bg-black/5"
+                    ? "text-gray-300 hover:bg-[#27272a]"
+                    : "text-gray-700 hover:bg-gray-100"
                 )}
               >
                 <div>
                   <div className="font-medium">{m.label || m.id}</div>
-                  <div className="text-[10px] opacity-60 capitalize">
+                  <div className="text-[10px] opacity-60 capitalize flex items-center gap-1.5">
                     {m.provider}
+                    {m.badge && (
+                      <span
+                        className={cn(
+                          "px-1 rounded-[3px] text-[9px] font-medium leading-none py-0.5",
+                          isDark
+                            ? "bg-gray-800 text-gray-400"
+                            : "bg-gray-200 text-gray-600"
+                        )}
+                      >
+                        {m.badge}
+                      </span>
+                    )}
                   </div>
                 </div>
 
-                {/* Badge or Checkmark */}
                 {isSelected && (
-                  <span className="w-2 h-2 rounded-full bg-green-500 shadow-green-500/50 shadow-lg" />
-                )}
-                {!isSelected && m.badge && (
-                  <span
-                    className={cn(
-                      "text-[10px] px-1.5 py-0.5 rounded border opacity-60 group-hover:opacity-100 transition-opacity",
-                      isDark
-                        ? "border-white/20 bg-white/5"
-                        : "border-black/10 bg-black/5"
-                    )}
-                  >
-                    {m.badge}
-                  </span>
+                  <Check size={14} className="shrink-0 stroke-[3]" />
                 )}
               </button>
             );

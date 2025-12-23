@@ -1,6 +1,12 @@
 const AVAILABLE_MODELS = [
   // --- OpenAI ---
   {
+    id: "gpt-5.1", // Added as requested to fix visibility glitch
+    label: "GPT-5.1",
+    provider: "openai",
+    badge: "New",
+  },
+  {
     id: "gpt-5-mini",
     label: "GPT-5 Mini",
     provider: "openai",

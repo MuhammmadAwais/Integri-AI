@@ -64,6 +64,7 @@ const ChatInterface: React.FC = () => {
                 key={msg.id || idx}
                 role={msg.role}
                 content={msg.content}
+                attachment={msg.attachment} // Pass the attachment prop here
                 onDelete={() => msg.id && deleteMessage(msg.id)}
               />
             ))
@@ -99,7 +100,16 @@ const ChatInterface: React.FC = () => {
 
               // Set title for fresh chats
               if (messages.length === 0 && token && id) {
-                SessionService.updateSession(token, id, text.substring(0, 30));
+                // FIXED: Do not use file name as title.
+                // If text exists, use it. If not, use generic "Attachment" or keep "New Chat"
+                const cleanText = text.trim();
+                const title = cleanText
+                  ? cleanText.substring(0, 30)
+                  : file
+                  ? "Attachment" // Generic title for file-only uploads
+                  : "New Chat";
+
+                SessionService.updateSession(token, id, title);
               }
             }}
             disabled={isThinking || isStreaming}

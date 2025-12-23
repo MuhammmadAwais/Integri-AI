@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useLayoutEffect, useRef } from "react";
 import { useAppSelector } from "../hooks/useRedux";
 import { cn } from "../lib/utils";
 import { Plus } from "lucide-react";
@@ -6,19 +6,41 @@ import ChatInput from "../features/chat/components/ChatInput";
 import PlaygroundLane from "../features/playground/components/PlaygroundLane";
 import ModelMenu from "../Components/ui/ModelMenu";
 import AVAILABLE_MODELS from "../../Constants";
+import gsap from "gsap";
 
 const Playground: React.FC = () => {
   const isDark = useAppSelector((state: any) => state.theme.isDark);
 
-  // Initialize with at least one model
   const [activeModels, setActiveModels] = useState<any[]>([
     AVAILABLE_MODELS[0],
     AVAILABLE_MODELS.length > 1 ? AVAILABLE_MODELS[1] : AVAILABLE_MODELS[0],
+    AVAILABLE_MODELS.length > 2 ? AVAILABLE_MODELS[2] : AVAILABLE_MODELS[0],
   ]);
 
+  // Added globalFile state
   const [globalPrompt, setGlobalPrompt] = useState("");
-  const [triggerId, setTriggerId] = useState(0); // Triggers the send in child components
+  const [globalFile, setGlobalFile] = useState<File | null>(null);
+  const [triggerId, setTriggerId] = useState(0);
   const [showAddModel, setShowAddModel] = useState(false);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        ".playground-lane",
+        { x: 50, opacity: 0 },
+        {
+          x: 0,
+          opacity: 1,
+          duration: 0.5,
+          stagger: 0.1,
+          ease: "power2.out",
+        }
+      );
+    }, containerRef);
+    return () => ctx.revert();
+  }, [activeModels.length]);
 
   const handleAddModel = (modelId: string) => {
     const fullModel = AVAILABLE_MODELS.find((m) => m.id === modelId);
@@ -28,18 +50,11 @@ const Playground: React.FC = () => {
     }
   };
 
-  const handleUpdateModel = (index: number, newId: string) => {
-    const fullModel = AVAILABLE_MODELS.find((m) => m.id === newId);
-    if (fullModel) {
-      const next = [...activeModels];
-      next[index] = fullModel;
-      setActiveModels(next);
-    }
-  };
-
-  const handleGlobalSend = (text: string) => {
-    if (!text.trim()) return;
+  // Updated to accept file
+  const handleGlobalSend = (text: string, file?: File | null) => {
+    if (!text.trim() && !file) return;
     setGlobalPrompt(text);
+    setGlobalFile(file || null); // Store the file
     setTriggerId((prev) => prev + 1);
   };
 
@@ -47,100 +62,89 @@ const Playground: React.FC = () => {
     <div
       className={cn(
         "flex flex-col h-[calc(100vh-64px)] relative overflow-hidden transition-colors duration-300",
-        isDark ? "bg-[#0a0a0a]" : "bg-gray-50"
+        isDark ? "bg-[#09090b]" : "bg-white"
       )}
     >
-      {/* 1. Header Toolbar */}
+      {/* Header */}
       <div
         className={cn(
           "px-6 py-3 border-b flex justify-between items-center shrink-0 z-20",
           isDark
-            ? "bg-[#0a0a0a]/80 border-[#2A2B32] backdrop-blur-md"
-            : "bg-white/80 border-gray-200 backdrop-blur-md"
+            ? "bg-[#09090b]/80 border-zinc-800 backdrop-blur-md"
+            : "bg-white/80 border-zinc-200 backdrop-blur-md"
         )}
       >
         <h1
           className={cn(
-            "font-bold text-lg",
-            isDark ? "text-white" : "text-gray-900"
+            "font-bold text-lg tracking-tight",
+            isDark ? "text-zinc-100" : "text-zinc-900"
           )}
         >
           Playground
         </h1>
 
-        {/* Add Model Button with Dropdown */}
         <div className="relative">
           <button
+            title="Add Model"
             onClick={() => setShowAddModel(true)}
             className={cn(
-              "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
+              "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all hover:cursor-pointer",
               isDark
-                ? "bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10"
-                : "bg-black/5 hover:bg-black/10 text-gray-700 border border-gray-200"
+                ? "bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700"
+                : "bg-zinc-100 hover:bg-zinc-200 text-zinc-800 border border-zinc-200"
             )}
           >
             <Plus size={16} />
-            <span>Add Model</span>
+            <span className="hidden sm:inline">Add Model</span>
           </button>
 
-          {/* Correctly positioned Model Selector */}
           <ModelMenu
             isOpen={showAddModel}
             onClose={() => setShowAddModel(false)}
             selected=""
             onSelect={handleAddModel}
             isDark={isDark}
-            position="top" // Drop DOWN for header
+            position="top"
           />
         </div>
       </div>
 
-      {/* 2. Horizontal Scrolling Grid */}
+      {/* Lanes */}
       <div
+        ref={containerRef}
         className={cn(
-          // Flex container with scrolling
-          "flex-1 flex overflow-x-auto overflow-y-hidden p-4 gap-4 snap-x scroll-smooth",
-          // Scrollbar styling
-          isDark ? "scrollbar-track-[#0a0a0a]" : "scrollbar-track-gray-50"
+          "flex-1 flex flex-row flex-nowrap overflow-x-auto overflow-y-hidden p-4 gap-4 snap-x scroll-smooth items-stretch",
+          isDark ? "scrollbar-track-[#09090b]" : "scrollbar-track-white"
         )}
       >
         {activeModels.map((model, idx) => (
           <div
             key={`${model.id}-${idx}`}
-            className="min-w-[350px] md:min-w-[400px] h-full snap-center"
+            className="playground-lane flex-1 min-w-[320px] max-w-full h-full snap-center flex-shrink-0 transition-all duration-300 ease-in-out"
           >
             <PlaygroundLane
               model={model}
               onRemove={() =>
                 setActiveModels((prev) => prev.filter((_, i) => i !== idx))
               }
-              onModelChange={(newId) => handleUpdateModel(idx, newId)}
               isDark={isDark}
               globalPrompt={globalPrompt}
+              globalFile={globalFile} // Pass file here
               triggerId={triggerId}
             />
           </div>
         ))}
-
-        {/* Empty State / Add Helper */}
-        <div className="min-w-[100px] flex items-center justify-center opacity-50">
-          <button
-            onClick={() => setShowAddModel(true)}
-            className="w-12 h-12 rounded-full border-2 border-dashed border-gray-500 flex items-center justify-center hover:border-purple-500 hover:text-purple-500 transition"
-          >
-            <Plus />
-          </button>
-        </div>
       </div>
 
-      {/* 3. Footer Input */}
+      {/* Footer */}
       <div
         className={cn(
           "p-4 border-t z-20 shrink-0",
-          isDark ? "border-[#2A2B32] bg-[#000]" : "border-gray-200 bg-white"
+          isDark ? "border-zinc-800 bg-[#09090b]" : "border-zinc-200 bg-white"
         )}
       >
         <div className="max-w-4xl mx-auto">
+          {/* onSend now correctly receives (text, file) */}
           <ChatInput onSend={handleGlobalSend} />
         </div>
       </div>

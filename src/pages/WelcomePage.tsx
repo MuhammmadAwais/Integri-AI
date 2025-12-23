@@ -20,7 +20,7 @@ import ParticleBackground from "../Components/ui/ParticleBackground";
 import ReasoningMenu from "../Components/ui/ReasoningMenu";
 import { RocketIcon } from "../Components/ui/ReasoningMenu";
 import ModelMenu from "../Components/ui/ModelMenu";
-import { ModalToggle } from "../Components/ui/ModelMenu";
+import AVAILABLE_MODELS from "../../Constants"; // Import constants to get labels
 
 const WelcomePage: React.FC = () => {
   const isDark = useAppSelector((state: any) => state.theme?.isDark);
@@ -31,6 +31,7 @@ const WelcomePage: React.FC = () => {
   const [showReasoningMenu, setShowReasoningMenu] = useState(false);
   const [showModelMenu, setShowModelMenu] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
   // Refs
   const fileInputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -40,13 +41,15 @@ const WelcomePage: React.FC = () => {
   const textInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
-  // --- FIXED ANIMATION LOGIC ---
+  // Helper to get Label
+  const selectedModelLabel =
+    AVAILABLE_MODELS.find((m) => m.id === modelMode)?.label || modelMode;
+
+  // --- ANIMATION LOGIC ---
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-      // FIX: Ensure elements start visible if animation fails (removed opacity-0 from JSX)
-      // We force opacity 0 -> 1 here instead.
       tl.fromTo(
         logoRef.current,
         { y: 20, opacity: 0 },
@@ -81,10 +84,10 @@ const WelcomePage: React.FC = () => {
     if (selectedFile) content = `[File: ${selectedFile.name}] ${text}`;
     try {
       const newChatId = await ChatService.createChat(accessToken, modelMode);
-      // ChatPage will handle sending this message via WebSocket.
       navigate(`/chat/${newChatId}`, {
         state: {
           initialMessage: content,
+          initialFile: selectedFile,
           model: modelMode,
         },
       });
@@ -117,8 +120,43 @@ const WelcomePage: React.FC = () => {
           : "bg-white selection:bg-blue-100 selection:text-black"
       )}
     >
-      {/* BACKGROUND */}
       <ParticleBackground />
+
+      {/* --- NEW: TOP LEFT MODEL SELECTOR --- */}
+      <div className="absolute top-6 left-6 z-50 flex items-center gap-2">
+        <div className="relative">
+          <button
+            onClick={() => setShowModelMenu(!showModelMenu)}
+            className={cn(
+              "flex items-center gap-2 px-3 py-2 rounded-xl text-lg font-semibold transition-all hover:cursor-pointer",
+              isDark
+                ? "text-gray-200 hover:bg-[#1A1A1A]"
+                : "text-gray-700 hover:bg-gray-100",
+              showModelMenu && (isDark ? "bg-[#1A1A1A]" : "bg-gray-100")
+            )}
+          >
+            <span className="opacity-90">{selectedModelLabel}</span>
+            <ChevronDown
+              size={16}
+              className={cn(
+                "opacity-50 transition-transform duration-200",
+                showModelMenu && "rotate-180"
+              )}
+            />
+          </button>
+
+          {/* Render Menu: Top-Left alignment */}
+          <ModelMenu
+            isOpen={showModelMenu}
+            onClose={() => setShowModelMenu(false)}
+            selected={modelMode}
+            onSelect={setModelMode}
+            isDark={isDark}
+            position="top" // Open downwards
+            align="left" // Align to left edge of button
+          />
+        </div>
+      </div>
 
       <input
         title="file"
@@ -130,7 +168,7 @@ const WelcomePage: React.FC = () => {
 
       {/* CONTENT */}
       <div className="w-full max-w-[720px] px-4 flex flex-col items-center -mt-16 z-10 relative">
-        {/* LOGO - Removed 'opacity-0' class */}
+        {/* LOGO */}
         <div
           ref={logoRef}
           className="mb-12 flex items-center justify-center gap-3"
@@ -152,7 +190,7 @@ const WelcomePage: React.FC = () => {
           </Link>
         </div>
 
-        {/* INPUT CONTAINER - Removed 'opacity-0' class */}
+        {/* INPUT CONTAINER */}
         <div
           ref={inputRef}
           className={cn(
@@ -162,6 +200,7 @@ const WelcomePage: React.FC = () => {
               : "bg-gray-50 border-gray-200 hover:border-gray-300"
           )}
         >
+          {/* Reasoning Menu remains in Input */}
           <ReasoningMenu
             isOpen={showReasoningMenu}
             onClose={() => setShowReasoningMenu(false)}
@@ -169,13 +208,8 @@ const WelcomePage: React.FC = () => {
             onSelect={setReasoningMode}
             isDark={isDark}
           />
-          <ModelMenu
-            isOpen={showModelMenu}
-            onClose={() => setShowModelMenu(false)}
-            selected={modelMode}
-            onSelect={setModelMode}
-            isDark={isDark}
-          />
+
+          {/* REMOVED: ModelMenu from here */}
 
           <div className="flex flex-col w-full">
             {/* File Preview */}
@@ -227,24 +261,13 @@ const WelcomePage: React.FC = () => {
                 onKeyDown={handleKeyDown}
                 placeholder="Ask anything you want..."
                 className={cn(
-                  // Added min-w-0 to allow shrinking in flex container
                   "flex-1 min-w-0 bg-transparent outline-none text-lg px-3 placeholder:text-gray-500/80 font-medium z-20",
                   isDark ? "text-gray-100" : "text-gray-900"
                 )}
               />
 
               <div className="flex items-center gap-1.5 shrink-0">
-                <button
-                  title="Select Model"
-                  onClick={() => setShowModelMenu(!showModelMenu)}
-                  className={cn(
-                    "flex items-center justify-center w-8 h-8 rounded-full transition-all hover:cursor-pointer",
-                    isDark ? "hover:bg-white/10" : "hover:bg-black/5",
-                    showModelMenu && "bg-white/10"
-                  )}
-                >
-                  <ModalToggle isDark={isDark} />
-                </button>
+                {/* REMOVED: Model Menu Toggle Button from here */}
 
                 <button
                   onClick={() => setShowReasoningMenu(!showReasoningMenu)}
@@ -301,7 +324,7 @@ const WelcomePage: React.FC = () => {
           </div>
         </div>
 
-        {/* FEATURE CHIPS - Removed 'opacity-0' class */}
+        {/* FEATURE CHIPS */}
         <div
           ref={chipsRef}
           className="flex flex-wrap justify-center gap-2 mt-6"

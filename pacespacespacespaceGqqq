@@ -1,0 +1,79 @@
+[33m811db70[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{0}: checkout: moving from 7b771adfc9f2c2fd12f1be30f05e79ab5e91b3fd to main
+[33m811db70[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m refs/remotes/origin/HEAD@{0}: fetch
+[33m811db70[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m refs/remotes/origin/main@{0}: fetch: fast-forward
+[33m7b771ad[m HEAD@{1}: checkout: moving from main to 7b771ad
+[33m811db70[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{2}: checkout: moving from main to main
+[33m811db70[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{3}: reset: moving to HEAD
+[33m187eb58[m[33m ([m[1;35mrefs/stash[m[33m)[m refs/stash@{0}: On main: stash the current stage
+[33m811db70[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m refs/heads/main@{0}: commit: Commit file upload support and UI improvements
+[33m811db70[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{4}: commit: Commit file upload support and UI improvements
+[33m7b771ad[m refs/heads/main@{1}: commit: Commit fixes of playground chat bug of shost ChatInput component and WelcomePage export issue
+[33m7b771ad[m HEAD@{5}: commit: Commit fixes of playground chat bug of shost ChatInput component and WelcomePage export issue
+[33m3d7c983[m refs/heads/main@{2}: commit: commit Fixes of chattign system v2
+[33m3d7c983[m HEAD@{6}: commit: commit Fixes of chattign system v2
+[33m795b563[m refs/heads/main@{3}: commit: Commit some bugs fixes to chattign system and playground lane hook
+[33m795b563[m HEAD@{7}: commit: Commit some bugs fixes to chattign system and playground lane hook
+[33m0862789[m refs/heads/main@{4}: commit: Commit addition of Playground feature with multi-lane support
+[33m0862789[m HEAD@{8}: commit: Commit addition of Playground feature with multi-lane support
+[33mc6961cb[m refs/heads/main@{5}: commit: Commit the init of palyground
+[33mc6961cb[m HEAD@{9}: commit: Commit the init of palyground
+[33me367489[m refs/heads/main@{6}: commit: commit fix of MobileSidebar of model selectors
+[33me367489[m HEAD@{10}: commit: commit fix of MobileSidebar of model selectors
+[33m9bd020b[m refs/heads/main@{7}: commit: Commit addition of modals for model selection and refactor model constants
+[33m9bd020b[m HEAD@{11}: commit: Commit addition of modals for model selection and refactor model constants
+[33mf5a61f7[m refs/heads/main@{8}: commit: Commit the addition of LibraryPage and related chat feature updates and delte button fix
+[33mf5a61f7[m HEAD@{12}: commit: Commit the addition of LibraryPage and related chat feature updates and delte button fix
+[33m536d519[m refs/stash@{1}: WIP on main: ecec98c Commit division of MessageBubble into smaller components
+[33mecec98c[m HEAD@{13}: reset: moving to HEAD
+[33mecec98c[m refs/heads/main@{9}: commit: Commit division of MessageBubble into smaller components
+[33mecec98c[m HEAD@{14}: commit: Commit division of MessageBubble into smaller components
+[33md396c92[m refs/heads/main@{10}: commit: Commit Add library section to sidebar
+[33md396c92[m HEAD@{15}: commit: Commit Add library section to sidebar
+[33ma36ed4f[m refs/heads/main@{11}: commit: Commit UI fixes of historyModal and more
+[33ma36ed4f[m HEAD@{16}: commit: Commit UI fixes of historyModal and more
+[33m88081b2[m refs/heads/main@{12}: commit: Commit the removal of sidebar components and update chat link routing
+[33m88081b2[m HEAD@{17}: commit: Commit the removal of sidebar components and update chat link routing
+[33m55d8599[m refs/heads/main@{13}: commit: Commit fixes related to api integrated changes and UI improvements in HistoryPage.
+[33m55d8599[m HEAD@{18}: commit: Commit fixes related to api integrated changes and UI improvements in HistoryPage.
+[33m8e26406[m refs/heads/main@{14}: commit: Remove the url and exchange it with env variable usage.
+[33m8e26406[m HEAD@{19}: commit: Remove the url and exchange it with env variable usage.
+[33m3d4a436[m refs/heads/main@{15}: commit: Commit fixes of the WebSocket connection and add accessibility titles to buttons.
+[33m3d4a436[m HEAD@{20}: commit: Commit fixes of the WebSocket connection and add accessibility titles to buttons.
+[33med312f1[m refs/heads/main@{16}: commit: Commit the testing of fixes
+[33med312f1[m HEAD@{21}: commit: Commit the testing of fixes
+[33mb6acdf3[m refs/heads/main@{17}: commit: Commit the UI CHANGES ACCORDING TO BACKEND
+[33mb6acdf3[m HEAD@{22}: commit: Commit the UI CHANGES ACCORDING TO BACKEND
+[33m6380f3e[m refs/heads/main@{18}: commit: Commit fix in backendApi of env variables
+[33m6380f3e[m HEAD@{23}: commit: Commit fix in backendApi of env variables
+[33m8f16953[m refs/heads/main@{19}: commit: Commit the fixes for refresh of page auth bug
+[33m8f16953[m HEAD@{24}: commit: Commit the fixes for refresh of page auth bug
+[33ma704409[m refs/heads/main@{20}: commit: Commit the inialization of backend API integration for authentication JWT Token.
+[33ma704409[m HEAD@{25}: commit: Commit the inialization of backend API integration for authentication JWT Token.
+[33mbb56ad4[m refs/heads/main@{21}: commit: Commit ui improvement with markdown in table of contents and clickable logo
+[33mbb56ad4[m HEAD@{26}: commit: Commit ui improvement with markdown in table of contents and clickable logo
+[33m0491ffe[m refs/heads/main@{22}: commit: Commit the fix of input field in mobiel screen in WelcomePage
+[33m0491ffe[m HEAD@{27}: commit: Commit the fix of input field in mobiel screen in WelcomePage
+[33m74f7656[m refs/heads/main@{23}: commit: Commit vercel fix off unused imports
+[33m74f7656[m HEAD@{28}: commit: Commit vercel fix off unused imports
+[33mc25f39f[m refs/heads/main@{24}: commit: Commit refactoring of ui components to support chat functionailty
+[33mc25f39f[m HEAD@{29}: commit: Commit refactoring of ui components to support chat functionailty
+[33m04ce97f[m refs/heads/main@{25}: commit: Commit the initaialization of shift to firebase database
+[33m04ce97f[m HEAD@{30}: commit: Commit the initaialization of shift to firebase database
+[33mb75c695[m refs/heads/main@{26}: commit: Commit tFixes of google SignupPage and login Isssue for not making it pop up
+[33mb75c695[m HEAD@{31}: commit: Commit tFixes of google SignupPage and login Isssue for not making it pop up
+[33md0d6eb5[m refs/heads/main@{27}: commit: Commit the fixes related to the Laoyout Imports
+[33md0d6eb5[m HEAD@{32}: commit: Commit the fixes related to the Laoyout Imports
+[33me73a06c[m refs/heads/main@{28}: commit: Commit change in location of the Layout.tsx
+[33me73a06c[m HEAD@{33}: commit: Commit change in location of the Layout.tsx
+[33m6690d36[m refs/heads/main@{29}: commit: Commit the UI improvement in auth input
+[33m6690d36[m HEAD@{34}: commit: Commit the UI improvement in auth input
+[33meb14d34[m refs/heads/main@{30}: commit: Commit Addition OF GOOGLE LOGIN with ui ux improvement of auth
+[33meb14d34[m HEAD@{35}: commit: Commit Addition OF GOOGLE LOGIN with ui ux improvement of auth
+[33m52bee1d[m refs/heads/main@{31}: commit: Commit vercel fix attempt for the case sensitivity
+[33m52bee1d[m HEAD@{36}: commit: Commit vercel fix attempt for the case sensitivity
+[33m217fbef[m refs/heads/main@{32}: commit: Updated the imports to check vercel
+[33m217fbef[m HEAD@{37}: commit: Updated the imports to check vercel
+[33m17b797d[m refs/heads/main@{33}: commit: Commit TS WARNINGS fix for vercel deployement
+[33m17b797d[m HEAD@{38}: commit: Commit TS WARNINGS fix for vercel deployement
+[33m6920be5[m refs/heads/main@{34}: commit: Commit Some UI Improvement and Fix Auth Bug
+[33m6920be5[m HEAD@{39}: commit:

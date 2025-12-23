@@ -8,6 +8,12 @@ export interface Message {
   id?: string;
   role: "user" | "assistant";
   content: string;
+  // Added attachment support for local preview
+  attachment?: {
+    name: string;
+    type: "image" | "file";
+    url: string;
+  };
 }
 
 export const triggerChatUpdate = () => {
@@ -163,14 +169,21 @@ export const useChat = (sessionId: string | undefined) => {
     async (content: string, file?: File | null) => {
       if (!content.trim() && !file) return;
 
-      // Optimistic Update
-      const displayContent = file
-        ? `[Uploaded File: ${file.name}] ${content}`
-        : content;
+      // Create attachment object for local preview
+      const attachment = file
+        ? {
+            name: file.name,
+            type: file.type.startsWith("image/")
+              ? ("image" as const)
+              : ("file" as const),
+            url: URL.createObjectURL(file),
+          }
+        : undefined;
 
+      // Optimistic Update: Clean content + structured attachment
       setMessages((prev) => [
         ...prev,
-        { role: "user", content: displayContent },
+        { role: "user", content: content, attachment },
       ]);
       setIsThinking(true);
 
@@ -196,8 +209,6 @@ export const useChat = (sessionId: string | undefined) => {
             }
           } catch (uploadError) {
             console.error("File upload failed:", uploadError);
-            // Decide if you want to abort message sending here or continue with just text
-            // Continuing for now, but you could add UI error handling
           }
         }
         // --- UPLOAD LOGIC END ---

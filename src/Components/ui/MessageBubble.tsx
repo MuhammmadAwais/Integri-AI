@@ -1,7 +1,7 @@
-import React, { useLayoutEffect, useRef} from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import { cn } from "../../lib/utils";
 import gsap from "gsap";
-import {Trash2} from "lucide-react";
+import { Trash2, FileText, Image as ImageIcon } from "lucide-react";
 import { useAppSelector } from "../../hooks/useRedux";
 import SkeletonLoader from "./SkeletonLoader";
 import MessageAvatar from "./MessageAvatar";
@@ -13,17 +13,23 @@ interface MessageProps {
   id?: string;
   role: "user" | "assistant";
   content: string;
+  // Added attachment prop
+  attachment?: {
+    name: string;
+    type: "image" | "file";
+    url: string;
+  };
   isLoading?: boolean;
   onDelete?: (id: string) => void;
   onRegenerate?: () => void;
 }
-
 
 // --- MAIN COMPONENT ---
 const MessageBubble: React.FC<MessageProps> = ({
   id,
   role,
   content,
+  attachment,
   isLoading,
   onDelete,
   onRegenerate,
@@ -100,6 +106,46 @@ const MessageBubble: React.FC<MessageProps> = ({
                     <Trash2 size={14} />
                   </button>
                 )}
+
+                {/* --- ATTACHMENT PREVIEW START --- */}
+                {attachment && (
+                  <div className="mb-3">
+                    {attachment.type === "image" ? (
+                      <div className="relative rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 max-w-[280px]">
+                        <img
+                          src={attachment.url}
+                          alt={attachment.name}
+                          className="w-full h-auto object-cover block"
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        className={cn(
+                          "flex items-center gap-3 p-3 rounded-lg border max-w-[280px]",
+                          isDark
+                            ? "bg-white/10 border-white/5"
+                            : "bg-black/5 border-black/5"
+                        )}
+                      >
+                        <div
+                          className={cn(
+                            "p-2 rounded-md",
+                            isDark ? "bg-black/20" : "bg-white"
+                          )}
+                        >
+                          <FileText size={20} className="text-indigo-500" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate opacity-90 pr-2">
+                            {attachment.name}
+                          </p>
+                          <p className="text-xs opacity-60">Attached File</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {/* --- ATTACHMENT PREVIEW END --- */}
 
                 <MessageMarkdown
                   content={content}
