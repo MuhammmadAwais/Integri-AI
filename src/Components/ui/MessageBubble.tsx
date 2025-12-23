@@ -1,7 +1,7 @@
 import React, { useLayoutEffect, useRef } from "react";
 import { cn } from "../../lib/utils";
 import gsap from "gsap";
-import { Trash2, FileText, Image as ImageIcon } from "lucide-react";
+import { Trash2, FileText } from "lucide-react";
 import { useAppSelector } from "../../hooks/useRedux";
 import SkeletonLoader from "./SkeletonLoader";
 import MessageAvatar from "./MessageAvatar";

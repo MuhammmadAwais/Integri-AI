@@ -68,8 +68,8 @@ const PlaygroundLane: React.FC<PlaygroundLaneProps> = ({
             className={cn(
               "w-8 h-8 rounded-lg flex items-center justify-center border shrink-0",
               isDark
-                ? "bg-gradient-to-br from-indigo-500/20 to-purple-500/10 border-indigo-500/20 text-indigo-400"
-                : "bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-100 text-indigo-600"
+                ? "bg-linear-to-br from-indigo-500/20 to-purple-500/10 border-indigo-500/20 text-indigo-400"
+                : "bg-linear-to-br from-indigo-50 to-purple-50 border-indigo-100 text-indigo-600"
             )}
           >
             <Sparkles size={14} className="fill-current opacity-80" />

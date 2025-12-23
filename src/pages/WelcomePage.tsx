@@ -123,7 +123,7 @@ const WelcomePage: React.FC = () => {
       <ParticleBackground />
 
       {/* --- NEW: TOP LEFT MODEL SELECTOR --- */}
-      <div className="absolute top-6 left-6 z-50 flex items-center gap-2">
+      <div className="absolute top-1 left-1 z-50 flex items-center gap-2">
         <div className="relative">
           <button
             onClick={() => setShowModelMenu(!showModelMenu)}

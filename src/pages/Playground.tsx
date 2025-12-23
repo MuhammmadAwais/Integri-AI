@@ -120,7 +120,7 @@ const Playground: React.FC = () => {
         {activeModels.map((model, idx) => (
           <div
             key={`${model.id}-${idx}`}
-            className="playground-lane flex-1 min-w-[320px] max-w-full h-full snap-center flex-shrink-0 transition-all duration-300 ease-in-out"
+            className="playground-lane flex-1 min-w-[320px] max-w-full h-full snap-center shrink-0 transition-all duration-300 ease-in-out"
           >
             <PlaygroundLane
               model={model}

@@ -40,14 +40,14 @@ const ModelMenu: React.FC<ModelMenuProps> = ({
         Uses z-[100] to ensure it sits above the Playground header (z-20).
       */}
       <div
-        className="fixed inset-0 z-[100] bg-transparent cursor-default"
+        className="fixed inset-0 z-100 bg-transparent cursor-default"
         onClick={onClose}
       />
 
       {/* Menu Container */}
       <div
         className={cn(
-          "absolute w-[280px] z-[101] flex flex-col p-1.5",
+          "absolute w-[280px] z-101 flex flex-col p-1.5",
           "animate-in zoom-in-95 duration-100 ease-out",
           "rounded-2xl border shadow-2xl overflow-hidden",
 
@@ -72,7 +72,7 @@ const ModelMenu: React.FC<ModelMenuProps> = ({
             : "bg-white border-gray-200 shadow-xl"
         )}
       >
-        <div className="max-h-[320px] overflow-y-auto custom-scrollbar relative">
+        <div className="max-h-80 overflow-y-auto custom-scrollbar relative">
           <div
             className={cn(
               "px-2 py-2 text-[11px] font-bold uppercase tracking-wider sticky top-0 z-10 mb-1 backdrop-blur-md",
@@ -124,7 +124,7 @@ const ModelMenu: React.FC<ModelMenuProps> = ({
                 </div>
 
                 {isSelected && (
-                  <Check size={14} className="shrink-0 stroke-[3]" />
+                  <Check size={14} className="shrink-0 stroke-3" />
                 )}
               </button>
             );
