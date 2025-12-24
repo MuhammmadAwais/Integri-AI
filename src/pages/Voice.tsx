@@ -17,7 +17,7 @@ const Voice: React.FC = () => {
   // 2. Init Voice Hook
 const { status, audioLevel, error, startSession, endSession } = useVoiceChat(
   accessToken,
-  "gpt-4o",
+  "gpt-realtime-mini",
   "openai"
 );
 

@@ -1,19 +1,18 @@
-// src/features/chat/hooks/useVoiceChat.ts
-import { useState, useEffect, useRef, useCallback } from "react";
-import { voiceSocketService } from "../../../services/VoiceWebSocketService"; // Check path matches your structure
-import { SessionService } from "../../../api/backendApi"; // Import API service
+// src/features/voice/hooks/useVoiceChat.ts
 
-// Configuration
+import { useState, useEffect, useRef, useCallback } from "react";
+import { voiceSocketService } from "../../../services/VoiceWebSocketService";
+import { SessionService } from "../../../api/backendApi";
+
 const INPUT_SAMPLE_RATE = 16000;
 const SILENCE_THRESHOLD_MS = 3000;
 const VAD_THRESHOLD = 0.02;
 
 export const useVoiceChat = (
   token: string | null,
-  model: string = "gpt-4o",
-  provider: string = "openai" // Added provider
+  model: string = "gpt-realtime-mini",
+  provider: string = "openai"
 ) => {
-  // State for session management
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [status, setStatus] = useState<
     | "disconnected"
@@ -27,7 +26,6 @@ export const useVoiceChat = (
   const [audioLevel, setAudioLevel] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
-  // Refs
   const audioContextRef = useRef<AudioContext | null>(null);
   const processorRef = useRef<ScriptProcessorNode | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -36,7 +34,15 @@ export const useVoiceChat = (
   const silenceStartRef = useRef<number>(Date.now());
   const isUserSpeakingRef = useRef(false);
 
-  // -- Helper functions (same as before) --
+  // Helper logging
+  const log = (msg: string) => {
+    console.log(
+      `%c[useVoiceChat] ${msg}`,
+      "color: #00e5ff; font-weight: bold;"
+    );
+  };
+
+  // -- Helpers (PCM/Base64) --
   const floatTo16BitPCM = (input: Float32Array) => {
     const output = new Int16Array(input.length);
     for (let i = 0; i < input.length; i++) {
@@ -65,10 +71,16 @@ export const useVoiceChat = (
     return bytes.buffer;
   };
 
-  // -- 1. Lifecycle: Connect Socket when SessionID is created --
+  // -- 1. Effect: Socket Connection --
   useEffect(() => {
-    // Only connect if we have a valid Token AND a real Session ID from API
-    if (!token || !sessionId) return;
+    log(
+      `🔄 Effect Dependencies Changed. Token: ${!!token}, SessionID: ${sessionId}, Model: ${model}`
+    );
+
+    if (!token || !sessionId) {
+      log("🚫 Missing Token or SessionID. Skipping connection.");
+      return;
+    }
 
     const handleMessage = (event: Event) => {
       const customEvent = event as CustomEvent;
@@ -85,39 +97,48 @@ export const useVoiceChat = (
         isAssistantSpeakingRef.current = false;
         setStatus("connected");
       } else if (data.type === "interrupt") {
+        log("⚡ Server confirmed Interrupt");
         isAssistantSpeakingRef.current = false;
       }
     };
 
     const handleOpen = () => {
+      log("🟢 Hook detected Socket OPEN");
       setStatus("connected");
-      // Optional: Send initial config like Dart does
-      // voiceSocketService.send({ type: 'config', voice: 'alloy', vad_threshold: 0.6 });
     };
 
-    const handleClose = () => setStatus("disconnected");
-    const handleError = () => setError("Socket connection error");
+    const handleClose = () => {
+      log("🔴 Hook detected Socket CLOSE");
+      disconnectMic();
+      setStatus("disconnected");
+      setSessionId(null);
+    };
 
-    // Add Listeners
+    const handleError = () => {
+      log("⚠️ Hook detected Socket ERROR");
+      setError("Connection lost");
+      disconnectMic();
+    };
+
     voiceSocketService.addEventListener("message", handleMessage);
     voiceSocketService.addEventListener("open", handleOpen);
     voiceSocketService.addEventListener("close", handleClose);
     voiceSocketService.addEventListener("error", handleError);
 
-    // Actual Connection
+    log("🏁 Calling service.connect()...");
     setStatus("connecting");
     voiceSocketService.connect(token, sessionId, model);
 
     return () => {
+      log("🧹 Cleanup: Unmounting effect. Disconnecting socket.");
       voiceSocketService.removeEventListener("message", handleMessage);
       voiceSocketService.removeEventListener("open", handleOpen);
       voiceSocketService.removeEventListener("close", handleClose);
       voiceSocketService.removeEventListener("error", handleError);
       voiceSocketService.disconnect();
     };
-  }, [token, sessionId, model]); // Runs when sessionId is set
+  }, [token, sessionId, model]);
 
-  // -- 2. Audio Playback Logic --
   const playAudioChunk = (base64Data: string) => {
     if (!audioContextRef.current) return;
     const ctx = audioContextRef.current;
@@ -144,8 +165,24 @@ export const useVoiceChat = (
     nextStartTimeRef.current += buffer.duration;
   };
 
-  // -- 3. Main Action: Start Session --
+  const disconnectMic = useCallback(() => {
+    log("🎙️ Shutting down Microphone...");
+    if (processorRef.current) {
+      processorRef.current.disconnect();
+      processorRef.current = null;
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+    }
+    if (audioContextRef.current) {
+      audioContextRef.current.close();
+      audioContextRef.current = null;
+    }
+  }, []);
+
   const startSession = useCallback(async () => {
+    log("▶️ startSession called");
     if (!token) {
       setError("Authentication missing");
       return;
@@ -155,19 +192,17 @@ export const useVoiceChat = (
       setError(null);
       setStatus("initializing");
 
-      // A. Create Session via HTTP API (Matches Dart 'setupVoiceWS')
-      console.log("⏳ Creating Voice Session...");
+      log("⏳ Creating API Session...");
       const sessionData = await SessionService.createSession(
         token,
         model,
         provider,
-        true // isVoice = true
+        true
       );
+      const newSessionId = sessionData.id || sessionData.session_id;
+      log(`✅ API Session Created: ${newSessionId}`);
 
-      const newSessionId = sessionData.id || sessionData.session_id; // Handle API variance
-      console.log("✅ Session Created:", newSessionId);
-
-      // B. Initialize Audio (Mic)
+      // Init Audio
       const AudioCtxClass =
         window.AudioContext || (window as any).webkitAudioContext;
       const ctx = new AudioCtxClass({ sampleRate: INPUT_SAMPLE_RATE });
@@ -178,8 +213,6 @@ export const useVoiceChat = (
           sampleRate: INPUT_SAMPLE_RATE,
           channelCount: 1,
           echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
         },
       });
       streamRef.current = stream;
@@ -189,9 +222,10 @@ export const useVoiceChat = (
       processorRef.current = processor;
 
       processor.onaudioprocess = (e) => {
+        if (!voiceSocketService.isReady) return;
+
         const inputData = e.inputBuffer.getChannelData(0);
 
-        // VAD / Energy
         let sum = 0;
         for (let i = 0; i < inputData.length; i++) {
           sum += inputData[i] * inputData[i];
@@ -201,7 +235,6 @@ export const useVoiceChat = (
 
         // Interrupt Logic
         if (rms > VAD_THRESHOLD && isAssistantSpeakingRef.current) {
-          console.log("🛑 Interrupting...");
           voiceSocketService.sendInterrupt();
           isAssistantSpeakingRef.current = false;
           if (audioContextRef.current) {
@@ -235,32 +268,22 @@ export const useVoiceChat = (
       source.connect(processor);
       processor.connect(ctx.destination);
 
-      // C. Trigger Socket Connection via Effect
       setSessionId(newSessionId);
     } catch (err: any) {
       console.error("Session Start Failed:", err);
-      setError(err.message || "Failed to start session");
+      setError(err.message);
+      disconnectMic();
       setStatus("disconnected");
     }
-  }, [token, model, provider]);
+  }, [token, model, provider, disconnectMic]);
 
   const endSession = useCallback(() => {
-    if (processorRef.current) processorRef.current.disconnect();
-    if (streamRef.current)
-      streamRef.current.getTracks().forEach((t) => t.stop());
-    if (audioContextRef.current) audioContextRef.current.close();
-
+    log("⏹️ endSession called");
+    disconnectMic();
     voiceSocketService.disconnect();
-
     setSessionId(null);
     setStatus("disconnected");
-  }, []);
+  }, [disconnectMic]);
 
-  return {
-    status,
-    audioLevel,
-    error,
-    startSession,
-    endSession,
-  };
+  return { status, audioLevel, error, startSession, endSession };
 };

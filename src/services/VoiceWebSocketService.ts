@@ -2,102 +2,150 @@
 
 type VoiceMessage =
   | { type: "auth"; token: string; session_id: string; model?: string }
-  | { type: "audio"; data: string } // Base64
+  | { type: "audio"; data: string }
   | { type: "commit" }
-  | { type: "interrupt" };
+  | { type: "interrupt" }
+  | { type: "config"; voice?: string; vad_threshold?: number };
 
 class VoiceWebSocketService extends EventTarget {
   private socket: WebSocket | null = null;
   private url: string = "wss://www.integri.cloud/api/v1/voice";
-  private isConnected: boolean = false;
 
-  constructor() {
-    super();
+  public get isReady(): boolean {
+    return this.socket?.readyState === WebSocket.OPEN;
   }
 
-  // src/services/VoiceWebSocketService.ts
+  private log(msg: string, data?: any) {
+    const time = new Date().toLocaleTimeString();
+    if (data) {
+      console.log(
+        `%c[VoiceWS ${time}] ${msg}`,
+        "color: #adfa1d; font-weight: bold;",
+        data
+      );
+    } else {
+      console.log(
+        `%c[VoiceWS ${time}] ${msg}`,
+        "color: #adfa1d; font-weight: bold;"
+      );
+    }
+  }
 
-  connect(token: string, sessionId: string, model: string = "gpt-4o-mini-realtime-preview") {
-    if (this.socket && this.isConnected) return;
-
-    console.log("🔌 Connecting to Voice Backend...");
-
-    try {
-      // 1. Append token to the URL (Browser workaround for missing headers)
-      // We also verify if we need to remove 'www' or change the path.
-      const wsUrl = new URL(this.url);
-      wsUrl.searchParams.append("token", token);
-      wsUrl.searchParams.append("session_id", sessionId); // Some backends need this early
-
-      this.socket = new WebSocket(wsUrl.toString());
-    } catch (e) {
-      console.error("Failed to create WebSocket:", e);
-      return;
+  connect(
+    token: string,
+    sessionId: string,
+    model: string = "gpt-realtime-mini"
+  ) {
+    // 1. Prevent redundant connections if already open/connecting
+    if (this.socket) {
+      if (this.socket.readyState === WebSocket.OPEN) {
+        this.log("⚠️ connect() called but socket is ALREADY OPEN. Ignoring.");
+        return;
+      }
+      if (this.socket.readyState === WebSocket.CONNECTING) {
+        this.log("⚠️ connect() called but socket is CONNECTING. Ignoring.");
+        return;
+      }
     }
 
-    this.socket.binaryType = "arraybuffer";
+    this.log(`🔌 Attempting connection...`, { sessionId, model });
 
-    this.socket.onopen = () => {
-      console.log("✅ Voice Socket Open");
-      this.isConnected = true;
-      this.dispatchEvent(new Event("open"));
+    try {
+      const wsUrl = new URL(this.url);
+      wsUrl.searchParams.append("token", token);
+      wsUrl.searchParams.append("session_id", sessionId);
 
-      // We still send the auth message just in case the backend supports the "connect-then-auth" flow
-      this.send({
-        type: "auth",
-        token: token,
-        session_id: sessionId,
-        model: model,
-      });
-    };
+      this.socket = new WebSocket(wsUrl.toString());
+      this.socket.binaryType = "arraybuffer";
 
-    // ... rest of the file (onmessage, onerror, etc) remains the same
+      // --- Event Handlers ---
 
-    this.socket.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        // Dispatch a CustomEvent with the data
-        this.dispatchEvent(new CustomEvent("message", { detail: data }));
-      } catch (e) {
-        console.error("❌ Failed to parse incoming voice message", e);
-      }
-    };
+      this.socket.onopen = () => {
+        this.log("✅ Socket Connection ESTABLISHED (onopen)");
+        this.dispatchEvent(new Event("open"));
 
-    this.socket.onerror = (error) => {
-      console.error("❌ Voice Socket Error:", error);
+        // Send Auth immediately as per protocol
+        this.send({
+          type: "auth",
+          token: token,
+          session_id: sessionId,
+          model: model,
+        });
+      };
+
+      this.socket.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          // Don't log every single audio chunk (too spammy), log other events
+          if (data.type !== "audio") {
+            this.log(`📩 Received Message: ${data.type}`, data);
+          }
+          this.dispatchEvent(new CustomEvent("message", { detail: data }));
+        } catch (e) {
+          console.error("❌ Failed to parse incoming message", e);
+        }
+      };
+
+      this.socket.onerror = (event) => {
+        console.error("❌ Socket Error Event:", event);
+        this.dispatchEvent(new Event("error"));
+      };
+
+      this.socket.onclose = (event) => {
+        this.log(
+          `💀 Socket CLOSED. Code: ${event.code}, Reason: "${event.reason}", Clean: ${event.wasClean}`
+        );
+
+        // ANALYZE THE CODE HERE:
+        if (event.code === 1006)
+          console.error(
+            "👉 Code 1006: Abnormal Closure. Usually means the server dropped the connection (Auth failed?) or the network died."
+          );
+        if (event.code >= 4000)
+          console.error(
+            `👉 Code ${event.code}: App-specific error from backend.`
+          );
+
+        this.socket = null;
+        this.dispatchEvent(new Event("close"));
+      };
+    } catch (e) {
+      console.error("❌ Exception during connect:", e);
       this.dispatchEvent(new Event("error"));
-    };
-
-    this.socket.onclose = () => {
-      console.log("🔌 Voice Socket Closed");
-      this.isConnected = false;
-      this.socket = null;
-      this.dispatchEvent(new Event("close"));
-    };
+    }
   }
 
   send(payload: VoiceMessage) {
-    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+    if (this.isReady && this.socket) {
+      if (payload.type !== "audio") {
+        this.log(`📤 Sending: ${payload.type}`);
+      }
       this.socket.send(JSON.stringify(payload));
+    } else {
+      this.log(
+        `⚠️ Cannot send '${payload.type}': Socket not ready (State: ${this.socket?.readyState})`
+      );
     }
   }
 
   sendAudioChunk(base64Audio: string) {
+    if (!this.isReady) return;
     this.send({ type: "audio", data: base64Audio });
   }
 
   sendCommit() {
-    console.log("📝 Sending Commit (Silence Detected)");
+    this.log("📝 Sending COMMIT (Silence detected)");
     this.send({ type: "commit" });
   }
 
   sendInterrupt() {
-    console.log("🛑 Sending Interrupt");
+    this.log("🛑 Sending INTERRUPT");
     this.send({ type: "interrupt" });
   }
 
   disconnect() {
     if (this.socket) {
+      this.log("🔻 disconnect() called manually by Client");
       this.socket.close();
       this.socket = null;
     }
