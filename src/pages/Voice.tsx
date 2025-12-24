@@ -1,13 +1,14 @@
-import React, { useEffect } from "react";
+import React from "react";
 import ParticleSphere from "../Components/ui/ParticleSphere";
-import { Mic, MicOff, PhoneOff, Activity } from "lucide-react";
+import { Mic ,PhoneOff } from "lucide-react";
 import { useVoiceChat } from "../features/voice/hooks/useVoiceChat";
 import { useAppSelector } from "../hooks/useRedux"; // Or your store path
-import { ChatService } from "../features/chat/services/chatService"; // For createChat if needed
+// For createChat if needed
 
 const Voice: React.FC = () => {
   // 1. Get Credentials from Redux
   const { accessToken, user } = useAppSelector((state: any) => state.auth);
+  {user} // for dev (vercel unused var fixed)
 
   // NOTE: You might need to create a session ID first or pass one.
   // For this example, I'll assume we pass a hardcoded one or generate it.
