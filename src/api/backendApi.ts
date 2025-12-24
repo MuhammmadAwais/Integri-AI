@@ -53,14 +53,14 @@ export const SessionService = {
     }
   },
 
-  createSession: async (token: string, model: string, provider: string) => {
+  createSession: async (token: string, model: string, provider: string, isVoice: boolean =false) => {
     try {
       const response = await backendApi.post(
         "/api/v1/sessions",
         {
           model,
           provider,
-          is_voice_session: false,
+          is_voice_session: isVoice,
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
