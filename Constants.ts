@@ -1,7 +1,13 @@
 const AVAILABLE_MODELS = [
+  // --- Integri ---
+  { id: "integri",
+    label: "Integri",
+    provider: "openai"
+   },
+
   // --- OpenAI ---
   {
-    id: "gpt-5.1", // Added as requested to fix visibility glitch
+    id: "gpt-5.1",
     label: "GPT-5.1",
     provider: "openai",
     badge: "New",
@@ -31,34 +37,28 @@ const AVAILABLE_MODELS = [
   },
 
   // --- Google ---
-  {
-    id: "gemini-2.5-flash",
-    label: "Gemini 2.5 Flash",
-    provider: "google",
-    badge: "Fast",
-  },
+  { id: "gemini-2.5-flash", label: "Gemini 2.5 Flash", provider: "gemini" },
+
   {
     id: "gemini-2.5-flash-lite",
     label: "Gemini 2.5 Flash Lite",
-    provider: "google",
+    provider: "gemini",
   },
 
-  // --- Anthropic ---
-  {
-    id: "claude-3.5-haiku",
-    label: "Claude 3.5 Haiku",
-    provider: "anthropic",
-    badge: "Smart",
-  },
-
-  // --- xAI (Grok) ---
+  // --- Grok ---
   {
     id: "grok-3-mini",
     label: "Grok 3 Mini",
-    provider: "xai",
+    provider: "grok",
     badge: "Uncensored",
   },
 
+  // --- Claude ---
+  {
+    id: "claude-3.5-haiku",
+    label: "Claude Instant 100k",
+    provider: "claude",
+  },
   // --- DeepSeek ---
   {
     id: "deepseek-reasoner",
