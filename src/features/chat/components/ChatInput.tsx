@@ -5,47 +5,47 @@ import {
   X,
   FileText,
   Globe,
-  Image as ImageIcon,
-  Mic,
+  Image as ImageIcon
 } from "lucide-react";
 import { useAppSelector } from "../../../hooks/useRedux";
 import { cn } from "../../../lib/utils";
 
 interface ChatInputProps {
-  // Updated signature to accept optional file object
   onSend?: (text: string, file?: File | null) => void;
-  // Fixed: Added disabled prop definition
   disabled?: boolean;
+  features?: boolean;
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ onSend, disabled }) => {
+const ChatInput: React.FC<ChatInputProps> = ({
+  onSend,
+  disabled,
+  features = true,
+}) => {
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   const [input, setInput] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
+      const maxHeight = features ? 160 : 120;
       textareaRef.current.style.height = `${Math.min(
         textareaRef.current.scrollHeight,
-        160
+        maxHeight
       )}px`;
     }
-  }, [input]);
+  }, [input, features]);
 
   const handleSend = () => {
     if (disabled) return;
     if ((input.trim() || file) && onSend) {
-      // Pass the input text AND the file object
-      const msg = file ? `[Uploaded File: ${file.name}] ${input}` : input;
-      onSend(msg, file);
-
+      onSend(input, file);
       setInput("");
       setFile(null);
       if (textareaRef.current) textareaRef.current.style.height = "auto";
-      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -56,148 +56,169 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend, disabled }) => {
     }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
+
   return (
-    <div className="w-full max-w-3xl mx-auto px-2 pb-4">
+    <div
+      className={cn(
+        "w-full transition-all duration-200",
+        // If features are hidden (PDF mode), use a cleaner container style
+        !features && "relative"
+      )}
+    >
+      {/* File Preview Bubble */}
       {file && (
-        <div className="mb-2 inline-flex items-center gap-3 p-3 rounded-2xl bg-[#181818] border border-[#2f2f2f] animate-in fade-in slide-in-from-bottom-2">
-          <div className="w-10 h-10 rounded-xl bg-[#2f2f2f] text-gray-300 flex items-center justify-center">
-            <FileText size={20} />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm font-medium text-gray-200">
-              {file.name}
-            </span>
-            <span className="text-xs text-gray-500">Ready to upload</span>
-          </div>
+        <div className="mb-2 flex w-fit items-center gap-2 rounded-xl bg-blue-500/10 px-3 py-1.5 text-xs font-medium text-blue-500">
+          <FileText size={14} />
+          <span className="max-w-[150px] truncate">{file.name}</span>
           <button
-            title="Remove File"
-            onClick={() => setFile(null)}
-            disabled={disabled}
-            className="ml-2 p-1 hover:bg-[#333] rounded-full text-gray-500 hover:text-gray-300 disabled:opacity-50"
+          title="file"
+            onClick={() => {
+              setFile(null);
+              if (fileInputRef.current) fileInputRef.current.value = "";
+            }}
+            className="ml-1 hover:text-blue-700"
           >
-            <X size={16} />
+            <X size={14} />
           </button>
         </div>
       )}
+
+      {/* Main Input Container */}
       <div
         className={cn(
-          "relative flex flex-col w-full p-2 rounded-[26px] border transition-all duration-200 shadow-sm group",
+          "relative flex flex-col overflow-hidden transition-all duration-200",
+          // Different border radius based on mode
+          features ? "rounded-3xl border shadow-sm" : "rounded-2xl border",
           isDark
-            ? "bg-[#181818] border-[#2f2f2f] focus-within:border-gray-600 focus-within:shadow-lg focus-within:shadow-blue-900/5"
-            : "bg-[#f4f4f4] border-[#e5e5e5] focus-within:border-gray-300",
-          disabled && "opacity-70 pointer-events-none"
+            ? "bg-[#1a1a1a] border-gray-800 focus-within:border-gray-700"
+            : "bg-[#f4f4f4] border-transparent focus-within:bg-white focus-within:border-gray-200 focus-within:shadow-md"
         )}
       >
+        {/* Text Area */}
         <textarea
-          title="Chat Input"
           ref={textareaRef}
           value={input}
-          disabled={disabled}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={disabled ? "Please wait..." : "Ask anything..."}
+          placeholder={
+            features
+              ? "Message Integri AI..."
+              : "Ask a question about this PDF..."
+          }
+          disabled={disabled}
           rows={1}
           className={cn(
-            "w-full max-h-40 py-3 px-4 bg-transparent outline-none resize-none text-[16px] leading-relaxed scrollbar-none",
-            isDark
-              ? "text-white placeholder-gray-500"
-              : "text-gray-900 placeholder-gray-500"
+            "w-full resize-none bg-transparent px-4 py-4 text-sm outline-none placeholder:text-gray-500 custom-scrollbar",
+            // If features off, add padding right for the send button
+            !features && "pr-12"
           )}
-          style={{ minHeight: "52px" }}
+          style={{ minHeight: "50px" }}
         />
 
-        <div className="flex items-center justify-between pl-2 pr-2 pb-1">
-          <div className="flex items-center gap-1">
-            <input
+        {/* --- MODE 1: FEATURES ENABLED (Standard) --- */}
+        {features && (
+          <div className="flex items-center justify-between px-2 pb-2">
+            {/* Left Tools */}
+            <div className="flex items-center gap-1">
+              <input
               title="file"
-              type="file"
-              ref={fileInputRef}
-              className="hidden"
-              onChange={(e) =>
-                e.target.files?.[0] && setFile(e.target.files[0])
-              }
-              disabled={disabled}
-            />
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden"
+              />
+              <button
+              
+                onClick={() => fileInputRef.current?.click()}
+                className={cn(
+                  "p-2 rounded-full transition-colors",
+                  isDark
+                    ? "hover:bg-gray-800 text-gray-400"
+                    : "hover:bg-gray-200 text-gray-500"
+                )}
+                title="Attach file"
+              >
+                <Paperclip size={18} />
+              </button>
+              <button
+              title="translate"
+                className={cn(
+                  "p-2 rounded-full transition-colors",
+                  isDark
+                    ? "hover:bg-gray-800 text-gray-400"
+                    : "hover:bg-gray-200 text-gray-500"
+                )}
+              >
+                <Globe size={18} />
+              </button>
+              <button
+              title="image"
+                className={cn(
+                  "p-2 rounded-full transition-colors",
+                  isDark
+                    ? "hover:bg-gray-800 text-gray-400"
+                    : "hover:bg-gray-200 text-gray-500"
+                )}
+              >
+                <ImageIcon size={18} />
+              </button>
+            </div>
 
-            <button
-              title="Attach File"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={disabled}
-              className={cn(
-                "p-2 rounded-full transition-colors hover:cursor-pointer disabled:cursor-not-allowed",
-                isDark
-                  ? "text-gray-400 hover:text-[#1d9bf0] hover:bg-[#1d9bf0]/10"
-                  : "text-gray-500 hover:bg-black/5"
-              )}
-            >
-              <Paperclip size={20} strokeWidth={1.5} />
-            </button>
-            <button
-              title="Insert Image"
-              disabled={disabled}
-              className={cn(
-                "p-2 rounded-full transition-colors hover:cursor-pointer disabled:cursor-not-allowed",
-                isDark
-                  ? "text-gray-400 hover:text-[#1d9bf0] hover:bg-[#1d9bf0]/10"
-                  : "text-gray-500 hover:bg-black/5"
-              )}
-            >
-              <ImageIcon size={20} strokeWidth={1.5} />
-            </button>
-            <button
-              title="Translate"
-              disabled={disabled}
-              className={cn(
-                "p-2 rounded-full transition-colors hidden sm:block hover:cursor-pointer disabled:cursor-not-allowed",
-                isDark
-                  ? "text-gray-400 hover:text-[#1d9bf0] hover:bg-[#1d9bf0]/10"
-                  : "text-gray-500 hover:bg-black/5"
-              )}
-            >
-              <Globe size={20} strokeWidth={1.5} />
-            </button>
-            <button
-              title="Voice Input"
-              disabled={disabled}
-              className={cn(
-                "p-2 rounded-full transition-colors hidden sm:block hover:cursor-pointer disabled:cursor-not-allowed",
-                isDark
-                  ? "text-gray-400 hover:text-[#1d9bf0] hover:bg-[#1d9bf0]/10"
-                  : "text-gray-500 hover:bg-black/5"
-              )}
-            >
-              <Mic size={20} strokeWidth={1.5} />
-            </button>
+            {/* Right Tools (Send) */}
+            <div className="flex items-center gap-3">
+              <span
+                className={cn(
+                  "text-xs hidden sm:block",
+                  isDark ? "text-gray-600" : "text-gray-400"
+                )}
+              >
+                {input.length} / 2000
+              </span>
+              <button
+              title="button"
+                onClick={handleSend}
+                disabled={(!input.trim() && !file) || disabled}
+                className={cn(
+                  "p-2 rounded-full transition-all duration-200 flex items-center justify-center",
+                  (input.trim() || file) && !disabled
+                    ? "bg-blue-600 text-white hover:bg-blue-700 shadow-md"
+                    : isDark
+                    ? "bg-gray-800 text-gray-500"
+                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                )}
+              >
+                <ArrowUp size={18} strokeWidth={2.5} />
+              </button>
+            </div>
           </div>
+        )}
 
-          <div className="flex items-center gap-3">
-            <span
-              className={cn(
-                "text-xs hidden sm:block",
-                isDark ? "text-gray-600" : "text-gray-400"
-              )}
-            >
-              {input.length} / 2000
-            </span>
+        {/* --- MODE 2: FEATURES DISABLED (PDF Mode) --- */}
+        {!features && (
+          <div className="absolute bottom-2 right-2">
             <button
-              title="Send Message"
+            title="button"
               onClick={handleSend}
               disabled={(!input.trim() && !file) || disabled}
               className={cn(
-                "p-2 rounded-full transition-all duration-200 flex items-center justify-center ",
+                "p-2 rounded-xl transition-all duration-200 flex items-center justify-center",
                 (input.trim() || file) && !disabled
-                  ? "bg-[#1d9bf0] text-white hover:bg-[#1a8cd8] shadow-md transform hover:scale-105 hover:cursor-pointer"
-                  : isDark
-                  ? "bg-[#2f2f2f] text-gray-500 cursor-not-allowed"
-                  : "bg-[#e5e5e5] text-gray-400 cursor-not-allowed"
+                  ? "bg-blue-600 text-white hover:bg-blue-700 shadow-sm"
+                  : "text-gray-400 cursor-not-allowed"
               )}
             >
               <ArrowUp size={20} strokeWidth={2.5} />
             </button>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
 };
+
 export default ChatInput;

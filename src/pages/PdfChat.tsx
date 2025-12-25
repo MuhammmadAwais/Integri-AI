@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import {
-  Upload,
-  FileText,
-  X,
-  MessageSquare,
-  Eye,
-} from "lucide-react";
-import { motion} from "framer-motion";
+import { Upload, FileText, X, MessageSquare, Eye } from "lucide-react";
+import { motion } from "framer-motion";
 import ChatInterface from "../features/chat/components/ChatInterface";
-import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
+import {  useAppSelector } from "../hooks/useRedux";
 import { ChatService } from "../features/chat/services/chatService";
 import Button from "../Components/ui/Button";
 
@@ -17,16 +11,13 @@ const PdfChatPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useAppDispatch();
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   const token = useAppSelector((state: any) => state.auth.accessToken);
 
-  // Local State
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"chat" | "pdf">("chat"); // For mobile
+  const [activeTab, setActiveTab] = useState<"chat" | "pdf">("chat");
   const [isUploading, setIsUploading] = useState(false);
 
-  // 1. Check for PDF in Router State (Persist preview on navigation)
   useEffect(() => {
     if (location.state?.file) {
       const url = URL.createObjectURL(location.state.file);
@@ -35,28 +26,21 @@ const PdfChatPage: React.FC = () => {
     }
   }, [location.state]);
 
-  // 2. Handle File Upload (Entry Point)
   const handleFileUpload = async (file: File) => {
     if (!file || file.type !== "application/pdf") {
       alert("Please upload a PDF file.");
       return;
     }
-
     setIsUploading(true);
     try {
-      // Create a new Chat Session
-      const sessionId = await ChatService.createChat(token, "gpt-4o"); // Defaulting to a high-perf model
-
-      // Navigate to the new session with the file in state to trigger "Auto-Send"
+      const sessionId = await ChatService.createChat(token, "gpt-4o");
       navigate(`/pdf/${sessionId}`, {
         state: {
           initialMessage: "Summarize this PDF",
           initialFile: file,
-          file: file, // Keeping a ref for the preview
+          file: file,
         },
       });
-
-      // On Mobile, switch to PDF view initially so they see it worked
       setActiveTab("pdf");
     } catch (error) {
       console.error("Failed to start PDF chat", error);
@@ -75,13 +59,10 @@ const PdfChatPage: React.FC = () => {
     if (e.target.files?.[0]) handleFileUpload(e.target.files[0]);
   };
 
-  // --- RENDER HELPERS ---
-
-  // Empty State (Upload Screen)
   if (!id) {
     return (
       <div
-        className="flex h-[calc(100vh-4rem)] w-full flex-col items-center justify-center p-6 transition-colors duration-300"
+        className="flex h-[calc(100vh-4rem)] w-full flex-col items-center justify-center p-6"
         onDragOver={(e) => e.preventDefault()}
         onDrop={onDrop}
       >
@@ -91,12 +72,11 @@ const PdfChatPage: React.FC = () => {
           className="max-w-md w-full text-center space-y-8"
         >
           <div className="space-y-4">
-            <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold tracking-tight bg-linear-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
               Chat with PDF
             </h1>
             <p className="text-muted-foreground text-lg">
-              Upload a document to instantly generate a summary and start asking
-              questions.
+              Upload a document to instantly generate a summary.
             </p>
           </div>
 
@@ -144,9 +124,8 @@ const PdfChatPage: React.FC = () => {
     );
   }
 
-  // Active Split View State
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] w-full overflow-hidden transition-colors duration-300">
+    <div className="flex flex-col h-[calc(100vh-4rem)] w-full overflow-hidden">
       {/* Mobile Tab Toggle */}
       <div
         className={`lg:hidden flex border-b ${
@@ -176,7 +155,7 @@ const PdfChatPage: React.FC = () => {
       </div>
 
       <div className="flex-1 flex overflow-hidden">
-        {/* --- LEFT SIDE: CHAT INTERFACE --- */}
+        {/* LEFT SIDE: CHAT */}
         <div
           className={`
           flex-1 flex flex-col min-w-0 transition-all duration-300
@@ -184,13 +163,11 @@ const PdfChatPage: React.FC = () => {
           lg:border-r ${isDark ? "border-gray-800" : "border-gray-200"}
         `}
         >
-          {/* We assume ChatInterface takes full height. We wrap it to ensure it fits. */}
-          <div className="flex-1 relative">
-            <ChatInterface />
-          </div>
+          {/* Use features={false} to hide extra tools and use cleaner input */}
+          <ChatInterface features={false} />
         </div>
 
-        {/* --- RIGHT SIDE: PDF PREVIEW --- */}
+        {/* RIGHT SIDE: PDF PREVIEW */}
         <div
           className={`
           flex-1 flex flex-col min-w-0 bg-gray-100 dark:bg-[#0f0f0f]
@@ -199,6 +176,7 @@ const PdfChatPage: React.FC = () => {
         >
           {pdfUrl ? (
             <div className="h-full w-full flex flex-col">
+              {/* Header */}
               <div
                 className={`
                 h-12 flex items-center justify-between px-4 border-b
@@ -209,40 +187,37 @@ const PdfChatPage: React.FC = () => {
                 }
               `}
               >
-                <span className="text-sm font-medium flex items-center gap-2">
+                <span className="text-sm font-medium flex items-center gap-2 truncate">
                   <FileText size={14} className="text-blue-500" />
-                  Document Preview
+                  <span className="truncate">Document Preview</span>
                 </span>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => {
                     setPdfUrl(null);
-                    // Optional: Navigate back to upload state
                     navigate("/pdf");
                   }}
                 >
                   <X size={16} />
                 </Button>
               </div>
-              <iframe
-                src={pdfUrl}
-                className={`flex-1 w-full h-full border-0 ${
-                  isDark ? "invert-[0.92] hue-rotate-180" : ""
-                }`}
-                title="PDF Preview"
-              />
-              {isDark && (
-                <div className="text-center py-1 text-[10px] text-gray-500 bg-[#1a1a1a]">
-                  PDF colors inverted for dark mode comfort
-                </div>
-              )}
+
+              {/* PDF Iframe - Removed padding for cleaner mobile look */}
+              <div className="flex-1 w-full h-full relative">
+                <iframe
+                  src={pdfUrl}
+                  className={`absolute inset-0 w-full h-full border-0 ${
+                    isDark ? "invert-[0.92] hue-rotate-180" : ""
+                  }`}
+                  title="PDF Preview"
+                />
+              </div>
             </div>
           ) : (
-            // Fallback if user lands directly on /pdf/:id without state (Deep link)
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center opacity-50">
               <FileText size={48} className="mb-4 text-gray-400" />
-              <p>No PDF preview available for this session.</p>
+              <p>No PDF preview available.</p>
               <Button
                 variant="outline"
                 className="mt-4"

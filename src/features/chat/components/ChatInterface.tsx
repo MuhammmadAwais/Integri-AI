@@ -8,7 +8,11 @@ import { useChat } from "../hooks/useChat";
 import { cn } from "../../../lib/utils";
 import { SessionService } from "../../../api/backendApi";
 
-const ChatInterface: React.FC = () => {
+interface ChatInterfaceProps {
+  features?: boolean;
+}
+
+const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
   const { id } = useParams();
   const location = useLocation();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -26,7 +30,7 @@ const ChatInterface: React.FC = () => {
 
   const hasInitialized = useRef(false);
 
-  // 1. Handle Welcome Page Transition
+  // 1. Handle Welcome Page Transition & PDF Auto-Send
   useEffect(() => {
     if (id && location.state?.initialMessage && !hasInitialized.current) {
       hasInitialized.current = true;
@@ -35,90 +39,102 @@ const ChatInterface: React.FC = () => {
       // Optimistically show and send (Pass File if present)
       sendMessage(initialMessage, initialFile);
 
-      // Update Title in background
-      if (token && initialMessage) {
-        SessionService.updateSession(
-          token,
-          id,
-          initialMessage.substring(0, 30)
-        );
-      }
+      // Clear state to prevent re-sending on refresh
+      window.history.replaceState({}, document.title);
     }
-  }, [id, location.state, sendMessage, token]);
+  }, [id, location.state, sendMessage]);
 
-  // 2. Auto Scroll
+  // 2. SCROLL LOGIC: Only scroll on NEW USER messages.
+  // The user requested: "when responce come my screen dont automatically scroll down"
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isThinking, isStreaming]);
+    const lastMessage = messages[messages.length - 1];
+
+    // Only scroll if the last message is from the user (they just sent it)
+    // OR if it's the very first load.
+    if (lastMessage?.role === "user" && !isStreaming) {
+      scrollToBottom();
+    }
+    // Note: We intentionally exclude scrolling on 'assistant' messages or 'isStreaming' updates
+  }, [messages.length, isStreaming]); // Depend on length so it fires when count changes, not content
+
+  const scrollToBottom = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  };
 
   return (
-    <div className="flex flex-col h-full relative">
-      {/* Scrollable Message Area */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar pt-4 pb-40 px-4">
-        <div className="max-w-3xl mx-auto space-y-6">
-          {isLoading && messages.length === 0 ? (
-            <SkeletonLoader count={3} />
-          ) : (
-            messages.map((msg, idx) => (
-              <MessageBubble
-                key={msg.id || idx}
-                role={msg.role}
-                content={msg.content}
-                attachment={msg.attachment} // Pass the attachment prop here
-                onDelete={() => msg.id && deleteMessage(msg.id)}
-              />
-            ))
-          )}
+    // Switch to Flexbox Layout to ensure Input is ALWAYS fixed at bottom
+    <div className="flex flex-col h-full w-full bg-transparent overflow-hidden">
+      {/* Messages Area - Flex Grow */}
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto custom-scrollbar p-4"
+      >
+        <div className="max-w-3xl mx-auto space-y-6 pb-4">
+          {messages.map((msg, index) => (
+            <MessageBubble
+              key={msg.id || index}
+              role={msg.role}
+              content={msg.content}
+              attachment={msg.attachment}
+              onDelete={msg.id ? () => deleteMessage(msg.id!) : undefined}
+            />
+          ))}
 
-          {/* Thinking / Streaming Indicator */}
-          {(isThinking || isStreaming) && (
-            <div className="flex items-center gap-2 text-gray-500 ml-16 text-sm font-mono mt-2 mb-4">
-              <span className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" />
-              <span className="animate-pulse">
-                {isStreaming ? "Generating..." : "Thinking..."}
-              </span>
+          {/* Loading / Thinking Indicators */}
+          {(isThinking || isLoading) && (
+            <div className="flex justify-start">
+              <SkeletonLoader />
             </div>
           )}
 
-          <div ref={scrollRef} />
+          {/* Spacer for bottom scrolling */}
+          <div className="h-4" />
         </div>
       </div>
 
+      {/* Input Area - Flex None (Fixed) */}
       <div
         className={cn(
-          "absolute bottom-0 left-0 w-full z-30 pt-10 pb-6 px-4",
+          "flex-none w-full z-20 px-4 py-4",
           isDark
-            ? "bg-linear-to-t from-black via-black to-transparent"
-            : "bg-linear-to-t from-white via-white to-transparent"
+            ? "bg-background "
+            : "bg-white "
         )}
       >
         <div className="w-full max-w-3xl mx-auto">
-          {/* Fixed: Pass (text, file) to sendMessage */}
           <ChatInput
+            features={features}
+            disabled={isThinking || isStreaming}
             onSend={(text, file) => {
               sendMessage(text, file);
 
               // Set title for fresh chats
               if (messages.length === 0 && token && id) {
-                // FIXED: Do not use file name as title.
-                // If text exists, use it. If not, use generic "Attachment" or keep "New Chat"
                 const cleanText = text.trim();
                 const title = cleanText
                   ? cleanText.substring(0, 30)
                   : file
-                  ? "Attachment" // Generic title for file-only uploads
+                  ? "Attachment"
                   : "New Chat";
 
                 SessionService.updateSession(token, id, title);
               }
+              // Force scroll when user sends
+              setTimeout(scrollToBottom, 100);
             }}
-            disabled={isThinking || isStreaming}
           />
-          <div className="text-center mt-3">
-            <span className="text-[10px] text-gray-500">
-              AI can make mistakes. Check important info.
-            </span>
-          </div>
+          {features && (
+            <div className="text-center mt-2">
+              <span className="text-[10px] text-gray-500">
+                AI can make mistakes. Check important info.
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>
