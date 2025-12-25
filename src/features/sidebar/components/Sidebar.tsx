@@ -7,8 +7,6 @@ import {
   Image as ImageIcon,
   FolderOpen,
   History,
-  ChevronsLeft,
-  ChevronsRight,
   ChevronDown,
   ChevronRight,
   Trash2,
@@ -19,12 +17,18 @@ import { useChatList } from "../../chat/hooks/useChat";
 import { cn } from "../../../lib/utils";
 import HistoryModal from "./HistoryModal";
 import DeleteModal from "../../../Components/ui/DeleteModal";
+import UserProfile from "./UserProfile";
 
 // --- NAVIGATION ITEMS CONFIG ---
 const NAV_ITEMS = [
   { id: "chat", label: "Chat", icon: PenSquare, path: "/" },
   { id: "voice", label: "Voice", icon: AudioWaveform, path: "/voice" },
-  { id: "playground", label: "Playground", icon: ImageIcon, path: "/playground" },
+  {
+    id: "playground",
+    label: "Playground",
+    icon: ImageIcon,
+    path: "/playground",
+  },
   { id: "projects", label: "Projects", icon: FolderOpen, path: "/projects" },
   { id: "library", label: "Library", icon: CheckCircle, path: "/library" },
 ];
@@ -123,13 +127,13 @@ const Sidebar: React.FC = () => {
         }
       `}</style>
 
-      {/* History Modal (Now Rendered via Portal) */}
+      {/* History Modal */}
       <HistoryModal
         isOpen={showHistoryModal}
         onClose={() => setShowHistoryModal(false)}
       />
 
-      {/* Delete Modal (Now Rendered via Portal) */}
+      {/* Delete Modal */}
       <DeleteModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
@@ -224,7 +228,6 @@ const Sidebar: React.FC = () => {
         <div className="flex-1 overflow-y-auto mt-4 custom-scrollbar px-2">
           {isExpanded ? (
             <div className="animate-in fade-in duration-300">
-              {/* Header with Toggle */}
               <button
                 className={cn(
                   "flex justify-between items-center w-full px-2 py-2 text-[#71767B]  transition-colors group mb-1",
@@ -253,7 +256,6 @@ const Sidebar: React.FC = () => {
                 )}
               </button>
 
-              {/* Dropdown Content */}
               {isHistoryOpen && (
                 <div className="pl-2 space-y-1">
                   <div>
@@ -330,41 +332,17 @@ const Sidebar: React.FC = () => {
           )}
         </div>
 
-        {/* --- 5. FOOTER --- */}
+        {/* --- 5. FOOTER (UserProfile) --- */}
         <div
           className={cn(
-            "p-3 mt-auto",
+            "p-2 mt-auto relative z-50",
             isDark ? "border-t border-[#1F1F1F]" : "border-t border-gray-200"
           )}
         >
-          <div
-            className={cn(
-              "flex items-center gap-2",
-              isExpanded ? "justify-between" : "justify-center flex-col"
-            )}
-          >
-            <div className="relative group cursor-pointer">
-              <div className="w-8 h-8 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs">
-                {user?.name?.[0] || "U"}
-              </div>
-            </div>
-
-            <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              className={cn(
-                "w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:cursor-pointer",
-                isDark
-                  ? "hover:bg-[#1A1A1A] text-[#555]"
-                  : "hover:bg-gray-100 text-gray-400"
-              )}
-            >
-              {isExpanded ? (
-                <ChevronsLeft size={18} />
-              ) : (
-                <ChevronsRight size={18} />
-              )}
-            </button>
-          </div>
+          <UserProfile
+            isExpanded={isExpanded}
+            onToggle={() => setIsExpanded(!isExpanded)}
+          />
         </div>
       </div>
     </>
