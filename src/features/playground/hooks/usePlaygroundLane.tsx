@@ -68,7 +68,7 @@ export const usePlaygroundLane = (modelConfig: {
 
             // Set Title & Notify Sidebar
             const title =
-              (text ? text.slice(0, 20) : "Attachment") + "... [PL]";
+              (text ? text.slice(0, 20) : "Attachment") ;
             await SessionService.updateSession(
               token,
               currentSessionId as any,

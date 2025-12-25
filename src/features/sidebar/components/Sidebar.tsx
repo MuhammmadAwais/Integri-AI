@@ -10,6 +10,7 @@ import {
   ChevronDown,
   ChevronRight,
   Trash2,
+  FileText,
 } from "lucide-react";
 import { CheckCircle } from "lucide-react";
 import { useAppSelector } from "../../../hooks/useRedux";
@@ -31,6 +32,7 @@ const NAV_ITEMS = [
   },
   { id: "projects", label: "Projects", icon: FolderOpen, path: "/projects" },
   { id: "library", label: "Library", icon: CheckCircle, path: "/library" },
+  { id: "pdf", label: "PDF Chat", icon: FileText, path: "/pdf" },
 ];
 
 const Sidebar: React.FC = () => {

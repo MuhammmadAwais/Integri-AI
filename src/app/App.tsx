@@ -23,6 +23,7 @@ import GettingStarted from "../pages/GettingStarted";
 import HistoryPage from "../pages/HistoryPage";
 import Playground from "../pages/Playground";
 import  Voice from "../pages/Voice";
+import PdfChatPage from "../pages/PdfChat";
 
 // --- Router Setup ---
 const router = createBrowserRouter([
@@ -41,6 +42,9 @@ const router = createBrowserRouter([
       { path: "history", element: <HistoryPage /> },
       { path: "playground", element: <Playground /> },
       { path: "voice", element: <Voice /> },
+      { path: "pdf", element:<PdfChatPage />},
+      { path: "pdf/:id", element:<PdfChatPage />}
+          
     ],
   },
   // 3. Catch-all

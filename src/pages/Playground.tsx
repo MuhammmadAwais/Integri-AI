@@ -112,7 +112,7 @@ const Playground: React.FC = () => {
       <div
         ref={containerRef}
         className={cn(
-          "flex-1 flex flex-row flex-nowrap overflow-x-auto overflow-y-hidden p-4 gap-4 snap-x scroll-smooth items-stretch",
+          "flex-1 flex flex-row flex-nowrap overflow-x-auto overflow-y-hidden p-4 gap-2 snap-x scroll-smooth items-stretch",
           isDark ? "scrollbar-track-[#09090b]" : "scrollbar-track-white"
         )}
       >
