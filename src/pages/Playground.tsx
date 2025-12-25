@@ -14,7 +14,6 @@ const Playground: React.FC = () => {
   const [activeModels, setActiveModels] = useState<any[]>([
     AVAILABLE_MODELS[0],
     AVAILABLE_MODELS.length > 1 ? AVAILABLE_MODELS[1] : AVAILABLE_MODELS[0],
-    AVAILABLE_MODELS.length > 2 ? AVAILABLE_MODELS[2] : AVAILABLE_MODELS[0],
   ]);
 
   // Added globalFile state
