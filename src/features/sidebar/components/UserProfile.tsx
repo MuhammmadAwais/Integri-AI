@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import {
   ChevronRight,
   ChevronLeft,
-  MoreHorizontal,
   LogIn,
   LogOut,
   User as UserIcon,
@@ -156,7 +155,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
             ref={menuRef}
             style={menuStyle}
             className={cn(
-              "z-[9999] rounded-xl shadow-2xl border overflow-hidden py-1 animate-in fade-in zoom-in-95 duration-100",
+              "z-9999 rounded-xl shadow-2xl border overflow-hidden py-1 animate-in fade-in zoom-in-95 duration-100",
               isDark
                 ? "bg-[#1E1E1E] border-gray-700"
                 : "bg-white border-gray-200"
