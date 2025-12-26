@@ -5,11 +5,13 @@ import {
   Navigate,
 } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./firebase";
+import { auth, db } from "./firebase"; // Added 'db' import
+import { doc, getDoc } from "firebase/firestore"; // Added Firestore imports
 import { useAppDispatch } from "../hooks/useRedux";
 
 //  IMPORT  ACTIONS AND API
 import { setAuthUser } from "../features/auth/slices/authSlice";
+import { setTheme } from "../features/theme/themeSlice"; // Added theme action
 import { getBackendToken } from "../api/backendApi";
 
 // --- Components & Pages ---
@@ -22,8 +24,11 @@ import ChatInterface from "../features/chat/components/ChatInterface";
 import GettingStarted from "../pages/GettingStarted";
 import HistoryPage from "../pages/HistoryPage";
 import Playground from "../pages/Playground";
-import  Voice from "../pages/Voice";
+import Voice from "../pages/Voice";
 import PdfChatPage from "../pages/PdfChat";
+import SettingsPage from "../pages/SettingsPage"; // Ensure this matches your file name
+import SendFeedbackPage from "../pages/SendFeedbackPage";
+import HelpPage from "../pages/HelpPage";
 
 // --- Router Setup ---
 const router = createBrowserRouter([
@@ -35,40 +40,59 @@ const router = createBrowserRouter([
   // 2. Main App
   {
     path: "/",
-    element: <Home />,
+    element: <Home />, // Wraps everything in Layout
     children: [
-      { index: true, element: <Welcome /> },
-      { path: "chat/:id", element: <ChatInterface /> },
+      { index: true, element: <Welcome /> }, // Default: Welcome Screen
+      { path: "chat/:id", element: <ChatInterface /> }, // Chat
+      { path: "c/:id", element: <ChatInterface /> }, // Shared/Short Link
       { path: "history", element: <HistoryPage /> },
       { path: "playground", element: <Playground /> },
       { path: "voice", element: <Voice /> },
-      { path: "pdf", element:<PdfChatPage />},
-      { path: "pdf/:id", element:<PdfChatPage />}
-          
+      { path: "pdf", element: <PdfChatPage /> },
+      { path: "pdf/:id", element: <PdfChatPage /> },
+      { path: "settings", element: <SettingsPage /> },
+      { path: "feedback", element: <SendFeedbackPage/> },
+      { path: "help", element: <HelpPage/> },
+      { path: "*", element: <Navigate to="/" replace /> },
     ],
   },
-  // 3. Catch-all
+
+  // 3. Fallback
   { path: "*", element: <Navigate to="/" replace /> },
 ]);
 
 const App: React.FC = () => {
-  const dispatch = useAppDispatch();
   const [introFinished, setIntroFinished] = useState(false);
+  const dispatch = useAppDispatch();
 
-  // AUTH LISTENER 
   useEffect(() => {
-    //  listener fires whenever Firebase detects a user (login or refresh)
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
-          // A. User is logged in with Firebase.
-          // B. fetch the  (Token) from  Backend again.
+          // 1. Restore Theme Preference from Firestore
+          try {
+            const userDocRef = doc(db, "users", firebaseUser.uid);
+            const userDocSnap = await getDoc(userDocRef);
+
+            if (userDocSnap.exists()) {
+              const userData = userDocSnap.data();
+              // Apply theme if set (mapping string 'dark'/'light' to boolean)
+              if (userData.defaultTheme) {
+                const isDarkTheme = userData.defaultTheme === "dark";
+                dispatch(setTheme(isDarkTheme));
+              }
+            }
+          } catch (themeError) {
+            console.error("Failed to load user theme:", themeError);
+          }
+
+          // 2. Fetch Backend Token
           const tokenData = await getBackendToken(
             firebaseUser.uid,
             firebaseUser.email
           );
 
-          // C. Dispatch BOTH to Redux
+          // 3. Dispatch Auth State
           dispatch(
             setAuthUser({
               user: {
@@ -77,12 +101,11 @@ const App: React.FC = () => {
                 name: firebaseUser.displayName,
                 avatar: firebaseUser.photoURL,
               },
-              accessToken: tokenData.access_token, // <--- save the token here!
+              accessToken: tokenData.access_token,
             })
           );
         } catch (error) {
           console.error("Error restoring backend session:", error);
-          // If backend is down, we must log the user out to prevent bugs
           dispatch(setAuthUser({ user: null, accessToken: null }));
         }
       } else {

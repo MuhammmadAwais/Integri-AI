@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux";
 import { logoutUser } from "../../auth/thunks/authThunk";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { cn } from "../../../lib/utils";
 import Portal from "../../../Components/ui/Portal";
 
@@ -94,7 +94,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
         className={cn(
           "flex items-center rounded-xl transition-colors cursor-pointer relative group select-none",
           isExpanded
-            ? "p-2 hover:bg-[#181818]"
+            ? isDark
+              ? "p-2 hover:bg-[#181818] "
+              : " p-2 hover:bg-transparent"
             : "justify-center p-0 mt-2 w-full aspect-square hover:bg-transparent"
         )}
       >
@@ -123,7 +125,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
           >
             {fullName}
           </p>
-          <p className="text-[#71767B] text-xs truncate">{username}</p>
+          <p className="text-[#71767B] text-xs truncate">{username.split("@")[0]}</p>
         </div>
 
         {/* 4. THE TOGGLE ARROW */}
@@ -212,12 +214,26 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                 </button>
               </>
             ) : (
-              <button
-                onClick={handleLogout}
-                className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 text-red-500 hover:bg-red-500/10 cursor-pointer transition-colors"
-              >
-                <LogOut size={16} /> Logout
-              </button>
+              <>
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 text-red-500 hover:bg-red-500/10 cursor-pointer transition-colors"
+                >
+                  <LogOut size={16} /> Logout
+                </button>
+                <Link to="/settings">
+                  <button
+                    className={cn(
+                      "w-full text-left px-4 py-2 text-sm flex items-center gap-2 cursor-pointer transition-colors",
+                      isDark
+                        ? "hover:bg-white/5 text-white"
+                        : "hover:bg-gray-200 text-black"
+                    )}
+                  >
+                    Settings
+                  </button>
+                </Link>
+              </>
             )}
           </div>
         </Portal>
