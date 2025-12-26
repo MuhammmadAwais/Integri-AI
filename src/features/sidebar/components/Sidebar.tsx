@@ -30,8 +30,8 @@ const NAV_ITEMS = [
     icon: ImageIcon,
     path: "/playground",
   },
-  { id: "projects", label: "Projects", icon: FolderOpen, path: "/projects" },
-  { id: "library", label: "Library", icon: CheckCircle, path: "/library" },
+  { id: "agents", label: "Alex Agents", icon: CheckCircle, path: "/agents" },
+  { id: "library", label: "Library", icon: FolderOpen, path: "/library" },
   { id: "pdf", label: "PDF Chat", icon: FileText, path: "/pdf" },
 ];
 

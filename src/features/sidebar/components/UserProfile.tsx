@@ -136,7 +136,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
           }}
           title={isExpanded ? "Collapse Sidebar" : "Expand Sidebar"}
           className={cn(
-            "absolute flex items-center justify-center rounded-full shadow-md border transition-all duration-200 z-50",
+            "absolute flex items-center justify-center rounded-full shadow-md border transition-all duration-200 z-50 mb-4",
             isDark
               ? "bg-[#1E1E1E] border-[#333] text-gray-400 hover:text-white hover:bg-[#333]"
               : "bg-white border-gray-200 text-gray-500 hover:text-black hover:bg-gray-50",

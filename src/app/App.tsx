@@ -29,6 +29,8 @@ import PdfChatPage from "../pages/PdfChat";
 import SettingsPage from "../pages/SettingsPage"; // Ensure this matches your file name
 import SendFeedbackPage from "../pages/SendFeedbackPage";
 import HelpPage from "../pages/HelpPage";
+import Agents from "../pages/Agents";
+
 
 // --- Router Setup ---
 const router = createBrowserRouter([
@@ -53,6 +55,8 @@ const router = createBrowserRouter([
       { path: "settings", element: <SettingsPage /> },
       { path: "feedback", element: <SendFeedbackPage/> },
       { path: "help", element: <HelpPage/> },
+      { path: "agents", element: <Agents/> },
+
       { path: "*", element: <Navigate to="/" replace /> },
     ],
   },
