@@ -30,6 +30,7 @@ import SettingsPage from "../pages/SettingsPage"; // Ensure this matches your fi
 import SendFeedbackPage from "../pages/SendFeedbackPage";
 import HelpPage from "../pages/HelpPage";
 import Agents from "../pages/Agents";
+import AgentDetailsPage from "../features/agents/components/AgentDetailsPage";
 
 
 // --- Router Setup ---
@@ -56,6 +57,7 @@ const router = createBrowserRouter([
       { path: "feedback", element: <SendFeedbackPage/> },
       { path: "help", element: <HelpPage/> },
       { path: "agents", element: <Agents/> },
+      { path: "agents/:id", element: <AgentDetailsPage/> },
 
       { path: "*", element: <Navigate to="/" replace /> },
     ],

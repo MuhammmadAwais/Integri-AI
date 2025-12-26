@@ -165,4 +165,104 @@ export const SessionService = {
   },
 };
 
+// --- AGENTS  ---
+export const AgentService = {
+  getAgents: async (token: string) => {
+    try {
+      const response = await backendApi.get("/api/v1/custom-gpts", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return Array.isArray(response.data)
+        ? response.data
+        : response.data.items || [];
+    } catch (error) {
+      console.error("❌ [API] Failed to fetch agents", error);
+      throw error;
+    }
+  },
+
+  getAgentById: async (token: string, agentId: string) => {
+    try {
+      const response = await backendApi.get(`/api/v1/custom-gpts/${agentId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("❌ [API] Failed to fetch agent details", error);
+      throw error;
+    }
+  },
+
+  createAgent: async (
+    token: string,
+    agentData: {
+      name: string;
+      description: string;
+      instructions: string;
+      conversation_starters?: string[]; // Added array of strings
+      recommended_model: string;        // Renamed from 'model'
+      recommended_provider: string;     // Added provider
+    }
+  ) => {
+    try {
+      // Ensure we send exactly what the API expects
+      const payload = {
+        name: agentData.name,
+        description: agentData.description,
+        instructions: agentData.instructions,
+        conversation_starters: agentData.conversation_starters || [], // Default to empty array if undefined
+        recommended_model: agentData.recommended_model,
+        recommended_provider: agentData.recommended_provider,
+      };
+
+      const response = await backendApi.post("/api/v1/custom-gpts", payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("❌ [API] Failed to create agent", error);
+      throw error;
+    }
+  },
+
+  updateAgent: async (
+    token: string,
+    agentId: string,
+    agentData: Partial<{
+      name: string;
+      description: string;
+      instructions: string;
+      conversation_starters: string[];
+      recommended_model: string;
+      recommended_provider: string;
+    }>
+  ) => {
+    try {
+      const response = await backendApi.patch(
+        `/api/v1/custom-gpts/${agentId}`,
+        agentData, // Make sure the caller passes the correct keys here too
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("❌ [API] Failed to update agent", error);
+      throw error;
+    }
+  },
+
+  deleteAgent: async (token: string, gpt_id: string) => {
+    try {
+      await backendApi.delete(`/api/v1/custom-gpts/${gpt_id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return true;
+    } catch (error) {
+      console.error("❌ [API] Failed to delete agent", error);
+      throw error;
+    }
+  },
+};
+
 export default backendApi;
