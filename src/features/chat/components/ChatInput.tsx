@@ -6,7 +6,6 @@ import {
   FileText,
   Globe,
   Image as ImageIcon,
-  Cloud,
   HardDrive,
 } from "lucide-react";
 import { useAppSelector } from "../../../hooks/useRedux";
@@ -104,6 +103,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           <FileText size={14} />
           <span className="max-w-[150px] truncate">{file.name}</span>
           <button
+          title="button"
             onClick={() => {
               setFile(null);
               if (fileInputRef.current) fileInputRef.current.value = "";
@@ -125,6 +125,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
             : "bg-[#f4f4f4] border-transparent focus-within:bg-white focus-within:border-gray-200 focus-within:shadow-md"
         )}
       >
+        
         {/* Text Area */}
         <textarea
           ref={textareaRef}
@@ -147,6 +148,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
             {/* Left Tools (Attach Menu) */}
             <div className="flex items-center gap-1 relative" ref={menuRef}>
               <input
+              title="button"
                 type="file"
                 ref={fileInputRef}
                 onChange={handleFileChange}
@@ -309,6 +311,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
               {/* Other standard buttons */}
               <button
+              title="button"
                 className={cn(
                   "p-2 rounded-full transition-colors",
                   isDark
@@ -319,6 +322,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 <Globe size={18} />
               </button>
               <button
+              title="button"
                 className={cn(
                   "p-2 rounded-full transition-colors",
                   isDark
@@ -341,6 +345,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 {input.length} / 2000
               </span>
               <button
+              title="button"
                 onClick={handleSend}
                 disabled={
                   (!input.trim() && !file) || disabled || isCloudLoading
@@ -368,6 +373,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
         {!features && (
           <div className="absolute bottom-2 right-2">
             <button
+            title="button"
               onClick={handleSend}
               disabled={(!input.trim() && !file) || disabled}
               className={cn(

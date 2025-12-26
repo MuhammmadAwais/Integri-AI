@@ -1,29 +1,23 @@
 
-import { useState } from "react";
+import { useState} from "react";
 
 // --- Configuration ---
 // PRO TIP: Move these to your .env file
-const GOOGLE_API_KEY = "AIzaSyC8LdEHdE3MA13dO1brtm2UbOIo01QqlDY";
-const GOOGLE_CLIENT_ID =
-  "1099368769804-miohir1ka8q3vdegp9t2vgrnafigocb1.apps.googleusercontent.com";
-const GOOGLE_APP_ID = "1099368769804"; // Found in Google Console Dashboard// Found in Google Console Dashboard
+const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+const GOOGLE_APP_ID = import.meta.env.VITE_GOOGLE_APP_ID; // Found in Google Console Dashboard// Found in Google Console Dashboard
 
-const ONEDRIVE_CLIENT_ID = "YOUR_ONEDRIVE_CLIENT_ID";
+const ONEDRIVE_CLIENT_ID = import.meta.env.VITE_ONEDRIVE_CLIENT_ID;
 
 export const useCloudStorage = (onFileSelected: (file: File) => void) => {
   const [isLoading, setIsLoading] = useState(false);
 
-  // ==============================
+  // ========================================================================
   // 1. GOOGLE DRIVE INTEGRATION (GIS + GAPI)
-  // ==============================
-
-  // Load GAPI (Google API Client) - Needed for the Picker
+  // ========================================================================
   const loadGapi = () => {
     return new Promise((resolve) => {
-      if ((window as any).gapi) {
-        resolve((window as any).gapi);
-        return;
-      }
+      if ((window as any).gapi) return resolve((window as any).gapi);
       const script = document.createElement("script");
       script.src = "https://apis.google.com/js/api.js";
       script.onload = () => resolve((window as any).gapi);
@@ -31,13 +25,10 @@ export const useCloudStorage = (onFileSelected: (file: File) => void) => {
     });
   };
 
-  // Load GIS (Google Identity Services) - Needed for Auth (Fixes your error)
   const loadGis = () => {
     return new Promise((resolve) => {
-      if ((window as any).google?.accounts?.oauth2) {
-        resolve((window as any).google.accounts.oauth2);
-        return;
-      }
+      if ((window as any).google?.accounts?.oauth2)
+        return resolve((window as any).google.accounts.oauth2);
       const script = document.createElement("script");
       script.src = "https://accounts.google.com/gsi/client";
       script.onload = () => resolve((window as any).google.accounts.oauth2);
@@ -48,27 +39,19 @@ export const useCloudStorage = (onFileSelected: (file: File) => void) => {
   const handleGoogleDrivePick = async () => {
     setIsLoading(true);
     try {
-      // 1. Load scripts in parallel
       const [gapi, googleIdentity] = (await Promise.all([
         loadGapi(),
         loadGis(),
       ])) as [any, any];
-
-      // 2. Load the 'picker' module in gapi
       await new Promise<void>((resolve) => gapi.load("picker", resolve));
 
-      // 3. Request Access Token using the NEW Token Client (GIS)
       const tokenClient = googleIdentity.initTokenClient({
         client_id: GOOGLE_CLIENT_ID,
         scope: "https://www.googleapis.com/auth/drive.readonly",
         callback: async (response: any) => {
-          if (response.error !== undefined) {
-            throw response;
-          }
-
+          if (response.error) throw response;
           const accessToken = response.access_token;
 
-          // 4. Create the Picker
           const view = new google.picker.View(google.picker.ViewId.DOCS);
           view.setMimeTypes(
             "application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -79,14 +62,11 @@ export const useCloudStorage = (onFileSelected: (file: File) => void) => {
             .setAppId(GOOGLE_APP_ID)
             .setOAuthToken(accessToken)
             .addView(view)
-            .addView(new google.picker.DocsUploadView()) // Optional: Allow uploading specifically to Drive then picking
             .setCallback(async (data: any) => {
               if (data.action === google.picker.Action.PICKED) {
                 const fileId = data.docs[0].id;
                 const fileName = data.docs[0].name;
                 const mimeType = data.docs[0].mimeType;
-
-                // Fetch actual file content using the token we just got
                 try {
                   const res = await fetch(
                     `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
@@ -98,19 +78,15 @@ export const useCloudStorage = (onFileSelected: (file: File) => void) => {
                   const file = new File([blob], fileName, { type: mimeType });
                   onFileSelected(file);
                 } catch (e) {
-                  console.error("Failed to download file content", e);
+                  console.error("GDrive Download Error", e);
                 }
               }
               setIsLoading(false);
             })
             .build();
-
           picker.setVisible(true);
         },
       });
-
-      // Trigger the auth flow
-      // prompt: '' implies we try to silence prompts if possible, but for first time it will pop up
       tokenClient.requestAccessToken({ prompt: "" });
     } catch (err) {
       console.error("Google Drive Error:", err);
@@ -119,43 +95,199 @@ export const useCloudStorage = (onFileSelected: (file: File) => void) => {
     }
   };
 
-  // ==============================
-  // 2. ONEDRIVE INTEGRATION (Unchanged)
-  // ==============================
-  const handleOneDrivePick = () => {
+  // ========================================================================
+  // 2. ONEDRIVE INTEGRATION (File Picker v8 + MSAL)
+  // ========================================================================
+  const loadMsal = () => {
+    return new Promise((resolve, reject) => {
+      if ((window as any).msal) return resolve((window as any).msal);
+      const script = document.createElement("script");
+      script.src =
+        "https://alcdn.msauth.net/browser/2.30.0/js/msal-browser.min.js";
+      script.async = true;
+      script.onload = () => resolve((window as any).msal);
+      script.onerror = () => reject("Failed to load MSAL");
+      document.body.appendChild(script);
+    });
+  };
+
+  const handleOneDrivePick = async () => {
     setIsLoading(true);
-    const script = document.createElement("script");
-    script.src = "https://js.live.net/v7.2/OneDrive.js";
-    script.onload = () => {
-      const odOptions = {
-        clientId: ONEDRIVE_CLIENT_ID,
-        action: "download",
-        multiSelect: false,
-        advanced: { filter: "folder,.pdf,.docx,.txt" },
-        success: async (files: any) => {
-          const downloadUrl = files.value[0]["@microsoft.graph.downloadUrl"];
-          const fileName = files.value[0].name;
-          try {
-            const response = await fetch(downloadUrl);
-            const blob = await response.blob();
-            const file = new File([blob], fileName, { type: blob.type });
-            onFileSelected(file);
-          } catch (e) {
-            console.error("OneDrive Download Error", e);
-          }
-          setIsLoading(false);
+    try {
+      const msal: any = await loadMsal();
+
+      const msalConfig = {
+        auth: {
+          clientId: ONEDRIVE_CLIENT_ID,
+          authority: "https://login.microsoftonline.com/consumers", // 'consumers' fixes the Tenant error for personal accounts
+          redirectUri: window.location.origin,
         },
-        cancel: () => {
-          setIsLoading(false);
+        cache: { cacheLocation: "sessionStorage" },
+      };
+
+      const msalInstance = new msal.PublicClientApplication(msalConfig);
+      await msalInstance.initialize();
+
+      // 1. Get Access Token
+      let accessToken;
+      try {
+        const loginResponse = await msalInstance.loginPopup({
+          scopes: ["Files.Read", "Files.Read.All"],
+        });
+        accessToken = loginResponse.accessToken;
+      } catch (loginErr) {
+        console.error("OneDrive Login Failed", loginErr);
+        setIsLoading(false);
+        return;
+      }
+
+      // 2. Launch v8 Picker
+      // We open a popup to the OneDrive Picker endpoint and POST the token to it
+      const pickerEndpoint = "https://onedrive.live.com/picker";
+
+      // Configuration for the picker
+      const pickerOptions = {
+        sdk: "8.0",
+        entry: {
+          oneDrive: {
+            files: {}, // Start in files
+          },
         },
-        error: (e: any) => {
-          console.error("OneDrive Picker Error", e);
-          setIsLoading(false);
+        authentication: {}, // Token is passed via form
+        messaging: {
+          origin: window.location.origin,
+          channelId: "27", // Arbitrary ID to verify messages
+        },
+        selection: {
+          mode: "single", // Or 'multiple'
+        },
+        typesAndSources: {
+          mode: "files",
+          pivots: {
+            oneDrive: true,
+            recent: true,
+          },
         },
       };
-      (window as any).OneDrive.open(odOptions);
-    };
-    document.body.appendChild(script);
+
+      // Open the popup window
+      const win = window.open("", "Picker", "width=1080,height=650");
+      if (!win) {
+        alert("Pop-up blocked. Please allow pop-ups for this site.");
+        setIsLoading(false);
+        return;
+      }
+
+      // Create a form to POST authentication to the picker URL
+      const form = win.document.createElement("form");
+      form.setAttribute("action", pickerEndpoint);
+      form.setAttribute("method", "POST");
+      win.document.body.append(form);
+
+      const inputToken = win.document.createElement("input");
+      inputToken.setAttribute("type", "hidden");
+      inputToken.setAttribute("name", "access_token");
+      inputToken.setAttribute("value", accessToken);
+      form.appendChild(inputToken);
+
+      const inputState = win.document.createElement("input");
+      inputState.setAttribute("type", "hidden");
+      inputState.setAttribute("name", "filePicker");
+      inputState.setAttribute("value", JSON.stringify(pickerOptions));
+      form.appendChild(inputState);
+
+      // Submit the form to navigate the popup to the picker
+      form.submit();
+
+      // 3. Listen for the file selection message
+      const messageListener = async (event: MessageEvent) => {
+        if (event.source !== win) return;
+
+        const message = event.data;
+
+        // Handshake / Activation
+        if (message.type === "initialize" && message.channelId === "27") {
+          const port = event.ports[0];
+
+          port.onmessage = async (mEvent) => {
+            const data = mEvent.data;
+
+            // Handle the 'pick' command (User selected a file)
+            if (data.type === "command" && data.data.command === "pick") {
+              const pickedItems = data.data.items; // Array of items
+              if (pickedItems && pickedItems.length > 0) {
+                const item = pickedItems[0];
+
+                // We need to fetch the file content.
+                // The picker returns metadata. Use the Graph API or the provided download URL.
+                // v8 for consumers usually provides valid download info, but sometimes we need a second call.
+                try {
+                  // Prefer the @microsoft.graph.downloadUrl if available, else fetch via ID
+                  let downloadUrl = item["@microsoft.graph.downloadUrl"];
+
+                  if (!downloadUrl && item.id) {
+                    // Fallback: Fetch metadata from Graph to get download URL
+                    const graphRes = await fetch(
+                      `https://graph.microsoft.com/v1.0/me/drive/items/${item.id}`,
+                      {
+                        headers: { Authorization: `Bearer ${accessToken}` },
+                      }
+                    );
+                    const graphJson = await graphRes.json();
+                    downloadUrl = graphJson["@microsoft.graph.downloadUrl"];
+                  }
+
+                  if (downloadUrl) {
+                    const res = await fetch(downloadUrl);
+                    const blob = await res.blob();
+                    const file = new File([blob], item.name, {
+                      type: blob.type || "application/pdf",
+                    });
+                    onFileSelected(file);
+                  } else {
+                    console.error("Could not find download URL for item", item);
+                  }
+                } catch (err) {
+                  console.error("Failed to download file", err);
+                }
+              }
+              port.postMessage({
+                type: "result",
+                id: data.id,
+                data: { result: "success" },
+              });
+              win.close();
+              setIsLoading(false);
+            }
+
+            // Handle Close/Cancel
+            if (data.type === "command" && data.data.command === "close") {
+              win.close();
+              setIsLoading(false);
+            }
+          };
+
+          // Activate the port
+          port.start();
+          port.postMessage({ type: "activate" });
+        }
+      };
+
+      window.addEventListener("message", messageListener);
+
+      // Cleanup listener when window closes
+      const timer = setInterval(() => {
+        if (win.closed) {
+          clearInterval(timer);
+          window.removeEventListener("message", messageListener);
+          setIsLoading(false);
+        }
+      }, 1000);
+    } catch (err) {
+      console.error("OneDrive v8 Error", err);
+      alert("Failed to launch OneDrive Picker");
+      setIsLoading(false);
+    }
   };
 
   return {

@@ -13,7 +13,6 @@ const PdfChatPage: React.FC = () => {
   const location = useLocation();
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   const token = useAppSelector((state: any) => state.auth.accessToken);
-
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"chat" | "pdf">("chat");
   const [isUploading, setIsUploading] = useState(false);

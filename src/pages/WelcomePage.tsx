@@ -1,4 +1,4 @@
-import React, { useState, useRef, useLayoutEffect } from "react";
+import React, { useState, useRef, useLayoutEffect, useEffect } from "react";
 import { useAppSelector } from "../hooks/useRedux";
 import { cn } from "../lib/utils";
 import {
@@ -12,6 +12,7 @@ import {
   ChevronDown,
   X as XIcon,
   FileText,
+  HardDrive, // Added for local file icon
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChatService } from "../features/chat/services/chatService";
@@ -20,7 +21,9 @@ import ParticleBackground from "../Components/ui/ParticleBackground";
 import ReasoningMenu from "../Components/ui/ReasoningMenu";
 import { RocketIcon } from "../Components/ui/ReasoningMenu";
 import ModelMenu from "../Components/ui/ModelMenu";
-import AVAILABLE_MODELS from "../../Constants"; // Import constants to get labels
+import AVAILABLE_MODELS from "../../Constants";
+import { useCloudStorage } from "../hooks/useCloudStorage"; // Import Hook
+import { AnimatePresence, motion } from "framer-motion"; // Import for smooth menu
 
 const WelcomePage: React.FC = () => {
   const isDark = useAppSelector((state: any) => state.theme?.isDark);
@@ -32,6 +35,9 @@ const WelcomePage: React.FC = () => {
   const [showModelMenu, setShowModelMenu] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
+  // New State for Attachment Menu
+  const [showAttachMenu, setShowAttachMenu] = useState(false);
+
   // Refs
   const fileInputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -39,7 +45,29 @@ const WelcomePage: React.FC = () => {
   const inputRef = useRef<HTMLDivElement>(null);
   const chipsRef = useRef<HTMLDivElement>(null);
   const textInputRef = useRef<HTMLInputElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null); // Ref for the menu
   const navigate = useNavigate();
+
+  // --- Cloud Storage Integration ---
+  const {
+    handleGoogleDrivePick,
+    handleOneDrivePick,
+    isLoading: isCloudLoading,
+  } = useCloudStorage((file) => {
+    setSelectedFile(file);
+    setShowAttachMenu(false);
+  });
+
+  // Click Outside Listener for Attachment Menu
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowAttachMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Helper to get Label
   const selectedModelLabel =
@@ -75,11 +103,34 @@ const WelcomePage: React.FC = () => {
   }, []);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) setSelectedFile(e.target.files[0]);
+    if (e.target.files && e.target.files[0]) {
+      setSelectedFile(e.target.files[0]);
+      setShowAttachMenu(false);
+    }
   };
 
   const startChat = async (text: string) => {
     if ((!text.trim() && !selectedFile) || !accessToken) return;
+
+    // Check if we should route to PDF Chat
+    if (selectedFile?.type === "application/pdf") {
+      try {
+        const newChatId = await ChatService.createChat(accessToken, modelMode);
+        // Navigate to PDF Chat Page
+        navigate(`/pdf/${newChatId}`, {
+          state: {
+            initialMessage: text,
+            initialFile: selectedFile,
+            file: selectedFile, // Ensure PdfChatPage picks this up
+          },
+        });
+      } catch (error) {
+        console.error(`Hey ${user?.name} Failed to start your chat:`, error);
+      }
+      return;
+    }
+
+    // Standard Chat Logic
     let content = text;
     if (selectedFile) content = `[File: ${selectedFile.name}] ${text}`;
     try {
@@ -209,8 +260,6 @@ const WelcomePage: React.FC = () => {
             isDark={isDark}
           />
 
-          {/* REMOVED: ModelMenu from here */}
-
           <div className="flex flex-col w-full">
             {/* File Preview */}
             {selectedFile && (
@@ -239,19 +288,157 @@ const WelcomePage: React.FC = () => {
             )}
 
             <div className="relative flex items-center w-full p-2.5 min-h-[60px]">
-              <button
-                title="Attach File"
-                onClick={() => fileInputRef.current?.click()}
-                className={cn(
-                  "p-2.5 rounded-full transition-colors shrink-0 ml-1 hover:cursor-pointer",
-                  isDark
-                    ? "text-gray-400 hover:text-white hover:bg-white/10"
-                    : "text-gray-500 hover:text-black hover:bg-black/5",
-                  selectedFile && "text-blue-500"
-                )}
-              >
-                <Paperclip size={20} strokeWidth={2.5} />
-              </button>
+              {/* ATTACHMENT MENU WRAPPER */}
+              <div className="relative" ref={menuRef}>
+                <button
+                  title="Attach File"
+                  onClick={() => setShowAttachMenu(!showAttachMenu)}
+                  className={cn(
+                    "p-2.5 rounded-full transition-colors shrink-0 ml-1 hover:cursor-pointer",
+                    showAttachMenu
+                      ? isDark
+                        ? "bg-white/10 text-white"
+                        : "bg-black/5 text-black"
+                      : isDark
+                      ? "text-gray-400 hover:text-white hover:bg-white/10"
+                      : "text-gray-500 hover:text-black hover:bg-black/5",
+                    selectedFile && "text-blue-500"
+                  )}
+                >
+                  <Paperclip size={20} strokeWidth={2.5} />
+                </button>
+
+                {/* POPUP MENU */}
+                <AnimatePresence>
+                  {showAttachMenu && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ duration: 0.1 }}
+                      className={cn(
+                        "absolute bottom-full left-0 mb-2 w-56 p-1.5 rounded-xl border shadow-xl backdrop-blur-md z-50 overflow-hidden",
+                        isDark
+                          ? "bg-[#18181b]/95 border-gray-700"
+                          : "bg-white/95 border-gray-200"
+                      )}
+                    >
+                      {/* Local Option */}
+                      <button
+                        onClick={() => fileInputRef.current?.click()}
+                        className={cn(
+                          "w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
+                          isDark
+                            ? "hover:bg-white/10 text-gray-200"
+                            : "hover:bg-gray-100 text-gray-700"
+                        )}
+                      >
+                        <HardDrive size={18} className="text-emerald-500" />
+                        Local Computer
+                      </button>
+
+                      <div
+                        className={cn(
+                          "h-px w-full my-1",
+                          isDark ? "bg-gray-700" : "bg-gray-100"
+                        )}
+                      />
+
+                      {/* Google Drive */}
+                      <button
+                        onClick={handleGoogleDrivePick}
+                        disabled={isCloudLoading}
+                        className={cn(
+                          "w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
+                          isDark
+                            ? "hover:bg-white/10 text-gray-200"
+                            : "hover:bg-gray-100 text-gray-700"
+                        )}
+                      >
+                        <svg
+                          className="w-4 h-4 shrink-0"
+                          viewBox="0 0 87.3 78"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="m6.6 66.85 3.85 6.65c.8 1.4 1.9 2.5 3.2 3.2l2.5 1.3 65-37.5-3.85-6.65c-.8-1.4-1.9-2.5-3.2-3.2l-2.4-1.3z"
+                            fill="#0066da"
+                          />
+                          <path
+                            d="m43.65 25-25.8 44.7 9.55 16.55 25.8-44.7c-1.65-2.85-4.75-4.9-8.25-4.9s-6.6 2.05-8.25 4.9z"
+                            fill="#00ac47"
+                          />
+                          <path
+                            d="m73.55 76.8c4.4 7.6 13.75 7.6 18.15 0l-3.85-6.65-3.2-5.6-35-60.6c-1.65-2.85-2.05-6.45-1.15-9.65l-2.5 1.3c-4.4 2.55-7.25 7.55-7.25 12.65z"
+                            fill="#ea4335"
+                          />
+                          <path
+                            d="m43.65 25c1.65-2.85 4.75-4.9 8.25-4.9l-.05.05h33.85c5.1 0 10.1 2.85 12.65 7.25l2.5 1.3c2.55-4.45 2.55-9.95 0-14.4l-2.5-1.3c-2.55-4.4-7.55-7.25-12.65-7.25h-33.85c-3.5 0-6.6 2.05-8.25 4.9z"
+                            fill="#00832d"
+                          />
+                        </svg>
+                        Google Drive
+                      </button>
+
+                      {/* OneDrive */}
+                      <button
+                        onClick={handleOneDrivePick}
+                        disabled={isCloudLoading}
+                        className={cn(
+                          "w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
+                          isDark
+                            ? "hover:bg-white/10 text-gray-200"
+                            : "hover:bg-gray-100 text-gray-700"
+                        )}
+                      >
+                        <svg
+                          className="w-4 h-4 shrink-0"
+                          viewBox="0 0 64 64"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="m39.243 45.426 12.839 7.749 6.294-10.587-12.516-7.854z"
+                            fill="#0072c6"
+                          />
+                          <path
+                            d="m18.145 23.335-5.328 3.013-4.253 10.641 9.47 5.766 8.397-13.655z"
+                            fill="#0072c6"
+                          />
+                          <path
+                            d="m27.502 18.04-10.428 5.86-1.129 1.909 9.873 6.007 10.081-16.791z"
+                            fill="#0072c6"
+                          />
+                          <path
+                            d="m18.256 42.662-8.675-5.334-1.956 2.032 10.825 6.467z"
+                            fill="#004578"
+                          />
+                          <path
+                            d="m51.916 42.684 6.46-10.697-3.23-1.935-12.28 7.355 1.258 2.032z"
+                            fill="#004578"
+                          />
+                          <path
+                            d="m36.726 14.156 2.56-4.173-10.669-6.419-2.56 4.173z"
+                            fill="#004578"
+                          />
+                          <path
+                            d="m28.632 24.322 13.033 7.854 12.351-20.241-12.984-7.806z"
+                            fill="#00bcf2"
+                          />
+                          <path
+                            d="m39.292 11.935 14.721 24.793 6.697-3.951-14.722-24.793z"
+                            fill="#00bcf2"
+                          />
+                          <path
+                            d="m26.695 31.821-8.397 13.655 20.945 12.96 8.29-13.881z"
+                            fill="#00bcf2"
+                          />
+                        </svg>
+                        OneDrive
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
 
               <input
                 ref={textInputRef}
@@ -304,7 +491,12 @@ const WelcomePage: React.FC = () => {
                         : "bg-black text-white hover:bg-gray-800"
                     )}
                   >
-                    <ArrowUp size={18} strokeWidth={3} />
+                    {/* Show loader if cloud is working */}
+                    {isCloudLoading ? (
+                      <div className="animate-spin h-4 w-4 border-2 border-black/30 border-t-black rounded-full dark:border-white/30 dark:border-t-white" />
+                    ) : (
+                      <ArrowUp size={18} strokeWidth={3} />
+                    )}
                   </button>
                 ) : (
                   <button
