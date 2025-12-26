@@ -1,14 +1,12 @@
 
 import { useState} from "react";
-
 // --- Configuration ---
-// PRO TIP: Move these to your .env file
+
 const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-const GOOGLE_APP_ID = import.meta.env.VITE_GOOGLE_APP_ID; // Found in Google Console Dashboard// Found in Google Console Dashboard
-
+const GOOGLE_APP_ID = import.meta.env.VITE_GOOGLE_APP_ID;
 const ONEDRIVE_CLIENT_ID = import.meta.env.VITE_ONEDRIVE_CLIENT_ID;
-
+declare const google: any;
 export const useCloudStorage = (onFileSelected: (file: File) => void) => {
   const [isLoading, setIsLoading] = useState(false);
 
