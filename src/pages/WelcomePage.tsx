@@ -225,24 +225,20 @@ const firstName = names.length > 1 ? names[0] : userName;
 
       {/* CONTENT */}
       <div className="w-full max-w-[720px] px-4 flex flex-col items-center -mt-16 z-10 relative">
-        {/* LOGO */}
+        
         <div
           ref={logoRef}
-          className="mb-12 flex items-center justify-center gap-3"
+          className="mb-18 flex items-center-safe justify-center "
         >
-          <img
-            src={isDark ? "/dark-theme-logo.png" : "/light-theme-logo.png"}
-            alt="logo"
-            className="w-8 h-8 hover:cursor-pointer"
-          />
+          
           <Link to="/">
             <h1
               className={cn(
-                "text-4xl font-bold tracking-tight hover:cursor-pointer",
+                "text-5xl font-extrabold tracking-tight hover:cursor-pointer",
                 isDark ? "text-white" : "text-black"
               )}
             >
-              Integri AI
+              Integri 
             </h1>
           </Link>
         </div>
