@@ -48,6 +48,12 @@ const WelcomePage: React.FC = () => {
   const menuRef = useRef<HTMLDivElement>(null); // Ref for the menu
   const navigate = useNavigate();
 
+const userName = user?.name || "User";
+const names = userName.split(" ");
+const firstName = names.length > 1 ? names[0] : userName;
+
+
+
   // --- Cloud Storage Integration ---
   const {
     handleGoogleDrivePick,
@@ -446,7 +452,7 @@ const WelcomePage: React.FC = () => {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask anything you want..."
+                placeholder={`Hey ${firstName || "Friend"} .......`}
                 className={cn(
                   "flex-1 min-w-0 bg-transparent outline-none text-lg px-3 placeholder:text-gray-500/80 font-medium z-20",
                   isDark ? "text-gray-100" : "text-gray-900"
