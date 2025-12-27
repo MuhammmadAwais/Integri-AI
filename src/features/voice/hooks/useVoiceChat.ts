@@ -197,6 +197,7 @@ export const useVoiceChat = (
         token,
         model,
         provider,
+        "",
         true
       );
       const newSessionId = sessionData.id || sessionData.session_id;
