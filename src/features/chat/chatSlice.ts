@@ -1,4 +1,4 @@
-// src/features/chat/chatSlice.ts
+
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import AVAILABLE_MODELS from "../../../Constants";
 

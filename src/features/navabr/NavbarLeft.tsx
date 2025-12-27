@@ -3,96 +3,185 @@ import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import { cn } from "../../lib/utils";
-import { ChevronDown, Plus } from "lucide-react";
+import { ChevronDown, Plus, Sparkles } from "lucide-react";
 import ModelMenu from "../../Components/ui/ModelMenu";
+import AgentMenu from "../../Components/ui/AgentMenu";
 import AVAILABLE_MODELS from "../../../Constants";
-import { setNewChatModel, addPlaygroundModel } from "../chat/chatSlice";
+import {
+  setNewChatModel,
+  addPlaygroundModel,
+  setNewChatAgent,
+} from "../chat/chatSlice";
 
 const NavbarLeft: React.FC = () => {
   const location = useLocation();
   const dispatch = useAppDispatch();
   const isDark = useAppSelector((state) => state.theme.isDark);
-  const { newChatModel } = useAppSelector((state) => state.chat);
+  const { newChatModel, selectedAgentId } = useAppSelector(
+    (state: any) => state.chat
+  );
+  const { items: agents } = useAppSelector((state: any) => state.agents);
 
   const [showModelMenu, setShowModelMenu] = useState(false);
+  const [showAgentMenu, setShowAgentMenu] = useState(false);
   const [showAddMenu, setShowAddMenu] = useState(false);
+  const [showAddAgentMenu, setShowAddAgentMenu] = useState(false);
 
-  // Welcome Screen Selector
+  // Welcome Screen Logic
   if (location.pathname === "/") {
+    const selectedAgent = agents.find((a: any) => a.gpt_id === selectedAgentId);
     const selectedModelLabel =
       AVAILABLE_MODELS.find((m) => m.id === newChatModel.id)?.label ||
       newChatModel.id;
 
     return (
-      <div className="relative">
-        <button
-          onClick={() => setShowModelMenu(!showModelMenu)}
-          className={cn(
-            "flex items-center gap-2 px-3 py-2 rounded-xl text-lg font-semibold transition-all hover:cursor-pointer",
-            isDark
-              ? "text-gray-200 hover:bg-[#1A1A1A]"
-              : "text-gray-700 hover:bg-gray-100",
-            showModelMenu && (isDark ? "bg-[#1A1A1A]" : "bg-gray-100")
-          )}
-        >
-          <span className="opacity-90">{selectedModelLabel}</span>
-          <ChevronDown
-            size={16}
+      <div className="flex items-center gap-2 relative">
+        <div className="relative">
+          <button
+            onClick={() => !selectedAgentId && setShowModelMenu(!showModelMenu)}
             className={cn(
-              "opacity-50 transition-transform duration-200",
-              showModelMenu && "rotate-180"
+              "flex items-center gap-2 px-3 py-2 rounded-xl text-lg font-semibold transition-all hover:cursor-pointer",
+              isDark
+                ? "text-gray-200 hover:bg-[#1A1A1A]"
+                : "text-gray-700 hover:bg-gray-100",
+              selectedAgentId && "opacity-50 cursor-not-allowed"
             )}
+          >
+            <span className="opacity-90">
+              {selectedAgentId ? "Agent Active" : selectedModelLabel}
+            </span>
+            {!selectedAgentId && <ChevronDown size={16} />}
+          </button>
+          <ModelMenu
+            isOpen={showModelMenu}
+            onClose={() => setShowModelMenu(false)}
+            selected={newChatModel.id}
+            isDark={isDark}
+            position="top"
+            align="left"
+            onSelect={(id) => {
+              const model = AVAILABLE_MODELS.find((m) => m.id === id);
+              if (model)
+                dispatch(
+                  setNewChatModel({ id: model.id, provider: model.provider })
+                );
+            }}
           />
-        </button>
+        </div>
 
-        <ModelMenu
-          isOpen={showModelMenu}
-          onClose={() => setShowModelMenu(false)}
-          selected={newChatModel.id}
-          onSelect={(id) => {
-            const model = AVAILABLE_MODELS.find((m) => m.id === id);
-            if (model)
-              dispatch(
-                setNewChatModel({ id: model.id, provider: model.provider })
-              );
-          }}
-          isDark={isDark}
-          position="top"
-          align="left"
-        />
+        <div className="w-px h-6 bg-gray-500/20" />
+
+        {/* Agent Selector with Highlighted State */}
+        <div className="relative">
+          <button
+            onClick={() => setShowAgentMenu(!showAgentMenu)}
+            className={cn(
+              "flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all hover:cursor-pointer border",
+              selectedAgentId
+                ? "bg-indigo-600 text-white border-indigo-500 shadow-lg shadow-indigo-500/20"
+                : isDark
+                ? "border-white/10 text-gray-400 hover:bg-white/5"
+                : "border-black/5 text-gray-600 hover:bg-black/5"
+            )}
+          >
+            <Sparkles
+              size={14}
+              className={selectedAgentId ? "animate-pulse" : ""}
+            />
+            <span>{selectedAgent?.name || "Select Agent"}</span>
+            <ChevronDown
+              size={14}
+              className={cn(
+                "transition-transform",
+                showAgentMenu && "rotate-180"
+              )}
+            />
+          </button>
+          <AgentMenu
+            isOpen={showAgentMenu}
+            onClose={() => setShowAgentMenu(false)}
+            selectedId={selectedAgentId}
+            isDark={isDark}
+            onSelect={(agent) => {
+              dispatch(setNewChatAgent(agent ? agent.gpt_id : null));
+              if (agent) {
+                dispatch(
+                  setNewChatModel({ id: agent.model, provider: "openai" })
+                );
+              }
+            }}
+          />
+        </div>
       </div>
     );
   }
 
-  // Playground Add Model Button
+  // Playground Logic
   if (location.pathname === "/playground") {
     return (
-      <div className="relative">
-        <button
-          onClick={() => setShowAddMenu(!showAddMenu)}
-          className={cn(
-            "p-2 rounded-lg transition-all flex items-center gap-2 hover:cursor-pointer",
-            isDark
-              ? "bg-zinc-800/50 text-zinc-400 hover:text-white hover:bg-zinc-800"
-              : "bg-zinc-100 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200"
-          )}
-        >
-          <Plus size={18} />
-          <span className="text-sm font-medium">Add Model</span>
-        </button>
-        <ModelMenu
-          isOpen={showAddMenu}
-          onClose={() => setShowAddMenu(false)}
-          selected=""
-          onSelect={(id) => {
-            const model = AVAILABLE_MODELS.find((m) => m.id === id);
-            if (model) dispatch(addPlaygroundModel(model));
-            setShowAddMenu(false);
-          }}
-          isDark={isDark}
-          position="top"
-          align="left"
-        />
+      <div className="flex items-center gap-2">
+        <div className="relative">
+          <button
+            onClick={() => setShowAddMenu(!showAddMenu)}
+            className={cn(
+              "p-2 px-3 rounded-lg transition-all flex items-center gap-2 hover:cursor-pointer",
+              isDark
+                ? "bg-zinc-800/50 text-zinc-400 hover:text-white"
+                : "bg-zinc-100 text-zinc-600 hover:text-zinc-900"
+            )}
+          >
+            <Plus size={16} />
+            <span className="text-xs font-bold uppercase">Add Model</span>
+          </button>
+          <ModelMenu
+            isOpen={showAddMenu}
+            onClose={() => setShowAddMenu(false)}
+            selected=""
+            isDark={isDark}
+            position="top"
+            align="left"
+            onSelect={(id) => {
+              const model = AVAILABLE_MODELS.find((m) => m.id === id);
+              if (model) dispatch(addPlaygroundModel(model));
+              setShowAddMenu(false);
+            }}
+          />
+        </div>
+
+        <div className="relative">
+          <button
+            onClick={() => setShowAddAgentMenu(!showAddAgentMenu)}
+            className={cn(
+              "p-2 px-3 rounded-lg transition-all flex items-center gap-2 hover:cursor-pointer border border-dashed border-indigo-500/30",
+              isDark
+                ? "bg-indigo-500/5 text-indigo-400 hover:bg-indigo-500/10"
+                : "bg-indigo-50/50 text-indigo-600 hover:bg-indigo-50"
+            )}
+          >
+            <Sparkles size={16} />
+            <span className="text-xs font-bold uppercase">Add Agent</span>
+          </button>
+          <AgentMenu
+            isOpen={showAddAgentMenu}
+            onClose={() => setShowAddAgentMenu(false)}
+            selectedId={null}
+            isDark={isDark}
+            onSelect={(agent) => {
+              if (agent) {
+                dispatch(
+                  addPlaygroundModel({
+                    id: agent.model,
+                    label: agent.name,
+                    provider: "openai",
+                    gpt_id: agent.gpt_id,
+                    instructions: agent.instructions,
+                  })
+                );
+              }
+              setShowAddAgentMenu(false);
+            }}
+          />
+        </div>
       </div>
     );
   }

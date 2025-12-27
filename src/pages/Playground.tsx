@@ -32,7 +32,7 @@ const Playground: React.FC = () => {
       );
     }, containerRef);
     return () => ctx.revert();
-  }, [playgroundModels.length]); // Re-run animation when models change
+  }, [playgroundModels.length]);
 
   const handleSendMessage = (text: string, file: File | null | undefined) => {
     setGlobalPrompt(text);
@@ -47,7 +47,8 @@ const Playground: React.FC = () => {
         isDark ? "bg-[#09090b]" : "bg-white"
       )}
     >
-
+   
+      {/* Lanes */}
       <div
         ref={containerRef}
         className={cn(
@@ -55,13 +56,13 @@ const Playground: React.FC = () => {
           isDark ? "scrollbar-track-[#09090b]" : "scrollbar-track-white"
         )}
       >
-        {playgroundModels.map((model:any, idx:any) => (
+        {playgroundModels.map((item: any, idx : number) => (
           <div
-            key={`${model.id}-${idx}`}
+            key={`${item.id}-${idx}`}
             className="playground-lane flex-1 min-w-[320px] max-w-full h-full snap-center shrink-0 transition-all duration-300 ease-in-out"
           >
             <PlaygroundLane
-              model={model}
+              model={item}
               onRemove={() => dispatch(removePlaygroundModel(idx))}
               isDark={isDark}
               globalPrompt={globalPrompt}
@@ -81,8 +82,8 @@ const Playground: React.FC = () => {
       >
         <div className="max-w-4xl mx-auto">
           <ChatInput
-            onSend={handleSendMessage}
-            placeholder={"Send a global prompt to all models... " }
+            onSend={handleSendMessage }
+            placeholder="Send a global prompt to all models and agents..."
             isDark={isDark}
           />
         </div>

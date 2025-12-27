@@ -26,8 +26,11 @@ import { AnimatePresence, motion } from "framer-motion";
 const WelcomePage: React.FC = () => {
   const isDark = useAppSelector((state: any) => state.theme?.isDark);
   const { user, accessToken } = useAppSelector((state: any) => state.auth);
-  // Model state is now managed globally in Redux via the Navbar selector
-  const { newChatModel } = useAppSelector((state: any) => state.chat);
+
+  // Model and Agent state from Redux
+  const { newChatModel, selectedAgentId } = useAppSelector(
+    (state: any) => state.chat
+  );
 
   const [inputValue, setInputValue] = useState("");
   const [reasoningMode, setReasoningMode] = useState("Auto");
@@ -114,9 +117,11 @@ const WelcomePage: React.FC = () => {
     // Check if we should route to PDF Chat
     if (selectedFile?.type === "application/pdf") {
       try {
+        // Updated logic: passing selectedAgentId to ChatService
         const newChatId = await ChatService.createChat(
           accessToken,
-          currentModelId
+          currentModelId,
+          selectedAgentId || undefined
         );
         navigate(`/pdf/${newChatId}`, {
           state: {
@@ -131,13 +136,15 @@ const WelcomePage: React.FC = () => {
       return;
     }
 
-    // Standard Chat Logic
+    // Standard/Agent Chat Logic
     let content = text;
     if (selectedFile) content = `[File: ${selectedFile.name}] ${text}`;
     try {
+      // Updated logic: passing selectedAgentId to ChatService
       const newChatId = await ChatService.createChat(
         accessToken,
-        currentModelId
+        currentModelId,
+        selectedAgentId || undefined
       );
       navigate(`/chat/${newChatId}`, {
         state: {
