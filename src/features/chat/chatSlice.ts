@@ -1,25 +1,27 @@
+// src/features/chat/chatSlice.ts
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import AVAILABLE_MODELS from "../../../Constants";
 
 interface ChatState {
   isMobileMenuOpen: boolean;
   isContextSidebarOpen: boolean;
   activeSidebarTab: "home" | "history" | "library" | "settings";
 
-  // 1. User Preference (For NEW chats)
   newChatModel: {
     id: string;
     provider: string;
   };
 
-  // ADDED: Track selected Agent for new chats
   selectedAgentId: string | null;
 
-  // 2. Active Session Data (LOCKED to the session)
   activeChatId: string | null;
   activeSessionConfig: {
     modelId: string;
     provider: string;
   } | null;
+
+  // ADDED: Playground state
+  playgroundModels: any[];
 }
 
 const initialState: ChatState = {
@@ -27,15 +29,21 @@ const initialState: ChatState = {
   isContextSidebarOpen: true,
   activeSidebarTab: "home",
   newChatModel: { id: "gpt-4o-mini", provider: "openai" },
-  selectedAgentId: null, // Default to null (Standard Chat)
+  selectedAgentId: null,
   activeChatId: null,
   activeSessionConfig: null,
+  // Initial models for the playground
+  playgroundModels: [
+    AVAILABLE_MODELS[0],
+    AVAILABLE_MODELS.length > 1 ? AVAILABLE_MODELS[1] : AVAILABLE_MODELS[0],
+  ],
 };
 
 const chatSlice = createSlice({
   name: "chat",
   initialState,
   reducers: {
+    // ... existing reducers
     toggleMobileMenu: (state, action: PayloadAction<boolean>) => {
       state.isMobileMenuOpen = action.payload;
     },
@@ -46,16 +54,12 @@ const chatSlice = createSlice({
       state.activeSidebarTab = action.payload;
       state.isContextSidebarOpen = true;
     },
-
-    // User selects model from Dropdown
     setNewChatModel: (
       state,
       action: PayloadAction<{ id: string; provider: string }>
     ) => {
       state.newChatModel = action.payload;
-      // Reset agent if manually picking a model
       state.selectedAgentId = null;
-
       if (!state.activeChatId) {
         state.activeSessionConfig = {
           modelId: action.payload.id,
@@ -63,30 +67,31 @@ const chatSlice = createSlice({
         };
       }
     },
-
-    // ADDED: User selects an Agent to chat with
     setNewChatAgent: (state, action: PayloadAction<string | null>) => {
       state.selectedAgentId = action.payload;
     },
-
-    // Navigate to a chat
     setActiveChat: (state, action: PayloadAction<string | null>) => {
       state.activeChatId = action.payload;
       if (action.payload === null) {
-        // Reset config to user preference when clearing
         state.activeSessionConfig = {
           modelId: state.newChatModel.id,
           provider: state.newChatModel.provider,
         };
       }
     },
-
-    // Lock the state when session details are loaded
     setActiveSessionConfig: (
       state,
       action: PayloadAction<{ modelId: string; provider: string }>
     ) => {
       state.activeSessionConfig = action.payload;
+    },
+
+    // ADDED: Playground Reducers
+    addPlaygroundModel: (state, action: PayloadAction<any>) => {
+      state.playgroundModels.push(action.payload);
+    },
+    removePlaygroundModel: (state, action: PayloadAction<number>) => {
+      state.playgroundModels.splice(action.payload, 1);
     },
   },
 });
@@ -99,6 +104,8 @@ export const {
   setNewChatAgent,
   setActiveChat,
   setActiveSessionConfig,
+  addPlaygroundModel,
+  removePlaygroundModel,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

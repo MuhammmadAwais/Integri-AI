@@ -159,7 +159,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
           {features && (
             <div className="text-center mt-2">
               <span className="text-[10px] text-gray-500">
-                AI can make mistakes. Check important info.
+                All LLMs can make mistakes. Verify the information you receive.
               </span>
             </div>
           )}

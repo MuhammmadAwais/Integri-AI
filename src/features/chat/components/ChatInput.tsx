@@ -15,6 +15,8 @@ import { AnimatePresence, motion } from "framer-motion"; // Assuming you have fr
 
 interface ChatInputProps {
   onSend?: (text: string, file?: File | null) => void;
+  placeholder?: string;
+  isDark?: boolean;
   disabled?: boolean;
   features?: boolean;
 }

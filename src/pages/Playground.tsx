@@ -1,26 +1,19 @@
 import React, { useState, useLayoutEffect, useRef } from "react";
-import { useAppSelector } from "../hooks/useRedux";
+import { useAppSelector, useAppDispatch } from "../hooks/useRedux";
 import { cn } from "../lib/utils";
-import { Plus } from "lucide-react";
 import ChatInput from "../features/chat/components/ChatInput";
 import PlaygroundLane from "../features/playground/components/PlaygroundLane";
-import ModelMenu from "../Components/ui/ModelMenu";
-import AVAILABLE_MODELS from "../../Constants";
+import { removePlaygroundModel } from "../features/chat/chatSlice";
 import gsap from "gsap";
 
 const Playground: React.FC = () => {
   const isDark = useAppSelector((state: any) => state.theme.isDark);
+  const { playgroundModels } = useAppSelector((state: any) => state.chat);
+  const dispatch = useAppDispatch();
 
-  const [activeModels, setActiveModels] = useState<any[]>([
-    AVAILABLE_MODELS[0],
-    AVAILABLE_MODELS.length > 1 ? AVAILABLE_MODELS[1] : AVAILABLE_MODELS[0],
-  ]);
-
-  // Added globalFile state
   const [globalPrompt, setGlobalPrompt] = useState("");
   const [globalFile, setGlobalFile] = useState<File | null>(null);
   const [triggerId, setTriggerId] = useState(0);
-  const [showAddModel, setShowAddModel] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -39,76 +32,22 @@ const Playground: React.FC = () => {
       );
     }, containerRef);
     return () => ctx.revert();
-  }, [activeModels.length]);
+  }, [playgroundModels.length]); // Re-run animation when models change
 
-  const handleAddModel = (modelId: string) => {
-    const fullModel = AVAILABLE_MODELS.find((m) => m.id === modelId);
-    if (fullModel) {
-      setActiveModels((prev) => [...prev, fullModel]);
-      setShowAddModel(false);
-    }
-  };
-
-  // Updated to accept file
-  const handleGlobalSend = (text: string, file?: File | null) => {
-    if (!text.trim() && !file) return;
+  const handleSendMessage = (text: string, file: File | null | undefined) => {
     setGlobalPrompt(text);
-    setGlobalFile(file || null); // Store the file
+    setGlobalFile(file || null);
     setTriggerId((prev) => prev + 1);
   };
 
   return (
     <div
       className={cn(
-        "flex flex-col h-[calc(100vh-64px)] relative overflow-hidden transition-colors duration-300",
+        "flex flex-col h-[calc(100dvh-64px)] w-full overflow-hidden transition-colors duration-300",
         isDark ? "bg-[#09090b]" : "bg-white"
       )}
     >
-      {/* Header */}
-      <div
-        className={cn(
-          "px-6 py-3 border-b flex justify-between items-center shrink-0 z-20",
-          isDark
-            ? "bg-[#09090b]/80 border-zinc-800 backdrop-blur-md"
-            : "bg-white/80 border-zinc-200 backdrop-blur-md"
-        )}
-      >
-        <h1
-          className={cn(
-            "font-bold text-lg tracking-tight",
-            isDark ? "text-zinc-100" : "text-zinc-900"
-          )}
-        >
-          Playground
-        </h1>
 
-        <div className="relative">
-          <button
-            title="Add Model"
-            onClick={() => setShowAddModel(true)}
-            className={cn(
-              "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all hover:cursor-pointer",
-              isDark
-                ? "bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700"
-                : "bg-zinc-100 hover:bg-zinc-200 text-zinc-800 border border-zinc-200"
-            )}
-          >
-            <Plus size={16} />
-            <span className="hidden sm:inline">Add Model</span>
-          </button>
-
-          <ModelMenu
-            isOpen={showAddModel}
-            onClose={() => setShowAddModel(false)}
-            selected=""
-            onSelect={handleAddModel}
-            isDark={isDark}
-            position="top"
-          />
-        </div>
-      </div>
-
-      {/* Lanes */}
       <div
         ref={containerRef}
         className={cn(
@@ -116,19 +55,17 @@ const Playground: React.FC = () => {
           isDark ? "scrollbar-track-[#09090b]" : "scrollbar-track-white"
         )}
       >
-        {activeModels.map((model, idx) => (
+        {playgroundModels.map((model:any, idx:any) => (
           <div
             key={`${model.id}-${idx}`}
             className="playground-lane flex-1 min-w-[320px] max-w-full h-full snap-center shrink-0 transition-all duration-300 ease-in-out"
           >
             <PlaygroundLane
               model={model}
-              onRemove={() =>
-                setActiveModels((prev) => prev.filter((_, i) => i !== idx))
-              }
+              onRemove={() => dispatch(removePlaygroundModel(idx))}
               isDark={isDark}
               globalPrompt={globalPrompt}
-              globalFile={globalFile} // Pass file here
+              globalFile={globalFile}
               triggerId={triggerId}
             />
           </div>
@@ -143,8 +80,11 @@ const Playground: React.FC = () => {
         )}
       >
         <div className="max-w-4xl mx-auto">
-          {/* onSend now correctly receives (text, file) */}
-          <ChatInput onSend={handleGlobalSend} />
+          <ChatInput
+            onSend={handleSendMessage}
+            placeholder={"Send a global prompt to all models... " }
+            isDark={isDark}
+          />
         </div>
       </div>
     </div>

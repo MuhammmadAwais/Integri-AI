@@ -494,7 +494,7 @@ const WelcomePage: React.FC = () => {
         </div>
 
         <div className="mt-8 text-xs text-gray-500 opacity-60">
-          Integri AI can make mistakes. Verify the information you receive.
+          All LLMs can make mistakes. Verify the information you receive.
         </div>
       </div>
     </div>
