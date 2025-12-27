@@ -1,162 +1,251 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Bot, ArrowLeft, MessageSquare, Tag, Sparkles } from "lucide-react";
-import { useAppSelector } from "../../../hooks/useRedux"; // Adjust path if needed based on file location
-import { cn } from "../../../lib/utils";
+import {
+  ArrowLeft,
+  MessageSquare,
+  Shield,
+  Globe,
+  Zap,
+  Play,
+} from "lucide-react";
 import { AgentService } from "../../../api/backendApi";
-import { ChatService } from "../../chat/services/chatService";
-import Button from "../../../Components/ui/Button";
-import SkeletonLoader from "../../../Components/ui/SkeletonLoader";
+import { ChatService } from "../../chat/services/chatService"; // Import ChatService
+import { useAppDispatch, useAppSelector } from "../../../hooks/useRedux";
+import { setNewChatAgent } from "../../chat/chatSlice";
+import { cn } from "../../../lib/utils";
 
-const AgentDetailsPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+const AgentDetailPage = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const { isDark } = useAppSelector((state: any) => state.theme);
+  const dispatch = useAppDispatch();
+
   const token = useAppSelector((state: any) => state.auth.accessToken);
+  const isDark = useAppSelector((state: any) => state.theme.isDark);
 
-  const [agent, setAgent] = useState<any>(null);
+  const [agent, setAgent] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
-  const [startingChat, setStartingChat] = useState(false);
+  const [creatingSession, setCreatingSession] = useState(false); // Add loading state for button
+  const [error, setError] = useState("");
 
+  // 1. Fetch Agent Details
   useEffect(() => {
-    const loadAgent = async () => {
+    const fetchAgent = async () => {
       if (!id || !token) return;
       try {
+        setLoading(true);
         const data = await AgentService.getAgentById(token, id);
         setAgent(data);
       } catch (err) {
         console.error("Failed to load agent", err);
+        setError("Failed to load agent details.");
       } finally {
         setLoading(false);
       }
     };
-    loadAgent();
+
+    fetchAgent();
   }, [id, token]);
 
-  const handleStartChat = async () => {
-    if (!token || !agent) return;
-    setStartingChat(true);
+  // 2. Start Chat Handler - FIXED
+  const handleStartChat = async (initialMessage?: string) => {
+    if (!agent || !token || creatingSession) return;
+
     try {
-      // Create a chat session with this agent's model
-      const sessionId = await ChatService.createChat(
+      setCreatingSession(true);
+
+      // A. Store Agent ID in Redux (Optional, but good for state consistency)
+      dispatch(setNewChatAgent(agent.id));
+
+      // B. Create the Session Explicitly
+      // We use the agent's recommended model, or default to a standard one
+      const modelToUse = agent.recommended_model || "gpt-4o-mini";
+
+      // Call Create Chat (Token, Model, AgentID)
+      const newSessionId = await ChatService.createChat(
         token,
-        agent.model,
+        modelToUse,
+        agent.id // Pass the Agent ID here!
       );
-      navigate(`/chat/${sessionId}`);
+
+      // C. Navigate to the NEW Session
+      if (initialMessage) {
+        // If they clicked a starter, pass it to auto-send
+        navigate(`/chat/${newSessionId}`, {
+          state: { initialMessage: initialMessage },
+        });
+      } else {
+        // Just open the empty chat
+        navigate(`/chat/${newSessionId}`);
+      }
     } catch (error) {
-      console.error("Failed to start chat", error);
+      console.error("Failed to start agent chat:", error);
+      // Optional: Add a toast notification here
     } finally {
-      setStartingChat(false);
+      setCreatingSession(false);
     }
   };
 
   if (loading) {
     return (
-      <div className={cn("h-full p-8", isDark ? "bg-[#09090b]" : "bg-gray-50")}>
-        <div className="max-w-3xl mx-auto space-y-6">
-          <SkeletonLoader className="h-8 w-1/3" />
-          <SkeletonLoader className="h-64 w-full" />
-        </div>
+      <div className="flex h-full w-full items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
       </div>
     );
   }
 
-  if (!agent) {
-    return <div className="p-10 text-center">Agent not found</div>;
+  if (error || !agent) {
+    return (
+      <div className="flex flex-col h-full w-full items-center justify-center gap-4">
+        <p className="text-red-500">{error || "Agent not found"}</p>
+        <button
+          onClick={() => navigate(-1)}
+          className="text-blue-500 hover:underline"
+        >
+          Go Back
+        </button>
+      </div>
+    );
   }
 
   return (
-    <div
-      className={cn(
-        "h-full w-full overflow-y-auto custom-scrollbar p-6 lg:p-12",
-        isDark ? "bg-[#09090b] text-white" : "bg-gray-50 text-gray-900"
-      )}
-    >
-      <div className="max-w-4xl mx-auto">
-        {/* Header Navigation */}
+    <div className="flex flex-col h-full w-full overflow-y-auto custom-scrollbar">
+      {/* Header */}
+      <div className="sticky top-0 z-10 flex items-center p-4 backdrop-blur-md bg-opacity-80">
         <button
-          onClick={() => navigate("/agents")}
+          onClick={() => navigate(-1)}
           className={cn(
-            "mb-8 flex items-center gap-2 text-sm font-medium transition-colors",
+            "p-2 rounded-full transition-colors",
             isDark
-              ? "text-gray-400 hover:text-white"
-              : "text-gray-500 hover:text-black"
+              ? "hover:bg-gray-800 text-gray-400"
+              : "hover:bg-gray-200 text-gray-600"
           )}
         >
-          <ArrowLeft size={16} /> Back to Agents
+          <ArrowLeft size={20} />
         </button>
+        <h1 className="ml-4 text-lg font-semibold opacity-90">Agent Details</h1>
+      </div>
 
-        {/* Hero Section */}
-        <div className="flex flex-col md:flex-row gap-8 mb-12">
-          <div
-            className={cn(
-              "w-32 h-32 rounded-3xl flex items-center justify-center shrink-0 shadow-2xl",
-              isDark
-                ? "bg-linear-to-br from-blue-600 to-purple-600 text-white"
-                : "bg-linear-to-br from-blue-500 to-cyan-400 text-white"
+      <div className="flex-1 max-w-3xl mx-auto w-full p-6 pb-20">
+        {/* Agent Profile Header */}
+        <div className="flex flex-col items-center text-center mb-10">
+          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mb-6 shadow-xl">
+            {agent.avatar_url ? (
+              <img
+                src={agent.avatar_url}
+                alt={agent.name}
+                className="w-full h-full rounded-full object-cover"
+              />
+            ) : (
+              <Zap size={40} className="text-white" />
             )}
-          >
-            <Bot size={64} />
           </div>
 
-          <div className="flex-1">
-            <h1 className="text-4xl font-bold tracking-tight mb-3">
-              {agent.name}
-            </h1>
-            <p
+          <h2 className="text-3xl font-bold mb-3">{agent.name}</h2>
+          <p
+            className={cn(
+              "text-lg max-w-xl",
+              isDark ? "text-gray-400" : "text-gray-600"
+            )}
+          >
+            {agent.description}
+          </p>
+
+          <div className="flex items-center gap-4 mt-6">
+            <button
+              onClick={() => handleStartChat()}
+              disabled={creatingSession}
               className={cn(
-                "text-lg mb-6 leading-relaxed",
-                isDark ? "text-gray-300" : "text-gray-600"
+                "flex items-center gap-2 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-medium transition-all shadow-lg hover:shadow-blue-500/25 active:scale-95",
+                creatingSession && "opacity-70 cursor-wait"
               )}
             >
-              {agent.description}
-            </p>
-
-            <div className="flex flex-wrap gap-4">
-              <Button
-                onClick={handleStartChat}
-                disabled={startingChat}
-                className="px-8 py-6 text-lg rounded-xl"
-              >
-                <MessageSquare className="mr-2" />
-                {startingChat ? "Starting..." : "Chat with Agent"}
-              </Button>
-
-              <div
-                className={cn(
-                  "px-4 py-2 rounded-xl border flex items-center gap-2",
-                  isDark
-                    ? "border-[#333] bg-[#1a1a1a]"
-                    : "border-gray-200 bg-white"
-                )}
-              >
-                <Tag size={16} className="text-blue-500" />
-                <span className="text-sm font-mono">{agent.model}</span>
-              </div>
-            </div>
+              {creatingSession ? (
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              ) : (
+                <MessageSquare size={18} />
+              )}
+              {creatingSession ? "Creating..." : "Start Chat"}
+            </button>
           </div>
         </div>
 
-        {/* Instructions Preview (Read Only) */}
-        <div
-          className={cn(
-            "rounded-2xl border p-8",
-            isDark
-              ? "bg-[#18181b] border-[#27272a]"
-              : "bg-white border-gray-200 shadow-sm"
-          )}
-        >
-          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-            <Sparkles size={20} className="text-yellow-500" />
-            System Instructions
-          </h2>
-          <div
-            className={cn(
-              "p-4 rounded-xl font-mono text-sm leading-relaxed overflow-x-auto",
-              isDark ? "bg-black/30 text-gray-300" : "bg-gray-50 text-gray-700"
+        <div className="space-y-8">
+          {/* Conversation Starters Section */}
+          {agent.conversation_starters &&
+            agent.conversation_starters.length > 0 && (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <h3
+                  className={cn(
+                    "text-sm font-semibold uppercase tracking-wider mb-4",
+                    isDark ? "text-gray-500" : "text-gray-400"
+                  )}
+                >
+                  Conversation Starters
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {agent.conversation_starters.map(
+                    (starter: string, idx: number) => (
+                      <button
+                        key={idx}
+                        onClick={() => handleStartChat(starter)}
+                        disabled={creatingSession}
+                        className={cn(
+                          "text-left p-4 rounded-xl border transition-all duration-200 group",
+                          isDark
+                            ? "bg-[#1a1a1a] border-gray-800 hover:border-gray-600 hover:bg-[#252525]"
+                            : "bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm"
+                        )}
+                      >
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium line-clamp-2">
+                            {starter}
+                          </span>
+                          <Play
+                            size={14}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity text-blue-500"
+                            fill="currentColor"
+                          />
+                        </div>
+                      </button>
+                    )
+                  )}
+                </div>
+              </div>
             )}
-          >
-            {agent.instructions}
+
+          {/* Capabilities / Info Section (Static or Data driven) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-800">
+            <div
+              className={cn(
+                "p-4 rounded-xl",
+                isDark ? "bg-gray-800/30" : "bg-gray-50"
+              )}
+            >
+              <div className="flex items-center gap-2 mb-2 text-indigo-500">
+                <Globe size={18} />
+                <span className="font-semibold text-sm">Capabilities</span>
+              </div>
+              <p className="text-xs opacity-70">
+                This agent has access to web browsing and data analysis tools to
+                provide accurate responses.
+              </p>
+            </div>
+
+            <div
+              className={cn(
+                "p-4 rounded-xl",
+                isDark ? "bg-gray-800/30" : "bg-gray-50"
+              )}
+            >
+              <div className="flex items-center gap-2 mb-2 text-green-500">
+                <Shield size={18} />
+                <span className="font-semibold text-sm">Privacy</span>
+              </div>
+              <p className="text-xs opacity-70">
+                Conversations with this agent are private and not used for
+                training standard models.
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -164,4 +253,4 @@ const AgentDetailsPage: React.FC = () => {
   );
 };
 
-export default AgentDetailsPage;
+export default AgentDetailPage;

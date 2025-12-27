@@ -11,6 +11,9 @@ interface ChatState {
     provider: string;
   };
 
+  // ADDED: Track selected Agent for new chats
+  selectedAgentId: string | null;
+
   // 2. Active Session Data (LOCKED to the session)
   activeChatId: string | null;
   activeSessionConfig: {
@@ -23,7 +26,8 @@ const initialState: ChatState = {
   isMobileMenuOpen: false,
   isContextSidebarOpen: true,
   activeSidebarTab: "home",
-  newChatModel: { id: "gpt-4o-mini", provider: "openai" }, // Default must exist in Constants
+  newChatModel: { id: "gpt-4o-mini", provider: "openai" },
+  selectedAgentId: null, // Default to null (Standard Chat)
   activeChatId: null,
   activeSessionConfig: null,
 };
@@ -43,20 +47,26 @@ const chatSlice = createSlice({
       state.isContextSidebarOpen = true;
     },
 
-    // User selects model from Dropdown (Only affects future chats)
+    // User selects model from Dropdown
     setNewChatModel: (
       state,
       action: PayloadAction<{ id: string; provider: string }>
     ) => {
       state.newChatModel = action.payload;
+      // Reset agent if manually picking a model
+      state.selectedAgentId = null;
 
-      // Visual feedback: if on "New Chat" screen, update the UI immediately
       if (!state.activeChatId) {
         state.activeSessionConfig = {
           modelId: action.payload.id,
           provider: action.payload.provider,
         };
       }
+    },
+
+    // ADDED: User selects an Agent to chat with
+    setNewChatAgent: (state, action: PayloadAction<string | null>) => {
+      state.selectedAgentId = action.payload;
     },
 
     // Navigate to a chat
@@ -86,6 +96,7 @@ export const {
   setContextSidebarOpen,
   setActiveSidebarTab,
   setNewChatModel,
+  setNewChatAgent,
   setActiveChat,
   setActiveSessionConfig,
 } = chatSlice.actions;

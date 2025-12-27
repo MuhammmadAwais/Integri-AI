@@ -53,17 +53,26 @@ export const SessionService = {
     }
   },
 
-  createSession: async (token: string, model: string, provider: string, isVoice: boolean =false) => {
+  // FIX 1: Added custom_gpt_id support for Agent Chatting
+  createSession: async (
+    token: string,
+    model: string,
+    provider: string,
+    custom_gpt_id?: string | null, // Added optional param
+    isVoice: boolean = false
+  ) => {
     try {
-      const response = await backendApi.post(
-        "/api/v1/sessions",
-        {
-          model,
-          provider,
-          is_voice_session: isVoice,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const payload = {
+        model,
+        provider,
+        // If custom_gpt_id is provided, send it; otherwise null
+        custom_gpt_id: custom_gpt_id || null,
+        is_voice_session: isVoice,
+      };
+
+      const response = await backendApi.post("/api/v1/sessions", payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return response.data;
     } catch (error) {
       console.error("❌ [API] Failed to create session", error);
@@ -116,21 +125,32 @@ export const SessionService = {
     }
   },
 
-  deleteMessage: async (token: string, messageId: string) => {
-    const response = await backendApi.delete(`/api/v1/messages/${messageId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data;
+  // FIX 2: Updated URL to match screenshot: /sessions/{id}/messages/{id}
+  deleteMessage: async (
+    token: string,
+    sessionId: string,
+    messageId: string
+  ) => {
+    try {
+      const response = await backendApi.delete(
+        `/api/v1/sessions/${sessionId}/messages/${messageId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("❌ [API] Failed to delete message", error);
+      throw error;
+    }
   },
 
-  // FIXED: Upload File Logic matching Documentation and Dart snippet
   uploadFile: async (token: string, file: File) => {
     try {
       const formData = new FormData();
-      // FIX 1: Documentation image shows param name is 'files' (plural/array)
-      formData.append("files", file);
+      // FIX 3: Standardized to 'file' (Singular)
+      formData.append("file", file);
 
-      // FIX 2: Endpoint is /api/v1/files/upload (not /api/v1/files)
       const response = await backendApi.post("/api/v1/files/upload", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -139,17 +159,16 @@ export const SessionService = {
       });
 
       const data = response.data;
-      console.log("File upload response data:", data);
-      // FIX 3: Parse Array Response [{ "file_id": "...", ... }]
-      // Logic mirrors Dart: e["file_id"] ?? e["id"]
+
+      // Handle various response formats safely
       let uploadedItem;
       if (Array.isArray(data) && data.length > 0) {
         uploadedItem = data[0];
       } else if (!Array.isArray(data)) {
-        // Fallback for single object response just in case
         uploadedItem = data;
       }
 
+      // Try to find the ID in common fields
       const fileId =
         uploadedItem?.file_id || uploadedItem?.id || uploadedItem?.data?.id;
 
@@ -199,18 +218,17 @@ export const AgentService = {
       name: string;
       description: string;
       instructions: string;
-      conversation_starters?: string[]; // Added array of strings
-      recommended_model: string;        // Renamed from 'model'
-      recommended_provider: string;     // Added provider
+      conversation_starters?: string[];
+      recommended_model: string;
+      recommended_provider: string;
     }
   ) => {
     try {
-      // Ensure we send exactly what the API expects
       const payload = {
         name: agentData.name,
         description: agentData.description,
         instructions: agentData.instructions,
-        conversation_starters: agentData.conversation_starters || [], // Default to empty array if undefined
+        conversation_starters: agentData.conversation_starters || [],
         recommended_model: agentData.recommended_model,
         recommended_provider: agentData.recommended_provider,
       };
@@ -240,7 +258,7 @@ export const AgentService = {
     try {
       const response = await backendApi.patch(
         `/api/v1/custom-gpts/${agentId}`,
-        agentData, // Make sure the caller passes the correct keys here too
+        agentData,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

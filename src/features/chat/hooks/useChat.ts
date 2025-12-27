@@ -1,14 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { socketService } from "../../../services/WebSocketsService";
 import { SessionService } from "../../../api/backendApi";
-import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux";
-import { setActiveSessionConfig } from "../chatSlice";
+import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux"
+import { setActiveSessionConfig } from "../../chat/chatSlice";
 
 export interface Message {
   id?: string;
   role: "user" | "assistant";
   content: string;
-  // Added attachment support for local preview
   attachment?: {
     name: string;
     type: "image" | "file";
@@ -24,9 +23,11 @@ export const triggerChatUpdate = () => {
 
 // --- HOOK 1: Sidebar List ---
 export const useChatList = (userId?: string) => {
+  // Suppress unused variable warning if intended
   {
     userId;
   }
+
   const [chats, setChats] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const token = useAppSelector((state: any) => state.auth.accessToken);
@@ -164,12 +165,11 @@ export const useChat = (sessionId: string | undefined) => {
     });
   }, []);
 
-  // 3. Send Message (Fixed for Sequential Upload -> Send)
+  // 3. Send Message
   const sendMessage = useCallback(
     async (content: string, file?: File | null) => {
       if (!content.trim() && !file) return;
 
-      // Optimistic Update: Show message immediately in UI
       const attachment = file
         ? {
             name: file.name,
@@ -200,26 +200,20 @@ export const useChat = (sessionId: string | undefined) => {
         if (file && token) {
           try {
             console.log("Uploading file...");
-            // Step 1: Upload and wait for response
             const uploadedId = await SessionService.uploadFile(token, file);
 
-            // Step 2: Validate ID (matches Dart: where(id => id.isNotEmpty))
             if (uploadedId) {
               fileIds.push(uploadedId);
               console.log("File uploaded, ID:", uploadedId);
             }
           } catch (uploadError) {
             console.error("File upload failed:", uploadError);
-            // Matches Dart logic: if (fileIds.isEmpty) throw Exception...
-            // We stop the process here so we don't send a message without the required context
             setIsThinking(false);
-            // Optional: You could add a toast notification here
             return;
           }
         }
 
         // --- SEND LOGIC ---
-        // Step 3: Send message ONLY after upload is processed
         console.log(`Sending to ${provider}/${model} with fileIds:`, fileIds);
         if (sessionId) {
           socketService.sendMessage(content, model, provider, fileIds);
@@ -232,10 +226,19 @@ export const useChat = (sessionId: string | undefined) => {
     [sessionId, activeConfig, newChatPref, token]
   );
 
+  // FIX: Updated to pass sessionId to backendApi
   const deleteMessage = async (messageId: string) => {
-    if (!token) return;
+    if (!token || !sessionId) return; // Ensure sessionId exists
+
+    // Optimistic UI update
     setMessages((prev) => prev.filter((m) => m.id !== messageId));
-    await SessionService.deleteMessage(token, messageId);
+
+    try {
+      await SessionService.deleteMessage(token, sessionId, messageId);
+    } catch (error) {
+      console.error("Failed to delete message", error);
+      // Optional: Revert UI if failed (requires storing previous state)
+    }
   };
 
   return {
