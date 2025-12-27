@@ -78,15 +78,28 @@ export const useChatList = (userId?: string) => {
 };
 
 // --- HOOK 2: Single Chat ---
+
+
+export interface Message {
+  id?: string;
+  role: "user" | "assistant";
+  content: string;
+  attachment?: {
+    name: string;
+    type: "image" | "file";
+    url: string;
+  };
+}
+
 export const useChat = (sessionId: string | undefined) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [messagesLoaded, setMessagesLoaded] = useState(false); // <--- NEW FLAG
   const [isThinking, setIsThinking] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
 
   const dispatch = useAppDispatch();
   const token = useAppSelector((state: any) => state.auth.accessToken);
-
   const activeConfig = useAppSelector(
     (state: any) => state.chat.activeSessionConfig
   );
@@ -101,7 +114,9 @@ export const useChat = (sessionId: string | undefined) => {
 
     const initChat = async () => {
       setIsLoading(true);
+      setMessagesLoaded(false); // Reset on ID change
       try {
+        // Fetch History
         const history = await SessionService.getSessionMessages(
           token,
           sessionId
@@ -112,6 +127,10 @@ export const useChat = (sessionId: string | undefined) => {
           setMessages([]);
         }
 
+        // Mark history as loaded
+        setMessagesLoaded(true); // <--- READY TO ACCEPT NEW MESSAGES
+
+        // Fetch Session Config
         const details = await SessionService.getSession(token, sessionId);
         if (details) {
           dispatch(
@@ -143,7 +162,6 @@ export const useChat = (sessionId: string | undefined) => {
 
         if (data.done) {
           setIsStreaming(false);
-          triggerChatUpdate();
           return;
         }
 
@@ -193,19 +211,12 @@ export const useChat = (sessionId: string | undefined) => {
           sessionId && activeConfig
             ? activeConfig.provider
             : newChatPref.provider;
-
         let fileIds: string[] = [];
 
-        // --- UPLOAD LOGIC ---
         if (file && token) {
           try {
-            console.log("Uploading file...");
             const uploadedId = await SessionService.uploadFile(token, file);
-
-            if (uploadedId) {
-              fileIds.push(uploadedId);
-              console.log("File uploaded, ID:", uploadedId);
-            }
+            if (uploadedId) fileIds.push(uploadedId);
           } catch (uploadError) {
             console.error("File upload failed:", uploadError);
             setIsThinking(false);
@@ -213,8 +224,6 @@ export const useChat = (sessionId: string | undefined) => {
           }
         }
 
-        // --- SEND LOGIC ---
-        console.log(`Sending to ${provider}/${model} with fileIds:`, fileIds);
         if (sessionId) {
           socketService.sendMessage(content, model, provider, fileIds);
         }
@@ -226,18 +235,13 @@ export const useChat = (sessionId: string | undefined) => {
     [sessionId, activeConfig, newChatPref, token]
   );
 
-  // FIX: Updated to pass sessionId to backendApi
   const deleteMessage = async (messageId: string) => {
-    if (!token || !sessionId) return; // Ensure sessionId exists
-
-    // Optimistic UI update
+    if (!token || !sessionId) return;
     setMessages((prev) => prev.filter((m) => m.id !== messageId));
-
     try {
       await SessionService.deleteMessage(token, sessionId, messageId);
     } catch (error) {
       console.error("Failed to delete message", error);
-      // Optional: Revert UI if failed (requires storing previous state)
     }
   };
 
@@ -248,5 +252,6 @@ export const useChat = (sessionId: string | undefined) => {
     isLoading,
     isStreaming,
     isThinking,
+    messagesLoaded, // <--- Return this
   };
 };

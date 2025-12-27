@@ -6,7 +6,7 @@ import SkeletonLoader from "../../../Components/ui/SkeletonLoader";
 import { useAppSelector } from "../../../hooks/useRedux";
 import { useChat } from "../hooks/useChat";
 import { cn } from "../../../lib/utils";
-import { ChatService } from "../services/chatService"; // Import ChatService
+import { ChatService } from "../services/chatService";
 import { SessionService } from "../../../api/backendApi";
 
 interface ChatInterfaceProps {
@@ -14,7 +14,7 @@ interface ChatInterfaceProps {
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
-  const { id } = useParams(); // id is undefined for new chats
+  const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -26,7 +26,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
     (state: any) => state.chat.selectedAgentId
   );
 
-  // Local thinking state for the transition period (creating session)
   const [isCreatingSession, setIsCreatingSession] = useState(false);
 
   const {
@@ -36,14 +35,22 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
     isLoading,
     isStreaming,
     isThinking,
+    messagesLoaded, // <--- Now available
   } = useChat(id);
 
-  const hasInitialized = useRef(false);
+  const hasAutoSent = useRef(false);
 
-  // 1. Handle Welcome Page Transition & Auto-Send
+  // 1. Handle Auto-Send (Conversation Starter)
+  // We wait for 'messagesLoaded' to ensure we don't overwrite the message
+  // with an empty history array from the initial fetch.
   useEffect(() => {
-    if (id && location.state?.initialMessage && !hasInitialized.current) {
-      hasInitialized.current = true;
+    if (
+      id &&
+      messagesLoaded &&
+      location.state?.initialMessage &&
+      !hasAutoSent.current
+    ) {
+      hasAutoSent.current = true;
       const { initialMessage, initialFile } = location.state;
 
       // Optimistically show and send
@@ -52,7 +59,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
       // Clear state to prevent re-sending on refresh
       window.history.replaceState({}, document.title);
     }
-  }, [id, location.state, sendMessage]);
+  }, [id, messagesLoaded, location.state, sendMessage]);
 
   // 2. SCROLL LOGIC
   useEffect(() => {
@@ -75,39 +82,26 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
   const handleSend = async (text: string, file?: File | null) => {
     if (!text.trim() && !file) return;
 
-    // CASE A: Existing Session -> Just send
     if (id) {
       sendMessage(text, file);
       setTimeout(scrollToBottom, 100);
       return;
     }
 
-    // CASE B: New Chat -> Create Session FIRST, then Redirect
+    // New Chat Flow
     if (!token) return;
-
     try {
       setIsCreatingSession(true);
-
-      // Create Session via API
-      // If selectedAgentId is set, it creates an Agent session
       const newSessionId = await ChatService.createChat(
         token,
         newChatModel.id,
-        selectedAgentId || undefined // Pass agent ID if present
+        selectedAgentId || undefined
       );
 
-      // Update Title (Optional optimization: do this in background)
       const cleanText = text.trim();
-      const title = cleanText
-        ? cleanText.substring(0, 30)
-        : file
-        ? "Attachment"
-        : "New Chat";
-
-      // Fire and forget title update
+      const title = cleanText ? cleanText.substring(0, 30) : "New Chat";
       SessionService.updateSession(token, newSessionId, title);
 
-      // Redirect to the new session, passing the message to be sent there
       navigate(`/chat/${newSessionId}`, {
         state: {
           initialMessage: text,
@@ -117,7 +111,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
     } catch (error) {
       console.error("Failed to create session:", error);
       setIsCreatingSession(false);
-      // Optional: Add toast error here
     }
   };
 

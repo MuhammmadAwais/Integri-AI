@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -9,7 +9,7 @@ import {
   Play,
 } from "lucide-react";
 import { AgentService } from "../../../api/backendApi";
-import { ChatService } from "../../chat/services/chatService"; // Import ChatService
+import { ChatService } from "../../chat/services/chatService";
 import { useAppDispatch, useAppSelector } from "../../../hooks/useRedux";
 import { setNewChatAgent } from "../../chat/chatSlice";
 import { cn } from "../../../lib/utils";
@@ -24,10 +24,9 @@ const AgentDetailPage = () => {
 
   const [agent, setAgent] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
-  const [creatingSession, setCreatingSession] = useState(false); // Add loading state for button
+  const [creatingSession, setCreatingSession] = useState(false);
   const [error, setError] = useState("");
 
-  // 1. Fetch Agent Details
   useEffect(() => {
     const fetchAgent = async () => {
       if (!id || !token) return;
@@ -42,44 +41,53 @@ const AgentDetailPage = () => {
         setLoading(false);
       }
     };
-
     fetchAgent();
   }, [id, token]);
 
-  // 2. Start Chat Handler - FIXED
-  const handleStartChat = async (initialMessage?: string) => {
+  // --- MODIFIED START CHAT HANDLER ---
+  const handleStartChat = async (specificStarter?: string) => {
     if (!agent || !token || creatingSession) return;
 
     try {
       setCreatingSession(true);
 
-      // A. Store Agent ID in Redux (Optional, but good for state consistency)
+      // 1. Determine the First Message
+      let messageToSend = specificStarter;
+
+      // If no specific starter was clicked (Main Button), pick a RANDOM one
+      if (
+        !messageToSend &&
+        agent.conversation_starters &&
+        agent.conversation_starters.length > 0
+      ) {
+        const randomIndex = Math.floor(
+          Math.random() * agent.conversation_starters.length
+        );
+        messageToSend = agent.conversation_starters[randomIndex];
+      }
+
+      // 2. Update Redux
       dispatch(setNewChatAgent(agent.id));
 
-      // B. Create the Session Explicitly
-      // We use the agent's recommended model, or default to a standard one
+      // 3. Create Session
       const modelToUse = agent.recommended_model || "gpt-4o-mini";
-
-      // Call Create Chat (Token, Model, AgentID)
       const newSessionId = await ChatService.createChat(
         token,
         modelToUse,
-        agent.id // Pass the Agent ID here!
+        agent.id
       );
 
-      // C. Navigate to the NEW Session
-      if (initialMessage) {
-        // If they clicked a starter, pass it to auto-send
+      // 4. Navigate (Passing the random or specific message)
+      if (messageToSend) {
         navigate(`/chat/${newSessionId}`, {
-          state: { initialMessage: initialMessage },
+          state: { initialMessage: messageToSend },
         });
       } else {
-        // Just open the empty chat
+        // Fallback if no starters exist at all
         navigate(`/chat/${newSessionId}`);
       }
     } catch (error) {
       console.error("Failed to start agent chat:", error);
-      // Optional: Add a toast notification here
     } finally {
       setCreatingSession(false);
     }
@@ -112,6 +120,7 @@ const AgentDetailPage = () => {
       {/* Header */}
       <div className="sticky top-0 z-10 flex items-center p-4 backdrop-blur-md bg-opacity-80">
         <button
+        title="button"
           onClick={() => navigate(-1)}
           className={cn(
             "p-2 rounded-full transition-colors",
@@ -128,7 +137,7 @@ const AgentDetailPage = () => {
       <div className="flex-1 max-w-3xl mx-auto w-full p-6 pb-20">
         {/* Agent Profile Header */}
         <div className="flex flex-col items-center text-center mb-10">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mb-6 shadow-xl">
+          <div className="w-24 h-24 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center mb-6 shadow-xl">
             {agent.avatar_url ? (
               <img
                 src={agent.avatar_url}
@@ -151,6 +160,7 @@ const AgentDetailPage = () => {
           </p>
 
           <div className="flex items-center gap-4 mt-6">
+            {/* MAIN START CHAT BUTTON (Will pick random starter) */}
             <button
               onClick={() => handleStartChat()}
               disabled={creatingSession}
@@ -170,7 +180,7 @@ const AgentDetailPage = () => {
         </div>
 
         <div className="space-y-8">
-          {/* Conversation Starters Section */}
+          {/* Conversation Starters Grid */}
           {agent.conversation_starters &&
             agent.conversation_starters.length > 0 && (
               <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -187,6 +197,7 @@ const AgentDetailPage = () => {
                     (starter: string, idx: number) => (
                       <button
                         key={idx}
+                        // SPECIFIC STARTER CLICK (Will use this specific text)
                         onClick={() => handleStartChat(starter)}
                         disabled={creatingSession}
                         className={cn(
@@ -213,7 +224,7 @@ const AgentDetailPage = () => {
               </div>
             )}
 
-          {/* Capabilities / Info Section (Static or Data driven) */}
+          {/* Capabilities Section */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-800">
             <div
               className={cn(
