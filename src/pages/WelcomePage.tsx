@@ -12,7 +12,7 @@ import {
   ChevronDown,
   X as XIcon,
   FileText,
-  HardDrive, // Added for local file icon
+  HardDrive,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChatService } from "../features/chat/services/chatService";
@@ -20,22 +20,19 @@ import gsap from "gsap";
 import ParticleBackground from "../Components/ui/ParticleBackground";
 import ReasoningMenu from "../Components/ui/ReasoningMenu";
 import { RocketIcon } from "../Components/ui/ReasoningMenu";
-import ModelMenu from "../Components/ui/ModelMenu";
-import AVAILABLE_MODELS from "../../Constants";
-import { useCloudStorage } from "../hooks/useCloudStorage"; // Import Hook
-import { AnimatePresence, motion } from "framer-motion"; // Import for smooth menu
+import { useCloudStorage } from "../hooks/useCloudStorage";
+import { AnimatePresence, motion } from "framer-motion";
 
 const WelcomePage: React.FC = () => {
   const isDark = useAppSelector((state: any) => state.theme?.isDark);
   const { user, accessToken } = useAppSelector((state: any) => state.auth);
+  // Model state is now managed globally in Redux via the Navbar selector
+  const { newChatModel } = useAppSelector((state: any) => state.chat);
+
   const [inputValue, setInputValue] = useState("");
   const [reasoningMode, setReasoningMode] = useState("Auto");
-  const [modelMode, setModelMode] = useState("gpt-5.1");
-  const [showReasoningMenu, setShowReasoningMenu] = useState(false);
-  const [showModelMenu, setShowModelMenu] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
-  // New State for Attachment Menu
+  const [showReasoningMenu, setShowReasoningMenu] = useState(false);
   const [showAttachMenu, setShowAttachMenu] = useState(false);
 
   // Refs
@@ -45,14 +42,12 @@ const WelcomePage: React.FC = () => {
   const inputRef = useRef<HTMLDivElement>(null);
   const chipsRef = useRef<HTMLDivElement>(null);
   const textInputRef = useRef<HTMLInputElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null); // Ref for the menu
+  const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-const userName = user?.name || "User";
-const names = userName.split(" ");
-const firstName = names.length > 1 ? names[0] : userName;
-
-
+  const userName = user?.name || "User";
+  const names = userName.split(" ");
+  const firstName = names.length > 1 ? names[0] : userName;
 
   // --- Cloud Storage Integration ---
   const {
@@ -74,10 +69,6 @@ const firstName = names.length > 1 ? names[0] : userName;
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  // Helper to get Label
-  const selectedModelLabel =
-    AVAILABLE_MODELS.find((m) => m.id === modelMode)?.label || modelMode;
 
   // --- ANIMATION LOGIC ---
   useLayoutEffect(() => {
@@ -118,16 +109,20 @@ const firstName = names.length > 1 ? names[0] : userName;
   const startChat = async (text: string) => {
     if ((!text.trim() && !selectedFile) || !accessToken) return;
 
+    const currentModelId = newChatModel.id;
+
     // Check if we should route to PDF Chat
     if (selectedFile?.type === "application/pdf") {
       try {
-        const newChatId = await ChatService.createChat(accessToken, modelMode);
-        // Navigate to PDF Chat Page
+        const newChatId = await ChatService.createChat(
+          accessToken,
+          currentModelId
+        );
         navigate(`/pdf/${newChatId}`, {
           state: {
             initialMessage: text,
             initialFile: selectedFile,
-            file: selectedFile, // Ensure PdfChatPage picks this up
+            file: selectedFile,
           },
         });
       } catch (error) {
@@ -140,12 +135,15 @@ const firstName = names.length > 1 ? names[0] : userName;
     let content = text;
     if (selectedFile) content = `[File: ${selectedFile.name}] ${text}`;
     try {
-      const newChatId = await ChatService.createChat(accessToken, modelMode);
+      const newChatId = await ChatService.createChat(
+        accessToken,
+        currentModelId
+      );
       navigate(`/chat/${newChatId}`, {
         state: {
           initialMessage: content,
           initialFile: selectedFile,
-          model: modelMode,
+          model: currentModelId,
         },
       });
     } catch (error) {
@@ -179,42 +177,6 @@ const firstName = names.length > 1 ? names[0] : userName;
     >
       <ParticleBackground />
 
-      {/* --- NEW: TOP LEFT MODEL SELECTOR --- */}
-      <div className="absolute top-1 left-1 z-50 flex items-center gap-2">
-        <div className="relative">
-          <button
-            onClick={() => setShowModelMenu(!showModelMenu)}
-            className={cn(
-              "flex items-center gap-2 px-3 py-2 rounded-xl text-lg font-semibold transition-all hover:cursor-pointer",
-              isDark
-                ? "text-gray-200 hover:bg-[#1A1A1A]"
-                : "text-gray-700 hover:bg-gray-100",
-              showModelMenu && (isDark ? "bg-[#1A1A1A]" : "bg-gray-100")
-            )}
-          >
-            <span className="opacity-90">{selectedModelLabel}</span>
-            <ChevronDown
-              size={16}
-              className={cn(
-                "opacity-50 transition-transform duration-200",
-                showModelMenu && "rotate-180"
-              )}
-            />
-          </button>
-
-          {/* Render Menu: Top-Left alignment */}
-          <ModelMenu
-            isOpen={showModelMenu}
-            onClose={() => setShowModelMenu(false)}
-            selected={modelMode}
-            onSelect={setModelMode}
-            isDark={isDark}
-            position="top" // Open downwards
-            align="left" // Align to left edge of button
-          />
-        </div>
-      </div>
-
       <input
         title="file"
         type="file"
@@ -225,12 +187,10 @@ const firstName = names.length > 1 ? names[0] : userName;
 
       {/* CONTENT */}
       <div className="w-full max-w-[720px] px-4 flex flex-col items-center -mt-16 z-10 relative">
-        
         <div
           ref={logoRef}
           className="mb-18 flex items-center-safe justify-center "
         >
-          
           <Link to="/">
             <h1
               className={cn(
@@ -238,7 +198,7 @@ const firstName = names.length > 1 ? names[0] : userName;
                 isDark ? "text-white" : "text-black"
               )}
             >
-              Integri 
+              Integri
             </h1>
           </Link>
         </div>
@@ -253,7 +213,6 @@ const firstName = names.length > 1 ? names[0] : userName;
               : "bg-gray-50 border-gray-200 hover:border-gray-300"
           )}
         >
-          {/* Reasoning Menu remains in Input */}
           <ReasoningMenu
             isOpen={showReasoningMenu}
             onClose={() => setShowReasoningMenu(false)}
@@ -325,7 +284,6 @@ const firstName = names.length > 1 ? names[0] : userName;
                           : "bg-white/95 border-gray-200"
                       )}
                     >
-                      {/* Local Option */}
                       <button
                         onClick={() => fileInputRef.current?.click()}
                         className={cn(
@@ -346,7 +304,6 @@ const firstName = names.length > 1 ? names[0] : userName;
                         )}
                       />
 
-                      {/* Google Drive */}
                       <button
                         onClick={handleGoogleDrivePick}
                         disabled={isCloudLoading}
@@ -382,7 +339,6 @@ const firstName = names.length > 1 ? names[0] : userName;
                         Google Drive
                       </button>
 
-                      {/* OneDrive */}
                       <button
                         onClick={handleOneDrivePick}
                         disabled={isCloudLoading}
@@ -456,8 +412,6 @@ const firstName = names.length > 1 ? names[0] : userName;
               />
 
               <div className="flex items-center gap-1.5 shrink-0">
-                {/* REMOVED: Model Menu Toggle Button from here */}
-
                 <button
                   onClick={() => setShowReasoningMenu(!showReasoningMenu)}
                   className={cn(
@@ -493,7 +447,6 @@ const firstName = names.length > 1 ? names[0] : userName;
                         : "bg-black text-white hover:bg-gray-800"
                     )}
                   >
-                    {/* Show loader if cloud is working */}
                     {isCloudLoading ? (
                       <div className="animate-spin h-4 w-4 border-2 border-black/30 border-t-black rounded-full dark:border-white/30 dark:border-t-white" />
                     ) : (
