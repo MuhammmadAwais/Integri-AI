@@ -3,8 +3,6 @@ import { motion } from "framer-motion";
 import { User, Palette, CreditCard, Download, HelpCircle } from "lucide-react";
 import { cn } from "../lib/utils";
 import { useAppSelector } from "../hooks/useRedux";
-
-// Import New Components
 import SettingsSection from "../features/settings/components/SettingsSection";
 import AppearanceSettings from "../features/settings/components/AppearanceSettings";
 import AccountSettings from "../features/settings/components/AccountSettings";
