@@ -78,7 +78,7 @@ const NavbarLeft: React.FC = () => {
           <button
             onClick={() => setShowAgentMenu(!showAgentMenu)}
             className={cn(
-              "flex items-center gap-2 px-2 py-2 rounded-xl text-xsm md:text-lg font-semibold transition-all hover:cursor-pointer border",
+              "flex items-center gap-2 px-2 py-2 rounded-xl text-xs md:text-lg font-semibold transition-all hover:cursor-pointer border",
               selectedAgentId
                 ? "bg-indigo-600 text-white border-indigo-500 shadow-lg shadow-indigo-500/20"
                 : isDark
