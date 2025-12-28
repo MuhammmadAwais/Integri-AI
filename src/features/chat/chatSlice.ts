@@ -1,4 +1,3 @@
-
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import AVAILABLE_MODELS from "../../../Constants";
 
@@ -20,7 +19,6 @@ interface ChatState {
     provider: string;
   } | null;
 
-  // ADDED: Playground state
   playgroundModels: any[];
 }
 
@@ -32,7 +30,6 @@ const initialState: ChatState = {
   selectedAgentId: null,
   activeChatId: null,
   activeSessionConfig: null,
-  // Initial models for the playground
   playgroundModels: [
     AVAILABLE_MODELS[0],
     AVAILABLE_MODELS.length > 1 ? AVAILABLE_MODELS[1] : AVAILABLE_MODELS[0],
@@ -43,7 +40,6 @@ const chatSlice = createSlice({
   name: "chat",
   initialState,
   reducers: {
-    // ... existing reducers
     toggleMobileMenu: (state, action: PayloadAction<boolean>) => {
       state.isMobileMenuOpen = action.payload;
     },
@@ -59,7 +55,7 @@ const chatSlice = createSlice({
       action: PayloadAction<{ id: string; provider: string }>
     ) => {
       state.newChatModel = action.payload;
-      state.selectedAgentId = null;
+      // REMOVED: state.selectedAgentId = null;  <-- This was causing the bug!
       if (!state.activeChatId) {
         state.activeSessionConfig = {
           modelId: action.payload.id,
@@ -85,8 +81,6 @@ const chatSlice = createSlice({
     ) => {
       state.activeSessionConfig = action.payload;
     },
-
-    // ADDED: Playground Reducers
     addPlaygroundModel: (state, action: PayloadAction<any>) => {
       state.playgroundModels.push(action.payload);
     },

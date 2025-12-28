@@ -1,4 +1,3 @@
-// src/features/navabr/NavbarLeft.tsx
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
@@ -61,17 +60,20 @@ const NavbarLeft: React.FC = () => {
             align="left"
             onSelect={(id) => {
               const model = AVAILABLE_MODELS.find((m) => m.id === id);
-              if (model)
+              if (model) {
+                // EXPLICITLY clear agent when manually picking a model
+                dispatch(setNewChatAgent(null));
                 dispatch(
                   setNewChatModel({ id: model.id, provider: model.provider })
                 );
+              }
             }}
           />
         </div>
 
         <div className="w-px h-6 bg-gray-500/20" />
 
-        {/* Agent Selector with Highlighted State */}
+        {/* Agent Selector */}
         <div className="relative">
           <button
             onClick={() => setShowAgentMenu(!showAgentMenu)}
@@ -104,9 +106,14 @@ const NavbarLeft: React.FC = () => {
             isDark={isDark}
             onSelect={(agent) => {
               dispatch(setNewChatAgent(agent ? agent.gpt_id : null));
+              // Because we removed the side-effect in chatSlice,
+              // we can now safely set the model without clearing the agent.
               if (agent) {
                 dispatch(
-                  setNewChatModel({ id: agent.model, provider: "openai" })
+                  setNewChatModel({
+                    id: agent.model,
+                    provider: agent.recommended_provider || "openai",
+                  })
                 );
               }
             }}
@@ -172,7 +179,7 @@ const NavbarLeft: React.FC = () => {
                   addPlaygroundModel({
                     id: agent.model,
                     label: agent.name,
-                    provider: "openai",
+                    provider: agent.recommended_provider || "openai",
                     gpt_id: agent.gpt_id,
                     instructions: agent.instructions,
                   })
