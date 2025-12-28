@@ -40,7 +40,7 @@ const ModelMenu: React.FC<ModelMenuProps> = ({
         Uses z-[100] to ensure it sits above the Playground header (z-20).
       */}
       <div
-        className="fixed inset-0 z-100 bg-transparent cursor-default"
+        className="border fixed inset-0 z-100 bg-transparent cursor-default"
         onClick={onClose}
       />
 

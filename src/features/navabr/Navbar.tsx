@@ -13,13 +13,10 @@ const Navbar: React.FC = () => {
         isDark ? "bg-[#000000]" : "bg-white"
       )}
     >
-      <div>
-        {/* Mobile */}
-        <div className="md:hidden flex items-center">          
-        </div>
-      </div>
+      <div className="flex items-center md:hidden ">
+        </div>    
       {/* Left */}
-      <div className="shrink flex items-center gap-4 ">
+      <div className="shrink md:shrink-0 flex items-center md:pl-0 pl-8 ">
         <NavbarLeft /> {/* */}
       </div>
 
