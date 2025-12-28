@@ -88,4 +88,57 @@ const AVAILABLE_MODELS = [
   },
 ];
 
+
+
+export const SUBSCRIPTION_PLANS = [
+  {
+    id: "starter",
+    name: "Starter",
+    description: "Essential tools for casual exploration.",
+    priceMonthly: 0,
+    priceYearly: 0,
+    features: [
+      "Access to basic models",
+      "Standard response speed",
+      "50 queries per day",
+      "Community support",
+    ],
+    isPopular: false,
+    buttonText: "Current Plan",
+  },
+  {
+    id: "pro",
+    name: "Pro",
+    description: "Unlock full reasoning capabilities.",
+    priceMonthly: 29,
+    priceYearly: 290,
+    features: [
+      "Access to all Premium models",
+      "Unlimited queries",
+      "Fast reasoning speed",
+      "Priority email support",
+      "Early access to new features",
+    ],
+    isPopular: true,
+    buttonText: "Upgrade to Pro",
+  },
+  {
+    id: "enterprise",
+    name: "Enterprise",
+    description: "For teams requiring maximum scale.",
+    priceMonthly: 99,
+    priceYearly: 990,
+    features: [
+      "Everything in Pro",
+      "Dedicated account manager",
+      "SSO & Custom Security",
+      "Custom model fine-tuning",
+      "SLA Guarantees",
+    ],
+    isPopular: false,
+    buttonText: "Contact Sales",
+  },
+];
+
+
 export default AVAILABLE_MODELS;

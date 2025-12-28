@@ -5,13 +5,13 @@ import {
   Navigate,
 } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth, db } from "./firebase"; // Added 'db' import
-import { doc, getDoc } from "firebase/firestore"; // Added Firestore imports
+import { auth, db } from "./firebase";
+import { doc, getDoc } from "firebase/firestore";
 import { useAppDispatch } from "../hooks/useRedux";
 
-//  IMPORT  ACTIONS AND API
+//  IMPORT ACTIONS AND API
 import { setAuthUser } from "../features/auth/slices/authSlice";
-import { setTheme } from "../features/theme/themeSlice"; // Added theme action
+import { setTheme } from "../features/theme/themeSlice";
 import { getBackendToken } from "../api/backendApi";
 
 // --- Components & Pages ---
@@ -26,15 +26,14 @@ import HistoryPage from "../pages/HistoryPage";
 import Playground from "../pages/Playground";
 import Voice from "../pages/Voice";
 import PdfChatPage from "../pages/PdfChat";
-import SettingsPage from "../pages/SettingsPage"; // Ensure this matches your file name
+import SettingsPage from "../pages/SettingsPage";
 import SendFeedbackPage from "../pages/SendFeedbackPage";
 import HelpPage from "../pages/HelpPage";
 import Agents from "../pages/Agents";
 import AgentDetailsPage from "../features/agents/components/AgentDetailsPage";
 import SubscriptionPage from "../pages/SubscriptionPage";
 
-
-// --- Router Setup ---
+// --- Router Setup (KEPT EXACTLY AS PROVIDED) ---
 const router = createBrowserRouter([
   // 1. Auth Pages
   { path: "/login", element: <Login /> },
@@ -55,11 +54,11 @@ const router = createBrowserRouter([
       { path: "pdf", element: <PdfChatPage /> },
       { path: "pdf/:id", element: <PdfChatPage /> },
       { path: "settings", element: <SettingsPage /> },
-      { path: "feedback", element: <SendFeedbackPage/> },
-      { path: "help", element: <HelpPage/> },
-      { path: "agents", element: <Agents/> },
-      { path: "agents/:id", element: <AgentDetailsPage/> },
-      { path: "subscriptions", element: <SubscriptionPage/> },
+      { path: "feedback", element: <SendFeedbackPage /> },
+      { path: "help", element: <HelpPage /> },
+      { path: "agents", element: <Agents /> },
+      { path: "agents/:id", element: <AgentDetailsPage /> },
+      { path: "subscriptions", element: <SubscriptionPage /> },
 
       { path: "*", element: <Navigate to="/" replace /> },
     ],
@@ -77,30 +76,45 @@ const App: React.FC = () => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
-          // 1. Restore Theme Preference from Firestore
+          // Initialize defaults
+          let isPremium = false;
+          let planId = "starter";
+
+          // 1. Fetch User Profile & Settings from Firestore
           try {
             const userDocRef = doc(db, "users", firebaseUser.uid);
             const userDocSnap = await getDoc(userDocRef);
 
             if (userDocSnap.exists()) {
               const userData = userDocSnap.data();
-              // Apply theme if set (mapping string 'dark'/'light' to boolean)
+
+              // Apply theme if set
               if (userData.defaultTheme) {
                 const isDarkTheme = userData.defaultTheme === "dark";
                 dispatch(setTheme(isDarkTheme));
               }
+
+              // Extract subscription status
+              isPremium = userData.isPremium || false;
+              planId = userData.planId || "starter";
             }
-          } catch (themeError) {
-            console.error("Failed to load user theme:", themeError);
+          } catch (firestoreError) {
+            console.error("Failed to load user profile:", firestoreError);
           }
 
           // 2. Fetch Backend Token
-          const tokenData = await getBackendToken(
-            firebaseUser.uid,
-            firebaseUser.email
-          );
+          let accessToken = null;
+          try {
+            const tokenData = await getBackendToken(
+              firebaseUser.uid,
+              firebaseUser.email
+            );
+            accessToken = tokenData.access_token;
+          } catch (tokenError) {
+            console.error("Backend token error", tokenError);
+          }
 
-          // 3. Dispatch Auth State
+          // 3. Dispatch Auth State with Subscription Data
           dispatch(
             setAuthUser({
               user: {
@@ -108,12 +122,14 @@ const App: React.FC = () => {
                 email: firebaseUser.email,
                 name: firebaseUser.displayName,
                 avatar: firebaseUser.photoURL,
+                isPremium: isPremium, // Injected here
+                planId: planId, // Injected here
               },
-              accessToken: tokenData.access_token,
+              accessToken: accessToken,
             })
           );
         } catch (error) {
-          console.error("Error restoring backend session:", error);
+          console.error("Error restoring session:", error);
           dispatch(setAuthUser({ user: null, accessToken: null }));
         }
       } else {

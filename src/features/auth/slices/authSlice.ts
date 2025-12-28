@@ -1,3 +1,4 @@
+// src/features/auth/slices/authSlice.ts
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type UserData } from "../services/authService";
 import {
@@ -6,11 +7,12 @@ import {
   logoutUser,
   loginWithGoogle,
 } from "../thunks/authThunk";
+// Import the subscription action to listen for it
+import { purchaseSubscription } from "../../subscriptions/slices/subscriptionSlice";
 
-// Shape of State
 interface AuthState {
   user: UserData | null;
-  accessToken: string | null; 
+  accessToken: string | null;
   isLoading: boolean;
   error: string | null;
   isNewUser: boolean;
@@ -18,8 +20,8 @@ interface AuthState {
 
 const initialState: AuthState = {
   user: null,
-  accessToken: null, 
-  isLoading: true, 
+  accessToken: null,
+  isLoading: true,
   error: null,
   isNewUser: false,
 };
@@ -52,9 +54,8 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        // Destructure the "Bundle" created in the Thunk
         state.user = action.payload.user;
-        state.accessToken = action.payload.accessToken; // Save the token!
+        state.accessToken = action.payload.accessToken;
         state.isNewUser = false;
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -70,7 +71,7 @@ const authSlice = createSlice({
       .addCase(registerUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload.user;
-        state.accessToken = action.payload.accessToken; // Save the token!
+        state.accessToken = action.payload.accessToken;
         state.isNewUser = true;
       })
       .addCase(registerUser.rejected, (state, action) => {
@@ -86,7 +87,7 @@ const authSlice = createSlice({
       .addCase(loginWithGoogle.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload.user;
-        state.accessToken = action.payload.accessToken; // Save the token!
+        state.accessToken = action.payload.accessToken;
         state.isNewUser = false;
       })
       .addCase(loginWithGoogle.rejected, (state, action) => {
@@ -97,8 +98,17 @@ const authSlice = createSlice({
       // --- LOGOUT ---
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
-        state.accessToken = null; // Clear the token!
+        state.accessToken = null;
         state.isLoading = false;
+      })
+
+      // --- SUBSCRIPTION INTEGRATION ---
+      // When subscription is successful, update the local user state immediately
+      .addCase(purchaseSubscription.fulfilled, (state, action) => {
+        if (state.user) {
+          state.user.isPremium = true;
+          state.user.planId = action.payload; // payload contains the planId
+        }
       });
   },
 });
