@@ -70,7 +70,7 @@ const SettingsPage: React.FC = () => {
           >
             <AccountSettings />
           </SettingsSection>
-
+            
           <SettingsSection
             icon={CreditCard}
             title="Subscription"

@@ -2,6 +2,7 @@ import React from "react";
 import { cn } from "../../../lib/utils";
 import { useAppSelector } from "../../../hooks/useRedux";
 import Button from "../../../Components/ui/Button";
+import { Link } from "react-router-dom";
 
 const SubscriptionSettings: React.FC = () => {
   const isDark = useAppSelector((state: any) => state.theme.isDark);
@@ -52,7 +53,10 @@ const SubscriptionSettings: React.FC = () => {
             voice mode, and priority support.
           </p>
         </div>
+        <Link
+          to="/subscriptions">
         <Button className="shrink-0">Manage Subscription</Button>
+        </Link>
       </div>
     </div>
   );

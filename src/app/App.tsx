@@ -31,6 +31,7 @@ import SendFeedbackPage from "../pages/SendFeedbackPage";
 import HelpPage from "../pages/HelpPage";
 import Agents from "../pages/Agents";
 import AgentDetailsPage from "../features/agents/components/AgentDetailsPage";
+import SubscriptionPage from "../pages/SubscriptionPage";
 
 
 // --- Router Setup ---
@@ -58,6 +59,7 @@ const router = createBrowserRouter([
       { path: "help", element: <HelpPage/> },
       { path: "agents", element: <Agents/> },
       { path: "agents/:id", element: <AgentDetailsPage/> },
+      { path: "subscriptions", element: <SubscriptionPage/> },
 
       { path: "*", element: <Navigate to="/" replace /> },
     ],
