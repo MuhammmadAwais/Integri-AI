@@ -14,12 +14,9 @@ const Navbar: React.FC = () => {
       )}
     >
       {/* Left */}
-      <div className="shrink-0 flex items-center md:ml-0 ml-8">
+      <div className="shrink-0 flex items-center md:pl-0 pl-8 ">
         <NavbarLeft /> {/* */}
       </div>
-
-      {/* Center */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden md:block"></div>
 
       {/* Right */}
       <div className="shrink-0 flex items-center justify-end">

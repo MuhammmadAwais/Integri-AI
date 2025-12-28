@@ -147,8 +147,7 @@ const DownloadSettings: React.FC = () => {
           iconSrc={isDark ? appleDark : appleLight}
           title="App Store"
           subtitle="Download on the"
-          href="https://apps.apple.com/"
-          // Add your real QR code image path here
+          href="https://apps.apple.com/us/app/integri/id6737592364"
           qrCodeImage={qrCodeApple}
         />
 
@@ -156,7 +155,7 @@ const DownloadSettings: React.FC = () => {
           iconSrc={playstore}
           title="Google Play"
           subtitle="Get it on"
-          href="https://play.google.com/"
+          href="https://play.google.com/store/apps/details?id=com.integri.integri&hl=en"
           qrCodeImage={qrCodeAndroid}
         />
       </div>
