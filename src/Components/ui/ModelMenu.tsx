@@ -47,7 +47,7 @@ const ModelMenu: React.FC<ModelMenuProps> = ({
       {/* Menu Container */}
       <div
         className={cn(
-          "absolute w-[280px] z-101 flex flex-col p-1.5",
+          "absolute w-[280px]  z-101 flex flex-col p-1.5",
           "animate-in zoom-in-95 duration-100 ease-out",
           "rounded-2xl border shadow-2xl overflow-hidden",
 

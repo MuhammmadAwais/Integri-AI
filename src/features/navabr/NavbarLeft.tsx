@@ -39,10 +39,10 @@ const NavbarLeft: React.FC = () => {
           <button
             onClick={() => !selectedAgentId && setShowModelMenu(!showModelMenu)}
             className={cn(
-              "flex items-center gap-2 px-3 py-2 rounded-xl text-lg font-semibold transition-all hover:cursor-pointer",
+              "flex items-center gap-2 px-3 py-2 rounded-xl text-sm md:text-lg font-semibold transition-all hover:cursor-pointer border",
               isDark
-                ? "text-gray-200 hover:bg-[#1A1A1A]"
-                : "text-gray-700 hover:bg-gray-100",
+                ? "border-white/10 text-gray-200 hover:bg-[#1A1A1A]"
+                : "border-black/5 text-gray-700 hover:bg-gray-100",
               selectedAgentId && "opacity-50 cursor-not-allowed"
             )}
           >
@@ -78,7 +78,7 @@ const NavbarLeft: React.FC = () => {
           <button
             onClick={() => setShowAgentMenu(!showAgentMenu)}
             className={cn(
-              "flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all hover:cursor-pointer border",
+              "flex items-center gap-2 px-3 py-2 rounded-xl text-sm md:text-lg font-semibold transition-all hover:cursor-pointer border",
               selectedAgentId
                 ? "bg-indigo-600 text-white border-indigo-500 shadow-lg shadow-indigo-500/20"
                 : isDark
