@@ -1,5 +1,4 @@
-// src/features/subscription/services/subscriptionService.ts
-import { doc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../../../app/firebase";
 
 export const SubscriptionService = {

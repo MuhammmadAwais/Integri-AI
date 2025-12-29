@@ -1,6 +1,6 @@
 // src/features/subscription/slices/subscriptionSlice.ts
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { SubscriptionService } from "../services/SubscriptionService";
+import { SubscriptionService } from "../services/subscriptionService";
 
 // Thunk to handle the async purchase
 export const purchaseSubscription = createAsyncThunk(
