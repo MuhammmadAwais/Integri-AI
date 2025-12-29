@@ -119,15 +119,8 @@ const Signup: React.FC = () => {
             Create Account <ArrowRight size={18} />
           </AuthButton>
 
-          <div className="relative my-2">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-[#3F3F46]"></div>
-            </div>
-            <div className="relative flex justify-center items-center">
-              <span className="px-2 bg-[#18181B] text-gray-500 font-semibold text-4xl">
-                OR
-              </span>
-            </div>
+          <div className="relative p-2">
+           
           </div>
 
           {/* 3. Attach onClick Handler Here */}
