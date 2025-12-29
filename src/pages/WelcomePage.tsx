@@ -13,6 +13,8 @@ import {
   X as XIcon,
   FileText,
   HardDrive,
+  Sparkles, // Added
+  ArrowRight, // Added
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChatService } from "../features/chat/services/chatService";
@@ -117,7 +119,6 @@ const WelcomePage: React.FC = () => {
     // Check if we should route to PDF Chat
     if (selectedFile?.type === "application/pdf") {
       try {
-        // Updated logic: passing selectedAgentId to ChatService
         const newChatId = await ChatService.createChat(
           accessToken,
           currentModelId,
@@ -140,7 +141,6 @@ const WelcomePage: React.FC = () => {
     let content = text;
     if (selectedFile) content = `[File: ${selectedFile.name}] ${text}`;
     try {
-      // Updated logic: passing selectedAgentId to ChatService
       const newChatId = await ChatService.createChat(
         accessToken,
         currentModelId,
@@ -183,6 +183,59 @@ const WelcomePage: React.FC = () => {
       )}
     >
       <ParticleBackground />
+
+      {/* --- SUBSCRIPTION OFFERING CARD (Top Left) --- */}
+      {/* Logic: Only show if user is NOT premium */}
+      {!user?.isPremium && (
+        <motion.div
+          initial={{ opacity: 0, x: -20, y: -20 }}
+          animate={{ opacity: 1, x: 0, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.6, ease: "easeOut" }}
+          className="absolute top-6 left-6 z-50"
+        >
+          <Link to="/subscriptions">
+            <div
+              className={cn(
+                "group flex items-center gap-3 p-1.5 pr-5 rounded-full border backdrop-blur-md transition-all duration-300 cursor-pointer",
+                isDark
+                  ? "bg-black/20 border-zinc-800 hover:bg-black/60 hover:border-white/20 text-white"
+                  : "bg-white/40 border-zinc-200 hover:bg-white/90 hover:border-black/10 text-black hover:shadow-xl shadow-sm"
+              )}
+            >
+              {/* Icon Circle */}
+              <div
+                className={cn(
+                  "flex items-center justify-center w-9 h-9 rounded-full border transition-all duration-300",
+                  isDark
+                    ? "bg-zinc-900 border-zinc-800 group-hover:bg-white group-hover:text-black group-hover:border-white"
+                    : "bg-white border-zinc-100 group-hover:bg-black group-hover:text-white group-hover:border-black"
+                )}
+              >
+                <Sparkles size={14} strokeWidth={2} />
+              </div>
+
+              {/* Text Info */}
+              <div className="flex flex-col">
+                <span
+                  className={cn(
+                    "text-[10px] uppercase font-bold tracking-widest leading-none mb-0.5",
+                    isDark ? "text-zinc-500" : "text-zinc-400"
+                  )}
+                >
+                  Free Plan
+                </span>
+                <span className="text-xs font-bold flex items-center gap-1 leading-none">
+                  Upgrade Now
+                  <ArrowRight
+                    size={10}
+                    className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
+                  />
+                </span>
+              </div>
+            </div>
+          </Link>
+        </motion.div>
+      )}
 
       <input
         title="file"

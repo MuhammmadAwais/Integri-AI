@@ -16,6 +16,10 @@ const NavbarLeft: React.FC = () => {
   const location = useLocation();
   const dispatch = useAppDispatch();
   const isDark = useAppSelector((state) => state.theme.isDark);
+
+  // FIX 1: Retrieve token for the AgentMenu to fetch data
+  const { token } = useAppSelector((state: any) => state.auth);
+
   const { newChatModel, selectedAgentId } = useAppSelector(
     (state: any) => state.chat
   );
@@ -26,7 +30,7 @@ const NavbarLeft: React.FC = () => {
   const [showAddMenu, setShowAddMenu] = useState(false);
   const [showAddAgentMenu, setShowAddAgentMenu] = useState(false);
 
-  // Welcome Screen Logic
+  // --- Welcome Screen Logic ---
   if (location.pathname === "/") {
     const selectedAgent = agents.find((a: any) => a.gpt_id === selectedAgentId);
     const selectedModelLabel =
@@ -51,6 +55,7 @@ const NavbarLeft: React.FC = () => {
             </span>
             {!selectedAgentId && <ChevronDown size={16} />}
           </button>
+
           <ModelMenu
             isOpen={showModelMenu}
             onClose={() => setShowModelMenu(false)}
@@ -61,7 +66,6 @@ const NavbarLeft: React.FC = () => {
             onSelect={(id) => {
               const model = AVAILABLE_MODELS.find((m) => m.id === id);
               if (model) {
-                // EXPLICITLY clear agent when manually picking a model
                 dispatch(setNewChatAgent(null));
                 dispatch(
                   setNewChatModel({ id: model.id, provider: model.provider })
@@ -99,15 +103,18 @@ const NavbarLeft: React.FC = () => {
               )}
             />
           </button>
+
+          {/* FIX 2: Added position="top" so it drops DOWN instead of UP */}
           <AgentMenu
             isOpen={showAgentMenu}
             onClose={() => setShowAgentMenu(false)}
             selectedId={selectedAgentId}
             isDark={isDark}
+            token={token}
+            position="top"
+            align="left"
             onSelect={(agent) => {
               dispatch(setNewChatAgent(agent ? agent.gpt_id : null));
-              // Because we removed the side-effect in chatSlice,
-              // we can now safely set the model without clearing the agent.
               if (agent) {
                 dispatch(
                   setNewChatModel({
@@ -123,7 +130,7 @@ const NavbarLeft: React.FC = () => {
     );
   }
 
-  // Playground Logic
+  // --- Playground Logic ---
   if (location.pathname === "/playground") {
     return (
       <div className="flex items-center gap-2">
@@ -168,11 +175,16 @@ const NavbarLeft: React.FC = () => {
             <Sparkles size={16} />
             <span className="text-xs font-bold uppercase">Add Agent</span>
           </button>
+
+          {/* FIX 3: Added position="top" here as well */}
           <AgentMenu
             isOpen={showAddAgentMenu}
             onClose={() => setShowAddAgentMenu(false)}
             selectedId={null}
             isDark={isDark}
+            token={token}
+            position="top"
+            align="left"
             onSelect={(agent) => {
               if (agent) {
                 dispatch(
