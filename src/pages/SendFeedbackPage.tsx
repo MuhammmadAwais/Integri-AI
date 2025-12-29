@@ -8,6 +8,7 @@ import { db } from "../app/firebase"; // Ensure correct path
 import { useAppSelector } from "../hooks/useRedux";
 import { cn } from "../lib/utils";
 import Button from "../Components/ui/Button";
+import ParticleBackground from "../Components/ui/ParticleBackground";
 
 const CATEGORIES = [
   "Bug Report",
@@ -65,6 +66,7 @@ const SendFeedbackPage: React.FC = () => {
         isDark ? "bg-[#09090b] text-white" : "bg-gray-50 text-gray-900"
       )}
     >
+      <ParticleBackground/>
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">

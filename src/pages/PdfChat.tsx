@@ -6,6 +6,7 @@ import ChatInterface from "../features/chat/components/ChatInterface";
 import {  useAppSelector } from "../hooks/useRedux";
 import { ChatService } from "../features/chat/services/chatService";
 import Button from "../Components/ui/Button";
+import ParticleBackground from "../Components/ui/ParticleBackground";
 
 const PdfChatPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -65,6 +66,7 @@ const PdfChatPage: React.FC = () => {
         onDragOver={(e) => e.preventDefault()}
         onDrop={onDrop}
       >
+        <ParticleBackground/>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

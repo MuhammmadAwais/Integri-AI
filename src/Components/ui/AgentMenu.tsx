@@ -24,11 +24,11 @@ const AgentMenu: React.FC<AgentMenuProps> = ({
   return (
     <>
       {/* Backdrop for click-outside to close */}
-      <div className="fixed inset-0 z-[100] bg-transparent" onClick={onClose} />
+      <div className="fixed inset-0 z-100 bg-transparent" onClick={onClose} />
 
       <div
         className={cn(
-          "absolute top-full left-0 mt-2 w-64 p-2 rounded-xl border shadow-xl z-[110] backdrop-blur-md animate-in fade-in zoom-in-95 duration-200",
+          "absolute top-full left-0 mt-2 w-64 p-2 rounded-xl border shadow-xl z-110 backdrop-blur-md animate-in fade-in zoom-in-95 duration-200",
           isDark
             ? "bg-[#121212]/95 border-[#27272a]"
             : "bg-white/95 border-gray-200"

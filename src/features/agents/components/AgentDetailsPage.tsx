@@ -13,6 +13,7 @@ import { ChatService } from "../../chat/services/chatService";
 import { useAppDispatch, useAppSelector } from "../../../hooks/useRedux";
 import { setNewChatAgent } from "../../chat/chatSlice";
 import { cn } from "../../../lib/utils";
+import ParticleBackground from "../../../Components/ui/ParticleBackground";
 
 const AgentDetailPage = () => {
   const { id } = useParams();
@@ -117,6 +118,7 @@ const AgentDetailPage = () => {
 
   return (
     <div className="flex flex-col h-full w-full overflow-y-auto custom-scrollbar">
+      <ParticleBackground/>
       {/* Header */}
       <div className="sticky top-0 z-10 flex items-center p-4 backdrop-blur-md bg-opacity-80">
         <button

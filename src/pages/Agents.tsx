@@ -14,6 +14,7 @@ import Button from "../Components/ui/Button";
 import AgentCard from "../features/agents/components/AgentCard";
 import AgentModal from "../features/agents/components/AgentModal";
 import SkeletonLoader from "../Components/ui/SkeletonLoader";
+import ParticleBackground from "../Components/ui/ParticleBackground";
 
 const Agents: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -52,6 +53,7 @@ const Agents: React.FC = () => {
         isDark ? "bg-[#09090b] text-white" : "bg-gray-50 text-gray-900"
       )}
     >
+      <ParticleBackground/>
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
         <div>

@@ -1,3 +1,4 @@
+
 @import "tailwindcss";
 .markdown-body {
   width: 100%;
@@ -46,4 +47,45 @@
   background: rgba(0,0,0,0.1);
   padding: 2px 6px;
   border-radius: 6px;
+}
+
+
+/* Custom Scrollbar */
+@layer utilities {
+  /* Width */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  /* Track (Background) */
+  ::-webkit-scrollbar-track {
+    background: transparent; 
+  }
+
+  /* Handle (The moving part) - Light Mode Default */
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-400 rounded-full;
+    border: 2px solid transparent; /* Creates padding effect */
+    background-clip: content-box;
+  }
+
+  /* Handle on Hover */
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-600;
+  }
+
+  /* Dark Mode Overrides */
+  .dark ::-webkit-scrollbar-thumb {
+    @apply bg-slate-600;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-400;
+  }
+}
+
+/* Ensure smooth background transition for the whole app */
+body {
+    @apply transition-colors duration-300;
 }

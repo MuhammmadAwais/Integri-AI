@@ -140,5 +140,28 @@ export const SUBSCRIPTION_PLANS = [
   },
 ];
 
+export const SUBSCRIPTION_FAQS = [
+  {
+    question: "Can I cancel my subscription at any time?",
+    answer:
+      "Yes, you can cancel your subscription at any time from your account settings. Your access will continue until the end of your current billing period.",
+  },
+  {
+    question: "What happens if I hit my query limit?",
+    answer:
+      "On the Starter plan, you will need to wait until the next day for your limit to reset. Pro users enjoy unlimited queries.",
+  },
+  {
+    question: "Is there a discount for yearly payment?",
+    answer:
+      "Yes! You save roughly 20% compared to monthly billing when you choose the annual plan.",
+  },
+  {
+    question: "Do you offer refunds?",
+    answer:
+      "We offer a 7-day money-back guarantee if you are not satisfied with the Pro plan capabilities.",
+  },
+];
+
 
 export default AVAILABLE_MODELS;
