@@ -8,7 +8,6 @@ import {
   Check,
   PenTool,
   Eraser,
-  Download,
 } from "lucide-react";
 import { cn } from "../../lib/utils"; // Adjust path as needed based on your structure
 
@@ -41,7 +40,7 @@ const WhiteboardModal: React.FC<WhiteboardModalProps> = ({
   const [color, setColor] = useState(isDark ? "#ffffff" : "#000000");
   const [lineWidth, setLineWidth] = useState(3);
   const [tool, setTool] = useState<"pen" | "eraser">("pen");
-
+    {setLineWidth}//for dev (vercel fix)
   // History for Undo/Redo
   const [history, setHistory] = useState<ImageData[]>([]);
   const [historyStep, setHistoryStep] = useState(-1);
