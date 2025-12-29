@@ -148,9 +148,10 @@ export const SessionService = {
   uploadFile: async (token: string, file: File) => {
     try {
       const formData = new FormData();
-      // FIX 3: Standardized to 'file' (Singular)
-      formData.append("file", file);
+      // FIX 1: Documentation image shows param name is 'files' (plural/array)
+      formData.append("files", file);
 
+      // FIX 2: Endpoint is /api/v1/files/upload (not /api/v1/files)
       const response = await backendApi.post("/api/v1/files/upload", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -159,16 +160,17 @@ export const SessionService = {
       });
 
       const data = response.data;
-
-      // Handle various response formats safely
+      console.log("File upload response data:", data);
+      // FIX 3: Parse Array Response [{ "file_id": "...", ... }]
+      // Logic mirrors Dart: e["file_id"] ?? e["id"]
       let uploadedItem;
       if (Array.isArray(data) && data.length > 0) {
         uploadedItem = data[0];
       } else if (!Array.isArray(data)) {
+        // Fallback for single object response just in case
         uploadedItem = data;
       }
 
-      // Try to find the ID in common fields
       const fileId =
         uploadedItem?.file_id || uploadedItem?.id || uploadedItem?.data?.id;
 
@@ -183,6 +185,7 @@ export const SessionService = {
     }
   },
 };
+
 
 // --- AGENTS  ---
 export const AgentService = {
