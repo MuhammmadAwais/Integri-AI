@@ -1,12 +1,27 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { Upload, FileText, X, MessageSquare, Eye } from "lucide-react";
+import {
+  Upload,
+  FileText,
+  X,
+  MessageSquare,
+  Eye,
+  StickyNote,
+  Trash2,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import ChatInterface from "../features/chat/components/ChatInterface";
-import {  useAppSelector } from "../hooks/useRedux";
+import { useAppSelector } from "../hooks/useRedux";
 import { ChatService } from "../features/chat/services/chatService";
 import Button from "../Components/ui/Button";
 import ParticleBackground from "../Components/ui/ParticleBackground";
+
+interface Note {
+  id: string;
+  x: number;
+  y: number;
+  text: string;
+}
 
 const PdfChatPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,9 +29,15 @@ const PdfChatPage: React.FC = () => {
   const location = useLocation();
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   const token = useAppSelector((state: any) => state.auth.accessToken);
+
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"chat" | "pdf">("chat");
   const [isUploading, setIsUploading] = useState(false);
+
+  // --- NOTES STATE ---
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [isNoteMode, setIsNoteMode] = useState(false);
+  const pdfContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (location.state?.file) {
@@ -59,6 +80,35 @@ const PdfChatPage: React.FC = () => {
     if (e.target.files?.[0]) handleFileUpload(e.target.files[0]);
   };
 
+  // --- NOTE HANDLERS ---
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isNoteMode || !pdfContainerRef.current) return;
+
+    // Get click coordinates relative to the container
+    const rect = pdfContainerRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const newNote: Note = {
+      id: Date.now().toString(),
+      // Center the note on click (assuming note width ~192px)
+      x: Math.max(0, x - 20),
+      y: Math.max(0, y - 20),
+      text: "",
+    };
+
+    setNotes([...notes, newNote]);
+    setIsNoteMode(false); // Turn off mode after adding one note
+  };
+
+  const updateNoteText = (id: string, text: string) => {
+    setNotes(notes.map((n) => (n.id === id ? { ...n, text } : n)));
+  };
+
+  const deleteNote = (id: string) => {
+    setNotes(notes.filter((n) => n.id !== id));
+  };
+
   if (!id) {
     return (
       <div
@@ -66,14 +116,14 @@ const PdfChatPage: React.FC = () => {
         onDragOver={(e) => e.preventDefault()}
         onDrop={onDrop}
       >
-        <ParticleBackground/>
+        <ParticleBackground />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="max-w-md w-full text-center space-y-8"
         >
           <div className="space-y-4">
-            <h1 className="text-4xl font-bold tracking-tight bg-linear-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
+            <h1 className="text-5xl font-bold tracking-tight bg-[#838996] bg-clip-text text-transparent">
               Chat with PDF
             </h1>
             <p className="text-muted-foreground text-lg">
@@ -86,7 +136,7 @@ const PdfChatPage: React.FC = () => {
             border-2 border-dashed rounded-3xl p-10 transition-all duration-300 cursor-pointer
             ${
               isDark
-                ? "border-gray-700 bg-gray-900/50 hover:bg-gray-800/50"
+                ? "border-gray-700 bg-transparent"
                 : "border-gray-200 bg-white hover:bg-gray-50"
             }
             ${isUploading ? "opacity-50 pointer-events-none" : ""}
@@ -103,7 +153,7 @@ const PdfChatPage: React.FC = () => {
               htmlFor="pdf-upload"
               className="cursor-pointer flex flex-col items-center gap-4"
             >
-              <div className="h-16 w-16 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500">
+              <div className="h-16 w-16 rounded-2xl bg-[#d3d3d3] flex items-center justify-center text-gray-500">
                 {isUploading ? (
                   <div className="animate-spin h-8 w-8 border-2 border-current border-t-transparent rounded-full" />
                 ) : (
@@ -164,14 +214,13 @@ const PdfChatPage: React.FC = () => {
           lg:border-r ${isDark ? "border-gray-800" : "border-gray-200"}
         `}
         >
-          {/* Use features={false} to hide extra tools and use cleaner input */}
           <ChatInterface features={false} />
         </div>
 
         {/* RIGHT SIDE: PDF PREVIEW */}
         <div
           className={`
-          flex-1 flex flex-col min-w-0 bg-gray-100 dark:bg-[#0f0f0f]
+          flex-1 flex flex-col min-w-0 bg-gray-100 dark:bg-[#0f0f0f] relative
           ${activeTab === "pdf" ? "flex" : "hidden lg:flex"}
         `}
         >
@@ -180,7 +229,7 @@ const PdfChatPage: React.FC = () => {
               {/* Header */}
               <div
                 className={`
-                h-12 flex items-center justify-between px-4 border-b
+                h-12 flex items-center justify-between px-4 border-b z-30
                 ${
                   isDark
                     ? "bg-[#1a1a1a] border-gray-800"
@@ -192,27 +241,105 @@ const PdfChatPage: React.FC = () => {
                   <FileText size={14} className="text-blue-500" />
                   <span className="truncate">Document Preview</span>
                 </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setPdfUrl(null);
-                    navigate("/pdf");
-                  }}
-                >
-                  <X size={16} />
-                </Button>
+
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className={`${
+                      isNoteMode
+                        ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-500 ring-1 ring-yellow-500"
+                        : ""
+                    }`}
+                    onClick={() => setIsNoteMode(!isNoteMode)}
+                    title="Add a Note"
+                  >
+                    {isNoteMode ? (
+                      <StickyNote size={16} fill="currentColor" />
+                    ) : (
+                      <StickyNote size={16} />
+                    )}
+                    <span className="ml-2 text-xs">
+                      {isNoteMode ? "Click PDF to Place" : "Add Note"}
+                    </span>
+                  </Button>
+
+                  <div className="w-px h-4 bg-gray-300 dark:bg-gray-700 mx-1" />
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setPdfUrl(null);
+                      navigate("/pdf");
+                    }}
+                  >
+                    <X size={16} />
+                  </Button>
+                </div>
               </div>
 
-              {/* PDF Iframe - Removed padding for cleaner mobile look */}
-              <div className="flex-1 w-full h-full relative">
+              {/* PDF Container */}
+              <div
+                ref={pdfContainerRef}
+                className="flex-1 w-full h-full relative overflow-hidden"
+              >
+                {/* 1. PDF Iframe (Bottom Layer) */}
                 <iframe
                   src={pdfUrl}
-                  className={`absolute inset-0 w-full h-full border-0 ${
-                    isDark ? "invert-[0.92] hue-rotate-180" : ""
-                  }`}
+                  className="absolute inset-0 w-full h-full border-0 z-0"
                   title="PDF Preview"
                 />
+
+                {/* 2. Click Capture Overlay (Middle Layer) 
+                   - This DIV sits on top of the iframe ONLY when isNoteMode is true.
+                   - This intercepts the click so the iframe doesn't swallow it.
+                */}
+                {isNoteMode && (
+                  <div
+                    className="absolute inset-0 z-10 cursor-crosshair bg-transparent"
+                    onClick={handleOverlayClick}
+                  />
+                )}
+
+                {/* 3. Notes Layer (Top Layer) */}
+                {notes.map((note) => (
+                  <div
+                    key={note.id}
+                    className="absolute z-20 w-48 shadow-lg rounded-lg overflow-hidden animate-in zoom-in duration-200"
+                    style={{
+                      left: note.x,
+                      top: note.y,
+                      backgroundColor: isDark ? "#3f3f3f" : "#fef08a",
+                      border: isDark ? "1px solid #555" : "1px solid #eab308",
+                    }}
+                    // Stop propagation so clicking a note doesn't trigger the "add note" logic
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="flex justify-between items-center p-1 bg-black/5 dark:bg-white/5 cursor-move">
+                      <span className="text-[10px] uppercase font-bold px-1 opacity-50">
+                        Note
+                      </span>
+                      <button
+                        onClick={() => deleteNote(note.id)}
+                        className="text-red-500 hover:text-red-700 p-0.5 rounded"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
+                    <textarea
+                      autoFocus
+                      className={`w-full h-24 p-2 text-sm resize-none bg-transparent outline-none ${
+                        isDark
+                          ? "text-white placeholder:text-gray-400"
+                          : "text-black placeholder:text-yellow-700"
+                      }`}
+                      placeholder="Type note..."
+                      value={note.text}
+                      onChange={(e) => updateNoteText(note.id, e.target.value)}
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           ) : (

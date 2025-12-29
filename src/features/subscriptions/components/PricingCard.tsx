@@ -49,10 +49,11 @@ const PricingCard: React.FC<PricingCardProps> = ({
 
         // --- POPULAR PLAN HIGHLIGHT ---
         plan.isPopular && isDark
-          ? "border-[#00A9A4] shadow-lg shadow-[#00A9A4]/10"
+          ?  "border-white shadow-lg shadow-[#00A9A4]/10" 
           : "",
         plan.isPopular && !isDark
-          ? "border-[#00A9A4] ring-1 ring-[#00A9A4] shadow-xl"
+          ? 
+             "border-gray-500 ring-1 ring-gray-500 shadow-xl"
           : "",
 
         // Scale effect for popular plan
@@ -62,7 +63,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
       {/* Popular Badge */}
       {plan.isPopular && (
         <div className="absolute -top-4 left-0 right-0 flex justify-center">
-          <div className="bg-[#00A9A4] text-white text-xs font-bold uppercase tracking-wider py-1.5 px-4 rounded-full shadow-lg flex items-center gap-1.5">
+          <div className="bg-white text-gray-800 text-xs font-bold uppercase tracking-wider py-1.5 px-4 rounded-full shadow-lg flex items-center gap-1.5">
             <Sparkles className="w-3 h-3" />
             Most Popular
           </div>

@@ -64,7 +64,7 @@ const AppearanceSettings: React.FC = () => {
         className={cn(
           "flex-1 flex flex-col items-center p-4 rounded-xl border-2 transition-all duration-200 relative text-left group hover:cursor-pointer",
           active
-            ? "border-blue-500 bg-blue-50/50 dark:bg-blue-900/20"
+            ? "border-[#838996] bg-blue-50/50 dark:bg-gray-900/20"
             : isDark
             ? "border-[#333] hover:border-gray-600 bg-[#222]"
             : "border-gray-100 hover:border-gray-300 bg-gray-50"
@@ -74,7 +74,7 @@ const AppearanceSettings: React.FC = () => {
           className={cn(
             "p-3 rounded-full mb-3 transition-colors",
             active
-              ? "bg-blue-500 text-white"
+              ? "bg-gray-500 text-white"
               : isDark
               ? "bg-gray-800 text-gray-400"
               : "bg-white text-gray-500"
@@ -83,7 +83,7 @@ const AppearanceSettings: React.FC = () => {
           {isSaving ? (
             <Loader2 className="animate-spin" size={20} />
           ) : (
-            <Icon size={20} />
+            <Icon size={20}  />
           )}
         </div>
         <span
@@ -95,7 +95,7 @@ const AppearanceSettings: React.FC = () => {
           {label}
         </span>
         {active && (
-          <div className="absolute top-2 right-2 text-blue-500">
+          <div className="absolute top-2 right-2 text-gray-500">
             <Check size={16} strokeWidth={3} />
           </div>
         )}

@@ -160,11 +160,7 @@ const Sidebar: React.FC = () => {
           )}
         >
           <Link to="/" className="hover:opacity-80 transition-opacity">
-            <img
-              src={isDark ? "/dark-theme-logo.png" : "/light-theme-logo.png"}
-              alt="logo"
-              className="h-8 w-auto "
-            />
+            <h1 className="text-2xl font-extrabold">Integri</h1>
           </Link>
         </div>
 

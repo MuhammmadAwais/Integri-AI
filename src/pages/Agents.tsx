@@ -53,7 +53,7 @@ const Agents: React.FC = () => {
         isDark ? "bg-[#09090b] text-white" : "bg-gray-50 text-gray-900"
       )}
     >
-      <ParticleBackground/>
+      <ParticleBackground />
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
         <div>
@@ -71,8 +71,23 @@ const Agents: React.FC = () => {
         </div>
 
         {/* Open Modal for Creating a New Agent */}
-        <Button onClick={() => dispatch(openCreateModal())}>
-          <Plus size={20} className="mr-2" /> Create Agent
+        <Button
+          className={cn(
+            " bg-transparent ",
+            isDark
+              ? "text-white hover:bg-gray-800"
+              : "text-gray-900 hover:bg-blue-50"
+          )}
+          onClick={() => dispatch(openCreateModal())}
+        >
+          <Plus
+            size={20}
+            className={cn(
+              "mr-2 bg-transparent",
+              isDark ? "text-white" : "text-gray-900"
+            )}
+          />{" "}
+          Create Agent
         </Button>
       </div>
 

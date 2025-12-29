@@ -36,10 +36,10 @@ const SettingsSection: React.FC<SettingsSectionProps> = ({
         <div
           className={cn(
             "p-2 rounded-lg",
-            isDark ? "bg-blue-500/10 text-blue-400" : "bg-blue-50 text-blue-600"
+            isDark ? "bg-[#424247] text-blue-400" : "bg-blue-50 text-blue-600"
           )}
         >
-          <Icon size={20} />
+          <Icon size={20} className="bg-transparent" />
         </div>
         <div>
           <h2

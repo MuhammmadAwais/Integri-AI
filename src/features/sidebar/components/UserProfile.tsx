@@ -103,7 +103,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
         {/* 1. Avatar */}
         <div
           className={cn(
-            "rounded-full bg-linear-to-tr from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm shrink-0 ring-2 ring-transparent group-hover:ring-indigo-500 transition-all shadow-sm",
+            "rounded-full bg-gray-600 flex items-center justify-center text-white font-bold text-sm shrink-0 ring-2 ring-transparent group-hover:ring-indigo-500 transition-all shadow-sm",
             isExpanded ? "w-9 h-9" : "w-8 h-8"
           )}
         >

@@ -66,7 +66,7 @@ const SendFeedbackPage: React.FC = () => {
         isDark ? "bg-[#09090b] text-white" : "bg-gray-50 text-gray-900"
       )}
     >
-      <ParticleBackground/>
+      <ParticleBackground />
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
@@ -102,7 +102,7 @@ const SendFeedbackPage: React.FC = () => {
                   : "bg-purple-50 text-purple-600"
               )}
             >
-              <MessageSquare size={24} />
+              <MessageSquare className="text-[#a9a9a9]" size={24} />
             </div>
             <div>
               <h2 className="text-xl font-semibold">We value your opinion</h2>
@@ -214,7 +214,7 @@ const SendFeedbackPage: React.FC = () => {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full sm:w-auto"
+                className=" bg-gray-700 hover:bg-gray-800 w-full sm:w-auto"
               >
                 {isSubmitting ? (
                   "Sending..."

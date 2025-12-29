@@ -4,9 +4,11 @@ import {
   ArrowLeft,
   MessageSquare,
   Shield,
-  Globe,
   Zap,
-  Play,
+  Cpu,
+  Terminal,
+  Clock,
+  ChevronRight,
 } from "lucide-react";
 import { AgentService } from "../../../api/backendApi";
 import { ChatService } from "../../chat/services/chatService";
@@ -45,48 +47,27 @@ const AgentDetailPage = () => {
     fetchAgent();
   }, [id, token]);
 
-  // --- MODIFIED START CHAT HANDLER ---
   const handleStartChat = async (specificStarter?: string) => {
     if (!agent || !token || creatingSession) return;
-
     try {
       setCreatingSession(true);
-
-      // 1. Determine the First Message
       let messageToSend = specificStarter;
-
-      // If no specific starter was clicked (Main Button), pick a RANDOM one
-      if (
-        !messageToSend &&
-        agent.conversation_starters &&
-        agent.conversation_starters.length > 0
-      ) {
+      if (!messageToSend && agent.conversation_starters?.length > 0) {
         const randomIndex = Math.floor(
           Math.random() * agent.conversation_starters.length
         );
         messageToSend = agent.conversation_starters[randomIndex];
       }
-
-      // 2. Update Redux
       dispatch(setNewChatAgent(agent.id));
-
-      // 3. Create Session
       const modelToUse = agent.recommended_model || "gpt-4o-mini";
       const newSessionId = await ChatService.createChat(
         token,
         modelToUse,
         agent.id
       );
-
-      // 4. Navigate (Passing the random or specific message)
-      if (messageToSend) {
-        navigate(`/chat/${newSessionId}`, {
-          state: { initialMessage: messageToSend },
-        });
-      } else {
-        // Fallback if no starters exist at all
-        navigate(`/chat/${newSessionId}`);
-      }
+      navigate(`/chat/${newSessionId}`, {
+        state: { initialMessage: messageToSend },
+      });
     } catch (error) {
       console.error("Failed to start agent chat:", error);
     } finally {
@@ -96,8 +77,18 @@ const AgentDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="flex h-full w-full items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+      <div
+        className={cn(
+          "flex h-full w-full items-center justify-center",
+          isDark ? "bg-black" : "bg-gray-50"
+        )}
+      >
+        <div
+          className={cn(
+            "h-6 w-6 animate-spin border-2 border-t-transparent",
+            isDark ? "border-white" : "border-black"
+          )}
+        />
       </div>
     );
   }
@@ -105,10 +96,10 @@ const AgentDetailPage = () => {
   if (error || !agent) {
     return (
       <div className="flex flex-col h-full w-full items-center justify-center gap-4">
-        <p className="text-red-500">{error || "Agent not found"}</p>
+        <p className="text-zinc-500">{error || "Agent not found"}</p>
         <button
           onClick={() => navigate(-1)}
-          className="text-blue-500 hover:underline"
+          className="text-black dark:text-white underline"
         >
           Go Back
         </button>
@@ -117,150 +108,185 @@ const AgentDetailPage = () => {
   }
 
   return (
-    <div className="flex flex-col h-full w-full overflow-y-auto custom-scrollbar">
-      <ParticleBackground/>
-      {/* Header */}
-      <div className="sticky top-0 z-10 flex items-center p-4 backdrop-blur-md bg-opacity-80">
+    <div
+      className={cn(
+        "overflow-x-hidden relative flex flex-col h-full w-full overflow-y-auto custom-scrollbar",
+        isDark ? "bg-black text-white" : "bg-gray-50 text-black"
+      )}
+    >
+      <ParticleBackground />
+
+      {/* --- HEADER --- */}
+      <div className="sticky top-0 z-10 flex items-center p-6 bg-transparent ">
         <button
-        title="button"
+        title="header"
           onClick={() => navigate(-1)}
           className={cn(
-            "p-2 rounded-full transition-colors",
+            "p-2 border transition-all hover:scale-105",
             isDark
-              ? "hover:bg-gray-800 text-gray-400"
-              : "hover:bg-gray-200 text-gray-600"
+              ? "border-zinc-800 bg-black/50 text-white hover:bg-zinc-900"
+              : "border-zinc-200 bg-white/50 text-black hover:bg-white"
           )}
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={18} />
         </button>
-        <h1 className="ml-4 text-lg font-semibold opacity-90">Agent Details</h1>
       </div>
 
-      <div className="flex-1 max-w-3xl mx-auto w-full p-6 pb-20">
-        {/* Agent Profile Header */}
-        <div className="flex flex-col items-center text-center mb-10">
-          <div className="w-24 h-24 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center mb-6 shadow-xl">
+      <div className="relative z-0 flex-1 w-full max-w-5xl mx-auto p-6 pb-20">
+        {/* --- PROFILE HERO --- */}
+        <div className="flex flex-col md:flex-row gap-10 items-start mb-16">
+          {/* Avatar */}
+          <div
+            className={cn(
+              "w-32 h-32 md:w-40 md:h-40 flex-shrink-0 flex items-center justify-center border-2",
+              isDark
+                ? "bg-zinc-900 border-zinc-800"
+                : "bg-white border-zinc-200 shadow-2xl"
+            )}
+          >
             {agent.avatar_url ? (
               <img
                 src={agent.avatar_url}
                 alt={agent.name}
-                className="w-full h-full rounded-full object-cover"
+                className="w-full h-full object-cover grayscale"
               />
             ) : (
-              <Zap size={40} className="text-white" />
+              <Zap
+                size={48}
+                className={isDark ? "text-white" : "text-black"}
+                strokeWidth={1}
+              />
             )}
           </div>
 
-          <h2 className="text-3xl font-bold mb-3">{agent.name}</h2>
-          <p
-            className={cn(
-              "text-lg max-w-xl",
-              isDark ? "text-gray-400" : "text-gray-600"
-            )}
-          >
-            {agent.description}
-          </p>
-
-          <div className="flex items-center gap-4 mt-6">
-            {/* MAIN START CHAT BUTTON (Will pick random starter) */}
-            <button
-              onClick={() => handleStartChat()}
-              disabled={creatingSession}
-              className={cn(
-                "flex items-center gap-2 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-medium transition-all shadow-lg hover:shadow-blue-500/25 active:scale-95",
-                creatingSession && "opacity-70 cursor-wait"
-              )}
-            >
-              {creatingSession ? (
-                <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-              ) : (
-                <MessageSquare size={18} />
-              )}
-              {creatingSession ? "Creating..." : "Start Chat"}
-            </button>
-          </div>
-        </div>
-
-        <div className="space-y-8">
-          {/* Conversation Starters Grid */}
-          {agent.conversation_starters &&
-            agent.conversation_starters.length > 0 && (
-              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <h3
-                  className={cn(
-                    "text-sm font-semibold uppercase tracking-wider mb-4",
-                    isDark ? "text-gray-500" : "text-gray-400"
-                  )}
-                >
-                  Conversation Starters
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {agent.conversation_starters.map(
-                    (starter: string, idx: number) => (
-                      <button
-                        key={idx}
-                        // SPECIFIC STARTER CLICK (Will use this specific text)
-                        onClick={() => handleStartChat(starter)}
-                        disabled={creatingSession}
-                        className={cn(
-                          "text-left p-4 rounded-xl border transition-all duration-200 group",
-                          isDark
-                            ? "bg-[#1a1a1a] border-gray-800 hover:border-gray-600 hover:bg-[#252525]"
-                            : "bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm"
-                        )}
-                      >
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium line-clamp-2">
-                            {starter}
-                          </span>
-                          <Play
-                            size={14}
-                            className="opacity-0 group-hover:opacity-100 transition-opacity text-blue-500"
-                            fill="currentColor"
-                          />
-                        </div>
-                      </button>
-                    )
-                  )}
-                </div>
-              </div>
-            )}
-
-          {/* Capabilities Section */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-800">
-            <div
-              className={cn(
-                "p-4 rounded-xl",
-                isDark ? "bg-gray-800/30" : "bg-gray-50"
-              )}
-            >
-              <div className="flex items-center gap-2 mb-2 text-indigo-500">
-                <Globe size={18} />
-                <span className="font-semibold text-sm">Capabilities</span>
-              </div>
-              <p className="text-xs opacity-70">
-                This agent has access to web browsing and data analysis tools to
-                provide accurate responses.
+          {/* Info */}
+          <div className="flex-1 space-y-6">
+            <div>
+              <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase mb-4">
+                {agent.name}
+              </h1>
+              <p
+                className={cn(
+                  "text-lg md:text-xl font-light max-w-2xl leading-relaxed",
+                  isDark ? "text-zinc-400" : "text-zinc-600"
+                )}
+              >
+                {agent.description}
               </p>
             </div>
 
-            <div
-              className={cn(
-                "p-4 rounded-xl",
-                isDark ? "bg-gray-800/30" : "bg-gray-50"
-              )}
-            >
-              <div className="flex items-center gap-2 mb-2 text-green-500">
-                <Shield size={18} />
-                <span className="font-semibold text-sm">Privacy</span>
-              </div>
-              <p className="text-xs opacity-70">
-                Conversations with this agent are private and not used for
-                training standard models.
-              </p>
+            <div className="flex flex-wrap gap-4">
+              <button
+                onClick={() => handleStartChat()}
+                disabled={creatingSession}
+                className={cn(
+                  "group relative flex items-center gap-3 px-8 py-4 font-bold tracking-widest uppercase text-sm border-2 transition-all",
+                  isDark
+                    ? "bg-white text-black border-white hover:bg-transparent hover:text-white"
+                    : "bg-black text-white border-black hover:bg-transparent hover:text-black"
+                )}
+              >
+                {creatingSession ? (
+                  <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent" />
+                ) : (
+                  <MessageSquare size={18} />
+                )}
+                <span>Initialize Chat</span>
+              </button>
             </div>
           </div>
         </div>
+
+        {/* --- SPECS GRID --- */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-zinc-200 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 mb-16 overflow-hidden">
+          {[
+            {
+              label: "Model Architecture",
+              value: agent.recommended_model || "GPT-4o",
+              icon: Cpu,
+            },
+            { label: "Access Level", value: "Private / Secure", icon: Shield },
+            { label: "Response Type", value: "Analytical", icon: Terminal },
+            { label: "Latency", value: "Low / Real-time", icon: Clock },
+          ].map((stat, idx) => (
+            <div
+              key={idx}
+              className={cn(
+                "p-6 flex flex-col gap-2",
+                isDark
+                  ? "bg-black hover:bg-zinc-900"
+                  : "bg-white hover:bg-zinc-50"
+              )}
+            >
+              <stat.icon
+                size={20}
+                className={isDark ? "text-zinc-500" : "text-zinc-400"}
+              />
+              <span
+                className={cn(
+                  "text-xs font-bold uppercase tracking-wider",
+                  isDark ? "text-zinc-500" : "text-zinc-400"
+                )}
+              >
+                {stat.label}
+              </span>
+              <span className="font-mono text-sm">{stat.value}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* --- CONVERSATION STARTERS --- */}
+        {agent.conversation_starters?.length > 0 && (
+          <div className="mb-16">
+            <div className="flex items-center gap-4 mb-6">
+              <div
+                className={cn(
+                  "h-px flex-1",
+                  isDark ? "bg-zinc-800" : "bg-zinc-300"
+                )}
+              />
+              <h3
+                className={cn(
+                  "font-mono text-sm uppercase tracking-widest",
+                  isDark ? "text-zinc-500" : "text-zinc-400"
+                )}
+              >
+                Command Protocols
+              </h3>
+              <div
+                className={cn(
+                  "h-px flex-1",
+                  isDark ? "bg-zinc-800" : "bg-zinc-300"
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {agent.conversation_starters.map(
+                (starter: string, idx: number) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleStartChat(starter)}
+                    className={cn(
+                      "group flex items-center justify-between p-5 text-left border transition-all duration-200",
+                      isDark
+                        ? "bg-zinc-900/50 border-zinc-800 text-zinc-300 hover:border-white hover:text-white"
+                        : "bg-white border-zinc-200 text-zinc-700 hover:border-black hover:text-black hover:shadow-lg"
+                    )}
+                  >
+                    <span className="text-sm font-medium line-clamp-1 font-mono">
+                      "{starter}"
+                    </span>
+                    <ChevronRight
+                      size={16}
+                      className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all"
+                    />
+                  </button>
+                )
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

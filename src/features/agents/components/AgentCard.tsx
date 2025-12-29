@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Edit2, Trash2,  Bot } from "lucide-react";
+import { Edit2, Trash2, Bot, ArrowUpRight } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import type { Agent } from "../agentsSlice";
 
@@ -22,72 +22,87 @@ const AgentCard: React.FC<AgentCardProps> = ({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -4 }}
       className={cn(
-        "group relative flex flex-col p-6 rounded-2xl border transition-all duration-300 hover:shadow-lg cursor-pointer",
+        "group relative flex flex-col p-6 rounded-none border transition-all duration-300 cursor-pointer overflow-hidden",
+        // Classic Bordered Look
         isDark
-          ? "bg-[#121212] border-[#27272a] hover:border-blue-500/50 hover:bg-[#1a1a1d]"
-          : "bg-white border-gray-200 hover:border-blue-200 hover:shadow-blue-500/5"
+          ? "bg-black border-zinc-800 hover:border-zinc-500"
+          : "bg-white border-zinc-200 hover:border-zinc-400 hover:shadow-xl"
       )}
       onClick={() => navigate(`/agents/${agent.gpt_id}`)}
     >
-      {/* Icon */}
-      <div
-        className={cn(
-          "w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-colors",
-          isDark
-            ? "bg-blue-500/10 text-blue-400 group-hover:bg-blue-500 group-hover:text-white"
-            : "bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white"
-        )}
-      >
-        <Bot size={24} />
+      {/* Top Row: Icon & Arrow */}
+      <div className="flex justify-between items-start mb-6">
+        <div
+          className={cn(
+            "w-10 h-10 flex items-center justify-center border transition-colors",
+            isDark
+              ? "bg-zinc-900 border-zinc-700 text-zinc-100 group-hover:bg-zinc-100 group-hover:text-black group-hover:border-white"
+              : "bg-zinc-50 border-zinc-200 text-zinc-900 group-hover:bg-black group-hover:text-white group-hover:border-black"
+          )}
+        >
+          <Bot size={20} strokeWidth={1.5} />
+        </div>
+        <ArrowUpRight
+          size={18}
+          className={cn(
+            "transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1",
+            isDark
+              ? "text-zinc-600 group-hover:text-white"
+              : "text-zinc-400 group-hover:text-black"
+          )}
+        />
       </div>
 
       {/* Content */}
       <h3
         className={cn(
-          "text-lg font-bold mb-2 truncate",
-          isDark ? "text-white" : "text-gray-900"
+          "text-xl font-bold mb-2 tracking-tight truncate",
+          isDark ? "text-white" : "text-black"
         )}
       >
         {agent.name}
       </h3>
       <p
         className={cn(
-          "text-sm line-clamp-3 mb-6 flex-1",
-          isDark ? "text-gray-400" : "text-gray-500"
+          "text-sm leading-relaxed line-clamp-2 mb-8 flex-1",
+          isDark ? "text-zinc-400" : "text-zinc-500"
         )}
       >
         {agent.description || "No description provided."}
       </p>
 
-      {/* Footer / Actions */}
-      <div className="flex items-center justify-between pt-4 border-t border-dashed border-gray-700/50">
+      {/* Footer / Meta & Actions */}
+      <div className="flex items-center justify-between pt-4 border-t border-dashed border-zinc-200 dark:border-zinc-800">
         <span
           className={cn(
-            "text-xs font-mono px-2 py-1 rounded",
-            isDark ? "bg-[#222] text-gray-400" : "bg-gray-100 text-gray-600"
+            "text-[10px] uppercase tracking-widest font-bold px-2 py-1 border",
+            isDark
+              ? "bg-zinc-900 border-zinc-800 text-zinc-400"
+              : "bg-zinc-50 border-zinc-200 text-zinc-600"
           )}
         >
           {agent.model}
         </span>
 
         <div
-          className="flex items-center gap-1"
+          className="flex items-center gap-2"
           onClick={(e) => e.stopPropagation()}
         >
           <button
             onClick={() => onEdit(agent)}
             className={cn(
-              "p-2 rounded-lg transition-colors",
+              "p-1.5 transition-colors",
               isDark
-                ? "text-gray-400 hover:text-white hover:bg-[#333]"
-                : "text-gray-400 hover:text-gray-900 hover:bg-gray-100"
+                ? "text-zinc-500 hover:text-white"
+                : "text-zinc-400 hover:text-black"
             )}
             title="Edit"
           >
-            <Edit2 size={16} />
+            <Edit2 size={14} />
           </button>
           <button
             onClick={() => {
@@ -98,14 +113,14 @@ const AgentCard: React.FC<AgentCardProps> = ({
               }
             }}
             className={cn(
-              "p-2 rounded-lg transition-colors",
+              "p-1.5 transition-colors",
               isDark
-                ? "text-gray-400 hover:text-red-400 hover:bg-red-900/20"
-                : "text-gray-400 hover:text-red-600 hover:bg-red-50"
+                ? "text-zinc-500 hover:text-red-400"
+                : "text-zinc-400 hover:text-red-600"
             )}
             title="Delete"
           >
-            <Trash2 size={16} />
+            <Trash2 size={14} />
           </button>
         </div>
       </div>

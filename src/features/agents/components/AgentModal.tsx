@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X, Loader2, Bot } from "lucide-react";
+import { X, Loader2, Bot, Plus } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { AgentService } from "../../../api/backendApi";
 import AVAILABLE_MODELS from "../../../../Constants";
@@ -31,7 +31,6 @@ const AgentModal: React.FC<AgentModalProps> = ({
     model: "gpt-4o-mini",
   });
 
-  // Conversation starters state
   const [conversationStarter, setConversationStarter] = useState("");
   const [conversationStarters, setConversationStarters] = useState<string[]>(
     []
@@ -40,16 +39,13 @@ const AgentModal: React.FC<AgentModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       setError(null);
-
       if (agent) {
         setFormData({
           name: agent.name || "",
           description: agent.description || "",
           instructions: agent.instructions || "",
-          // FIX 4: Robust check. Prioritize recommended_model, fallback to model, then default.
           model: agent.recommended_model || agent.model || "gpt-4o-mini",
         });
-
         setConversationStarters(agent.conversation_starters || []);
       } else {
         setFormData({
@@ -58,10 +54,8 @@ const AgentModal: React.FC<AgentModalProps> = ({
           instructions: "",
           model: "gpt-4o-mini",
         });
-
         setConversationStarters([]);
       }
-
       setConversationStarter("");
     }
   }, [isOpen, agent]);
@@ -72,14 +66,11 @@ const AgentModal: React.FC<AgentModalProps> = ({
     e.preventDefault();
     setError(null);
     setIsSubmitting(true);
-
     try {
       const selectedModelObj = AVAILABLE_MODELS.find(
         (m) => m.id === formData.model
       );
-
       const provider = selectedModelObj?.provider || "openai";
-
       const payload = {
         name: formData.name,
         description: formData.description,
@@ -89,142 +80,166 @@ const AgentModal: React.FC<AgentModalProps> = ({
         recommended_provider: provider,
       };
 
-      if (agent) {
-        // FIX 5: Use 'gpt_id' (which is the actual ID field in your Agent interface)
-        await AgentService.updateAgent(token, agent.gpt_id, payload);
-      } else {
-        await AgentService.createAgent(token, payload);
-      }
+      if (agent) await AgentService.updateAgent(token, agent.gpt_id, payload);
+      else await AgentService.createAgent(token, payload);
 
       onSuccess();
       onClose();
     } catch (err: any) {
-      console.error("Failed to save agent", err);
-      setError(
-        err.response?.data?.detail || "Failed to save agent. Please try again."
-      );
+      console.error(err);
+      setError(err.response?.data?.detail || "Failed to save agent.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const inputClass = cn(
+    "flex w-full border px-4 py-3 text-sm font-medium transition-all outline-none",
+    isDark
+      ? "bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-600 focus:border-white focus:bg-black"
+      : "bg-zinc-50 border-zinc-200 text-black placeholder:text-zinc-400 focus:border-black focus:bg-white"
+  );
+
   return (
     <>
-      {/* Backdrop */}
       <div
-        className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+        className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Modal */}
       <div
         className={cn(
-          "fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-xl border p-6 shadow-2xl animate-in fade-in-0 zoom-in-95",
-          isDark
-            ? "bg-[#18181b] border-[#27272a] text-gray-100"
-            : "bg-white border-gray-200 text-gray-900"
+          "fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 border p-8 shadow-2xl animate-in fade-in-0 zoom-in-95",
+          isDark ? "bg-black border-zinc-800" : "bg-white border-zinc-200"
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <Bot
-              className={isDark ? "text-indigo-400" : "text-indigo-600"}
-              size={22}
-            />
-            {agent ? "Edit Agent" : "Create New Agent"}
-          </h2>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <div
+              className={cn(
+                "p-2 border",
+                isDark
+                  ? "border-zinc-700 bg-zinc-900"
+                  : "border-zinc-200 bg-zinc-100"
+              )}
+            >
+              <Bot size={20} className={isDark ? "text-white" : "text-black"} />
+            </div>
+            <h2
+              className={cn(
+                "text-xl font-bold tracking-tight uppercase",
+                isDark ? "text-white" : "text-black"
+              )}
+            >
+              {agent ? "Edit Protocol" : "New Agent"}
+            </h2>
+          </div>
           <button
           title="button"
             onClick={onClose}
             className={cn(
-              "rounded-full p-1 transition-colors",
-              isDark
-                ? "hover:bg-gray-800 text-gray-400"
-                : "hover:bg-gray-100 text-gray-500"
+              "p-1 hover:rotate-90 transition-transform",
+              isDark ? "text-white" : "text-black"
             )}
           >
-            <X size={20} />
+            <X size={24} />
           </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Name */}
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium">Name</label>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Name & Desc */}
+          <div className="space-y-4">
             <input
               required
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              placeholder="e.g., Coding Assistant"
-              className={cn(
-                "flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2",
-                isDark
-                  ? "bg-gray-900 border-gray-800 focus-visible:ring-indigo-500"
-                  : "bg-white border-gray-200 focus-visible:ring-indigo-500"
-              )}
+              placeholder="AGENT DESIGNATION (NAME)"
+              className={inputClass}
             />
-          </div>
-
-          {/* Description */}
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium">Description</label>
             <input
               value={formData.description}
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
-              placeholder="What does this agent do?"
-              className={cn(
-                "flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2",
-                isDark
-                  ? "bg-gray-900 border-gray-800 focus-visible:ring-indigo-500"
-                  : "bg-white border-gray-200 focus-visible:ring-indigo-500"
-              )}
+              placeholder="OPERATIONAL BRIEF (DESCRIPTION)"
+              className={inputClass}
             />
           </div>
 
-          {/* Conversation Starters */}
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium">Conversation Starters</label>
+          {/* Model Select */}
+          <div>
+            <select
+              title="select"
+              value={formData.model}
+              onChange={(e) =>
+                setFormData({ ...formData, model: e.target.value })
+              }
+              className={inputClass}
+            >
+              {AVAILABLE_MODELS.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.label.toUpperCase()}
+                </option>
+              ))}
+            </select>
+          </div>
 
+          {/* Instructions */}
+          <textarea
+            required
+            rows={4}
+            value={formData.instructions}
+            onChange={(e) =>
+              setFormData({ ...formData, instructions: e.target.value })
+            }
+            placeholder="SYSTEM DIRECTIVES (INSTRUCTIONS)"
+            className={cn(inputClass, "resize-none")}
+          />
+
+          {/* Starters */}
+          <div className="space-y-3">
             <div className="flex gap-2">
               <input
                 value={conversationStarter}
                 onChange={(e) => setConversationStarter(e.target.value)}
-                placeholder="e.g. How can I help you today?"
-                className={cn(
-                  "flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2",
-                  isDark
-                    ? "bg-gray-900 border-gray-800 focus-visible:ring-indigo-500"
-                    : "bg-white border-gray-200 focus-visible:ring-indigo-500"
-                )}
+                placeholder="ADD COMMAND PROTOCOL (STARTER)"
+                className={inputClass}
               />
               <button
+              title="button"
                 type="button"
                 onClick={() => {
                   if (!conversationStarter.trim()) return;
-                  setConversationStarters((prev) => [
-                    ...prev,
+                  setConversationStarters([
+                    ...conversationStarters,
                     conversationStarter.trim(),
                   ]);
                   setConversationStarter("");
                 }}
-                className="px-4 rounded-md bg-indigo-600 text-white text-sm hover:bg-indigo-700"
+                className={cn(
+                  "px-4 border transition-colors",
+                  isDark
+                    ? "border-zinc-700 hover:bg-white hover:text-black"
+                    : "border-zinc-300 hover:bg-black hover:text-white"
+                )}
               >
-                Add
+                <Plus size={20} />
               </button>
             </div>
-
             {conversationStarters.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
+              <div className="flex flex-wrap gap-2">
                 {conversationStarters.map((starter, index) => (
                   <span
                     key={index}
-                    className="flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-indigo-500/10 text-indigo-400"
+                    className={cn(
+                      "flex items-center gap-2 px-3 py-1 text-xs font-mono uppercase border",
+                      isDark
+                        ? "border-zinc-800 bg-zinc-900 text-zinc-300"
+                        : "border-zinc-200 bg-zinc-50 text-zinc-600"
+                    )}
                   >
                     {starter}
                     <button
@@ -234,9 +249,9 @@ const AgentModal: React.FC<AgentModalProps> = ({
                           prev.filter((_, i) => i !== index)
                         )
                       }
-                      className="hover:text-red-400"
+                      className="hover:text-red-500"
                     >
-                      ✕
+                      ×
                     </button>
                   </span>
                 ))}
@@ -244,67 +259,22 @@ const AgentModal: React.FC<AgentModalProps> = ({
             )}
           </div>
 
-          {/* Model */}
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium">Base Model</label>
-            <select
-            title="select"
-              value={formData.model}
-              onChange={(e) =>
-                setFormData({ ...formData, model: e.target.value })
-              }
-              className={cn(
-                "flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2",
-                isDark
-                  ? "bg-gray-900 border-gray-800 focus-visible:ring-indigo-500"
-                  : "bg-white border-gray-200 focus-visible:ring-indigo-500"
-              )}
-            >
-              {AVAILABLE_MODELS.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.label} ({m.provider})
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Instructions */}
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium">System Instructions</label>
-            <textarea
-              required
-              rows={5}
-              value={formData.instructions}
-              onChange={(e) =>
-                setFormData({ ...formData, instructions: e.target.value })
-              }
-              placeholder="You are a helpful assistant who..."
-              className={cn(
-                "flex w-full rounded-md border px-3 py-2 text-sm resize-none focus-visible:ring-2 focus-visible:ring-offset-2",
-                isDark
-                  ? "bg-gray-900 border-gray-800 focus-visible:ring-indigo-500"
-                  : "bg-white border-gray-200 focus-visible:ring-indigo-500"
-              )}
-            />
-          </div>
-
           {error && (
-            <div className="p-3 text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-md">
+            <div className="p-3 text-sm font-mono text-red-500 border border-red-500/20 bg-red-500/5">
               {error}
             </div>
           )}
 
-          {/* Footer */}
-          <div className="flex justify-end gap-3 pt-4">
+          <div className="flex justify-end gap-4 pt-4 border-t border-zinc-200 dark:border-zinc-800">
             <button
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
               className={cn(
-                "px-4 py-2 text-sm rounded-md",
+                "px-6 py-3 text-sm font-bold uppercase tracking-wider transition-colors",
                 isDark
-                  ? "text-gray-300 hover:bg-gray-800"
-                  : "text-gray-700 hover:bg-gray-100"
+                  ? "text-zinc-500 hover:text-white"
+                  : "text-zinc-500 hover:text-black"
               )}
             >
               Cancel
@@ -313,14 +283,19 @@ const AgentModal: React.FC<AgentModalProps> = ({
               type="submit"
               disabled={isSubmitting}
               className={cn(
-                "flex items-center gap-2 px-4 py-2 text-sm rounded-md text-white",
-                isSubmitting
-                  ? "bg-indigo-600/50 cursor-not-allowed"
-                  : "bg-indigo-600 hover:bg-indigo-700"
+                "px-8 py-3 text-sm font-bold uppercase tracking-widest transition-all",
+                isDark
+                  ? "bg-white text-black hover:bg-zinc-200"
+                  : "bg-black text-white hover:bg-zinc-800"
               )}
             >
-              {isSubmitting && <Loader2 size={16} className="animate-spin" />}
-              {agent ? "Save Changes" : "Create Agent"}
+              {isSubmitting ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : agent ? (
+                "Save System"
+              ) : (
+                "Deploy Agent"
+              )}
             </button>
           </div>
         </form>

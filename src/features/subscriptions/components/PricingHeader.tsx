@@ -15,7 +15,7 @@ const PricingHeader: React.FC<PricingHeaderProps> = ({
 
   return (
     <div className="text-center max-w-4xl mx-auto mb-16 space-y-4">
-      <h2 className="text-sm font-semibold tracking-wide text-[#00A9A4] uppercase">
+      <h2 className="text-sm font-semibold tracking-wide text-[#ffffff] uppercase">
         Pricing Plans
       </h2>
 

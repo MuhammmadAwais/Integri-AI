@@ -103,9 +103,13 @@ const AccountSettings: React.FC = () => {
         </div>
       </div>
       <div className="flex items-center gap-4">
-        <Button type="submit" disabled={isUploading || !displayName.trim()}>
+        <Button
+          className="bg-[#696969] hover:bg-gray-500"
+          type="submit"
+          disabled={isUploading || !displayName.trim()}
+        >
           {isUploading ? (
-            <Loader2 className="animate-spin mr-2" size={18} />
+            <Loader2 className="animate-spin mr-2 " size={18} />
           ) : null}
           Save Changes
         </Button>

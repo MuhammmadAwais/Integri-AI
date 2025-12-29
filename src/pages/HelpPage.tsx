@@ -64,7 +64,7 @@ const HelpPage: React.FC = () => {
         isDark ? "bg-[#09090b] text-white" : "bg-gray-50 text-gray-900"
       )}
     >
-      <ParticleBackground/>
+      <ParticleBackground />
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
@@ -118,7 +118,7 @@ const HelpPage: React.FC = () => {
               <div
                 className={cn(
                   "p-3 rounded-full",
-                  isDark ? "bg-blue-500 text-white" : "bg-blue-600 text-white"
+                  isDark ? "bg-[#696969] text-white" : "bg-[#696969] text-white"
                 )}
               >
                 <Mail size={24} />
@@ -140,7 +140,7 @@ const HelpPage: React.FC = () => {
               className={cn(
                 "px-4 py-2 rounded-lg font-medium transition-colors",
                 isDark
-                  ? "bg-blue-600 hover:bg-blue-500 text-white"
+                  ? "bg-[#a9a9a9]  text-white"
                   : "bg-white text-blue-600 shadow-sm hover:bg-gray-50"
               )}
             >

@@ -12,14 +12,14 @@ const SubscriptionSettings: React.FC = () => {
       className={cn(
         "relative overflow-hidden rounded-xl p-6 border transition-all",
         isDark
-          ? "bg-linear-to-br from-blue-900/20 to-[#18181b] border-blue-900/30"
+          ? "bg-linear-to-br from-gray-700 to-[#18181b] border-blue-900/30"
           : "bg-linear-to-br from-blue-50 to-white border-blue-100"
       )}
     >
       <div
         className={cn(
           "absolute -top-10 -right-10 w-40 h-40 rounded-full blur-3xl opacity-30",
-          isDark ? "bg-blue-500" : "bg-blue-300"
+          isDark ? "bg-gray-500" : "bg-blue-300"
         )}
       />
 
@@ -29,7 +29,7 @@ const SubscriptionSettings: React.FC = () => {
             <span
               className={cn(
                 "px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider",
-                isDark ? "bg-blue-500 text-white" : "bg-blue-600 text-white"
+                isDark ? "bg-gray-500 text-white" : "bg-gray-600 text-white"
               )}
             >
               Free Plan
@@ -53,9 +53,8 @@ const SubscriptionSettings: React.FC = () => {
             voice mode, and priority support.
           </p>
         </div>
-        <Link
-          to="/subscriptions">
-        <Button className="shrink-0">Manage Subscription</Button>
+        <Link to="/subscriptions">
+          <Button className="shrink-0 bg-[#696969] hover:bg-gray-500">Manage Subscription</Button>
         </Link>
       </div>
     </div>

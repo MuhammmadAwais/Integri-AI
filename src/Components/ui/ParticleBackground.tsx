@@ -13,22 +13,24 @@ const ParticleBackground: React.FC = () => {
 
     let particles: Particle[] = [];
     let animationFrameId: number;
+    let mouse = { x: -9999, y: -9999 }; // Initialize off-screen
 
     // --- CONFIGURATION ---
     const config = {
-      particleCount: Math.min(window.innerWidth * 0.1, 100),
-      connectionDist: 110,
-      speed: 0.5,
+      // Reduced count for a cleaner look (0.06 multiplier instead of 0.1)
+      particleCount: Math.min(window.innerWidth * 0.06, 70),
+      connectionDist: 120,
+      mouseDist: 150, // Distance for mouse interaction
+      speed: 0.3, // Slower, more elegant movement
       colors: {
         dark: {
-          bg: "#000000", // Pure black for depth
-          particle: "rgba(255, 255, 255, 0.8)", // Bright stars
-          line: "rgba(255, 255, 255, 0.15)", // Faint connections
+          particle: "rgba(255, 255, 255, 0.6)", // Slightly transparent white
+          line: "rgba(255, 255, 255, 0.12)", // Very faint lines
         },
         light: {
-          bg: "#f8fafc", // Very light slate gray
-          particle: "rgba(71, 85, 105, 0.7)", // Slate-600 dots
-          line: "rgba(71, 85, 105, 0.15)", // Faint slate lines
+          // KEY FIX: Much lighter, subtle slate color for light mode
+          particle: "rgba(148, 163, 184, 0.5)", // Slate-400 at 50% opacity
+          line: "rgba(148, 163, 184, 0.08)", // Almost invisible lines
         },
       },
     };
@@ -39,19 +41,34 @@ const ParticleBackground: React.FC = () => {
       init();
     };
 
+    const handleMouseMove = (e: MouseEvent) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    };
+
+    const handleMouseLeave = () => {
+      mouse.x = -9999;
+      mouse.y = -9999;
+    };
+
     class Particle {
       x: number;
       y: number;
       vx: number;
       vy: number;
       size: number;
+      baseX: number;
+      baseY: number;
 
       constructor() {
         this.x = Math.random() * canvas!.width;
         this.y = Math.random() * canvas!.height;
+        this.baseX = this.x;
+        this.baseY = this.y;
         this.vx = (Math.random() - 0.5) * config.speed;
         this.vy = (Math.random() - 0.5) * config.speed;
-        this.size = Math.random() * 2 + 1.5;
+        // KEY FIX: Smaller size (0.5px to 2px)
+        this.size = Math.random() * 1.5 + 0.5;
       }
 
       update() {
@@ -61,6 +78,24 @@ const ParticleBackground: React.FC = () => {
         // Bounce off edges
         if (this.x < 0 || this.x > canvas!.width) this.vx *= -1;
         if (this.y < 0 || this.y > canvas!.height) this.vy *= -1;
+
+        // Mouse Interaction (Gentle Repulsion/Wiggle)
+        const dx = mouse.x - this.x;
+        const dy = mouse.y - this.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < config.mouseDist) {
+          const forceDirectionX = dx / distance;
+          const forceDirectionY = dy / distance;
+          const force = (config.mouseDist - distance) / config.mouseDist;
+
+          // Gentle push away from mouse
+          const directionX = forceDirectionX * force * 1;
+          const directionY = forceDirectionY * force * 1;
+
+          this.x -= directionX;
+          this.y -= directionY;
+        }
       }
 
       draw() {
@@ -91,9 +126,19 @@ const ParticleBackground: React.FC = () => {
 
           if (distance < config.connectionDist) {
             const opacity = 1 - distance / config.connectionDist;
-            ctx.strokeStyle = isDark
-              ? config.colors.dark.line.replace("0.15", `${opacity * 0.2}`)
-              : config.colors.light.line.replace("0.15", `${opacity * 0.2}`);
+            // Dynamic opacity calculation
+            const colorBase = isDark
+              ? config.colors.dark.line
+              : config.colors.light.line;
+            // Extract the rgba values to inject calculated opacity
+            // This assumes the format is "rgba(r, g, b, a)" in config
+            // We replace the last value with our calculated opacity * base opacity
+            const finalOpacity = opacity * (isDark ? 0.2 : 0.4);
+
+            ctx.strokeStyle = colorBase.replace(
+              /[\d.]+\)$/g,
+              `${finalOpacity})`
+            );
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(particles[a].x, particles[a].y);
@@ -106,7 +151,6 @@ const ParticleBackground: React.FC = () => {
 
     const animate = () => {
       if (!ctx || !canvas) return;
-      // Clear canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       particles.forEach((p) => {
@@ -119,12 +163,17 @@ const ParticleBackground: React.FC = () => {
     };
 
     window.addEventListener("resize", resize);
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseleave", handleMouseLeave);
+
     resize();
     init();
     animate();
 
     return () => {
       window.removeEventListener("resize", resize);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseleave", handleMouseLeave);
       cancelAnimationFrame(animationFrameId);
     };
   }, [isDark]);
@@ -134,8 +183,7 @@ const ParticleBackground: React.FC = () => {
       ref={canvasRef}
       className="absolute inset-0 pointer-events-none z-0"
       style={{
-        // Smoothly transition background color
-        transition: "background-color 0.5s ease",
+        transition: "opacity 0.5s ease",
       }}
     />
   );
