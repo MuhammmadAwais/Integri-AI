@@ -138,7 +138,7 @@ const AgentDetailPage = () => {
           {/* Avatar */}
           <div
             className={cn(
-              "w-32 h-32 md:w-40 md:h-40 flex-shrink-0 flex items-center justify-center border-2",
+              "w-32 h-32 md:w-40 md:h-40 shrink-0 flex items-center justify-center border-2",
               isDark
                 ? "bg-zinc-900 border-zinc-800"
                 : "bg-white border-zinc-200 shadow-2xl"

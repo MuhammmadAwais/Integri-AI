@@ -321,6 +321,7 @@ const PdfChatPage: React.FC = () => {
                         Note
                       </span>
                       <button
+                      title="button"
                         onClick={() => deleteNote(note.id)}
                         className="text-red-500 hover:text-red-700 p-0.5 rounded"
                       >
