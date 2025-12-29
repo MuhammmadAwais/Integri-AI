@@ -13,8 +13,9 @@ import {
   X as XIcon,
   FileText,
   HardDrive,
-  Sparkles, // Added
-  ArrowRight, // Added
+  Sparkles,
+  ArrowRight,
+  PenTool, // Added for Sketch Icon
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChatService } from "../features/chat/services/chatService";
@@ -24,6 +25,7 @@ import ReasoningMenu from "../Components/ui/ReasoningMenu";
 import { RocketIcon } from "../Components/ui/ReasoningMenu";
 import { useCloudStorage } from "../hooks/useCloudStorage";
 import { AnimatePresence, motion } from "framer-motion";
+import WhiteboardModal from "../Components/ui/WhiteboardModal"; // Import the modal
 
 const WelcomePage: React.FC = () => {
   const isDark = useAppSelector((state: any) => state.theme?.isDark);
@@ -39,6 +41,7 @@ const WelcomePage: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showReasoningMenu, setShowReasoningMenu] = useState(false);
   const [showAttachMenu, setShowAttachMenu] = useState(false);
+  const [showWhiteboard, setShowWhiteboard] = useState(false); // State for Whiteboard
 
   // Refs
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -185,7 +188,6 @@ const WelcomePage: React.FC = () => {
       <ParticleBackground />
 
       {/* --- SUBSCRIPTION OFFERING CARD (Top Left) --- */}
-      {/* Logic: Only show if user is NOT premium */}
       {!user?.isPremium && (
         <motion.div
           initial={{ opacity: 0, x: -20, y: -20 }}
@@ -202,7 +204,6 @@ const WelcomePage: React.FC = () => {
                   : "bg-white/40 border-zinc-200 hover:bg-white/90 hover:border-black/10 text-black hover:shadow-xl shadow-sm"
               )}
             >
-              {/* Icon Circle */}
               <div
                 className={cn(
                   "flex items-center justify-center w-9 h-9 rounded-full border transition-all duration-300",
@@ -214,7 +215,6 @@ const WelcomePage: React.FC = () => {
                 <Sparkles size={14} strokeWidth={2} />
               </div>
 
-              {/* Text Info */}
               <div className="flex flex-col">
                 <span
                   className={cn(
@@ -293,7 +293,11 @@ const WelcomePage: React.FC = () => {
                       : "bg-white border-gray-200 text-gray-800"
                   )}
                 >
-                  <FileText className="hover:cursor-pointer" size={16} />
+                  {selectedFile.type.startsWith("image/") ? (
+                    <ImageIcon size={16} className="text-blue-500" />
+                  ) : (
+                    <FileText size={16} className="text-blue-500" />
+                  )}
                   <span className="max-w-[150px] truncate">
                     {selectedFile.name}
                   </span>
@@ -345,7 +349,10 @@ const WelcomePage: React.FC = () => {
                       )}
                     >
                       <button
-                        onClick={() => fileInputRef.current?.click()}
+                        onClick={() => {
+                          fileInputRef.current?.click();
+                          setShowAttachMenu(false);
+                        }}
                         className={cn(
                           "w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
                           isDark
@@ -453,6 +460,30 @@ const WelcomePage: React.FC = () => {
                         </svg>
                         OneDrive
                       </button>
+
+                      <div
+                        className={cn(
+                          "h-px w-full my-1",
+                          isDark ? "bg-gray-700" : "bg-gray-100"
+                        )}
+                      />
+
+                      {/* --- NEW SKETCH BUTTON --- */}
+                      <button
+                        onClick={() => {
+                          setShowWhiteboard(true);
+                          setShowAttachMenu(false);
+                        }}
+                        className={cn(
+                          "w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
+                          isDark
+                            ? "hover:bg-white/10 text-gray-200"
+                            : "hover:bg-gray-100 text-gray-700"
+                        )}
+                      >
+                        <PenTool size={18} className="text-purple-500" />
+                        Draw Sketch
+                      </button>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -557,6 +588,17 @@ const WelcomePage: React.FC = () => {
           All LLMs can make mistakes. Verify the information you receive.
         </div>
       </div>
+
+      {/* --- WHITEBOARD MODAL (Rendered outside DOM hierarchy) --- */}
+      <WhiteboardModal
+        isOpen={showWhiteboard}
+        onClose={() => setShowWhiteboard(false)}
+        onDone={(file) => {
+          setSelectedFile(file);
+          setShowWhiteboard(false);
+        }}
+        isDark={isDark}
+      />
     </div>
   );
 };

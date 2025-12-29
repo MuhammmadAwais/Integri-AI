@@ -7,11 +7,13 @@ import {
   Globe,
   Image as ImageIcon,
   HardDrive,
+  PenTool, // Imported Pen Icon
 } from "lucide-react";
 import { useAppSelector } from "../../../hooks/useRedux";
 import { cn } from "../../../lib/utils";
-import { useCloudStorage } from "../../../hooks/useCloudStorage"; // Import the new hook
-import { AnimatePresence, motion } from "framer-motion"; // Assuming you have framer-motion installed
+import { useCloudStorage } from "../../../hooks/useCloudStorage";
+import { AnimatePresence, motion } from "framer-motion";
+import WhiteboardModal from "../../../Components/ui/WhiteboardModal";// Make sure path is correct
 
 interface ChatInputProps {
   onSend?: (text: string, file?: File | null) => void;
@@ -29,7 +31,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   const [input, setInput] = useState("");
   const [file, setFile] = useState<File | null>(null);
-  const [showAttachMenu, setShowAttachMenu] = useState(false); // State for dropdown
+  const [showAttachMenu, setShowAttachMenu] = useState(false);
+  const [showWhiteboard, setShowWhiteboard] = useState(false); // State for whiteboard
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -102,10 +105,14 @@ const ChatInput: React.FC<ChatInputProps> = ({
       {/* File Preview Bubble */}
       {file && (
         <div className="mb-2 flex w-fit items-center gap-2 rounded-xl bg-blue-500/10 px-3 py-1.5 text-xs font-medium text-blue-500 animate-in fade-in slide-in-from-bottom-2">
-          <FileText size={14} />
+          {file.type.startsWith("image/") ? (
+            <ImageIcon size={14} />
+          ) : (
+            <FileText size={14} />
+          )}
           <span className="max-w-[150px] truncate">{file.name}</span>
           <button
-          title="button"
+            title="button"
             onClick={() => {
               setFile(null);
               if (fileInputRef.current) fileInputRef.current.value = "";
@@ -127,7 +134,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
             : "bg-[#f4f4f4] border-transparent focus-within:bg-white focus-within:border-gray-200 focus-within:shadow-md"
         )}
       >
-        
         {/* Text Area */}
         <textarea
           ref={textareaRef}
@@ -150,7 +156,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
             {/* Left Tools (Attach Menu) */}
             <div className="flex items-center gap-1 relative" ref={menuRef}>
               <input
-              title="button"
+                title="button"
                 type="file"
                 ref={fileInputRef}
                 onChange={handleFileChange}
@@ -190,7 +196,10 @@ const ChatInput: React.FC<ChatInputProps> = ({
                     <div className="flex flex-col gap-1">
                       {/* Local Upload */}
                       <button
-                        onClick={() => fileInputRef.current?.click()}
+                        onClick={() => {
+                          fileInputRef.current?.click();
+                          setShowAttachMenu(false);
+                        }}
                         className={cn(
                           "flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-lg transition-colors",
                           isDark
@@ -306,6 +315,30 @@ const ChatInput: React.FC<ChatInputProps> = ({
                         </svg>
                         OneDrive
                       </button>
+
+                      <div
+                        className={cn(
+                          "h-px w-full my-1",
+                          isDark ? "bg-gray-800" : "bg-gray-100"
+                        )}
+                      />
+
+                      {/* NEW: Draw Sketch Option */}
+                      <button
+                        onClick={() => {
+                          setShowWhiteboard(true);
+                          setShowAttachMenu(false);
+                        }}
+                        className={cn(
+                          "flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-lg transition-colors",
+                          isDark
+                            ? "hover:bg-gray-800 text-gray-200"
+                            : "hover:bg-gray-100 text-gray-700"
+                        )}
+                      >
+                        <PenTool size={16} className="text-purple-500" />
+                        Draw Sketch
+                      </button>
                     </div>
                   </motion.div>
                 )}
@@ -313,7 +346,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
               {/* Other standard buttons */}
               <button
-              title="button"
+                title="button"
                 className={cn(
                   "p-2 rounded-full transition-colors",
                   isDark
@@ -324,7 +357,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 <Globe size={18} />
               </button>
               <button
-              title="button"
+                title="button"
                 className={cn(
                   "p-2 rounded-full transition-colors",
                   isDark
@@ -347,7 +380,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 {input.length} / 2000
               </span>
               <button
-              title="button"
+                title="button"
                 onClick={handleSend}
                 disabled={
                   (!input.trim() && !file) || disabled || isCloudLoading
@@ -375,7 +408,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
         {!features && (
           <div className="absolute bottom-2 right-2">
             <button
-            title="button"
+              title="button"
               onClick={handleSend}
               disabled={(!input.trim() && !file) || disabled}
               className={cn(
@@ -390,6 +423,17 @@ const ChatInput: React.FC<ChatInputProps> = ({
           </div>
         )}
       </div>
+
+      {/* WHITEBOARD MODAL (Rendered via Portal inside component) */}
+      <WhiteboardModal
+        isOpen={showWhiteboard}
+        onClose={() => setShowWhiteboard(false)}
+        onDone={(file) => {
+          setFile(file);
+          setShowWhiteboard(false);
+        }}
+        isDark={isDark}
+      />
     </div>
   );
 };

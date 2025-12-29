@@ -160,7 +160,14 @@ const Sidebar: React.FC = () => {
           )}
         >
           <Link to="/" className="hover:opacity-80 transition-opacity">
-            <h1 className="text-2xl font-extrabold">Integri</h1>
+            <h1
+              className={cn(
+                "",
+                isExpanded ? "text-2xl font-extrabold" : "text xs font-semibold"
+              )}
+            >
+              Integri
+            </h1>
           </Link>
         </div>
 
