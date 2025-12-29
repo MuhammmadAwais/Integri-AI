@@ -7,7 +7,7 @@ import { Check, Bot, Sparkles, Plus, Loader2 } from "lucide-react";
 
 // ⚠️ CRITICAL: Verify this path matches your project structure
 // It should point to where you saved 'agentsSlice.tsx'
-import { fetchAgents } from "../../features/agents/agentsSlice";
+import {fetchAgents} from "../../features/agents/agentsSlice";
 
 interface AgentMenuProps {
   isOpen: boolean;
@@ -199,23 +199,24 @@ const AgentMenu: React.FC<AgentMenuProps> = ({
                     );
                   })
                 : /* Empty State */
-                  !isLoading && (
-                    <button
-                      onClick={() => {
-                        onClose();
-                        navigate("/agents");
-                      }}
-                      className={cn(
-                        "w-full px-3 py-3 mt-2 rounded-lg text-sm transition-all flex items-center justify-center gap-2 border border-dashed",
-                        isDark
-                          ? "border-zinc-800 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900"
-                          : "border-zinc-200 text-zinc-500 hover:text-zinc-700 hover:bg-zinc-50"
-                      )}
-                    >
-                      <Plus size={14} />
-                      <span>Create New Agent</span>
-                    </button>
+                  null}
+              {!isLoading && (
+                <button
+                  onClick={() => {
+                    onClose();
+                    navigate("/agents");
+                  }}
+                  className={cn(
+                    "w-full px-3 py-3 mt-2 rounded-lg text-sm transition-all flex items-center justify-center gap-2 border border-dashed",
+                    isDark
+                      ? "border-zinc-800 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900"
+                      : "border-zinc-200 text-zinc-500 hover:text-zinc-700 hover:bg-zinc-50"
                   )}
+                >
+                  <Plus size={14} />
+                  <span>Create New Agent</span>
+                </button>
+              )}
             </div>
           </div>
         </div>,
