@@ -8,6 +8,7 @@ import {
   Eye,
   StickyNote,
   Trash2,
+  Download,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import ChatInterface from "../features/chat/components/ChatInterface";
@@ -15,6 +16,9 @@ import { useAppSelector } from "../hooks/useRedux";
 import { ChatService } from "../features/chat/services/chatService";
 import Button from "../Components/ui/Button";
 import ParticleBackground from "../Components/ui/ParticleBackground";
+
+// Import pdf-lib
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 
 interface Note {
   id: string;
@@ -84,21 +88,19 @@ const PdfChatPage: React.FC = () => {
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!isNoteMode || !pdfContainerRef.current) return;
 
-    // Get click coordinates relative to the container
     const rect = pdfContainerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
     const newNote: Note = {
       id: Date.now().toString(),
-      // Center the note on click (assuming note width ~192px)
       x: Math.max(0, x - 20),
       y: Math.max(0, y - 20),
       text: "",
     };
 
     setNotes([...notes, newNote]);
-    setIsNoteMode(false); // Turn off mode after adding one note
+    setIsNoteMode(false);
   };
 
   const updateNoteText = (id: string, text: string) => {
@@ -107,6 +109,74 @@ const PdfChatPage: React.FC = () => {
 
   const deleteNote = (id: string) => {
     setNotes(notes.filter((n) => n.id !== id));
+  };
+
+  // --- DOWNLOAD WITH NOTES ---
+  const handleDownloadWithNotes = async () => {
+    if (!pdfUrl) return;
+    if (notes.length === 0) {
+      alert("No notes to save. Add some notes first!");
+      return;
+    }
+
+    try {
+      const existingPdfBytes = await fetch(pdfUrl).then((res) =>
+        res.arrayBuffer()
+      );
+
+      const pdfDoc = await PDFDocument.load(existingPdfBytes);
+      const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+      const pages = pdfDoc.getPages();
+      const firstPage = pages[0];
+      const { width: pageWidth, height: pageHeight } = firstPage.getSize();
+
+      if (!pdfContainerRef.current) return;
+      const { clientWidth, clientHeight } = pdfContainerRef.current;
+
+      for (const note of notes) {
+        const relX = note.x / clientWidth;
+        const relY = note.y / clientHeight;
+
+        const x = relX * pageWidth;
+        const y = pageHeight - relY * pageHeight;
+
+        const boxWidth = 180;
+        const boxHeight = 90;
+
+        firstPage.drawRectangle({
+          x: x,
+          y: y - boxHeight,
+          width: boxWidth,
+          height: boxHeight,
+          color: rgb(0.99, 0.94, 0.54),
+          borderColor: rgb(0.9, 0.7, 0.1),
+          borderWidth: 1,
+        });
+
+        firstPage.drawText(note.text, {
+          x: x + 5,
+          y: y - 15,
+          size: 10,
+          font: helveticaFont,
+          color: rgb(0, 0, 0),
+          maxWidth: boxWidth - 10,
+          lineHeight: 12,
+        });
+      }
+
+      const pdfBytes = await pdfDoc.save();
+
+      // FIX: Cast pdfBytes to any to avoid "Uint8Array vs BlobPart" TS error
+      const blob = new Blob([pdfBytes as any], { type: "application/pdf" });
+
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `document_with_notes_${Date.now()}.pdf`;
+      link.click();
+    } catch (error) {
+      console.error("Failed to save PDF", error);
+      alert("Failed to generate PDF with notes.");
+    }
   };
 
   if (!id) {
@@ -252,7 +322,7 @@ const PdfChatPage: React.FC = () => {
                         : ""
                     }`}
                     onClick={() => setIsNoteMode(!isNoteMode)}
-                    title="Add a Note"
+                    title="Click PDF to add a note"
                   >
                     {isNoteMode ? (
                       <StickyNote size={16} fill="currentColor" />
@@ -262,6 +332,17 @@ const PdfChatPage: React.FC = () => {
                     <span className="ml-2 text-xs">
                       {isNoteMode ? "Click PDF to Place" : "Add Note"}
                     </span>
+                  </Button>
+
+                  {/* Download Button */}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleDownloadWithNotes}
+                    title="Download with Notes"
+                  >
+                    <Download size={16} />
+                    <span className="ml-2 text-xs hidden sm:inline">Save</span>
                   </Button>
 
                   <div className="w-px h-4 bg-gray-300 dark:bg-gray-700 mx-1" />
@@ -284,17 +365,14 @@ const PdfChatPage: React.FC = () => {
                 ref={pdfContainerRef}
                 className="flex-1 w-full h-full relative overflow-hidden"
               >
-                {/* 1. PDF Iframe (Bottom Layer) */}
+                {/* 1. PDF Iframe */}
                 <iframe
                   src={pdfUrl}
                   className="absolute inset-0 w-full h-full border-0 z-0"
                   title="PDF Preview"
                 />
 
-                {/* 2. Click Capture Overlay (Middle Layer) 
-                   - This DIV sits on top of the iframe ONLY when isNoteMode is true.
-                   - This intercepts the click so the iframe doesn't swallow it.
-                */}
+                {/* 2. Click Capture Overlay */}
                 {isNoteMode && (
                   <div
                     className="absolute inset-0 z-10 cursor-crosshair bg-transparent"
@@ -302,7 +380,7 @@ const PdfChatPage: React.FC = () => {
                   />
                 )}
 
-                {/* 3. Notes Layer (Top Layer) */}
+                {/* 3. Notes Layer */}
                 {notes.map((note) => (
                   <div
                     key={note.id}
@@ -313,7 +391,6 @@ const PdfChatPage: React.FC = () => {
                       backgroundColor: isDark ? "#3f3f3f" : "#fef08a",
                       border: isDark ? "1px solid #555" : "1px solid #eab308",
                     }}
-                    // Stop propagation so clicking a note doesn't trigger the "add note" logic
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className="flex justify-between items-center p-1 bg-black/5 dark:bg-white/5 cursor-move">
@@ -321,7 +398,7 @@ const PdfChatPage: React.FC = () => {
                         Note
                       </span>
                       <button
-                      title="button"
+                        title="button"
                         onClick={() => deleteNote(note.id)}
                         className="text-red-500 hover:text-red-700 p-0.5 rounded"
                       >
