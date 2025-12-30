@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Sparkles, Wand2, Monitor, Box, Zap, Settings2 } from "lucide-react";
+import { Sparkles, Wand2, Monitor, Box, Zap} from "lucide-react";
 import ImageUploader from "./ImageUploader";
 import GenDropdown from "./GenDropdown";
 import AVAILABLE_MODELS from "../../../../Constants";
