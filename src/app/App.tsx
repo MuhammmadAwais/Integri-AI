@@ -32,6 +32,7 @@ import HelpPage from "../pages/HelpPage";
 import Agents from "../pages/Agents";
 import AgentDetailsPage from "../features/agents/components/AgentDetailsPage";
 import SubscriptionPage from "../pages/SubscriptionPage";
+import ImageGenPage from "../pages/ImageGenPage";
 
 // --- Router Setup (KEPT EXACTLY AS PROVIDED) ---
 const router = createBrowserRouter([
@@ -59,6 +60,8 @@ const router = createBrowserRouter([
       { path: "agents", element: <Agents /> },
       { path: "agents/:id", element: <AgentDetailsPage /> },
       { path: "subscriptions", element: <SubscriptionPage /> },
+      { path: "imageGen", element: <ImageGenPage/>},
+
 
       { path: "*", element: <Navigate to="/" replace /> },
     ],
