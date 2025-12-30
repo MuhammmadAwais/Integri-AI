@@ -52,7 +52,7 @@ const GenDropdown: React.FC<GenDropdownProps> = ({
 
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all duration-200
+        className={`hover:cursor-pointer w-full flex items-center justify-between p-3 rounded-xl border transition-all duration-200
           ${
             isDark
               ? `bg-zinc-900 border-zinc-800 text-zinc-100 hover:bg-zinc-800 hover:border-zinc-700 ${
@@ -103,7 +103,7 @@ const GenDropdown: React.FC<GenDropdownProps> = ({
                   onChange(option);
                   setIsOpen(false);
                 }}
-                className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors group
+                className={`hover:cursor-pointer w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors group
                   ${
                     value.id === option.id
                       ? isDark

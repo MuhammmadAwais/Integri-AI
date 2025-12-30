@@ -42,7 +42,7 @@ const GenRightPanel: React.FC<Props> = ({ isDark }) => {
       ${isDark ? "bg-zinc-950" : "bg-zinc-50"}`}
     >
       {/* Particles overlay behind background*/}
-      <ParticleBackground/>
+      <ParticleBackground />
       {/* Background Pattern (Subtle) */}
       <div
         className={`absolute inset-0 opacity-[0.03] pointer-events-none
@@ -60,7 +60,7 @@ const GenRightPanel: React.FC<Props> = ({ isDark }) => {
             isDark ? "text-white" : "text-zinc-900"
           }`}
         >
-         Prompt Gallery
+          Prompt Gallery
         </h1>
         <div
           className={`pointer-events-auto px-2 py-2 rounded-full text-xs font-bold border backdrop-blur-md
@@ -75,15 +75,15 @@ const GenRightPanel: React.FC<Props> = ({ isDark }) => {
       </div>
 
       {/* Horizontal Carousel Container - Reels Style */}
-      <div className="w-full h-full flex items-center overflow-x-auto px-10 gap-6 custom-scrollbar snap-x snap-mandatory pt-10 pb-10">
+      <div className="w-full h-full flex items-center overflow-x-auto px-10 gap-2 custom-scrollbar snap-x snap-mandatory pt-10">
         {GALLERY_ITEMS.map((item) => (
           <div
             key={item.id}
-            className="snap-center shrink-0 h-[85%] w-[45vh] lg:w-[50vh] flex flex-col relative group perspective-1000"
+            className="snap-center shrink-0 pt-2 h-[90%] w-[45vh] lg:w-[50vh] flex flex-col relative group perspective-1000"
           >
             {/* Card Container */}
             <div
-              className={`relative w-full h-full rounded-4xl overflow-hidden shadow-2xl transition-all duration-500 hover:-translate-y-2
+              className={`relative w-full h-full rounded-2xl overflow-hidden shadow-2xl transition-all duration-500 hover:-translate-y-2
               ${
                 isDark
                   ? "bg-zinc-900 shadow-black/50 border border-zinc-800"
@@ -95,7 +95,7 @@ const GenRightPanel: React.FC<Props> = ({ isDark }) => {
               <img
                 src={item.url}
                 alt={item.prompt}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover "
               />
 
               {/* Bottom Info Overlay */}
@@ -105,10 +105,16 @@ const GenRightPanel: React.FC<Props> = ({ isDark }) => {
                 </p>
 
                 <div className="flex items-center gap-3 pt-2">
-                  <button title="download" className="flex-1 py-3 bg-white text-black font-bold text-sm rounded-xl hover:bg-zinc-200 transition flex items-center justify-center gap-2">                   
+                  <button
+                    title="download"
+                    className="hover:cursor-pointer flex-1 py-3 bg-white text-black font-bold text-sm rounded-xl hover:bg-zinc-200 transition flex items-center justify-center gap-2"
+                  >
                     Use Prompt
                   </button>
-                  <button title="share" className="p-3 rounded-xl bg-white/10 backdrop-blur-md text-white hover:bg-white/20 transition border border-white/10">
+                  <button
+                    title="share"
+                    className="hover:cursor-pointer p-3 rounded-xl bg-white/10 backdrop-blur-md text-white hover:bg-white/20 transition border border-white/10"
+                  >
                     <Share2 size={18} />
                   </button>
                 </div>
@@ -118,7 +124,7 @@ const GenRightPanel: React.FC<Props> = ({ isDark }) => {
         ))}
 
         {/* Empty Spacer */}
-        <div className="w-10 shrink-0"></div>
+        <div className="w-10  shrink-0"></div>
       </div>
     </div>
   );

@@ -128,20 +128,7 @@ const GenLeftPanel: React.FC<Props> = ({ isDark }) => {
         </div>
 
         {/* 5. Image Upload */}
-        <ImageUploader isDark={isDark} />
-
-        {/* 6. Advanced Settings Toggle (Visual Only) */}
-        <button
-          className={`w-full py-3 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider rounded-xl border border-dashed transition-all
-          ${
-            isDark
-              ? "border-zinc-800 text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300"
-              : "border-zinc-200 text-zinc-400 hover:bg-zinc-50 hover:text-zinc-600"
-          }`}
-        >
-          <Settings2 size={14} />
-          Advanced Settings
-        </button>
+        <ImageUploader isDark={isDark} />        
       </div>
 
       {/* Footer / Generate Action */}
@@ -151,7 +138,7 @@ const GenLeftPanel: React.FC<Props> = ({ isDark }) => {
         }`}
       >
         <button
-          className={`w-full py-4 rounded-xl flex items-center justify-center gap-3 font-bold text-sm tracking-wide uppercase transition-all transform active:scale-[0.98] shadow-lg
+          className={`hover:cursor-pointer w-full py-4 rounded-xl flex items-center justify-center gap-3 font-bold text-sm tracking-wide uppercase transition-all transform active:scale-[0.98] shadow-lg
           ${
             isDark
               ? "bg-white text-black hover:bg-zinc-200 shadow-zinc-900/20"
