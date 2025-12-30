@@ -11,8 +11,9 @@ import {
   ChevronRight,
   Trash2,
   FileText,
+  CheckCircle,
+  MessageCircle,
 } from "lucide-react";
-import { CheckCircle } from "lucide-react";
 import { useAppSelector } from "../../../hooks/useRedux";
 import { useChatList } from "../../chat/hooks/useChat";
 import { cn } from "../../../lib/utils";
@@ -22,17 +23,18 @@ import UserProfile from "./UserProfile";
 
 // --- NAVIGATION ITEMS CONFIG ---
 const NAV_ITEMS = [
-  { id: "chat", label: "Chat", icon: PenSquare, path: "/" },
+  { id: "chat", label: "Chat", icon: MessageCircle, path: "/" },
   { id: "voice", label: "Voice", icon: AudioWaveform, path: "/voice" },
   {
     id: "playground",
     label: "Playground",
-    icon: ImageIcon,
+    icon: PenSquare,
     path: "/playground",
   },
   { id: "agents", label: "Alex Agents", icon: CheckCircle, path: "/agents" },
   { id: "library", label: "Library", icon: FolderOpen, path: "/library" },
   { id: "pdf", label: "PDF Chat", icon: FileText, path: "/pdf" },
+  { id: "imageGen", label: "Image Gen", icon: ImageIcon, path: "/imageGen" },
 ];
 
 const Sidebar: React.FC = () => {
