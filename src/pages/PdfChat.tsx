@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
   Upload,
@@ -9,6 +9,7 @@ import {
   StickyNote,
   Trash2,
   Download,
+  GripHorizontal, // Added Drag Handle Icon
 } from "lucide-react";
 import { motion } from "framer-motion";
 import ChatInterface from "../features/chat/components/ChatInterface";
@@ -42,6 +43,10 @@ const PdfChatPage: React.FC = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [isNoteMode, setIsNoteMode] = useState(false);
   const pdfContainerRef = useRef<HTMLDivElement>(null);
+
+  // --- DRAG STATE ---
+  const [draggingNoteId, setDraggingNoteId] = useState<string | null>(null);
+  const dragOffsetRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     if (location.state?.file) {
@@ -111,6 +116,63 @@ const PdfChatPage: React.FC = () => {
     setNotes(notes.filter((n) => n.id !== id));
   };
 
+  // --- DRAG LOGIC START ---
+  const handleDragStart = (e: React.MouseEvent, note: Note) => {
+    e.stopPropagation(); // Prevent triggering other clicks
+    setDraggingNoteId(note.id);
+
+    if (pdfContainerRef.current) {
+      const containerRect = pdfContainerRef.current.getBoundingClientRect();
+      // Calculate where inside the note the user clicked (the offset)
+      const mouseXRel = e.clientX - containerRect.left;
+      const mouseYRel = e.clientY - containerRect.top;
+
+      dragOffsetRef.current = {
+        x: mouseXRel - note.x,
+        y: mouseYRel - note.y,
+      };
+    }
+  };
+
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!draggingNoteId || !pdfContainerRef.current) return;
+
+      const containerRect = pdfContainerRef.current.getBoundingClientRect();
+
+      // Calculate new position based on mouse position relative to container minus the initial click offset
+      const newX = e.clientX - containerRect.left - dragOffsetRef.current.x;
+      const newY = e.clientY - containerRect.top - dragOffsetRef.current.y;
+
+      setNotes((prevNotes) =>
+        prevNotes.map((n) =>
+          n.id === draggingNoteId ? { ...n, x: newX, y: newY } : n
+        )
+      );
+    },
+    [draggingNoteId]
+  );
+
+  const handleMouseUp = useCallback(() => {
+    setDraggingNoteId(null);
+  }, []);
+
+  // Attach/Detach global listeners for dragging
+  useEffect(() => {
+    if (draggingNoteId) {
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mouseup", handleMouseUp);
+    } else {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [draggingNoteId, handleMouseMove, handleMouseUp]);
+  // --- DRAG LOGIC END ---
+
   // --- DOWNLOAD WITH NOTES ---
   const handleDownloadWithNotes = async () => {
     if (!pdfUrl) return;
@@ -127,7 +189,7 @@ const PdfChatPage: React.FC = () => {
       const pdfDoc = await PDFDocument.load(existingPdfBytes);
       const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
       const pages = pdfDoc.getPages();
-      const firstPage = pages[0];
+      const firstPage = pages[0]; // Currently maps everything to page 1 for iframe view
       const { width: pageWidth, height: pageHeight } = firstPage.getSize();
 
       if (!pdfContainerRef.current) return;
@@ -165,10 +227,7 @@ const PdfChatPage: React.FC = () => {
       }
 
       const pdfBytes = await pdfDoc.save();
-
-      // FIX: Cast pdfBytes to any to avoid "Uint8Array vs BlobPart" TS error
       const blob = new Blob([pdfBytes as any], { type: "application/pdf" });
-
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.download = `document_with_notes_${Date.now()}.pdf`;
@@ -370,6 +429,8 @@ const PdfChatPage: React.FC = () => {
                   src={pdfUrl}
                   className="absolute inset-0 w-full h-full border-0 z-0"
                   title="PDF Preview"
+                  // Disabling pointer events on iframe while dragging prevents it from stealing mouse events
+                  style={{ pointerEvents: draggingNoteId ? "none" : "auto" }}
                 />
 
                 {/* 2. Click Capture Overlay */}
@@ -390,15 +451,19 @@ const PdfChatPage: React.FC = () => {
                       top: note.y,
                       backgroundColor: isDark ? "#3f3f3f" : "#fef08a",
                       border: isDark ? "1px solid #555" : "1px solid #eab308",
+                      cursor: draggingNoteId === note.id ? "grabbing" : "auto",
                     }}
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <div className="flex justify-between items-center p-1 bg-black/5 dark:bg-white/5 cursor-move">
-                      <span className="text-[10px] uppercase font-bold px-1 opacity-50">
-                        Note
-                      </span>
+                    <div
+                      className="flex justify-between items-center p-1 bg-black/5 dark:bg-white/5 cursor-grab active:cursor-grabbing"
+                      onMouseDown={(e) => handleDragStart(e, note)}
+                    >
+                      <div className="flex items-center gap-1 opacity-50 px-1">
+                        <GripHorizontal size={14} />
+                      </div>
                       <button
-                        title="button"
+                        title="Delete Note"
                         onClick={() => deleteNote(note.id)}
                         className="text-red-500 hover:text-red-700 p-0.5 rounded"
                       >
