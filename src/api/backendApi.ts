@@ -11,12 +11,18 @@ const backendApi = axios.create({
 });
 
 // --- AUTH ---
-export const getBackendToken = async (userId: any, email: any) => {
+// Updated to accept 'isPremium' boolean
+export const getBackendToken = async (
+  userId: any,
+  email: any,
+  isPremium: boolean
+) => {
   try {
     const response = await backendApi.post("/api/v1/auth/token", {
       user_id: userId,
       email: email,
-      user_type :  "premium"
+      // Dynamic User Type Logic
+      user_type: isPremium ? "premium" : "freemium",
     });
     return response.data;
   } catch (error: any) {
@@ -187,7 +193,6 @@ export const SessionService = {
   },
 };
 
-
 // --- AGENTS  ---
 export const AgentService = {
   getAgents: async (token: string) => {
@@ -356,7 +361,7 @@ export const AgentService = {
     try {
       await backendApi.post(
         `/api/v1/custom-gpts/${gpt_id}/knowledge/clear`,
-        {}, 
+        {},
         {
           headers: { Authorization: `Bearer ${token}` },
         }

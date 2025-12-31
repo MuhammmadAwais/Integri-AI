@@ -34,7 +34,7 @@ import AgentDetailsPage from "../features/agents/components/AgentDetailsPage";
 import SubscriptionPage from "../pages/SubscriptionPage";
 import ImageGenPage from "../pages/ImageGenPage";
 
-// --- Router Setup (KEPT EXACTLY AS PROVIDED) ---
+// --- Router Setup ---
 const router = createBrowserRouter([
   // 1. Auth Pages
   { path: "/login", element: <Login /> },
@@ -78,7 +78,6 @@ const App: React.FC = () => {
       if (firebaseUser) {
         try {
           // 1. Sync with RevenueCat FIRST
-          // This ensures if they bought on mobile, the web knows immediately
           const isPremiumStatus =
             await SubscriptionService.syncStatusWithRevenueCat(
               firebaseUser.uid
@@ -107,19 +106,21 @@ const App: React.FC = () => {
             console.error("Failed to load user profile:", firestoreError);
           }
 
-          // 3. Fetch Backend Token
+          // 3. Fetch Backend Token (PASSING PREMIUM STATUS)
           let accessToken = null;
           try {
+            // We pass 'isPremiumStatus' here so the backend knows the user type
             const tokenData = await getBackendToken(
               firebaseUser.uid,
-              firebaseUser.email
+              firebaseUser.email,
+              isPremiumStatus
             );
             accessToken = tokenData.access_token;
           } catch (tokenError) {
             console.error("Backend token error", tokenError);
           }
 
-          // 4. Dispatch Auth State with RevenueCat-Synced Subscription Data
+          // 4. Dispatch Auth State
           dispatch(
             setAuthUser({
               user: {
@@ -127,7 +128,7 @@ const App: React.FC = () => {
                 email: firebaseUser.email,
                 name: firebaseUser.displayName,
                 avatar: firebaseUser.photoURL,
-                isPremium: isPremiumStatus, // Using fresh RevenueCat status
+                isPremium: isPremiumStatus,
                 planId: planId,
               },
               accessToken: accessToken,

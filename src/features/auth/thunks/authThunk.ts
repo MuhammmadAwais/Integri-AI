@@ -7,13 +7,19 @@ export const loginUser = createAsyncThunk(
   "auth/login",
   async (data: { email: string; password: string }, { rejectWithValue }) => {
     try {
-      // 1. Ask Firebase 
+      // 1. Ask Firebase
       const user = await AuthService.login(data.email, data.password);
 
-      // 2. Ask Backend 
-      // We send the ID we just got from Firebase
-      const backendData = await getBackendToken(user.id, user.email);
+      // 2. Ask Backend
+      // We send the ID and PREMIUM STATUS we just got from Firebase
+      const backendData = await getBackendToken(
+        user.id,
+        user.email,
+        user.isPremium
+      );
+
       console.log("Backend auth successful:", backendData);
+
       // 3. Return BOTH (The User + The Token)
       return {
         user: user,
@@ -41,7 +47,12 @@ export const registerUser = createAsyncThunk(
       );
 
       // 2. Get Token from Backend
-      const backendData = await getBackendToken(user.id, user.email);
+      // New users are usually not premium yet, but we pass the value from the user object to be safe
+      const backendData = await getBackendToken(
+        user.id,
+        user.email,
+        user.isPremium
+      );
 
       // 3. Return Both
       return {
@@ -63,7 +74,11 @@ export const loginWithGoogle = createAsyncThunk(
       const user = await AuthService.loginWithGoogle();
 
       // Get Token from Backend
-      const backendData = await getBackendToken(user.id, user.email);
+      const backendData = await getBackendToken(
+        user.id,
+        user.email,
+        user.isPremium
+      );
 
       // Return Both
       return {
@@ -76,7 +91,13 @@ export const loginWithGoogle = createAsyncThunk(
   }
 );
 
-// --- LOGOUT THUNK ---
-export const logoutUser = createAsyncThunk("auth/logout", async () => {
-  await AuthService.logout();
-});
+export const logoutUser = createAsyncThunk(
+  "auth/logout",
+  async (_, { rejectWithValue }) => {
+    try {
+      await AuthService.logout();
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Logout failed");
+    }
+  }
+);
