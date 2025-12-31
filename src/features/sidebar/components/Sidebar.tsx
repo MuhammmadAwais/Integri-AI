@@ -3,9 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Search,
   PenSquare,
-  AudioWaveform,
   Image as ImageIcon,
-  FolderOpen,
   History,
   ChevronDown,
   ChevronRight,
@@ -24,7 +22,6 @@ import UserProfile from "./UserProfile";
 // --- NAVIGATION ITEMS CONFIG ---
 const NAV_ITEMS = [
   { id: "chat", label: "Chat", icon: MessageCircle, path: "/" },
-  { id: "voice", label: "Voice", icon: AudioWaveform, path: "/voice" },
   {
     id: "playground",
     label: "Playground",
@@ -32,9 +29,8 @@ const NAV_ITEMS = [
     path: "/playground",
   },
   { id: "agents", label: "Alex Agents", icon: CheckCircle, path: "/agents" },
-  { id: "library", label: "Library", icon: FolderOpen, path: "/library" },
-  { id: "pdf", label: "PDF Chat", icon: FileText, path: "/pdf" },
   { id: "imageGen", label: "Image Gen", icon: ImageIcon, path: "/imageGen" },
+  { id: "pdf", label: "PDF Chat", icon: FileText, path: "/pdf" },
 ];
 
 const Sidebar: React.FC = () => {

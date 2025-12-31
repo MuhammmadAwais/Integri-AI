@@ -545,17 +545,19 @@ const WelcomePage: React.FC = () => {
                     )}
                   </button>
                 ) : (
-                  <button
-                    title="Voice Input"
-                    className={cn(
-                      "w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:cursor-pointer",
-                      isDark
-                        ? "text-gray-400 hover:bg-white/10 hover:text-white"
-                        : "text-gray-500 hover:bg-black/5 hover:text-black"
-                    )}
-                  >
-                    <AudioLines size={20} />
-                  </button>
+                  <Link to="/voice">
+                    <button
+                      title="Voice Input"
+                      className={cn(
+                        "w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:cursor-pointer",
+                        isDark
+                          ? "text-gray-400 hover:bg-white/10 hover:text-white"
+                          : "text-gray-500 hover:bg-black/5 hover:text-black"
+                      )}
+                    >
+                      <AudioLines size={20} />
+                    </button>
+                  </Link>
                 )}
               </div>
             </div>
