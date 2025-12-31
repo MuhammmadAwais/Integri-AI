@@ -211,19 +211,34 @@ export const useChat = (sessionId: string | undefined) => {
           sessionId && activeConfig
             ? activeConfig.provider
             : newChatPref.provider;
+
         let fileIds: string[] = [];
 
+        // --- UPLOAD LOGIC ---
         if (file && token) {
           try {
+            console.log("Uploading file...");
+            // Step 1: Upload and wait for response
             const uploadedId = await SessionService.uploadFile(token, file);
-            if (uploadedId) fileIds.push(uploadedId);
+
+            // Step 2: Validate ID (matches Dart: where(id => id.isNotEmpty))
+            if (uploadedId) {
+              fileIds.push(uploadedId);
+              console.log("File uploaded, ID:", uploadedId);
+            }
           } catch (uploadError) {
             console.error("File upload failed:", uploadError);
+            // Matches Dart logic: if (fileIds.isEmpty) throw Exception...
+            // We stop the process here so we don't send a message without the required context
             setIsThinking(false);
+            // Optional: You could add a toast notification here
             return;
           }
         }
 
+        // --- SEND LOGIC ---
+        // Step 3: Send message ONLY after upload is processed
+        console.log(`Sending to ${provider}/${model} with fileIds:`, fileIds);
         if (sessionId) {
           socketService.sendMessage(content, model, provider, fileIds);
         }

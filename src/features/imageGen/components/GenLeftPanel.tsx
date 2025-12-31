@@ -148,13 +148,7 @@ const GenLeftPanel: React.FC<Props> = ({ isDark }) => {
           <Sparkles size={18} fill="currentColor" />
           Generate Image
         </button>
-        <p
-          className={`text-center text-[10px] mt-3 ${
-            isDark ? "text-zinc-600" : "text-zinc-400"
-          }`}
-        >
-          Cost: 1 Credit per generation
-        </p>
+        
       </div>
     </div>
   );
