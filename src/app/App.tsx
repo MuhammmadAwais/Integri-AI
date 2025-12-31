@@ -13,6 +13,7 @@ import { useAppDispatch } from "../hooks/useRedux";
 import { setAuthUser } from "../features/auth/slices/authSlice";
 import { setTheme } from "../features/theme/themeSlice";
 import { getBackendToken } from "../api/backendApi";
+import { SubscriptionService } from "../features/subscriptions/services/subscriptionService";
 
 // --- Components & Pages ---
 import Home from "../pages/Home";
@@ -59,8 +60,7 @@ const router = createBrowserRouter([
       { path: "agents", element: <Agents /> },
       { path: "agents/:id", element: <AgentDetailsPage /> },
       { path: "subscriptions", element: <SubscriptionPage /> },
-      { path: "imageGen", element: <ImageGenPage/>},
-
+      { path: "imageGen", element: <ImageGenPage /> },
 
       { path: "*", element: <Navigate to="/" replace /> },
     ],
@@ -77,11 +77,16 @@ const App: React.FC = () => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
-          // Initialize defaults
-          let isPremium = false;
+          // 1. Sync with RevenueCat FIRST
+          // This ensures if they bought on mobile, the web knows immediately
+          const isPremiumStatus =
+            await SubscriptionService.syncStatusWithRevenueCat(
+              firebaseUser.uid
+            );
+
           let planId = "starter";
 
-          // 1. Fetch User Profile & Settings from Firestore
+          // 2. Fetch User Profile & Settings from Firestore
           try {
             const userDocRef = doc(db, "users", firebaseUser.uid);
             const userDocSnap = await getDoc(userDocRef);
@@ -95,15 +100,14 @@ const App: React.FC = () => {
                 dispatch(setTheme(isDarkTheme));
               }
 
-              // Extract subscription status
-              isPremium = userData.isPremium || false;
+              // Extract plan info from Firestore
               planId = userData.planId || "starter";
             }
           } catch (firestoreError) {
             console.error("Failed to load user profile:", firestoreError);
           }
 
-          // 2. Fetch Backend Token
+          // 3. Fetch Backend Token
           let accessToken = null;
           try {
             const tokenData = await getBackendToken(
@@ -115,7 +119,7 @@ const App: React.FC = () => {
             console.error("Backend token error", tokenError);
           }
 
-          // 3. Dispatch Auth State with Subscription Data
+          // 4. Dispatch Auth State with RevenueCat-Synced Subscription Data
           dispatch(
             setAuthUser({
               user: {
@@ -123,8 +127,8 @@ const App: React.FC = () => {
                 email: firebaseUser.email,
                 name: firebaseUser.displayName,
                 avatar: firebaseUser.photoURL,
-                isPremium: isPremium, // Injected here
-                planId: planId, // Injected here
+                isPremium: isPremiumStatus, // Using fresh RevenueCat status
+                planId: planId,
               },
               accessToken: accessToken,
             })
@@ -143,8 +147,7 @@ const App: React.FC = () => {
   }, [dispatch]);
 
   return (
-    <>     
-      {/* 2. Main App */}
+    <>
       <div>
         <RouterProvider router={router} />
       </div>

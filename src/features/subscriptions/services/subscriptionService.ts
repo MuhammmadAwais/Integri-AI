@@ -1,54 +1,130 @@
+import { Purchases, type Package } from "@revenuecat/purchases-js";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../../../app/firebase";
 
 export const SubscriptionService = {
   /**
-   * Simulates a purchase and updates (or creates) the user's document in Firestore.
+   * Initializes RevenueCat, checks status, and syncs to Firebase.
+   */
+
+  syncStatusWithRevenueCat: async (userId: string): Promise<boolean> => {
+    try {
+      // 1. Get the RevenueCat Instance
+      const purchases = Purchases.configure(
+        import.meta.env.VITE_REVENUECAT_WEB_API_KEY,
+        userId
+      );
+      
+      // 2. Check Customer Info
+      const customerInfo = await purchases.getCustomerInfo();
+      
+      // 3. Check Entitlement (ensure "premium" matches your Dashboard entitlement ID)
+      const isPremium =
+        typeof customerInfo.entitlements.active["premium"] !== "undefined";
+
+      // 4. Sync to Firestore
+      const userRef = doc(db, "users", userId);
+      await setDoc(
+        userRef,
+        {
+          isPremium: isPremium,
+          status: isPremium ? "active" : "free",
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
+
+      return isPremium;
+    } catch (error) {
+      console.error("RevenueCat Sync Error:", error);
+      return false;
+    }
+  },
+
+  /**
+   * Purchases a specific package (monthly/annual)
    */
   purchaseSubscription: async (
     userId: string,
     planId: string
   ): Promise<string> => {
-    // 1. Simulate API/Payment Gateway delay
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const REVENUECAT_ID = import.meta.env.VITE_REVENUECAT_ID;
+      // 1. Get Shared Instance
+      const purchases = Purchases.getSharedInstance();
 
-    // 2. Upsert Firestore (Update if exists, Create if not)
-    const userRef = doc(db, "users", userId);
+      // 2. Fetch Offerings
+      const offerings = await purchases.getOfferings();
 
-    // Using setDoc with merge: true prevents "No document to update" errors
-    await setDoc(
-      userRef,
-      {
-        isPremium: true,
-        planId: planId,
-        subscriptionDate: serverTimestamp(),
-        status: "active",
-        updatedAt: serverTimestamp(), // Good for tracking
-      },
-      { merge: true }
-    );
+      // --- ROBUST OFFERING LOOKUP LOGIC ---
+      // Priority 1: The 'Current' offering set in Dashboard
+      let currentOffering = offerings.current;
 
-    return planId;
-  },
+      // Priority 2: The specific ID  provided REVENUECAT_ID
+      if (!currentOffering && offerings.all[REVENUECAT_ID]) {
+        console.log(`Found offering by ID: ${REVENUECAT_ID}`);
+        currentOffering = offerings.all[REVENUECAT_ID];
+      }
 
-  /**
-   * Cancel subscription (Reverts to free tier)
-   */
-  cancelSubscription: async (userId: string): Promise<void> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Priority 3: Fallback to 'default' (standard naming convention)
+      if (!currentOffering && offerings.all["default"]) {
+        console.log("Found offering by name: default");
+        currentOffering = offerings.all["default"];
+      }
 
-    const userRef = doc(db, "users", userId);
+      // Priority 4: Just take the first available offering we can find
+      if (!currentOffering) {
+        const firstKey = Object.keys(offerings.all)[0];
+        if (firstKey) {
+          console.log(`Falling back to first available offering: ${firstKey}`);
+          currentOffering = offerings.all[firstKey];
+        }
+      }
 
-    // We use setDoc here too for safety, though updateDoc is usually fine for cancellations
-    await setDoc(
-      userRef,
-      {
-        isPremium: false,
-        planId: "starter",
-        status: "canceled",
-        updatedAt: serverTimestamp(),
-      },
-      { merge: true }
-    );
+      // DEBUGGING: If still missing, log everything to help you
+      if (!currentOffering) {
+        console.error("Available Offerings found:", Object.keys(offerings.all));
+        throw new Error(
+          "No offerings found. Please check RevenueCat Dashboard > Product Catalog."
+        );
+      }
+
+      // 3. Find the package matching the planId (monthly/semi_annual/annual)
+      const pkg = currentOffering.availablePackages.find(
+        (p: Package) => p.identifier === planId
+      );
+
+      if (!pkg) {
+        const availableIds = currentOffering.availablePackages
+          .map((p) => p.identifier)
+          .join(", ");
+        throw new Error(
+          `Plan '${planId}' not found in offering. Available IDs: ${availableIds}`
+        );
+      }
+
+      // 4. Purchase
+      const { customerInfo } = await purchases.purchase({ rcPackage: pkg });
+
+      // 5. Verify transaction success
+      const isPremium =
+        typeof customerInfo.entitlements.active["premium"] !== "undefined";
+      if (!isPremium) {
+        throw new Error(
+          "Purchase completed but premium entitlement not granted."
+        );
+      }
+
+      // 6. Force sync
+      await SubscriptionService.syncStatusWithRevenueCat(userId);
+
+      return planId;
+    } catch (error: any) {
+      if (error.code === "UserCancelledError") {
+        throw new Error("Purchase was cancelled.");
+      }
+      console.error("Purchase Error:", error);
+      throw new Error(error.message || "Purchase failed");
+    }
   },
 };

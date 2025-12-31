@@ -9,7 +9,7 @@ import {
   StickyNote,
   Trash2,
   Download,
-  GripHorizontal, // Added Drag Handle Icon
+  GripHorizontal, 
 } from "lucide-react";
 import { motion } from "framer-motion";
 import ChatInterface from "../features/chat/components/ChatInterface";
@@ -17,8 +17,6 @@ import { useAppSelector } from "../hooks/useRedux";
 import { ChatService } from "../features/chat/services/chatService";
 import Button from "../Components/ui/Button";
 import ParticleBackground from "../Components/ui/ParticleBackground";
-
-// Import pdf-lib
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 
 interface Note {
