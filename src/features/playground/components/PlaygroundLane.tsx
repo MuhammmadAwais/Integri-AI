@@ -85,7 +85,7 @@ const PlaygroundLane: React.FC<PlaygroundLaneProps> = ({
               {model.label || model.id}
             </h3>
             <p className="text-[10px] text-zinc-500 font-medium capitalize leading-none truncate">
-              {model.provider}
+              {model.alt_provider || model.provider}
             </p>
           </div>
         </div>

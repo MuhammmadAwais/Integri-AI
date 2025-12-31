@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   createBrowserRouter,
   RouterProvider,
@@ -15,7 +15,6 @@ import { setTheme } from "../features/theme/themeSlice";
 import { getBackendToken } from "../api/backendApi";
 
 // --- Components & Pages ---
-import IntroPortal from "../Components/ui/IntroPortal";
 import Home from "../pages/Home";
 import Login from "../pages/LoginPage";
 import Signup from "../pages/SignupPage";
@@ -72,7 +71,6 @@ const router = createBrowserRouter([
 ]);
 
 const App: React.FC = () => {
-  const [introFinished, setIntroFinished] = useState(false);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -145,16 +143,9 @@ const App: React.FC = () => {
   }, [dispatch]);
 
   return (
-    <>
-      {!introFinished && (
-        <IntroPortal onComplete={() => setIntroFinished(true)} />
-      )}
+    <>     
       {/* 2. Main App */}
-      <div
-        className={`transition-opacity duration-1000 ${
-          introFinished ? "opacity-100" : "opacity-0"
-        }`}
-      >
+      <div>
         <RouterProvider router={router} />
       </div>
     </>

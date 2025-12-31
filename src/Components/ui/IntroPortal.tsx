@@ -1,3 +1,6 @@
+//  RIGHT NOW WE ARE NOT USING THIS (JUST FOR FUTURE OPTION OF ANIMATIONS)
+
+
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 

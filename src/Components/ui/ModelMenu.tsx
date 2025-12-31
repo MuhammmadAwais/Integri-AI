@@ -163,7 +163,7 @@ const ModelMenu: React.FC<ModelMenuProps> = ({
                     <div>
                       <div className="font-medium">{m.label || m.id}</div>
                       <div className="text-[10px] opacity-60 capitalize flex items-center gap-1.5">
-                        {m.provider}
+                        {m.alt_provider || m.provider}
                         {m.badge && (
                           <span
                             className={cn(

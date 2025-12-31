@@ -2,7 +2,8 @@ const AVAILABLE_MODELS = [
   // --- Integri ---
   { id: "integri",
     label: "Integri",
-    provider: "integri"
+    provider: "openai",
+    alt_provider : "integri"
    },
 
   // --- OpenAI ---

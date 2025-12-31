@@ -156,11 +156,12 @@ const ChatInput: React.FC<ChatInputProps> = ({
             {/* Left Tools (Attach Menu) */}
             <div className="flex items-center gap-1 relative" ref={menuRef}>
               <input
-                title="button"
+                title="file"
                 type="file"
                 ref={fileInputRef}
                 onChange={handleFileChange}
                 className="hidden"
+                accept=".jpg, .jpeg, .png, .gif, .pdf"
               />
 
               {/* Toggle Attach Menu */}

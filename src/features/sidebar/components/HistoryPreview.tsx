@@ -199,7 +199,7 @@ const HistoryPreview: React.FC<Props> = ({
                           ),
                         }}
                       >
-                        {(msg.content || "") + " ......."}
+                        {(msg.content || "")}
                       </ReactMarkdown>
                     </div>
                   </div>
@@ -207,11 +207,7 @@ const HistoryPreview: React.FC<Props> = ({
               );
             })}
 
-            {/* Preview note */}
-            <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400 italic">
-              This is just a preview of the chat. View the full conversation via
-              the link above.
-            </div>
+            
           </div>
         )}
       </div>

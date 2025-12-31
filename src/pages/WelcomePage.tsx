@@ -127,9 +127,9 @@ const WelcomePage: React.FC = () => {
           currentModelId,
           selectedAgentId || undefined
         );
-        navigate(`/pdf/${newChatId}`, {
+        navigate(`/chat/${newChatId}`, {
           state: {
-            initialMessage: text,
+            initialMessage: text || "Explain this",
             initialFile: selectedFile,
             file: selectedFile,
           },
@@ -243,6 +243,7 @@ const WelcomePage: React.FC = () => {
         ref={fileInputRef}
         className="hidden"
         onChange={handleFileSelect}
+        accept=".jpg, .jpeg, .png, .gif, .pdf"
       />
 
       {/* CONTENT */}
