@@ -28,7 +28,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
     name: "",
     description: "",
     instructions: "",
-    model: "gpt-4o-mini",
+    model: "integri",
   });
 
   const [conversationStarter, setConversationStarter] = useState("");
@@ -44,7 +44,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
           name: agent.name || "",
           description: agent.description || "",
           instructions: agent.instructions || "",
-          model: agent.recommended_model || agent.model || "gpt-4o-mini",
+          model: agent.recommended_model || agent.model || "integri",
         });
         setConversationStarters(agent.conversation_starters || []);
       } else {
@@ -52,7 +52,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
           name: "",
           description: "",
           instructions: "",
-          model: "gpt-4o-mini",
+          model: "integri",
         });
         setConversationStarters([]);
       }

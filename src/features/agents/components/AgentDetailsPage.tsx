@@ -59,7 +59,7 @@ const AgentDetailPage = () => {
         messageToSend = agent.conversation_starters[randomIndex];
       }
       dispatch(setNewChatAgent(agent.id));
-      const modelToUse = agent.recommended_model || "gpt-4o-mini";
+      const modelToUse = agent.recommended_model || "integri";
       const newSessionId = await ChatService.createChat(
         token,
         modelToUse,
@@ -202,7 +202,7 @@ const AgentDetailPage = () => {
           {[
             {
               label: "Model Architecture",
-              value: agent.recommended_model || "GPT-4o",
+              value: agent.recommended_model || "integri",
               icon: Cpu,
             },
             { label: "Access Level", value: "Private / Secure", icon: Shield },

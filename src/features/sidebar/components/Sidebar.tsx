@@ -28,7 +28,7 @@ const NAV_ITEMS = [
     icon: PenSquare,
     path: "/playground",
   },
-  { id: "agents", label: "Alex Agents", icon: CheckCircle, path: "/agents" },
+  { id: "agents", label: "Agents", icon: CheckCircle, path: "/agents" },
   { id: "imageGen", label: "Image Gen", icon: ImageIcon, path: "/imageGen" },
   { id: "pdf", label: "PDF Chat", icon: FileText, path: "/pdf" },
 ];

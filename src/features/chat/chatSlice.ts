@@ -26,7 +26,7 @@ const initialState: ChatState = {
   isMobileMenuOpen: false,
   isContextSidebarOpen: true,
   activeSidebarTab: "home",
-  newChatModel: { id: "gpt-4o-mini", provider: "openai" },
+  newChatModel: { id: "integri", provider: "openai" },
   selectedAgentId: null,
   activeChatId: null,
   activeSessionConfig: null,
