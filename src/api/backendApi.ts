@@ -285,6 +285,88 @@ export const AgentService = {
       throw error;
     }
   },
+
+  // --- NEW: KNOWLEDGE DOCUMENTS ---
+
+  getAgentDocuments: async (token: string, gpt_id: string) => {
+    try {
+      const response = await backendApi.get(
+        `/api/v1/custom-gpts/${gpt_id}/knowledge`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return Array.isArray(response.data) ? response.data : [];
+    } catch (error) {
+      console.error("❌ [API] Failed to fetch agent documents", error);
+      throw error;
+    }
+  },
+
+  uploadAgentDocuments: async (
+    token: string,
+    gpt_id: string,
+    files: File[]
+  ) => {
+    try {
+      const formData = new FormData();
+      // Documentation shows 'files' as an array
+      files.forEach((file) => {
+        formData.append("files", file);
+      });
+
+      const response = await backendApi.post(
+        `/api/v1/custom-gpts/${gpt_id}/knowledge`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log("Upload response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("❌ [API] Failed to upload agent documents", error);
+      throw error;
+    }
+  },
+
+  deleteAgentDocument: async (
+    token: string,
+    gpt_id: string,
+    document_id: string
+  ) => {
+    try {
+      await backendApi.delete(
+        `/api/v1/custom-gpts/${gpt_id}/knowledge/${document_id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return true;
+    } catch (error) {
+      console.error("❌ [API] Failed to delete agent document", error);
+      throw error;
+    }
+  },
+
+  clearAgentKnowledge: async (token: string, gpt_id: string) => {
+    try {
+      await backendApi.post(
+        `/api/v1/custom-gpts/${gpt_id}/knowledge/clear`,
+        {}, 
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return true;
+    } catch (error) {
+      console.error("❌ [API] Failed to clear agent knowledge", error);
+      throw error;
+    }
+  },
 };
 
 export default backendApi;

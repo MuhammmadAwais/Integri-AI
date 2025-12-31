@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -9,11 +9,21 @@ import {
   Terminal,
   Clock,
   ChevronRight,
+  FileText,
+  Upload,
+  Trash2,
+  Loader2,
+  Database,
 } from "lucide-react";
 import { AgentService } from "../../../api/backendApi";
 import { ChatService } from "../../chat/services/chatService";
 import { useAppDispatch, useAppSelector } from "../../../hooks/useRedux";
-import { setNewChatAgent } from "../../chat/chatSlice";
+import {
+  fetchAgentDocuments,
+  uploadAgentDocuments,
+  deleteAgentDocument,
+} from "../../agents/agentsSlice";
+import {setNewChatAgent} from "../../chat/chatSlice"
 import { cn } from "../../../lib/utils";
 import ParticleBackground from "../../../Components/ui/ParticleBackground";
 
@@ -21,13 +31,20 @@ const AgentDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const token = useAppSelector((state: any) => state.auth.accessToken);
   const isDark = useAppSelector((state: any) => state.theme.isDark);
 
+  // Get documents from Redux store
+  const { documents, isDocsLoading } = useAppSelector(
+    (state: any) => state.agents
+  );
+
   const [agent, setAgent] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [creatingSession, setCreatingSession] = useState(false);
+  const [uploadingDocs, setUploadingDocs] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -37,6 +54,9 @@ const AgentDetailPage = () => {
         setLoading(true);
         const data = await AgentService.getAgentById(token, id);
         setAgent(data);
+
+        // Fetch Documents
+        dispatch(fetchAgentDocuments({ token, gpt_id: id }));
       } catch (err) {
         console.error("Failed to load agent", err);
         setError("Failed to load agent details.");
@@ -45,7 +65,7 @@ const AgentDetailPage = () => {
       }
     };
     fetchAgent();
-  }, [id, token]);
+  }, [id, token, dispatch]);
 
   const handleStartChat = async (specificStarter?: string) => {
     if (!agent || !token || creatingSession) return;
@@ -72,6 +92,40 @@ const AgentDetailPage = () => {
       console.error("Failed to start agent chat:", error);
     } finally {
       setCreatingSession(false);
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0 || !id) return;
+
+    setUploadingDocs(true);
+    try {
+      const files = Array.from(e.target.files);
+      await dispatch(
+        uploadAgentDocuments({ token, gpt_id: id, files })
+      ).unwrap();
+      // Refresh list
+      dispatch(fetchAgentDocuments({ token, gpt_id: id }));
+    } catch (err) {
+      console.error("Upload failed", err);
+      alert("Failed to upload documents.");
+    } finally {
+      setUploadingDocs(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const handleDeleteDoc = async (docId: string) => {
+    if (!id || !token) return;
+    if (confirm("Delete this document?")) {
+      try {
+        await dispatch(
+          deleteAgentDocument({ token, gpt_id: id, document_id: docId })
+        ).unwrap();
+      } catch (e) {
+        console.error(e);
+        alert("Failed to delete document.");
+      }
     }
   };
 
@@ -119,7 +173,7 @@ const AgentDetailPage = () => {
       {/* --- HEADER --- */}
       <div className="sticky top-0 z-10 flex items-center p-6 bg-transparent ">
         <button
-        title="header"
+          title="header"
           onClick={() => navigate(-1)}
           className={cn(
             "p-2 border transition-all hover:scale-105",
@@ -233,6 +287,141 @@ const AgentDetailPage = () => {
               <span className="font-mono text-sm">{stat.value}</span>
             </div>
           ))}
+        </div>
+
+        {/* --- KNOWLEDGE BASE SECTION --- */}
+        <div className="mb-16">
+          <div className="flex items-center gap-4 mb-6">
+            <div
+              className={cn(
+                "h-px flex-1",
+                isDark ? "bg-zinc-800" : "bg-zinc-300"
+              )}
+            />
+            <h3
+              className={cn(
+                "flex items-center gap-2 font-mono text-sm uppercase tracking-widest",
+                isDark ? "text-zinc-500" : "text-zinc-400"
+              )}
+            >
+              <Database size={16} /> Knowledge Base
+            </h3>
+            <div
+              className={cn(
+                "h-px flex-1",
+                isDark ? "bg-zinc-800" : "bg-zinc-300"
+              )}
+            />
+          </div>
+
+          <div
+            className={cn(
+              "p-6 border",
+              isDark
+                ? "bg-zinc-900/20 border-zinc-800"
+                : "bg-white border-zinc-200"
+            )}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h4
+                  className={cn(
+                    "text-lg font-bold",
+                    isDark ? "text-white" : "text-black"
+                  )}
+                >
+                  Attached Documents
+                </h4>
+                <p
+                  className={cn(
+                    "text-sm",
+                    isDark ? "text-zinc-500" : "text-zinc-500"
+                  )}
+                >
+                  These files provide context for the agent's responses.
+                </p>
+              </div>
+              <div>
+                <input
+                title="file"
+                  type="file"
+                  multiple
+                  ref={fileInputRef}
+                  className="hidden"
+                  onChange={handleFileUpload}
+                  accept=".pdf,.txt,.docx,.md"
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingDocs}
+                  className={cn(
+                    "flex items-center gap-2 px-4 py-2 text-sm font-bold uppercase tracking-wide border transition-all",
+                    isDark
+                      ? "border-zinc-700 hover:bg-white hover:text-black"
+                      : "border-zinc-300 hover:bg-black hover:text-white"
+                  )}
+                >
+                  {uploadingDocs ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : (
+                    <Upload size={16} />
+                  )}
+                  Upload
+                </button>
+              </div>
+            </div>
+
+            {isDocsLoading ? (
+              <div className="py-8 flex justify-center">
+                <Loader2 className="animate-spin text-zinc-500" />
+              </div>
+            ) : documents.length === 0 ? (
+              <div className="text-center py-8 text-zinc-500 text-sm italic border-2 border-dashed border-zinc-200 dark:border-zinc-800">
+                No knowledge documents attached.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {documents.map((doc: any) => (
+                  <div
+                    key={doc.file_id}
+                    className={cn(
+                      "flex items-center justify-between p-4 border group",
+                      isDark
+                        ? "bg-black border-zinc-800"
+                        : "bg-gray-50 border-zinc-200"
+                    )}
+                  >
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      <div
+                        className={cn(
+                          "p-2",
+                          isDark ? "bg-zinc-900" : "bg-white"
+                        )}
+                      >
+                        <FileText size={20} className="text-blue-500" />
+                      </div>
+                      <div className="flex flex-col overflow-hidden">
+                        <span className="text-sm font-medium truncate">
+                          {doc.filename}
+                        </span>
+                        <span className="text-xs text-zinc-500 uppercase">
+                          {doc.file_type} • {(doc.file_size / 1024).toFixed(0)}{" "}
+                          KB
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                    title="delete"
+                      onClick={() => handleDeleteDoc(doc.file_id)}
+                      className="opacity-0 group-hover:opacity-100 p-2 text-zinc-500 hover:text-red-500 transition-all"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* --- CONVERSATION STARTERS --- */}
