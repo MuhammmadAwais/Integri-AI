@@ -1,12 +1,19 @@
 const AVAILABLE_MODELS = [
   // --- Integri ---
-  { id: "integri",
+  {
+    id: "integri",
     label: "Integri",
     provider: "openai",
-    alt_provider : "integri"
-   },
+    alt_provider: "integri",
+  },
 
   // --- OpenAI ---
+  {
+    id: "gpt-5.2",
+    label: "GPT-5.2",
+    provider: "openai",
+    badge: "New",
+  },
   {
     id: "gpt-5.1",
     label: "GPT-5.1",
@@ -36,6 +43,24 @@ const AVAILABLE_MODELS = [
     provider: "openai",
     badge: "Efficient",
   },
+  {
+    id: "gpt-3.5-turbo",
+    label: "GPT-3.5 turbo",
+    provider: "openai",
+    badge: "Efficient",
+  },
+  {
+    id: "gpt-4o-mini-search-preview",
+    label: "gpt-4o mini-search-preview",
+    provider: "openai",
+    badge: "Efficient",
+  },
+  {
+    id: "gpt-4o-mini-deep-research",
+    label: "GPT-4o mini-deep-research",
+    provider: "openai",
+    badge: "Efficient",
+  },
 
   // --- Google ---
   { id: "gemini-2.5-flash", label: "Gemini 2.5 Flash", provider: "gemini" },
@@ -43,6 +68,11 @@ const AVAILABLE_MODELS = [
   {
     id: "gemini-2.5-flash-lite",
     label: "Gemini 2.5 Flash Lite",
+    provider: "gemini",
+  },
+  {
+    id: "gemini-3-flash-preview",
+    label: "Gemini 3 flash-preview",
     provider: "gemini",
   },
 
@@ -53,11 +83,40 @@ const AVAILABLE_MODELS = [
     provider: "grok",
     badge: "Uncensored",
   },
+  {
+    id: "grok-4-1-fast-reasoning",
+    label: "Grok 4-1 fast reasoning",
+    provider: "grok",
+    badge: "Uncensored",
+  },
+  {
+    id: "grok-4-1-fast-non-reasoning",
+    label: "Grok 4-1 non reasoning",
+    provider: "grok",
+    badge: "Uncensored",
+  },
+  {
+    id: "grok-4-fast-reasoning",
+    label: "Grok 4 fast reasoning",
+    provider: "grok",
+    badge: "Uncensored",
+  },
+  {
+    id: "grok-4-fast-non-reasoning",
+    label: "Grok 4 fast non reasoning",
+    provider: "grok",
+    badge: "Uncensored",
+  },
 
   // --- Claude ---
   {
     id: "claude-3.5-haiku",
     label: "Claude Instant 100k",
+    provider: "claude",
+  },
+  {
+    id: "claude-haiku-3",
+    label: "Claude haiku 3",
     provider: "claude",
   },
   // --- DeepSeek ---
@@ -77,6 +136,12 @@ const AVAILABLE_MODELS = [
   {
     id: "perplexity-sonar",
     label: "Perplexity Sonar",
+    provider: "perplexity",
+    badge: "Search",
+  },
+  {
+    id: "sonar-reasoning",
+    label: "Sonar Reasoning",
     provider: "perplexity",
     badge: "Search",
   },
