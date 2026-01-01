@@ -14,6 +14,7 @@ import {
   Trash2,
   Loader2,
   Database,
+  AlertOctagon, // Added for Clear Button
 } from "lucide-react";
 import { AgentService } from "../../../api/backendApi";
 import { ChatService } from "../../chat/services/chatService";
@@ -22,10 +23,13 @@ import {
   fetchAgentDocuments,
   uploadAgentDocuments,
   deleteAgentDocument,
+  clearAgentKnowledge, // Added Action
 } from "../../agents/agentsSlice";
-import {setNewChatAgent} from "../../chat/chatSlice"
+import { setNewChatAgent } from "../../chat/chatSlice";
 import { cn } from "../../../lib/utils";
 import ParticleBackground from "../../../Components/ui/ParticleBackground";
+import ConfirmationModal from "./ConfirmationModal"; // Imported Modal
+import ErrorModal from "../../../Components/ui/ErrorModal"; // Imported Modal
 
 const AgentDetailPage = () => {
   const { id } = useParams();
@@ -46,6 +50,17 @@ const AgentDetailPage = () => {
   const [creatingSession, setCreatingSession] = useState(false);
   const [uploadingDocs, setUploadingDocs] = useState(false);
   const [error, setError] = useState("");
+
+  // --- NEW: Modal States ---
+  const [isClearModalOpen, setIsClearModalOpen] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
+  const [errorModal, setErrorModal] = useState<{
+    open: boolean;
+    message: string;
+  }>({
+    open: false,
+    message: "",
+  });
 
   useEffect(() => {
     const fetchAgent = async () => {
@@ -106,9 +121,13 @@ const AgentDetailPage = () => {
       ).unwrap();
       // Refresh list
       dispatch(fetchAgentDocuments({ token, gpt_id: id }));
-    } catch (err) {
+    } catch (err: any) {
       console.error("Upload failed", err);
-      alert("Failed to upload documents.");
+      // Use new Error Modal
+      setErrorModal({
+        open: true,
+        message: err.message || "Failed to upload documents.",
+      });
     } finally {
       setUploadingDocs(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -117,14 +136,36 @@ const AgentDetailPage = () => {
 
   const handleDeleteDoc = async (docId: string) => {
     if (!id || !token) return;
-    if (confirm("Delete this document?")) {
       try {
         await dispatch(
           deleteAgentDocument({ token, gpt_id: id, document_id: docId })
         ).unwrap();
-      } catch (e) {
-        console.error(e);
-        alert("Failed to delete document.");
+      } catch (e: any) {
+        setErrorModal({
+          open: true,
+          message: e.message || "Failed to delete document.",
+        });
+      }
+  };
+
+  // --- NEW: Handle Clear Knowledge ---
+  const handleClearKnowledge = async () => {
+    if (id && token) {
+      setIsClearing(true);
+      try {
+        await dispatch(clearAgentKnowledge({ token, gpt_id: id })).unwrap();
+        setIsClearModalOpen(false);
+        // Refresh to show empty state
+        dispatch(fetchAgentDocuments({ token, gpt_id: id }));
+      } catch (error: any) {
+        console.error("Clear knowledge failed", error);
+        setIsClearModalOpen(false);
+        setErrorModal({
+          open: true,
+          message: error.message || "Failed to clear knowledge base.",
+        });
+      } finally {
+        setIsClearing(false);
       }
     }
   };
@@ -169,6 +210,25 @@ const AgentDetailPage = () => {
       )}
     >
       <ParticleBackground />
+
+      {/* --- NEW: Modals Rendered via Portal --- */}
+      <ConfirmationModal
+        isOpen={isClearModalOpen}
+        onClose={() => setIsClearModalOpen(false)}
+        onConfirm={handleClearKnowledge}
+        title="Clear Knowledge Base?"
+        message="Are you sure you want to remove ALL documents from this agent? This action cannot be undone and the agent will lose all custom knowledge."
+        confirmText="Yes, Clear All"
+        cancelText="Cancel"
+        isDangerous={true}
+        isLoading={isClearing}
+      />
+
+      <ErrorModal
+        isOpen={errorModal.open}
+        onClose={() => setErrorModal({ ...errorModal, open: false })}
+        message={errorModal.message}
+      />
 
       {/* --- HEADER --- */}
       <div className="sticky top-0 z-10 flex items-center p-6 bg-transparent ">
@@ -341,9 +401,26 @@ const AgentDetailPage = () => {
                   These files provide context for the agent's responses.
                 </p>
               </div>
-              <div>
+              <div className="flex items-center gap-3">
+                {/* --- NEW: Clear All Button --- */}
+                {documents.length > 0 && (
+                  <button
+                    onClick={() => setIsClearModalOpen(true)}
+                    className={cn(
+                      "flex items-center gap-2 px-3 py-2 text-xs font-bold uppercase tracking-wide border transition-all",
+                      isDark
+                        ? "border-red-900/50 text-red-500 hover:bg-red-900/20"
+                        : "border-red-200 text-red-600 hover:bg-red-50"
+                    )}
+                    title="Clear all knowledge"
+                  >
+                    <AlertOctagon size={14} />
+                    Clear All
+                  </button>
+                )}
+
                 <input
-                title="file"
+                  title="file"
                   type="file"
                   multiple
                   ref={fileInputRef}
@@ -383,7 +460,7 @@ const AgentDetailPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {documents.map((doc: any) => (
                   <div
-                    key={doc.file_id}
+                    key={doc.document_id}
                     className={cn(
                       "flex items-center justify-between p-4 border group",
                       isDark
@@ -411,8 +488,10 @@ const AgentDetailPage = () => {
                       </div>
                     </div>
                     <button
-                    title="delete"
-                      onClick={() => handleDeleteDoc(doc.document_id)}
+                      title="delete"
+                      onClick={() =>
+                        handleDeleteDoc( doc.document_id)
+                      } // Handled inconsistent IDs safely
                       className="opacity-0 group-hover:opacity-100 p-2 text-zinc-500 hover:text-red-500 transition-all"
                     >
                       <Trash2 size={16} />
