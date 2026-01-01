@@ -7,15 +7,12 @@ import {
   Search,
   Image as ImageIcon,
   Users,
-  Mic,
   AudioLines,
   ChevronDown,
   X as XIcon,
   FileText,
   HardDrive,
-  Sparkles,
-  ArrowRight,
-  PenTool, // Added for Sketch Icon
+  PenTool, 
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChatService } from "../features/chat/services/chatService";
