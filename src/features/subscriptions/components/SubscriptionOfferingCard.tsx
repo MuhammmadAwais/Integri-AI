@@ -39,7 +39,7 @@ const SubscriptionOfferingCard: React.FC = () => {
           >
             {/* The Video / GIF Image */}
             <img
-              src="/public/Flower_AfterEffects.gif" 
+              src="/Flower_AfterEffects.gif" 
               alt="Premium"
               className={cn(
                 "w-full h-full object-cover scale-110 transition-all",
