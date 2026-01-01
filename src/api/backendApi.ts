@@ -301,7 +301,11 @@ export const AgentService = {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      return Array.isArray(response.data) ? response.data : [];
+      const document_responce = response.data;
+      console.log("Document responce:", document_responce.documents);
+      return Array.isArray(document_responce.documents)
+        ? document_responce.documents
+        : [];
     } catch (error) {
       console.error("❌ [API] Failed to fetch agent documents", error);
       throw error;

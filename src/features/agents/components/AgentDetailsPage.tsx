@@ -412,7 +412,7 @@ const AgentDetailPage = () => {
                     </div>
                     <button
                     title="delete"
-                      onClick={() => handleDeleteDoc(doc.file_id)}
+                      onClick={() => handleDeleteDoc(doc.document_id)}
                       className="opacity-0 group-hover:opacity-100 p-2 text-zinc-500 hover:text-red-500 transition-all"
                     >
                       <Trash2 size={16} />
