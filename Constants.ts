@@ -91,7 +91,7 @@ const AVAILABLE_MODELS = [
   },
   {
     id: "grok-4-1-fast-non-reasoning",
-    label: "Grok 4-1 non reasoning",
+    label: "Grok 4-1 fast non reasoning",
     provider: "grok",
     badge: "Uncensored",
   },
