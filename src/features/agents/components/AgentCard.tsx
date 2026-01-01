@@ -95,7 +95,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
           <button
             onClick={() => onEdit(agent)}
             className={cn(
-              "p-1.5 transition-colors",
+              "hover:cursor-pointer p-1.5 transition-colors",
               isDark
                 ? "text-zinc-500 hover:text-white"
                 : "text-zinc-400 hover:text-black"
@@ -113,7 +113,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
               }
             }}
             className={cn(
-              "p-1.5 transition-colors",
+              "p-1.5 transition-colors hover:cursor-pointer",
               isDark
                 ? "text-zinc-500 hover:text-red-400"
                 : "text-zinc-400 hover:text-red-600"

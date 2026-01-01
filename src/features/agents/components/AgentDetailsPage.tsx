@@ -194,7 +194,7 @@ const AgentDetailPage = () => {
         <p className="text-zinc-500">{error || "Agent not found"}</p>
         <button
           onClick={() => navigate(-1)}
-          className="text-black dark:text-white underline"
+          className="text-black dark:text-white underline hover:cursor-pointer"
         >
           Go Back
         </button>
@@ -236,7 +236,7 @@ const AgentDetailPage = () => {
           title="header"
           onClick={() => navigate(-1)}
           className={cn(
-            "p-2 border transition-all hover:scale-105",
+            "p-2 border transition-all hover:scale-105 hover:cursor-pointer",
             isDark
               ? "border-zinc-800 bg-black/50 text-white hover:bg-zinc-900"
               : "border-zinc-200 bg-white/50 text-black hover:bg-white"
@@ -305,7 +305,7 @@ const AgentDetailPage = () => {
                 ) : (
                   <MessageSquare size={18} />
                 )}
-                <span>Initialize Chat</span>
+                <span className="hover:cursor-pointer">Initialize Chat</span>
               </button>
             </div>
           </div>
@@ -407,7 +407,7 @@ const AgentDetailPage = () => {
                   <button
                     onClick={() => setIsClearModalOpen(true)}
                     className={cn(
-                      "flex items-center gap-2 px-3 py-2 text-xs font-bold uppercase tracking-wide border transition-all",
+                      "flex items-center gap-2 px-3 py-2 text-xs font-bold uppercase tracking-wide border transition-all hover:cursor-pointer",
                       isDark
                         ? "border-red-900/50 text-red-500 hover:bg-red-900/20"
                         : "border-red-200 text-red-600 hover:bg-red-50"
@@ -432,7 +432,7 @@ const AgentDetailPage = () => {
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploadingDocs}
                   className={cn(
-                    "flex items-center gap-2 px-4 py-2 text-sm font-bold uppercase tracking-wide border transition-all",
+                    "hover:cursor-pointer flex items-center gap-2 px-4 py-2 text-sm font-bold uppercase tracking-wide border transition-all",
                     isDark
                       ? "border-zinc-700 hover:bg-white hover:text-black"
                       : "border-zinc-300 hover:bg-black hover:text-white"
@@ -441,7 +441,7 @@ const AgentDetailPage = () => {
                   {uploadingDocs ? (
                     <Loader2 size={16} className="animate-spin" />
                   ) : (
-                    <Upload size={16} />
+                    <Upload className="hover:cursor-pointer" size={16} />
                   )}
                   Upload
                 </button>
@@ -489,12 +489,10 @@ const AgentDetailPage = () => {
                     </div>
                     <button
                       title="delete"
-                      onClick={() =>
-                        handleDeleteDoc( doc.document_id)
-                      } // Handled inconsistent IDs safely
-                      className="opacity-0 group-hover:opacity-100 p-2 text-zinc-500 hover:text-red-500 transition-all"
+                      onClick={() => handleDeleteDoc(doc.document_id)} // Handled inconsistent IDs safely
+                      className="opacity-0 group-hover:opacity-100 p-2 text-zinc-500 hover:text-red-500 transition-all hover:cursor-pointer"
                     >
-                      <Trash2 size={16} />
+                      <Trash2 className="hover:cursor-pointer" size={16} />
                     </button>
                   </div>
                 ))}
@@ -505,17 +503,17 @@ const AgentDetailPage = () => {
 
         {/* --- CONVERSATION STARTERS --- */}
         {agent.conversation_starters?.length > 0 && (
-          <div className="mb-16">
-            <div className="flex items-center gap-4 mb-6">
+          <div className="mb-16 ">
+            <div className="flex items-center gap-4 mb-6 ">
               <div
                 className={cn(
-                  "h-px flex-1",
+                  "h-px flex-1 ",
                   isDark ? "bg-zinc-800" : "bg-zinc-300"
                 )}
               />
               <h3
                 className={cn(
-                  "font-mono text-sm uppercase tracking-widest",
+                  "font-mono text-sm uppercase tracking-widest ",
                   isDark ? "text-zinc-500" : "text-zinc-400"
                 )}
               >
@@ -529,20 +527,20 @@ const AgentDetailPage = () => {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
               {agent.conversation_starters.map(
                 (starter: string, idx: number) => (
                   <button
                     key={idx}
                     onClick={() => handleStartChat(starter)}
                     className={cn(
-                      "group flex items-center justify-between p-5 text-left border transition-all duration-200",
+                      "group flex items-center justify-between p-5 text-left border transition-all duration-200 hover:cursor-pointer",
                       isDark
                         ? "bg-zinc-900/50 border-zinc-800 text-zinc-300 hover:border-white hover:text-white"
                         : "bg-white border-zinc-200 text-zinc-700 hover:border-black hover:text-black hover:shadow-lg"
                     )}
                   >
-                    <span className="text-sm font-medium line-clamp-1 font-mono">
+                    <span className="text-sm font-medium line-clamp-1 font-mono ">
                       "{starter}"
                     </span>
                     <ChevronRight
