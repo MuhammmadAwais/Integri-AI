@@ -11,11 +11,13 @@ interface ChatState {
     provider: string;
   };
 
-  // --- NEW: State for Voice Model ---
   voiceChatModel: {
     id: string;
     provider: string;
   };
+
+  // --- NEW: Toggle for Voice Captions ---
+  voiceShowCaptions: boolean;
 
   selectedAgentId: string | null;
 
@@ -33,52 +35,49 @@ const initialState: ChatState = {
   isContextSidebarOpen: true,
   activeSidebarTab: "home",
   newChatModel: { id: "integri", provider: "openai" },
-  // Default Voice Model
   voiceChatModel: {
     id: VOICE_MODELS[0].id,
     provider: VOICE_MODELS[0].provider,
   },
+  // Default to hidden or visible as you prefer
+  voiceShowCaptions: false,
   selectedAgentId: null,
   activeChatId: null,
   activeSessionConfig: null,
-  playgroundModels: [
-    AVAILABLE_MODELS[0],
-    AVAILABLE_MODELS.length > 1 ? AVAILABLE_MODELS[1] : AVAILABLE_MODELS[0],
-  ],
+  playgroundModels: [AVAILABLE_MODELS[0], AVAILABLE_MODELS[1]],
 };
 
-const chatSlice = createSlice({
+export const chatSlice = createSlice({
   name: "chat",
   initialState,
   reducers: {
-    toggleMobileMenu: (state, action: PayloadAction<boolean>) => {
-      state.isMobileMenuOpen = action.payload;
+    toggleMobileMenu: (state) => {
+      state.isMobileMenuOpen = !state.isMobileMenuOpen;
     },
     setContextSidebarOpen: (state, action: PayloadAction<boolean>) => {
       state.isContextSidebarOpen = action.payload;
     },
-    setActiveSidebarTab: (state, action: PayloadAction<any>) => {
+    setActiveSidebarTab: (
+      state,
+      action: PayloadAction<"home" | "history" | "library" | "settings">
+    ) => {
       state.activeSidebarTab = action.payload;
-      state.isContextSidebarOpen = true;
     },
     setNewChatModel: (
       state,
       action: PayloadAction<{ id: string; provider: string }>
     ) => {
       state.newChatModel = action.payload;
-      if (!state.activeChatId) {
-        state.activeSessionConfig = {
-          modelId: action.payload.id,
-          provider: action.payload.provider,
-        };
-      }
     },
-    // --- NEW: Reducer for Voice Model ---
     setVoiceChatModel: (
       state,
       action: PayloadAction<{ id: string; provider: string }>
     ) => {
       state.voiceChatModel = action.payload;
+    },
+    // --- NEW: Action to Toggle Captions ---
+    setVoiceShowCaptions: (state, action: PayloadAction<boolean>) => {
+      state.voiceShowCaptions = action.payload;
     },
     setNewChatAgent: (state, action: PayloadAction<string | null>) => {
       state.selectedAgentId = action.payload;
@@ -112,7 +111,8 @@ export const {
   setContextSidebarOpen,
   setActiveSidebarTab,
   setNewChatModel,
-  setVoiceChatModel, // Exported
+  setVoiceChatModel,
+  setVoiceShowCaptions, // Export new action
   setNewChatAgent,
   setActiveChat,
   setActiveSessionConfig,

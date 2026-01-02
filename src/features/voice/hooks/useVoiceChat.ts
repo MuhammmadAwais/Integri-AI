@@ -1,5 +1,3 @@
-// src/features/voice/hooks/useVoiceChat.ts
-
 import { useState, useEffect, useRef, useCallback } from "react";
 import { voiceSocketService } from "../../../services/VoiceWebSocketService";
 import { SessionService } from "../../../api/backendApi";
@@ -26,8 +24,9 @@ export const useVoiceChat = (
   const [audioLevel, setAudioLevel] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
-  // NEW: State for Captions
+  // --- CAPTION STATE ---
   const [caption, setCaption] = useState<string | null>(null);
+  const captionBuffer = useRef<string>("");
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const processorRef = useRef<ScriptProcessorNode | null>(null);
@@ -45,7 +44,7 @@ export const useVoiceChat = (
     );
   };
 
-  // -- Helpers (PCM/Base64) --
+  // -- Helpers --
   const floatTo16BitPCM = (input: Float32Array) => {
     const output = new Int16Array(input.length);
     for (let i = 0; i < input.length; i++) {
@@ -76,63 +75,81 @@ export const useVoiceChat = (
 
   // -- 1. Effect: Socket Connection --
   useEffect(() => {
-    log(
-      `🔄 Effect Dependencies Changed. Token: ${!!token}, SessionID: ${sessionId}, Model: ${model}`
-    );
-
-    if (!token || !sessionId) {
-      log("🚫 Missing Token or SessionID. Skipping connection.");
-      return;
-    }
+    if (!token || !sessionId) return;
 
     const handleMessage = (event: Event) => {
       const customEvent = event as CustomEvent;
       const data = customEvent.detail;
 
+      // --- 1. Audio Handling ---
       if (data.type === "audio" && data.data) {
         setStatus("speaking");
         isAssistantSpeakingRef.current = true;
         playAudioChunk(data.data);
-      } else if (
-        data.type === "speech_ended" ||
-        data.type === "response_complete"
-      ) {
-        isAssistantSpeakingRef.current = false;
-        setStatus("connected");
-      } else if (data.type === "interrupt") {
-        log("⚡ Server confirmed Interrupt");
-        isAssistantSpeakingRef.current = false;
       }
 
-      // NEW: Handle Captions/Transcripts
-      // Checking common fields for transcript data
-      else if (
-        data.type === "transcript" ||
-        data.type === "caption" ||
-        data.type === "text" ||
-        data.type === "transcription"
+      // --- 2. Turn Management (Clear captions when switching speakers) ---
+      else if (data.type === "input_audio_buffer.speech_started") {
+        captionBuffer.current = "";
+        setCaption(null);
+        setStatus("listening");
+      } else if (data.type === "response.content_part.added") {
+        captionBuffer.current = "";
+        setCaption(null);
+      }
+
+      // --- 3. Speech Ended ---
+      else if (data.type === "speech_ended" || data.type === "response.done") {
+        isAssistantSpeakingRef.current = false;
+        setStatus("connected");
+      } else if (data.type === "interrupt" || data.type === "response.cancel") {
+        isAssistantSpeakingRef.current = false;
+        captionBuffer.current = "";
+        setCaption(null);
+      }
+
+      // --- 4. CAPTIONS (FIXED) ---
+      // Catching the specific event "assistant_transcript" you mentioned
+      else if (data.type === "assistant_transcript") {
+        // The text is likely in data.text based on your log
+        const newText = data.text || "";
+        if (newText) {
+          captionBuffer.current += newText;
+          setCaption(captionBuffer.current);
+        }
+      }
+
+      // Fallback for other standard events
+      else if (data.type === "response.audio_transcript.delta") {
+        if (data.delta) {
+          captionBuffer.current += data.delta;
+          setCaption(captionBuffer.current);
+        }
+      } else if (
+        data.type === "response.audio_transcript.done" ||
+        data.type === "transcript"
       ) {
-        if (data.text || data.content || data.transcript) {
-          setCaption(data.text || data.content || data.transcript);
+        const final = data.transcript || data.text;
+        if (final) {
+          captionBuffer.current = final;
+          setCaption(final);
         }
       }
     };
 
     const handleOpen = () => {
-      log("🟢 Hook detected Socket OPEN");
       setStatus("connected");
+      log("Socket Connected");
     };
 
     const handleClose = () => {
-      log("🔴 Hook detected Socket CLOSE");
       disconnectMic();
       setStatus("disconnected");
       setSessionId(null);
-      setCaption(null); // Clear caption on close
+      setCaption(null);
     };
 
     const handleError = () => {
-      log("⚠️ Hook detected Socket ERROR");
       setError("Connection lost");
       disconnectMic();
     };
@@ -142,13 +159,9 @@ export const useVoiceChat = (
     voiceSocketService.addEventListener("close", handleClose);
     voiceSocketService.addEventListener("error", handleError);
 
-    log("🏁 Calling service.connect()...");
-    setStatus("connecting");
-    // Connect passing the dynamic model
     voiceSocketService.connect(token, sessionId, model);
 
     return () => {
-      log("🧹 Cleanup: Unmounting effect. Disconnecting socket.");
       voiceSocketService.removeEventListener("message", handleMessage);
       voiceSocketService.removeEventListener("open", handleOpen);
       voiceSocketService.removeEventListener("close", handleClose);
@@ -184,7 +197,6 @@ export const useVoiceChat = (
   };
 
   const disconnectMic = useCallback(() => {
-    log("🎙️ Shutting down Microphone...");
     if (processorRef.current) {
       processorRef.current.disconnect();
       processorRef.current = null;
@@ -200,7 +212,6 @@ export const useVoiceChat = (
   }, []);
 
   const startSession = useCallback(async () => {
-    log("▶️ startSession called");
     if (!token) {
       setError("Authentication missing");
       return;
@@ -210,8 +221,6 @@ export const useVoiceChat = (
       setError(null);
       setStatus("initializing");
 
-      log("⏳ Creating API Session...");
-      // Pass dynamic model and provider to createSession
       const sessionData = await SessionService.createSession(
         token,
         model,
@@ -220,7 +229,6 @@ export const useVoiceChat = (
         true
       );
       const newSessionId = sessionData.id || sessionData.session_id;
-      log(`✅ API Session Created: ${newSessionId}`);
 
       // Init Audio
       const AudioCtxClass =
@@ -260,7 +268,8 @@ export const useVoiceChat = (
           if (audioContextRef.current) {
             nextStartTimeRef.current = audioContextRef.current.currentTime;
           }
-          setCaption(null); // Clear caption on interrupt
+          setCaption(null);
+          captionBuffer.current = "";
         }
 
         // Send Audio
@@ -273,7 +282,8 @@ export const useVoiceChat = (
           silenceStartRef.current = Date.now();
           if (!isUserSpeakingRef.current) {
             isUserSpeakingRef.current = true;
-            setCaption(null); // Clear caption when user starts speaking
+            setCaption(null);
+            captionBuffer.current = "";
           }
         } else {
           const silenceDuration = Date.now() - silenceStartRef.current;
@@ -300,7 +310,6 @@ export const useVoiceChat = (
   }, [token, model, provider, disconnectMic]);
 
   const endSession = useCallback(() => {
-    log("⏹️ endSession called");
     disconnectMic();
     voiceSocketService.disconnect();
     setSessionId(null);

@@ -2,35 +2,33 @@ import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import { cn } from "../../lib/utils";
-import { ChevronDown, Plus, Sparkles, Mic } from "lucide-react"; // Added Mic icon
+import { ChevronDown, Plus, Sparkles, Mic, Captions } from "lucide-react"; // Added Captions icon
 import ModelMenu from "../../Components/ui/ModelMenu";
 import AgentMenu from "../../Components/ui/AgentMenu";
-import VoiceModelMenu from "../voice/components/VoiceModelMenu"; // Imported VoiceModelMenu
-import AVAILABLE_MODELS, { VOICE_MODELS } from "../../../Constants"; // Imported VOICE_MODELS
+import VoiceModelMenu from "../voice/components/VoiceModelMenu";
+import AVAILABLE_MODELS, { VOICE_MODELS } from "../../../Constants";
 import {
   setNewChatModel,
   addPlaygroundModel,
   setNewChatAgent,
-  setVoiceChatModel, // Imported action
+  setVoiceChatModel,
+  setVoiceShowCaptions, // Import action
 } from "../chat/chatSlice";
 
 const NavbarLeft: React.FC = () => {
   const location = useLocation();
   const dispatch = useAppDispatch();
   const isDark = useAppSelector((state) => state.theme.isDark);
-
   const { token } = useAppSelector((state: any) => state.auth);
 
-  const { newChatModel, selectedAgentId, voiceChatModel } = useAppSelector(
-    (state: any) => state.chat
-  );
+  const { newChatModel, selectedAgentId, voiceChatModel, voiceShowCaptions } =
+    useAppSelector((state: any) => state.chat);
   const { items: agents } = useAppSelector((state: any) => state.agents);
 
   const [showModelMenu, setShowModelMenu] = useState(false);
   const [showAgentMenu, setShowAgentMenu] = useState(false);
   const [showAddMenu, setShowAddMenu] = useState(false);
   const [showAddAgentMenu, setShowAddAgentMenu] = useState(false);
-  // State for Voice Menu
   const [showVoiceMenu, setShowVoiceMenu] = useState(false);
 
   // --- Voice Page Logic ---
@@ -40,6 +38,7 @@ const NavbarLeft: React.FC = () => {
 
     return (
       <div className="flex items-center gap-2 relative">
+        {/* Model Selector */}
         <div className="relative">
           <button
             onClick={() => setShowVoiceMenu(!showVoiceMenu)}
@@ -68,12 +67,31 @@ const NavbarLeft: React.FC = () => {
             }}
           />
         </div>
+
+        <div className="w-px h-5 bg-gray-500/20 mx-1" />
+
+        {/* NEW: Toggle Captions Button */}
+        <button
+          onClick={() => dispatch(setVoiceShowCaptions(!voiceShowCaptions))}
+          className={cn(
+            "p-2 rounded-xl border transition-all hover:cursor-pointer relative group",
+            voiceShowCaptions
+              ? "bg-zinc-600 text-white border-zinc-500 shadow-lg shadow-indigo-500/20"
+              : isDark
+              ? "border-white/10 text-gray-400 hover:bg-white/5 hover:text-gray-200"
+              : "border-black/5 text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+          )}
+          title={voiceShowCaptions ? "Hide Captions" : "Show Captions"}
+        >
+          <Captions size={18} strokeWidth={voiceShowCaptions ? 2.5 : 2} />
+        </button>
       </div>
     );
   }
 
-  // --- Welcome Screen Logic ---
+  // ... (Rest of the component remains unchanged for Welcome/Playground) ...
   if (location.pathname === "/") {
+    // Existing Welcome Screen code...
     const selectedAgent = agents.find((a: any) => a.gpt_id === selectedAgentId);
     const selectedModelLabel =
       AVAILABLE_MODELS.find((m) => m.id === newChatModel.id)?.label ||
@@ -126,7 +144,7 @@ const NavbarLeft: React.FC = () => {
             className={cn(
               "flex items-center gap-2 px-2 py-2 rounded-xl text-xs md:text-md font-semibold transition-all hover:cursor-pointer border",
               selectedAgentId
-                ? "bg-indigo-600 text-white border-indigo-500 shadow-lg shadow-indigo-500/20"
+                ? "bg-zinc-600 text-white border-zinc-500 shadow-lg shadow-zinc-500/20"
                 : isDark
                 ? "border-white/10 text-gray-400 hover:bg-white/5"
                 : "border-black/5 text-gray-600 hover:bg-black/5"
@@ -172,8 +190,8 @@ const NavbarLeft: React.FC = () => {
     );
   }
 
-  // --- Playground Logic ---
   if (location.pathname === "/playground") {
+    // Existing Playground code...
     return (
       <div className="flex items-center gap-2">
         <div className="relative">

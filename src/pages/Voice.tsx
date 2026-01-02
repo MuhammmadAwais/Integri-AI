@@ -5,31 +5,22 @@ import { useVoiceChat } from "../features/voice/hooks/useVoiceChat";
 import { useAppSelector } from "../hooks/useRedux";
 import ParticleBackground from "../Components/ui/ParticleBackground";
 import { cn } from "../lib/utils";
+import Captions from "../features/voice/components/Captions"; // Import updated component
 
-// For createChat if needed
 const Voice: React.FC = () => {
-  // 1. Get Credentials from Redux
   const { accessToken, user } = useAppSelector((state: any) => state.auth);
   {
     user;
-  } // for dev (vercel unused var fixed)
+  } // prevent unused var warning
 
-  // NOTE: might need to create a session ID first or pass one.
   const { isDark } = useAppSelector((state: any) => state.theme);
+  // Get voice config + caption visibility from Redux
+  const { voiceChatModel, voiceShowCaptions } = useAppSelector(
+    (state: any) => state.chat
+  );
 
-  // Get selected voice model from Redux
-  const { voiceChatModel } = useAppSelector((state: any) => state.chat);
-
-  // 2. Init Voice Hook with dynamic model
   const { status, audioLevel, error, startSession, endSession, caption } =
-    useVoiceChat(
-      accessToken,
-      voiceChatModel.id, // Dynamic ID
-      voiceChatModel.provider // Dynamic Provider
-    );
-
-  // Auto-start on mount (optional, or wait for button)
-  // useEffect(() => { startSession(); return () => endSession(); }, []);
+    useVoiceChat(accessToken, voiceChatModel.id, voiceChatModel.provider);
 
   const handleToggle = () => {
     if (status === "disconnected") {
@@ -39,16 +30,16 @@ const Voice: React.FC = () => {
     }
   };
 
-  // Visualizer props based on state
   const isActive =
     status === "speaking" || status === "listening" || status === "connected";
 
   return (
     <div className="relative w-full h-screen overflow-hidden flex flex-col items-center justify-center">
       <ParticleBackground />
+
       {/* Header */}
       <div className="absolute top-10 z-10 text-center">
-        <h2 className=" text-4xl font-extrabold tracking-widest uppercase">
+        <h2 className="text-4xl font-extrabold tracking-widest uppercase">
           {status === "disconnected"
             ? "Ready"
             : status === "speaking"
@@ -98,23 +89,10 @@ const Voice: React.FC = () => {
               : "#000"
           }
         />
-
-        {/* Caption Overlay */}
-        {caption && status === "speaking" && (
-          <div className="absolute bottom-10 w-[80%] text-center pointer-events-none z-30 animate-in fade-in slide-in-from-bottom-4 duration-300">
-            <span
-              className={cn(
-                "px-6 py-3 rounded-2xl text-lg md:text-xl font-medium shadow-2xl backdrop-blur-md",
-                isDark
-                  ? "bg-black/60 text-white/90 border border-white/10"
-                  : "bg-white/60 text-black/90 border border-black/10"
-              )}
-            >
-              {caption}
-            </span>
-          </div>
-        )}
       </div>
+
+      {/* CAPTIONS: Controlled by Redux state from Navbar */}
+      <Captions text={caption} status={status} isVisible={voiceShowCaptions} />
 
       {/* Controls */}
       <div className="absolute bottom-12 z-20 flex flex-col items-center gap-6">
@@ -137,7 +115,6 @@ const Voice: React.FC = () => {
             }
           `}
         >
-          {/* Ping Ring */}
           {isActive && (
             <span className="absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-20 animate-ping"></span>
           )}
@@ -146,7 +123,7 @@ const Voice: React.FC = () => {
             <PhoneOff className="text-white w-8 h-8" />
           ) : (
             <Mic
-              className={cn(" w-8 h-8", isDark ? "text-black" : "  text-white")}
+              className={cn("w-8 h-8", isDark ? "text-black" : "text-white")}
             />
           )}
         </button>

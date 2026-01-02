@@ -36,82 +36,56 @@ class VoiceWebSocketService extends EventTarget {
     sessionId: string,
     model: string = "gpt-realtime-mini"
   ) {
-    // 1. Prevent redundant connections if already open/connecting
-    if (this.socket) {
-      if (this.socket.readyState === WebSocket.OPEN) {
-        this.log("⚠️ connect() called but socket is ALREADY OPEN. Ignoring.");
-        return;
-      }
-      if (this.socket.readyState === WebSocket.CONNECTING) {
-        this.log("⚠️ connect() called but socket is CONNECTING. Ignoring.");
-        return;
-      }
+    if (
+      this.socket &&
+      (this.socket.readyState === WebSocket.OPEN ||
+        this.socket.readyState === WebSocket.CONNECTING)
+    ) {
+      this.log("⚠️ Socket already connected or connecting.");
+      return;
     }
 
-    this.log(`🔌 Attempting connection...`, { sessionId, model });
+    this.log(`🔌 Connecting to ${this.url}...`);
+    this.socket = new WebSocket(this.url);
 
-    try {
-      const wsUrl = new URL(this.url);
-      wsUrl.searchParams.append("token", token);
-      wsUrl.searchParams.append("session_id", sessionId);
+    this.socket.onopen = () => {
+      this.log("✅ WebSocket Open");
+      this.dispatchEvent(new Event("open"));
+      this.send({ type: "auth", token, session_id: sessionId, model });
+    };
 
-      this.socket = new WebSocket(wsUrl.toString());
-      this.socket.binaryType = "arraybuffer";
-
-      // --- Event Handlers ---
-
-      this.socket.onopen = () => {
-        this.log("✅ Socket Connection ESTABLISHED (onopen)");
-        this.dispatchEvent(new Event("open"));
-
-        // Send Auth immediately as per protocol
-        this.send({
-          type: "auth",
-          token: token,
-          session_id: sessionId,
-          model: model,
-        });
-      };
-
-      this.socket.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          // Don't log every single audio chunk (too spammy), log other events
-          if (data.type !== "audio") {
-            this.log(`📩 Received Message: ${data.type}`, data);
-          }
-          this.dispatchEvent(new CustomEvent("message", { detail: data }));
-        } catch (e) {
-          console.error("❌ Failed to parse incoming message", e);
+    // --- YOUR CUSTOM SNIPPET HERE ---
+    this.socket.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        // Don't log every single audio chunk (too spammy), log other events
+        if (data.type !== "audio") {
+          this.log(`📩 Received Message: ${data.type}`, data);
         }
-      };
+        this.dispatchEvent(new CustomEvent("message", { detail: data }));
+      } catch (e) {
+        console.error("❌ Failed to parse incoming message", e);
+      }
+    };
+    // -------------------------------
 
-      this.socket.onerror = (event) => {
-        console.error("❌ Socket Error Event:", event);
-        this.dispatchEvent(new Event("error"));
-      };
+    this.socket.onclose = (event) => {
+      this.log(`❌ WebSocket Closed (Code: ${event.code})`);
+      this.socket = null;
+      this.dispatchEvent(new Event("close"));
+    };
 
-      this.socket.onclose = (event) => {
-        this.log(
-          `💀 Socket CLOSED. Code: ${event.code}, Reason: "${event.reason}", Clean: ${event.wasClean}`
-        );
-
-        // ANALYZE THE CODE HERE:
-        if (event.code === 1006)
-          console.error(
-            "👉 Code 1006: Abnormal Closure. Usually means the server dropped the connection (Auth failed?) or the network died."
-          );
-        if (event.code >= 4000)
-          console.error(
-            `👉 Code ${event.code}: App-specific error from backend.`
-          );
-
-        this.socket = null;
-        this.dispatchEvent(new Event("close"));
-      };
-    } catch (e) {
-      console.error("❌ Exception during connect:", e);
+    this.socket.onerror = (error) => {
+      console.error("❌ WebSocket Error:", error);
       this.dispatchEvent(new Event("error"));
+    };
+  }
+
+  disconnect() {
+    if (this.socket) {
+      this.log("🔌 Disconnecting...");
+      this.socket.close();
+      this.socket = null;
     }
   }
 
@@ -122,9 +96,7 @@ class VoiceWebSocketService extends EventTarget {
       }
       this.socket.send(JSON.stringify(payload));
     } else {
-      this.log(
-        `⚠️ Cannot send '${payload.type}': Socket not ready (State: ${this.socket?.readyState})`
-      );
+      this.log(`⚠️ Cannot send '${payload.type}': Socket not ready`);
     }
   }
 
@@ -139,16 +111,8 @@ class VoiceWebSocketService extends EventTarget {
   }
 
   sendInterrupt() {
-    this.log("🛑 Sending INTERRUPT");
+    this.log("✋ Sending INTERRUPT");
     this.send({ type: "interrupt" });
-  }
-
-  disconnect() {
-    if (this.socket) {
-      this.log("🔻 disconnect() called manually by Client");
-      this.socket.close();
-      this.socket = null;
-    }
   }
 }
 
