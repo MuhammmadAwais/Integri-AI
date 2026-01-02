@@ -345,29 +345,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 )}
               </AnimatePresence>
 
-              {/* Other standard buttons */}
-              <button
-                title="button"
-                className={cn(
-                  "p-2 rounded-full transition-colors",
-                  isDark
-                    ? "hover:bg-gray-800 text-gray-400"
-                    : "hover:bg-gray-200 text-gray-500"
-                )}
-              >
-                <Globe size={18} />
-              </button>
-              <button
-                title="button"
-                className={cn(
-                  "p-2 rounded-full transition-colors",
-                  isDark
-                    ? "hover:bg-gray-800 text-gray-400"
-                    : "hover:bg-gray-200 text-gray-500"
-                )}
-              >
-                <ImageIcon size={18} />
-              </button>
+              
             </div>
 
             {/* Right Tools (Send) */}
