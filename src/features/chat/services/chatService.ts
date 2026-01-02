@@ -22,7 +22,6 @@ export const ChatService = {
         custom_gpt_id
       );
       
-      // Expecting { session_id: "..." } from backend
       return response.session_id;
     } catch (error) {
       console.error("Backend: Failed to create chat", error);

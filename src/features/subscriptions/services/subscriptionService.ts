@@ -17,11 +17,8 @@ export const SubscriptionService = {
       
       // 2. Check Customer Info
       const customerInfo = await purchases.getCustomerInfo();
-      
       // 3. Check Entitlement (ensure "premium" matches your Dashboard entitlement ID)
-      const isPremium =
-        typeof customerInfo.entitlements.active["premium"] !== "undefined";
-
+      const isPremium = customerInfo.entitlements.all.integri.isActive;
       // 4. Sync to Firestore
       const userRef = doc(db, "users", userId);
       await setDoc(

@@ -108,10 +108,12 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
         {profileImage ? (
           <div
             className={cn(
-              "rounded-full bg-gray-600 flex items-center justify-center text-white font-bold text-sm shrink-0 ring-2 ring-transparent  transition-all shadow-sm",
+              "rounded-full bg-gray-600 flex items-center justify-center text-white font-bold text-sm shrink-0 ring-3 ring-transparent  transition-all shadow-sm",
               isExpanded ? "w-9 h-9" : "w-8 h-8",
-              !user?.isPremium
-                ? "ring-yellow-400 group-hover:ring-yellow-600 "
+              user?.isPremium
+                ? isDark
+                  ? "ring-yellow-400 group-hover:ring-yellow-600 "
+                  : "ring-yellow-400  group-hover:ring-yellow-500 "
                 : "group-hover:ring-indigo-500"
             )}
           >

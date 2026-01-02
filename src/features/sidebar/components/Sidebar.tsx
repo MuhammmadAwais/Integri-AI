@@ -72,7 +72,6 @@ const Sidebar: React.FC = () => {
 
   // Data Fetching
   const { chats = [], handleDeleteChat } = useChatList(user?.id);
-
   // Filter Logic
   const filteredChats = chats.filter((c) =>
     (c.title || "").toLowerCase().includes(searchQuery.toLowerCase())
