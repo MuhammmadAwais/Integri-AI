@@ -4,11 +4,8 @@ import { cn } from "../lib/utils";
 import {
   Paperclip,
   ArrowUp,
-  Search,
   Image as ImageIcon,
-  Users,
   AudioLines,
-  ChevronDown,
   X as XIcon,
   FileText,
   HardDrive,
@@ -18,11 +15,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { ChatService } from "../features/chat/services/chatService";
 import gsap from "gsap";
 import ParticleBackground from "../Components/ui/ParticleBackground";
-import ReasoningMenu from "../Components/ui/ReasoningMenu";
-import { RocketIcon } from "../Components/ui/ReasoningMenu";
 import { useCloudStorage } from "../hooks/useCloudStorage";
 import { AnimatePresence, motion } from "framer-motion";
-import WhiteboardModal from "../Components/ui/WhiteboardModal"; // Import the modal
+import WhiteboardModal from "../Components/ui/WhiteboardModal"; 
 import SubscriptionOfferingCard from "../features/subscriptions/components/SubscriptionOfferingCard";
 
 const WelcomePage: React.FC = () => {
@@ -35,9 +30,7 @@ const WelcomePage: React.FC = () => {
   );
 
   const [inputValue, setInputValue] = useState("");
-  const [reasoningMode, setReasoningMode] = useState("Auto");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [showReasoningMenu, setShowReasoningMenu] = useState(false);
   const [showAttachMenu, setShowAttachMenu] = useState(false);
   const [showWhiteboard, setShowWhiteboard] = useState(false); // State for Whiteboard
 
@@ -166,11 +159,6 @@ const WelcomePage: React.FC = () => {
     }
   };
 
-  const features = [
-    { icon: Search, label: "DeepSearch" },
-    { icon: ImageIcon, label: "Create Image" },
-    { icon: Users, label: "Pick Persons" },
-  ];
 
   return (
     <div
@@ -223,13 +211,7 @@ const WelcomePage: React.FC = () => {
               : "bg-gray-50 border-gray-200 hover:border-gray-300"
           )}
         >
-          <ReasoningMenu
-            isOpen={showReasoningMenu}
-            onClose={() => setShowReasoningMenu(false)}
-            selected={reasoningMode}
-            onSelect={setReasoningMode}
-            isDark={isDark}
-          />
+         
 
           <div className="flex flex-col w-full">
             {/* File Preview */}
@@ -453,22 +435,7 @@ const WelcomePage: React.FC = () => {
               />
 
               <div className="flex items-center gap-1.5 shrink-0">
-                <button
-                  onClick={() => setShowReasoningMenu(!showReasoningMenu)}
-                  className={cn(
-                    "flex items-center gap-1 px-2 py-1.5 rounded-lg transition-all text-sm font-semibold hover:cursor-pointer",
-                    isDark
-                      ? "text-gray-400 hover:text-gray-200 hover:bg-white/10"
-                      : "text-gray-500 hover:text-black hover:bg-black/5"
-                  )}
-                >
-                  <RocketIcon
-                    size={14}
-                    className={isDark ? "text-gray-400" : "text-gray-600"}
-                  />
-                  <span className="hidden sm:inline">{reasoningMode}</span>
-                  <ChevronDown size={12} strokeWidth={3} />
-                </button>
+              
 
                 <div
                   className={cn(
@@ -514,27 +481,7 @@ const WelcomePage: React.FC = () => {
           </div>
         </div>
 
-        {/* FEATURE CHIPS */}
-        <div
-          ref={chipsRef}
-          className="flex flex-wrap justify-center gap-2 mt-6"
-        >
-          {features.map((feat, idx) => (
-            <button
-              key={idx}
-              onClick={() => startChat(feat.label)}
-              className={cn(
-                "flex items-center gap-2 px-3.5 py-2 rounded-full text-sm font-semibold border transition-all duration-200 hover:cursor-pointer",
-                isDark
-                  ? "bg-transparent border-[#2A2B32] text-gray-400 hover:text-white hover:bg-[#181818] hover:border-gray-600"
-                  : "bg-white border-gray-200 text-gray-600 hover:text-black hover:bg-gray-50 hover:border-gray-300"
-              )}
-            >
-              <feat.icon size={15} />
-              <span>{feat.label}</span>
-            </button>
-          ))}
-        </div>
+       
 
         <div className="mt-8 text-xs text-gray-500 opacity-60">
           All LLMs can make mistakes. Verify the information you receive.
