@@ -89,13 +89,13 @@ const VoiceModelMenu: React.FC<VoiceModelMenuProps> = ({
   return createPortal(
     <>
       <div
-        className="fixed inset-0 z-[9998] bg-transparent"
+        className="fixed inset-0 z-9998 bg-transparent"
         onClick={onClose}
       />
       <div
         ref={menuRef}
         className={cn(
-          "fixed z-[9999] w-[240px] rounded-xl border p-1.5 shadow-xl animate-in fade-in zoom-in-95 duration-100",
+          "fixed z-9999 w-60 rounded-xl border p-1.5 shadow-xl animate-in fade-in zoom-in-95 duration-100",
           isDark ? "bg-[#121212] border-zinc-800" : "bg-white border-zinc-200"
         )}
         style={{
