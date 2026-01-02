@@ -45,7 +45,7 @@ const MobileSidebar: React.FC = () => {
 
   const handleNavigation = (path: string) => {
     navigate(path);
-    dispatch(toggleMobileMenu(false));
+    dispatch(toggleMobileMenu());
   };
 
   const handleNewChat = async () => {
@@ -69,7 +69,7 @@ const MobileSidebar: React.FC = () => {
       if (newSessionId) {
         if (refreshChats) refreshChats(); // Ensure list updates
         navigate(`/chat/${newSessionId}`);
-        dispatch(toggleMobileMenu(false));
+        dispatch(toggleMobileMenu());
       }
     } catch (error) {
       console.error("Failed to create chat:", error);
@@ -153,7 +153,7 @@ const MobileSidebar: React.FC = () => {
           </div>
           <button
             title="Close Menu"
-            onClick={() => dispatch(toggleMobileMenu(false))}
+            onClick={() => dispatch(toggleMobileMenu())}
             className={cn(
               "p-2 rounded-full transition-colors",
               isDark
@@ -238,7 +238,7 @@ const MobileSidebar: React.FC = () => {
                     key={sessionId}
                     onClick={() => {
                       navigate(`/chat/${sessionId}`);
-                      dispatch(toggleMobileMenu(false));
+                      dispatch(toggleMobileMenu());
                     }}
                     className={cn(
                       "group relative flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-200 cursor-pointer text-sm",
