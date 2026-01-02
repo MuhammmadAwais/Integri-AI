@@ -21,7 +21,7 @@ export const ChatService = {
         provider,
         custom_gpt_id
       );
-
+      
       // Expecting { session_id: "..." } from backend
       return response.session_id;
     } catch (error) {

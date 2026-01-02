@@ -68,6 +68,7 @@ const AgentDetailPage = () => {
       try {
         setLoading(true);
         const data = await AgentService.getAgentById(token, id);
+        
         setAgent(data);
 
         // Fetch Documents
@@ -98,7 +99,7 @@ const AgentDetailPage = () => {
       const newSessionId = await ChatService.createChat(
         token,
         modelToUse,
-        agent.id
+        agent.gpt_id
       );
       navigate(`/chat/${newSessionId}`, {
         state: { initialMessage: messageToSend },
