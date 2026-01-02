@@ -16,7 +16,10 @@ interface AppButtonProps {
   qrCodeImage?: string; // This is the actual QR code image to show in modal
 }
 
-const DownloadSettings: React.FC = () => {
+interface DownloadSettingsProps {
+  isSidebar?: boolean;
+}
+const DownloadSettings: React.FC<DownloadSettingsProps> = ({ isSidebar }) => {
   const isDark = useAppSelector((state: any) => state.theme.isDark);
 
   const AppButton: React.FC<AppButtonProps> = ({
@@ -95,7 +98,7 @@ const DownloadSettings: React.FC = () => {
           <DownloadModal
             isOpen={isHovered}
             isDark={isDark}
-            qrCodeSrc={qrCodeImage} 
+            qrCodeSrc={qrCodeImage}
             storeName={title}
           />
 
@@ -122,6 +125,65 @@ const DownloadSettings: React.FC = () => {
       </div>
     );
   };
+
+
+    if (isSidebar) {
+      return (
+        <div className="w-full animate-in fade-in slide-in-from-bottom-2 duration-500">
+          <div
+            className={cn(
+              "flex flex-row gap-4 p-4 rounded-xl border",
+              isDark
+                ? "bg-[#18181b] border-white/5"
+                : "bg-white border-gray-200 shadow-sm"
+            )}
+          >
+            {/* Row 1: iOS */}
+            <div className="flex flex-col items-center justify-between group">
+              <div className="flex items-center gap-3">
+                <div
+                  className={cn(
+                    "p-1.5 rounded-lg",
+                  )}
+                >
+                  <p className="ml-1">Appstore</p>
+                </div>
+              </div>
+              <div className="bg-white p-1 rounded-md border border-gray-100 shadow-sm">
+                <img
+                  src={qrCodeApple}
+                  alt="iOS QR"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            </div>     
+
+            {/* Row 2: Android */}
+            <div className="flex flex-col items-center justify-between group">
+              <div className="flex items-center gap-3">
+                <div
+                  className={cn(
+                    "p-1.5 flex gap-1 items-center rounded-lg "
+                    
+                  )}
+                >
+                 
+                  <p className="ml-1">Playstore</p>
+                </div>
+              </div>
+              <div className="bg-white p-1 rounded-md border border-gray-100 shadow-sm">
+                <img
+                  src={qrCodeAndroid}
+                  alt="Android QR"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
 
   return (
     <div className="flex flex-col w-full animate-in fade-in slide-in-from-bottom-4 duration-500">

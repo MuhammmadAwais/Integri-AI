@@ -11,6 +11,7 @@ import { logoutUser } from "../../auth/thunks/authThunk";
 import { Link, useNavigate } from "react-router-dom";
 import { cn } from "../../../lib/utils";
 import Portal from "../../../Components/ui/Portal";
+import DownloadSettings from "../../settings/components/DownloadSettings";
 
 interface UserProfileProps {
   isExpanded: boolean;
@@ -32,11 +33,31 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+    //Profile states
+  const [isHovered, setIsHovered] = useState(false);
 
   // Mock Data
   const initials = user?.name ? user.name.substring(0, 1).toUpperCase() : "G";
   const fullName = user?.name || "Guest User";
   const username = user?.email || "No account active";
+
+
+   const handleMouseEnter = () => {
+     setIsHovered(true);
+   };
+
+   const handleMouseLeave = () => {
+     setIsHovered(false);
+   };
+
+   const handleClick = () => {
+     setIsHovered(false);
+   };
+const handleDivClick = (e: React.MouseEvent) => {
+  handleClick();
+  handleToggleMenu(e);
+};
+   
 
   const handleToggleMenu = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -92,9 +113,17 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
 
   return (
     <>
+      {isHovered && (
+        
+          
+          <DownloadSettings isSidebar={true} />
+       
+      )}
       <div
         ref={containerRef}
-        onClick={handleToggleMenu}
+        onClick={handleDivClick}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         className={cn(
           "flex items-center rounded-xl transition-colors cursor-pointer relative group select-none",
           isExpanded

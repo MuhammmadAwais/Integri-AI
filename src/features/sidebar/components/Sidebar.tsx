@@ -19,6 +19,7 @@ import HistoryModal from "./HistoryModal";
 import DeleteModal from "../../../Components/ui/DeleteModal";
 import UserProfile from "./UserProfile";
 
+
 // --- NAVIGATION ITEMS CONFIG ---
 const NAV_ITEMS = [
   { id: "chat", label: "Chat", icon: MessageCircle, path: "/" },
@@ -39,6 +40,7 @@ const Sidebar: React.FC = () => {
   const [isHistoryOpen, setIsHistoryOpen] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
+
   // Modal States
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -49,6 +51,10 @@ const Sidebar: React.FC = () => {
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   const user = useAppSelector((state: any) => state.auth.user);
   const SearchinputRef = useRef<HTMLInputElement | null>(null);
+
+
+  // Profile Functionailities
+;
 
   // Keyboard Shortcuts
   useEffect(() => {
@@ -334,8 +340,11 @@ const Sidebar: React.FC = () => {
           )}
         </div>
 
+        
+
         {/* --- 5. FOOTER (UserProfile) --- */}
         <div
+          
           className={cn(
             "p-2 mt-auto relative z-50",
             isDark ? "border-t border-[#1F1F1F]" : "border-t border-gray-200"
