@@ -29,7 +29,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
 
   const [showMenu, setShowMenu] = useState(false);
   const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
-
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -60,7 +60,11 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
       setShowMenu(true);
     }
   };
-
+  useEffect(() => {
+      if (user) {
+        setProfileImage(user.avatar || null);
+      }
+    }, [user]);
   // Close when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -101,14 +105,32 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
         )}
       >
         {/* 1. Avatar */}
-        <div
-          className={cn(
-            "rounded-full bg-gray-600 flex items-center justify-center text-white font-bold text-sm shrink-0 ring-2 ring-transparent group-hover:ring-indigo-500 transition-all shadow-sm",
-            isExpanded ? "w-9 h-9" : "w-8 h-8"
-          )}
-        >
-          {initials}
-        </div>
+        {profileImage ? (
+          <div
+            className={cn(
+              "rounded-full bg-gray-600 flex items-center justify-center text-white font-bold text-sm shrink-0 ring-2 ring-transparent  transition-all shadow-sm",
+              isExpanded ? "w-9 h-9" : "w-8 h-8",
+              !user?.isPremium
+                ? "ring-yellow-400 group-hover:ring-yellow-600 "
+                : "group-hover:ring-indigo-500"
+            )}
+          >
+            <img
+              src={profileImage}
+              alt="Profile"
+              className="w-full h-full object-cover rounded-full"
+            />
+          </div>
+        ) : (
+          <div
+            className={cn(
+              "rounded-full bg-gray-600 flex items-center justify-center text-white font-bold text-sm shrink-0 ring-2 ring-transparent group-hover:ring-indigo-500 transition-all shadow-sm",
+              isExpanded ? "w-9 h-9" : "w-8 h-8"
+            )}
+          >
+            {initials}
+          </div>
+        )}
 
         {/* 2. Text Info (Visible only when Expanded) */}
         <div
@@ -125,7 +147,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
           >
             {fullName}
           </p>
-          <p className="text-[#71767B] text-xs truncate">{username.split("@")[0]}</p>
+          <p className="text-[#71767B] text-xs truncate">
+            {username.split("@")[0]}
+          </p>
         </div>
 
         {/* 4. THE TOGGLE ARROW */}

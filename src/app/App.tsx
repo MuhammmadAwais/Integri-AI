@@ -44,11 +44,11 @@ const router = createBrowserRouter([
   // 2. Main App
   {
     path: "/",
-    element: <Home />, // Wraps everything in Layout
+    element: <Home />,
     children: [
-      { index: true, element: <Welcome /> }, // Default: Welcome Screen
-      { path: "chat/:id", element: <ChatInterface /> }, // Chat
-      { path: "c/:id", element: <ChatInterface /> }, // Shared/Short Link
+      { index: true, element: <Welcome /> },
+      { path: "chat/:id", element: <ChatInterface /> },
+      { path: "c/:id", element: <ChatInterface /> },
       { path: "history", element: <HistoryPage /> },
       { path: "playground", element: <Playground /> },
       { path: "voice", element: <Voice /> },
@@ -77,13 +77,16 @@ const App: React.FC = () => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
-          // 1. Sync with RevenueCat FIRST
+          // 1. Sync with RevenueCat FIRST (Preserved)
           const isPremiumStatus =
             await SubscriptionService.syncStatusWithRevenueCat(
               firebaseUser.uid
             );
 
           let planId = "starter";
+          let country = "";
+          // Use Google photo by default, will override if Firestore has one
+          let avatarUrl = firebaseUser.photoURL;
 
           // 2. Fetch User Profile & Settings from Firestore
           try {
@@ -99,17 +102,22 @@ const App: React.FC = () => {
                 dispatch(setTheme(isDarkTheme));
               }
 
-              // Extract plan info from Firestore
+              // Extract data
               planId = userData.planId || "starter";
+              country = userData.country || "";
+
+              // NEW: Check if user has a custom uploaded photo
+              if (userData.photoURL) {
+                avatarUrl = userData.photoURL;
+              }
             }
           } catch (firestoreError) {
             console.error("Failed to load user profile:", firestoreError);
           }
 
-          // 3. Fetch Backend Token (PASSING PREMIUM STATUS)
+          // 3. Fetch Backend Token (PASSING PREMIUM STATUS) - Preserved
           let accessToken = null;
           try {
-            // We pass 'isPremiumStatus' here so the backend knows the user type
             const tokenData = await getBackendToken(
               firebaseUser.uid,
               firebaseUser.email,
@@ -127,9 +135,10 @@ const App: React.FC = () => {
                 id: firebaseUser.uid,
                 email: firebaseUser.email,
                 name: firebaseUser.displayName,
-                avatar: firebaseUser.photoURL,
+                avatar: avatarUrl, // Updated to use the resolved URL
                 isPremium: isPremiumStatus,
                 planId: planId,
+                country: country, // Added country
               },
               accessToken: accessToken,
             })

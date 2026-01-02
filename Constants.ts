@@ -241,5 +241,32 @@ export const SUBSCRIPTION_FAQS = [
   },
 ];
 
+export const COUNTRIES = [
+  "United States",
+  "United Kingdom",
+  "Canada",
+  "Australia",
+  "Germany",
+  "France",
+  "India",
+  "Pakistan",
+  "China",
+  "Japan",
+  "Brazil",
+  "Mexico",
+  "Russia",
+  "South Africa",
+  "Italy",
+  "Spain",
+  "Netherlands",
+  "Sweden",
+  "Switzerland",
+  "Argentina",
+  "New Zealand",
+  "Singapore",
+  "United Arab Emirates",
+];
 
 export default AVAILABLE_MODELS;
+
+
