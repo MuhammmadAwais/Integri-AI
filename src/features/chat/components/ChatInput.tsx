@@ -4,7 +4,6 @@ import {
   ArrowUp,
   X,
   FileText,
-  Globe,
   Image as ImageIcon,
   HardDrive,
   PenTool, // Imported Pen Icon
