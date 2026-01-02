@@ -26,6 +26,9 @@ export const useVoiceChat = (
   const [audioLevel, setAudioLevel] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
+  // NEW: State for Captions
+  const [caption, setCaption] = useState<string | null>(null);
+
   const audioContextRef = useRef<AudioContext | null>(null);
   const processorRef = useRef<ScriptProcessorNode | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -100,6 +103,19 @@ export const useVoiceChat = (
         log("⚡ Server confirmed Interrupt");
         isAssistantSpeakingRef.current = false;
       }
+
+      // NEW: Handle Captions/Transcripts
+      // Checking common fields for transcript data
+      else if (
+        data.type === "transcript" ||
+        data.type === "caption" ||
+        data.type === "text" ||
+        data.type === "transcription"
+      ) {
+        if (data.text || data.content || data.transcript) {
+          setCaption(data.text || data.content || data.transcript);
+        }
+      }
     };
 
     const handleOpen = () => {
@@ -112,6 +128,7 @@ export const useVoiceChat = (
       disconnectMic();
       setStatus("disconnected");
       setSessionId(null);
+      setCaption(null); // Clear caption on close
     };
 
     const handleError = () => {
@@ -127,6 +144,7 @@ export const useVoiceChat = (
 
     log("🏁 Calling service.connect()...");
     setStatus("connecting");
+    // Connect passing the dynamic model
     voiceSocketService.connect(token, sessionId, model);
 
     return () => {
@@ -193,6 +211,7 @@ export const useVoiceChat = (
       setStatus("initializing");
 
       log("⏳ Creating API Session...");
+      // Pass dynamic model and provider to createSession
       const sessionData = await SessionService.createSession(
         token,
         model,
@@ -241,6 +260,7 @@ export const useVoiceChat = (
           if (audioContextRef.current) {
             nextStartTimeRef.current = audioContextRef.current.currentTime;
           }
+          setCaption(null); // Clear caption on interrupt
         }
 
         // Send Audio
@@ -253,6 +273,7 @@ export const useVoiceChat = (
           silenceStartRef.current = Date.now();
           if (!isUserSpeakingRef.current) {
             isUserSpeakingRef.current = true;
+            setCaption(null); // Clear caption when user starts speaking
           }
         } else {
           const silenceDuration = Date.now() - silenceStartRef.current;
@@ -284,7 +305,8 @@ export const useVoiceChat = (
     voiceSocketService.disconnect();
     setSessionId(null);
     setStatus("disconnected");
+    setCaption(null);
   }, [disconnectMic]);
 
-  return { status, audioLevel, error, startSession, endSession };
+  return { status, audioLevel, error, startSession, endSession, caption };
 };

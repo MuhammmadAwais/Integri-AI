@@ -2,14 +2,16 @@ import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import { cn } from "../../lib/utils";
-import { ChevronDown, Plus, Sparkles } from "lucide-react";
+import { ChevronDown, Plus, Sparkles, Mic } from "lucide-react"; // Added Mic icon
 import ModelMenu from "../../Components/ui/ModelMenu";
 import AgentMenu from "../../Components/ui/AgentMenu";
-import AVAILABLE_MODELS from "../../../Constants";
+import VoiceModelMenu from "../voice/components/VoiceModelMenu"; // Imported VoiceModelMenu
+import AVAILABLE_MODELS, { VOICE_MODELS } from "../../../Constants"; // Imported VOICE_MODELS
 import {
   setNewChatModel,
   addPlaygroundModel,
   setNewChatAgent,
+  setVoiceChatModel, // Imported action
 } from "../chat/chatSlice";
 
 const NavbarLeft: React.FC = () => {
@@ -17,10 +19,9 @@ const NavbarLeft: React.FC = () => {
   const dispatch = useAppDispatch();
   const isDark = useAppSelector((state) => state.theme.isDark);
 
-  // FIX 1: Retrieve token for the AgentMenu to fetch data
   const { token } = useAppSelector((state: any) => state.auth);
 
-  const { newChatModel, selectedAgentId } = useAppSelector(
+  const { newChatModel, selectedAgentId, voiceChatModel } = useAppSelector(
     (state: any) => state.chat
   );
   const { items: agents } = useAppSelector((state: any) => state.agents);
@@ -29,6 +30,47 @@ const NavbarLeft: React.FC = () => {
   const [showAgentMenu, setShowAgentMenu] = useState(false);
   const [showAddMenu, setShowAddMenu] = useState(false);
   const [showAddAgentMenu, setShowAddAgentMenu] = useState(false);
+  // State for Voice Menu
+  const [showVoiceMenu, setShowVoiceMenu] = useState(false);
+
+  // --- Voice Page Logic ---
+  if (location.pathname === "/voice") {
+    const selectedVoiceModel =
+      VOICE_MODELS.find((m) => m.id === voiceChatModel.id) || VOICE_MODELS[0];
+
+    return (
+      <div className="flex items-center gap-2 relative">
+        <div className="relative">
+          <button
+            onClick={() => setShowVoiceMenu(!showVoiceMenu)}
+            className={cn(
+              "flex items-center gap-2 px-3 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all hover:cursor-pointer border ml-1 md:ml-0",
+              isDark
+                ? "border-white/10 text-gray-200 hover:bg-[#1A1A1A]"
+                : "border-black/5 text-gray-700 hover:bg-gray-100"
+            )}
+          >
+            <Mic size={14} className="opacity-70" />
+            <span>{selectedVoiceModel.label}</span>
+            <ChevronDown size={14} className="opacity-50" />
+          </button>
+
+          <VoiceModelMenu
+            isOpen={showVoiceMenu}
+            onClose={() => setShowVoiceMenu(false)}
+            selectedId={voiceChatModel.id}
+            isDark={isDark}
+            position="top"
+            align="left"
+            onSelect={(id, provider) => {
+              dispatch(setVoiceChatModel({ id, provider }));
+              setShowVoiceMenu(false);
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
 
   // --- Welcome Screen Logic ---
   if (location.pathname === "/") {
@@ -176,7 +218,6 @@ const NavbarLeft: React.FC = () => {
             <span className="text-xs font-bold uppercase">Add Agent</span>
           </button>
 
-          {/* FIX 3: Added position="top" here as well */}
           <AgentMenu
             isOpen={showAddAgentMenu}
             onClose={() => setShowAddAgentMenu(false)}

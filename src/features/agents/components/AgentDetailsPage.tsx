@@ -432,7 +432,7 @@ const AgentDetailPage = () => {
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploadingDocs}
                   className={cn(
-                    "hover:cursor-pointer flex items-center gap-2 px-4 py-2 text-sm font-bold uppercase tracking-wide border transition-all",
+                    "hover:cursor-pointer flex items-center gap-2 px-4 py-2 text-sm font-bold uppercase tracking-wide border transition-all ",
                     isDark
                       ? "border-zinc-700 hover:bg-white hover:text-black"
                       : "border-zinc-300 hover:bg-black hover:text-white"

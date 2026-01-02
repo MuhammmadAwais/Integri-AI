@@ -33,7 +33,9 @@ export class WebSocketService {
 
     this.socket.onmessage = (event) => {
       try {
+        console.log("📩 [WS] Received Message:",event);
         const data = JSON.parse(event.data);
+        console.log("📩 [WS] Received Message:", data);
         if (this.messageHandler) {
           this.messageHandler(data);
         }
@@ -65,6 +67,7 @@ export class WebSocketService {
     };
 
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+      
       this.send(message);
     } else {
       this.messageQueue.push(message);

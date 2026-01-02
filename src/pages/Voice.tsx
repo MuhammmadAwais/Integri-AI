@@ -1,25 +1,32 @@
 import React from "react";
 import ParticleSphere from "../Components/ui/ParticleSphere";
-import { Mic ,PhoneOff } from "lucide-react";
+import { Mic, PhoneOff } from "lucide-react";
 import { useVoiceChat } from "../features/voice/hooks/useVoiceChat";
-import { useAppSelector } from "../hooks/useRedux"; 
+import { useAppSelector } from "../hooks/useRedux";
 import ParticleBackground from "../Components/ui/ParticleBackground";
 import { cn } from "../lib/utils";
+
 // For createChat if needed
 const Voice: React.FC = () => {
   // 1. Get Credentials from Redux
   const { accessToken, user } = useAppSelector((state: any) => state.auth);
-  {user} // for dev (vercel unused var fixed)
+  {
+    user;
+  } // for dev (vercel unused var fixed)
 
   // NOTE: might need to create a session ID first or pass one.
   const { isDark } = useAppSelector((state: any) => state.theme);
 
-  // 2. Init Voice Hook
-const { status, audioLevel, error, startSession, endSession } = useVoiceChat(
-  accessToken,
-  "gpt-realtime-mini",
-  "openai"
-);
+  // Get selected voice model from Redux
+  const { voiceChatModel } = useAppSelector((state: any) => state.chat);
+
+  // 2. Init Voice Hook with dynamic model
+  const { status, audioLevel, error, startSession, endSession, caption } =
+    useVoiceChat(
+      accessToken,
+      voiceChatModel.id, // Dynamic ID
+      voiceChatModel.provider // Dynamic Provider
+    );
 
   // Auto-start on mount (optional, or wait for button)
   // useEffect(() => { startSession(); return () => endSession(); }, []);
@@ -38,7 +45,7 @@ const { status, audioLevel, error, startSession, endSession } = useVoiceChat(
 
   return (
     <div className="relative w-full h-screen overflow-hidden flex flex-col items-center justify-center">
-      <ParticleBackground/>
+      <ParticleBackground />
       {/* Header */}
       <div className="absolute top-10 z-10 text-center">
         <h2 className=" text-4xl font-extrabold tracking-widest uppercase">
@@ -86,9 +93,27 @@ const { status, audioLevel, error, startSession, endSession } = useVoiceChat(
               ? "#00ccff"
               : audioLevel > 0.05
               ? "#00ff88"
-              : isDark ? "#fff" : "#000"
+              : isDark
+              ? "#fff"
+              : "#000"
           }
         />
+
+        {/* Caption Overlay */}
+        {caption && status === "speaking" && (
+          <div className="absolute bottom-10 w-[80%] text-center pointer-events-none z-30 animate-in fade-in slide-in-from-bottom-4 duration-300">
+            <span
+              className={cn(
+                "px-6 py-3 rounded-2xl text-lg md:text-xl font-medium shadow-2xl backdrop-blur-md",
+                isDark
+                  ? "bg-black/60 text-white/90 border border-white/10"
+                  : "bg-white/60 text-black/90 border border-black/10"
+              )}
+            >
+              {caption}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Controls */}
@@ -106,7 +131,9 @@ const { status, audioLevel, error, startSession, endSession } = useVoiceChat(
             ${
               isActive
                 ? "bg-red-500 hover:bg-red-600 scale-110 shadow-red-500/30"
-                : isDark ? "bg-white hover:bg-gray-100 shadow-white/10" : "bg-black hover:bg-gray-800 shadow-black/10"
+                : isDark
+                ? "bg-white hover:bg-gray-100 shadow-white/10"
+                : "bg-black hover:bg-gray-800 shadow-black/10"
             }
           `}
         >
@@ -118,7 +145,9 @@ const { status, audioLevel, error, startSession, endSession } = useVoiceChat(
           {isActive ? (
             <PhoneOff className="text-white w-8 h-8" />
           ) : (
-            <Mic className={cn(" w-8 h-8", isDark ? "text-black" : "  text-white" )} />
+            <Mic
+              className={cn(" w-8 h-8", isDark ? "text-black" : "  text-white")}
+            />
           )}
         </button>
 

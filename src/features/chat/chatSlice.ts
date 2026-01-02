@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import AVAILABLE_MODELS from "../../../Constants";
+import AVAILABLE_MODELS, { VOICE_MODELS } from "../../../Constants";
 
 interface ChatState {
   isMobileMenuOpen: boolean;
@@ -7,6 +7,12 @@ interface ChatState {
   activeSidebarTab: "home" | "history" | "library" | "settings";
 
   newChatModel: {
+    id: string;
+    provider: string;
+  };
+
+  // --- NEW: State for Voice Model ---
+  voiceChatModel: {
     id: string;
     provider: string;
   };
@@ -27,6 +33,11 @@ const initialState: ChatState = {
   isContextSidebarOpen: true,
   activeSidebarTab: "home",
   newChatModel: { id: "integri", provider: "openai" },
+  // Default Voice Model
+  voiceChatModel: {
+    id: VOICE_MODELS[0].id,
+    provider: VOICE_MODELS[0].provider,
+  },
   selectedAgentId: null,
   activeChatId: null,
   activeSessionConfig: null,
@@ -55,13 +66,19 @@ const chatSlice = createSlice({
       action: PayloadAction<{ id: string; provider: string }>
     ) => {
       state.newChatModel = action.payload;
-      // REMOVED: state.selectedAgentId = null;  <-- This was causing the bug!
       if (!state.activeChatId) {
         state.activeSessionConfig = {
           modelId: action.payload.id,
           provider: action.payload.provider,
         };
       }
+    },
+    // --- NEW: Reducer for Voice Model ---
+    setVoiceChatModel: (
+      state,
+      action: PayloadAction<{ id: string; provider: string }>
+    ) => {
+      state.voiceChatModel = action.payload;
     },
     setNewChatAgent: (state, action: PayloadAction<string | null>) => {
       state.selectedAgentId = action.payload;
@@ -95,6 +112,7 @@ export const {
   setContextSidebarOpen,
   setActiveSidebarTab,
   setNewChatModel,
+  setVoiceChatModel, // Exported
   setNewChatAgent,
   setActiveChat,
   setActiveSessionConfig,
