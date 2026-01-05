@@ -1,7 +1,7 @@
 import React, { useLayoutEffect, useRef } from "react";
 import { cn } from "../../lib/utils";
 import gsap from "gsap";
-import { Trash2, FileText } from "lucide-react";
+import { Trash2, FileText, Sparkles } from "lucide-react";
 import { useAppSelector } from "../../hooks/useRedux";
 import SkeletonLoader from "./SkeletonLoader";
 import MessageAvatar from "./MessageAvatar";
@@ -20,6 +20,7 @@ interface MessageProps {
     url: string;
   };
   isLoading?: boolean;
+  isGeneratingImage?: boolean; // New prop for image generation skeleton
   onDelete?: (id: string) => void;
   onRegenerate?: () => void;
 }
@@ -31,6 +32,7 @@ const MessageBubble: React.FC<MessageProps> = ({
   content,
   attachment,
   isLoading,
+  isGeneratingImage,
   onDelete,
   onRegenerate,
 }) => {
@@ -107,8 +109,28 @@ const MessageBubble: React.FC<MessageProps> = ({
                   </button>
                 )}
 
+                {/* --- IMAGE GENERATION SKELETON START --- */}
+                {isGeneratingImage && (
+                  <div className="mb-3 animate-pulse">
+                    <div
+                      className={cn(
+                        "relative rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 w-[280px] h-[280px] flex items-center justify-center",
+                        isDark ? "bg-white/5" : "bg-black/5"
+                      )}
+                    >
+                      <div className="flex flex-col items-center gap-2 opacity-50">
+                        <Sparkles size={24} className="animate-spin-slow" />
+                        <span className="text-xs font-medium">
+                          Generating Image...
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {/* --- IMAGE GENERATION SKELETON END --- */}
+
                 {/* --- ATTACHMENT PREVIEW START --- */}
-                {attachment && (
+                {attachment && !isGeneratingImage && (
                   <div className="mb-3">
                     {attachment.type === "image" ? (
                       <div className="relative rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 max-w-[280px]">
@@ -155,7 +177,7 @@ const MessageBubble: React.FC<MessageProps> = ({
               </div>
 
               {/* 3. Bot Actions */}
-              {!isUser && (
+              {!isUser && !isGeneratingImage && (
                 <MessageActions
                   content={content}
                   isDark={isDark}

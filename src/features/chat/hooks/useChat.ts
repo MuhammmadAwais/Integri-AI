@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { socketService } from "../../../services/WebSocketsService";
 import { SessionService } from "../../../api/backendApi";
-import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux"
+import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux";
 import { setActiveSessionConfig } from "../../chat/chatSlice";
 
 export interface Message {
@@ -13,6 +13,8 @@ export interface Message {
     type: "image" | "file";
     url: string;
   };
+  // NEW: Track if this message is a placeholder for generating an image
+  isGeneratingImage?: boolean;
 }
 
 export const triggerChatUpdate = () => {
@@ -79,18 +81,6 @@ export const useChatList = (userId?: string) => {
 
 // --- HOOK 2: Single Chat ---
 
-
-export interface Message {
-  id?: string;
-  role: "user" | "assistant";
-  content: string;
-  attachment?: {
-    name: string;
-    type: "image" | "file";
-    url: string;
-  };
-}
-
 export const useChat = (sessionId: string | undefined) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -122,7 +112,18 @@ export const useChat = (sessionId: string | undefined) => {
           sessionId
         );
         if (Array.isArray(history)) {
-          setMessages(history);
+          // Map history to include image attachments if present
+          const mappedMessages = history.map((msg: any) => ({
+            ...msg,
+            attachment: msg.image_url
+              ? {
+                  name: "Generated Image",
+                  type: "image",
+                  url: msg.image_url,
+                }
+              : undefined,
+          }));
+          setMessages(mappedMessages);
         } else {
           setMessages([]);
         }
@@ -156,6 +157,7 @@ export const useChat = (sessionId: string | undefined) => {
   // 2. Stream Handling
   useEffect(() => {
     socketService.onMessage((data) => {
+      // A. Text Stream
       if (data.type === "stream") {
         setIsThinking(false);
         setIsStreaming(true);
@@ -170,7 +172,13 @@ export const useChat = (sessionId: string | undefined) => {
 
         setMessages((prev) => {
           const lastMsg = prev[prev.length - 1];
-          if (lastMsg && lastMsg.role === "assistant") {
+          // Append to last message if it's assistant and NOT an image placeholder
+          if (
+            lastMsg &&
+            lastMsg.role === "assistant" &&
+            !lastMsg.isGeneratingImage &&
+            !lastMsg.attachment
+          ) {
             return [
               ...prev.slice(0, -1),
               { ...lastMsg, content: lastMsg.content + chunk },
@@ -179,6 +187,66 @@ export const useChat = (sessionId: string | undefined) => {
             return [...prev, { role: "assistant", content: chunk }];
           }
         });
+      }
+
+      // B. Image Generation Status (Thinking state for images)
+      if (data.type === "status") {
+        setIsThinking(false);
+        setMessages((prev) => {
+          const lastMsg = prev[prev.length - 1];
+          if (lastMsg?.role === "assistant" && lastMsg.isGeneratingImage)
+            return prev;
+
+          return [
+            ...prev,
+            { role: "assistant", content: "", isGeneratingImage: true },
+          ];
+        });
+      }
+
+      // C. Image Generated (Final result)
+      if (data.type === "image_generated") {
+        setIsThinking(false);
+        setIsStreaming(false);
+
+        const imageUrl = data.url;
+        const caption = data.content || "";
+
+        setMessages((prev) => {
+          const lastMsg = prev[prev.length - 1];
+
+          // Replace the "Generating..." placeholder
+          if (lastMsg?.role === "assistant" && lastMsg.isGeneratingImage) {
+            return [
+              ...prev.slice(0, -1),
+              {
+                ...lastMsg,
+                isGeneratingImage: false,
+                content: caption,
+                attachment: {
+                  name: "Generated Image",
+                  type: "image",
+                  url: imageUrl,
+                },
+              },
+            ];
+          }
+
+          // Fallback: append new message
+          return [
+            ...prev,
+            {
+              role: "assistant",
+              content: caption,
+              attachment: {
+                name: "Generated Image",
+                type: "image",
+                url: imageUrl,
+              },
+            },
+          ];
+        });
+        triggerChatUpdate();
       }
     });
   }, []);

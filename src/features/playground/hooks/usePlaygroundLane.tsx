@@ -67,8 +67,7 @@ export const usePlaygroundLane = (modelConfig: {
             setSessionId(currentSessionId);
 
             // Set Title & Notify Sidebar
-            const title =
-              (text ? text.slice(0, 20) : "Attachment") ;
+            const title = text ? text.slice(0, 20) : "Attachment";
             await SessionService.updateSession(
               token,
               currentSessionId as any,
@@ -81,13 +80,20 @@ export const usePlaygroundLane = (modelConfig: {
             ws.connect(token, currentSessionId as any);
 
             ws.onMessage((data) => {
+              // --- Handle Text Stream ---
               if (data.type === "stream") {
+                setIsLoading(false);
                 setIsStreaming(!data.done);
                 const chunk = data.content || data.chunk || "";
                 if (chunk) {
                   setMessages((prev) => {
                     const last = prev[prev.length - 1];
-                    if (last?.role === "assistant") {
+                    // Append to assistant message if it exists and isn't a special status placeholder
+                    if (
+                      last?.role === "assistant" &&
+                      !last.isGeneratingImage &&
+                      !last.attachment
+                    ) {
                       return [
                         ...prev.slice(0, -1),
                         { ...last, content: last.content + chunk },
@@ -96,6 +102,66 @@ export const usePlaygroundLane = (modelConfig: {
                     return [...prev, { role: "assistant", content: chunk }];
                   });
                 }
+              }
+
+              // --- Handle Image Generation Status ---
+              if (data.type === "status") {
+                setIsLoading(false);
+                setMessages((prev) => {
+                  const last = prev[prev.length - 1];
+                  if (last?.role === "assistant" && last.isGeneratingImage)
+                    return prev;
+
+                  return [
+                    ...prev,
+                    {
+                      role: "assistant",
+                      content: "",
+                      isGeneratingImage: true,
+                    },
+                  ];
+                });
+              }
+
+              // --- Handle Image Generated ---
+              if (data.type === "image_generated") {
+                setIsLoading(false);
+                setIsStreaming(false);
+
+                const imageUrl = data.url;
+
+                setMessages((prev) => {
+                  const last = prev[prev.length - 1];
+                  // Update placeholder
+                  if (last?.role === "assistant" && last.isGeneratingImage) {
+                    return [
+                      ...prev.slice(0, -1),
+                      {
+                        ...last,
+                        isGeneratingImage: false,
+                        content: data.content || "",
+                        attachment: {
+                          name: "Generated Image",
+                          type: "image",
+                          url: imageUrl,
+                        },
+                      },
+                    ];
+                  }
+                  // Or append new
+                  return [
+                    ...prev,
+                    {
+                      role: "assistant",
+                      content: data.content || "",
+                      attachment: {
+                        name: "Generated Image",
+                        type: "image",
+                        url: imageUrl,
+                      },
+                    },
+                  ];
+                });
               }
             });
 
