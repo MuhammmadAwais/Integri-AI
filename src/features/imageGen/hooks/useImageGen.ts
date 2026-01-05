@@ -58,13 +58,12 @@ export const useImageGen = () => {
       setGeneratedImage(null);
 
       try {
-        // 1. Create a specific session for this generation
-        // We use the selected model/provider.
+        // 1. Create a specific session
         const sessionData = await SessionService.createSession(
           token,
           modelId,
           provider,
-          null // No custom GPT
+          null
         );
 
         const newSessionId = sessionData.session_id;
@@ -82,38 +81,28 @@ export const useImageGen = () => {
         // 3. Connect Socket
         socketService.connect(token, newSessionId);
 
-        // 4. Setup specific listeners for Image Gen
+        // 4. Setup listeners
         socketService.onMessage((data) => {
-          if (data.type === "stream") {
-            // Requirement: Ignore streams
-            return;
-          }
-          if (data.type === "status") {
-            // Requirement: Trigger loader (already handled by isGenerating=true)
-            // We could add specific status text state here if needed
-          }
+          if (data.type === "stream") return;
+
           if (data.type === "image_generated") {
-            // Requirement: Replace loader with image
             setGeneratedImage({
               url: data.url,
               prompt: data.content || prompt,
               id: Date.now().toString(),
             });
             setIsGenerating(false);
-            // Optional: Disconnect after success to save resources,
-            // or keep open if follow-ups are allowed.
           }
+
           if (data.type === "error") {
             setError(data.content || "Generation failed");
             setIsGenerating(false);
           }
         });
 
-        // 5. Construct Prompt (Prompt Engineering Logic)
+        // 5. Construct Prompt & Send
         const engineeredPrompt = `${prompt} in ${quality} quality and ${aspectRatio} aspect ratio.`;
 
-        // 6. Send Message
-        // We use a small timeout to ensure socket connection or rely on the service's queue
         setTimeout(() => {
           socketService.sendMessage(
             engineeredPrompt,
@@ -131,10 +120,35 @@ export const useImageGen = () => {
     [token]
   );
 
+  const downloadImage = useCallback(async (url: string, filename: string) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (e) {
+      console.error("Download failed:", e);
+      // Fallback for direct links
+      window.open(url, "_blank");
+    }
+  }, []);
+
+  const resetGen = () => {
+    setGeneratedImage(null);
+    setIsGenerating(false);
+    setError(null);
+  };
+
   return {
     generateImage,
     generatedImage,
     isGenerating,
     error,
+    downloadImage,
+    resetGen,
   };
 };

@@ -24,7 +24,7 @@ const MODEL_OPTIONS = AVAILABLE_MODELS.map((m) => ({
       ? "High-end photorealism"
       : `Powered by ${m.provider}`,
   badge: m.badge,
-  provider: m.provider, // Preserve provider for logic
+  provider: m.provider,
 }));
 
 const RATIOS = [
@@ -65,7 +65,8 @@ const GenLeftPanel: React.FC<Props> = ({
 
   return (
     <div className="flex flex-col h-full font-sans">
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-8">
+      {/* Scrollable Content Area */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
         <div>
           <h2
             className={`text-xl font-bold flex items-center gap-2 ${
