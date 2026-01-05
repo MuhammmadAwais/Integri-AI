@@ -1,9 +1,15 @@
 import React, { useState, useRef } from "react";
 import { Upload, X, Image as ImageIcon } from "lucide-react";
+
 interface ImageUploaderProps {
   isDark: boolean;
+  onFileChange: (file: File | null) => void;
 }
-const ImageUploader: React.FC<ImageUploaderProps> = ({ isDark }) => {
+
+const ImageUploader: React.FC<ImageUploaderProps> = ({
+  isDark,
+  onFileChange,
+}) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -12,19 +18,23 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ isDark }) => {
     if (file) {
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
+      onFileChange(file); // Lift state up
     }
   };
+
   const triggerUpload = () => fileInputRef.current?.click();
+
   const clearImage = (e: React.MouseEvent) => {
     e.stopPropagation();
     setPreviewUrl(null);
+    onFileChange(null); // Clear parent state
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   return (
     <div className="flex flex-col gap-2">
       <input
-      title="file"
+        title="file"
         type="file"
         ref={fileInputRef}
         onChange={handleFileChange}
@@ -78,7 +88,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ isDark }) => {
           </div>
 
           <button
-          title="remove"
+            title="remove"
             onClick={clearImage}
             className="absolute top-2 right-2 p-1 rounded-full bg-black/50 text-white/70 hover:text-white hover:bg-black/80 backdrop-blur-md transition"
           >
