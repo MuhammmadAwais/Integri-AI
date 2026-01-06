@@ -92,7 +92,11 @@ const ImageGenPage = () => {
             onClose={resetGen}
           />
         ) : (
-          <GenRightPanel isDark={isDark}  />
+          <GenRightPanel
+            isDark={isDark}
+            generatedImage={generatedImage}
+            isGenerating={isGenerating}
+          />
         )}
       </div>
     </div>
