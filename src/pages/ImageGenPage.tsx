@@ -34,7 +34,8 @@ const ImageGenPage = () => {
       imageFile: params.file,
     });
   };
-
+  
+  {generatedImage || isGenerating ? console.log(generatedImage , "url") : null}
   return (
     <div
       className={`flex flex-col md:flex-row h-[calc(100vh-64px)] w-full overflow-hidden transition-colors duration-200 font-sans

@@ -86,8 +86,9 @@ export const useImageGen = () => {
           if (data.type === "stream") return;
 
           if (data.type === "image_generated") {
+            console.log("Image Generated:", data);
             setGeneratedImage({
-              url: data.url,
+              url: data.image_url,
               prompt: data.content || prompt,
               id: Date.now().toString(),
             });

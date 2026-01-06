@@ -67,7 +67,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
     contextRef.current?.closePath();
     setIsDrawingActive(false);
   };
-
+  console.log(imageSrc  );
   return (
     <div className="flex flex-col h-full w-full p-4 md:p-8">
       {/* Header / Toolbar */}
