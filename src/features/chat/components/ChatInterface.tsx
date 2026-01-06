@@ -113,7 +113,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
       setIsCreatingSession(false);
     }
   };
-
+  console.log(messages)
   return (
     <div className="flex flex-col h-full w-full bg-transparent overflow-hidden">
       {/* Messages Area */}
@@ -123,6 +123,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
       >
         <div className="max-w-3xl mx-auto space-y-6 pb-4">
           {messages.map((msg, index) => (
+            
             <MessageBubble
               key={msg.id || index}
               role={msg.role}

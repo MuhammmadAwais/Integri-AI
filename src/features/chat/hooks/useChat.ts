@@ -209,8 +209,9 @@ export const useChat = (sessionId: string | undefined) => {
         setIsThinking(false);
         setIsStreaming(false);
 
-        const imageUrl = data.url;
-        const caption = data.content || "";
+        const imageUrl = data.image_url || "";
+        const caption = data.content || data.revised_prompt || "";
+;
 
         setMessages((prev) => {
           const lastMsg = prev[prev.length - 1];
@@ -327,7 +328,7 @@ export const useChat = (sessionId: string | undefined) => {
       console.error("Failed to delete message", error);
     }
   };
-
+  console.log("messages", messages);
   return {
     messages,
     sendMessage,
