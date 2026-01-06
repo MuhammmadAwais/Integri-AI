@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Download, PenTool, X, RefreshCw, Maximize2 } from "lucide-react";
+import { Download, PenTool, X} from "lucide-react";
 
 interface ImagePreviewProps {
   imageSrc: string;
