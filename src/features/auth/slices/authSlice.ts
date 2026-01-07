@@ -1,4 +1,3 @@
-// src/features/auth/slices/authSlice.ts
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type UserData } from "../services/authService";
 import {
@@ -38,9 +37,11 @@ const authSlice = createSlice({
     ) => {
       state.user = action.payload.user;
       state.accessToken = action.payload.accessToken;
-      // If the user object is marked as new (missing Firestore doc), set flag
+      // If user exists but is marked new (missing country/lang), set flag
       if (action.payload.user?.isNewUser) {
         state.isNewUser = true;
+      } else {
+        state.isNewUser = false;
       }
       state.isLoading = false;
     },
@@ -62,7 +63,6 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.user = action.payload.user;
         state.accessToken = action.payload.accessToken;
-        // Check if the service returned isNewUser (e.g. Doc missing)
         state.isNewUser = !!action.payload.user.isNewUser;
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -79,7 +79,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.user = action.payload.user;
         state.accessToken = action.payload.accessToken;
-        state.isNewUser = true; // Always true after fresh register until onboarding
+        state.isNewUser = true; // Always true after fresh register
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -110,7 +110,7 @@ const authSlice = createSlice({
         state.isNewUser = false;
       })
 
-      // --- SUBSCRIPTION INTEGRATION ---
+      // --- SUBSCRIPTION ---
       .addCase(purchaseSubscription.fulfilled, (state, action) => {
         if (state.user) {
           state.user.isPremium = true;

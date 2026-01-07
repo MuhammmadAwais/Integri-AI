@@ -34,7 +34,7 @@ const SubscriptionPage: React.FC = () => {
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
-  const currentPlanId = user?.isPremium ? user.planId || "monthly" : "starter";
+  const currentPlanId = user?.isPremium ? user.planId || "monthly" : "freemium";
 
   const handleSubscribe = async (planId: string) => {
     if (!user) {
@@ -42,7 +42,7 @@ const SubscriptionPage: React.FC = () => {
       return;
     }
 
-    if (planId === "starter") return;
+    if (planId === "freemium") return;
 
     setLoadingPlanId(planId);
 

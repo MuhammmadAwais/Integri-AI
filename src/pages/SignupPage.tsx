@@ -1,15 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  Mail,
-  Lock,
-  User,
-  ArrowRight,
-  Chrome,
-  Phone,
-  Globe,
-  MapPin,
-} from "lucide-react";
+import { Mail, Lock, User, ArrowRight, Chrome, Phone } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import {
   registerUser,
@@ -18,28 +9,6 @@ import {
 import AuthLayout from "../Components/layout/AuthLayout";
 import AuthInput from "../features/auth/components/AuthInput";
 import AuthButton from "../features/auth/components/AuthButton";
-import { cn } from "../lib/utils";
-
-// --- Configuration Data ---
-const COUNTRIES = [
-  { name: "United States", code: "US", dial: "+1", lang: "English" },
-  { name: "Germany", code: "DE", dial: "+49", lang: "German" },
-  { name: "Pakistan", code: "PK", dial: "+92", lang: "Urdu" },
-  { name: "United Kingdom", code: "GB", dial: "+44", lang: "English" },
-  { name: "India", code: "IN", dial: "+91", lang: "Hindi" },
-  { name: "Canada", code: "CA", dial: "+1", lang: "English" },
-  { name: "Australia", code: "AU", dial: "+61", lang: "English" },
-];
-
-const LANGUAGES = [
-  "English",
-  "German",
-  "Spanish",
-  "French",
-  "Urdu",
-  "Hindi",
-  "Arabic",
-];
 
 const Signup: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -47,10 +16,7 @@ const Signup: React.FC = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    phoneNumber: "",
-    country: "",
-    language: "",
-    countryCode: "+1", // Default
+    phoneNumber: "", // Optional, text only now
   });
   const [confirmPasswordError, setConfirmPasswordError] = useState<
     string | null
@@ -60,45 +26,6 @@ const Signup: React.FC = () => {
   const navigate = useNavigate();
   const { isLoading, error } = useAppSelector((state) => state.auth);
 
-  // --- 1. Automated Geo-Detection ---
-  useEffect(() => {
-    const detectLocation = async () => {
-      try {
-        const response = await fetch("https://ipapi.co/json/");
-        const data = await response.json();
-
-        if (data && data.country_name) {
-          const matchedCountry =
-            COUNTRIES.find((c) => c.code === data.country_code) ||
-            COUNTRIES.find((c) => c.name === data.country_name);
-
-          if (matchedCountry) {
-            setFormData((prev) => ({
-              ...prev,
-              country: matchedCountry.name,
-              countryCode: matchedCountry.dial,
-              language: matchedCountry.lang,
-            }));
-          }
-        }
-      } catch (err) {
-        console.warn("Geo-detection failed, falling back to defaults.");
-      }
-    };
-    detectLocation();
-  }, []);
-
-  // --- Handlers ---
-  const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedCountry = COUNTRIES.find((c) => c.name === e.target.value);
-    setFormData((prev) => ({
-      ...prev,
-      country: e.target.value,
-      countryCode: selectedCountry ? selectedCountry.dial : prev.countryCode,
-      language: selectedCountry ? selectedCountry.lang : prev.language,
-    }));
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
@@ -106,21 +33,14 @@ const Signup: React.FC = () => {
       return;
     }
 
-    // Combine Code + Number for full phone (Optional)
-    const fullPhone = formData.phoneNumber
-      ? `${formData.countryCode}${formData.phoneNumber}`
-      : "";
-
+    // Register without Country/Language (handled in GettingStarted)
     const result = await dispatch(
       registerUser({
         email: formData.email,
         password: formData.password,
         name: formData.name,
-        // Passing new fields to Thunk (ensure Thunk accepts them)
-        // @ts-ignore
-        country: formData.country,
-        language: formData.language,
-        phoneNumber: fullPhone,
+        // @ts-ignore - Thunk updated to accept optional phone
+        phoneNumber: formData.phoneNumber,
       })
     );
 
@@ -132,7 +52,6 @@ const Signup: React.FC = () => {
   const handleGoogleLogin = async () => {
     const result = await dispatch(loginWithGoogle());
     if (loginWithGoogle.fulfilled.match(result)) {
-      // Logic handled in App.tsx or GettingStarted based on isNewUser flag
       navigate("/getting-started");
     }
   };
@@ -162,101 +81,16 @@ const Signup: React.FC = () => {
           required
         />
 
-        {/* --- Country & Language Row --- */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2 group">
-            <label className="text-sm font-medium text-gray-400 group-focus-within:text-white ml-1">
-              Country
-            </label>
-            <div className="relative">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 z-10 pointer-events-none">
-                <MapPin size={20} />
-              </div>
-              <select
-                value={formData.country}
-                onChange={handleCountryChange}
-                required
-                className={cn(
-                  "w-full bg-[#27272A] border border-[#3F3F46] rounded-xl py-2 pl-12 pr-4 text-white placeholder-gray-500 appearance-none cursor-pointer",
-                  "focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 focus:bg-[#303035]",
-                  "transition-all duration-200 ease-out"
-                )}
-              >
-                <option value="" disabled>
-                  Select Country
-                </option>
-                {COUNTRIES.map((c) => (
-                  <option key={c.code} value={c.name}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="space-y-2 group">
-            <label className="text-sm font-medium text-gray-400 group-focus-within:text-white ml-1">
-              Language
-            </label>
-            <div className="relative">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 z-10 pointer-events-none">
-                <Globe size={20} />
-              </div>
-              <select
-                value={formData.language}
-                onChange={(e) =>
-                  setFormData({ ...formData, language: e.target.value })
-                }
-                required
-                className={cn(
-                  "w-full bg-[#27272A] border border-[#3F3F46] rounded-xl py-2 pl-12 pr-4 text-white placeholder-gray-500 appearance-none cursor-pointer",
-                  "focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 focus:bg-[#303035]",
-                  "transition-all duration-200 ease-out"
-                )}
-              >
-                <option value="" disabled>
-                  Select Language
-                </option>
-                {LANGUAGES.map((l) => (
-                  <option key={l} value={l}>
-                    {l}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* --- Phone Number with Code --- */}
-        <div className="space-y-2 group">
-          <label className="text-sm font-medium text-gray-400 group-focus-within:text-white ml-1">
-            Phone Number (Optional)
-          </label>
-          <div className="flex gap-2">
-            {/* Read-only code display (synced with Country) */}
-            <div className="w-24 bg-[#27272A] border border-[#3F3F46] rounded-xl flex items-center justify-center text-gray-300 select-none">
-              {formData.countryCode}
-            </div>
-            <div className="relative flex-1">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 z-10 pointer-events-none">
-                <Phone size={20} />
-              </div>
-              <input
-                type="tel"
-                placeholder="300 1234567"
-                className={cn(
-                  "w-full bg-[#27272A] border border-[#3F3F46] rounded-xl py-2 pl-12 pr-4 text-white placeholder-gray-500",
-                  "focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 focus:bg-[#303035]",
-                  "transition-all duration-200 ease-out"
-                )}
-                value={formData.phoneNumber}
-                onChange={(e) =>
-                  setFormData({ ...formData, phoneNumber: e.target.value })
-                }
-              />
-            </div>
-          </div>
-        </div>
+        <AuthInput
+          label="Phone Number (Optional)"
+          type="tel"
+          placeholder="+1 234 567 890"
+          icon={Phone}
+          value={formData.phoneNumber}
+          onChange={(e) =>
+            setFormData({ ...formData, phoneNumber: e.target.value })
+          }
+        />
 
         <AuthInput
           label="Password"

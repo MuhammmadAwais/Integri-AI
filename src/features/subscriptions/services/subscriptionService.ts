@@ -35,6 +35,7 @@ export const SubscriptionService = {
     userId: string,
     planId: string
   ): Promise<string> => {
+    {userId} // Suppress unused variable warning FOR (VERCEL DEVELOPEMENT)
     try {
       const REVENUECAT_ID = import.meta.env.VITE_REVENUECAT_ID;
       const purchases = Purchases.getSharedInstance();

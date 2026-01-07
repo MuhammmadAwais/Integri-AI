@@ -1,21 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
+import { motion, AnimatePresence } from "framer-motion";
+import { Globe, MapPin, CheckCircle2, Sparkles, Loader2 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import { completeOnboarding } from "../features/auth/slices/authSlice";
 import { AuthService } from "../features/auth/services/authService";
-import { Globe, MapPin, ArrowRight } from "lucide-react";
 import { cn } from "../lib/utils";
 
-// Reusing configuration from Signup
+// --- Configuration ---
 const COUNTRIES = [
-  { name: "United States", code: "US", dial: "+1", lang: "English" },
-  { name: "Germany", code: "DE", dial: "+49", lang: "German" },
-  { name: "Pakistan", code: "PK", dial: "+92", lang: "Urdu" },
-  { name: "United Kingdom", code: "GB", dial: "+44", lang: "English" },
-  { name: "India", code: "IN", dial: "+91", lang: "Hindi" },
-  { name: "Canada", code: "CA", dial: "+1", lang: "English" },
-  { name: "Australia", code: "AU", dial: "+61", lang: "English" },
+  { name: "United States", code: "US", lang: "English" },
+  { name: "Germany", code: "DE", lang: "German" },
+  { name: "United Kingdom", code: "GB", lang: "English" },
+  { name: "Canada", code: "CA", lang: "English" },
+  { name: "India", code: "IN", lang: "Hindi" },
+  { name: "Pakistan", code: "PK", lang: "Urdu" },
+  { name: "Australia", code: "AU", lang: "English" },
+  { name: "France", code: "FR", lang: "French" },
+  { name: "Spain", code: "ES", lang: "Spanish" },
 ];
 
 const LANGUAGES = [
@@ -26,218 +29,291 @@ const LANGUAGES = [
   "Urdu",
   "Hindi",
   "Arabic",
+  "Mandarin",
 ];
 
 const GettingStarted: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { user, isNewUser } = useAppSelector((state) => state.auth);
+  const { user } = useAppSelector((state) => state.auth);
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  // Form state for Google Auth users who need to complete profile
-  const [onboardingData, setOnboardingData] = useState({
+  // State
+  const [formData, setFormData] = useState({
     country: "",
     language: "",
   });
-  const [loadingLocation, setLoadingLocation] = useState(true);
+  const [isLoadingLocation, setIsLoadingLocation] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
-  // --- Geo Detection ---
+  // Refs
+  const containerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const bgImageRef = useRef<HTMLImageElement>(null);
+
+  // --- 1. Smart Geo-Detection (Mount) ---
   useEffect(() => {
     const detectLocation = async () => {
       try {
-        const response = await fetch("https://ipapi.co/json/");
+        // CHANGED: Use ipwho.is instead of ipapi.co to avoid CORS errors
+        const response = await fetch("https://ipwho.is/");
         const data = await response.json();
-
-        if (data && data.country_name) {
+        // Check if the API request was successful
+        if (data && data.success) {
           const matchedCountry =
             COUNTRIES.find((c) => c.code === data.country_code) ||
-            COUNTRIES.find((c) => c.name === data.country_name);
+            COUNTRIES.find((c) => c.name === data.country);
 
           if (matchedCountry) {
-            setOnboardingData((prev) => ({
-              ...prev,
+            setFormData({
               country: matchedCountry.name,
               language: matchedCountry.lang,
-            }));
+            });
+          } else {
+            // Fallback if country not in our supported list
+            setFormData({ country: "United States", language: "English" });
           }
+        } else {
+          setFormData({ country: "United States", language: "English" });
         }
       } catch (err) {
-        console.warn("Geo-detection failed.");
+        setFormData({ country: "United States", language: "English" });
       } finally {
-        setLoadingLocation(false);
+        setIsLoadingLocation(false);
       }
     };
     detectLocation();
   }, []);
 
-  // --- Animation ---
+  // --- 2. GSAP Entrance ---
   useEffect(() => {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline();
-      tl.from(containerRef.current, { opacity: 0, duration: 1 }).from(
-        contentRef.current,
-        {
-          y: 100,
-          opacity: 0,
-          duration: 1,
-          ease: "power3.out",
-          delay: 0.2,
-        }
-      );
+      tl.from(bgImageRef.current, {
+        scale: 1.1,
+        opacity: 0,
+        duration: 1.5,
+        ease: "power2.out",
+      })
+        .from(containerRef.current, { opacity: 0, duration: 0.8 }, "-=1")
+        .from(
+          contentRef.current,
+          { y: 60, opacity: 0, duration: 1, ease: "power3.out" },
+          "-=0.5"
+        );
     }, containerRef);
     return () => ctx.revert();
   }, []);
 
-  const handleGetStarted = async () => {
-    if (isNewUser) {
-      // If mandatory fields are missing, don't proceed (basic validation)
-      if (!onboardingData.country || !onboardingData.language) {
-        alert("Please select your Country and Language to continue.");
-        return;
-      }
+  // --- 3. Mouse Effect ---
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
-      // Call AuthService to create/update the Firestore doc
+  // --- Handler ---
+  const handleCompleteSetup = async () => {
+    if (!formData.country || !formData.language) return;
+
+    setIsSubmitting(true);
+    try {
       if (user?.id) {
         await AuthService.completeOnboarding(user.id, {
-          country: onboardingData.country,
-          language: onboardingData.language,
+          country: formData.country,
+          language: formData.language,
           email: user.email || "",
           name: user.name || "",
         });
       }
+      dispatch(completeOnboarding());
+      navigate("/");
+    } catch (error) {
+      console.error("Onboarding Error", error);
+      setIsSubmitting(false);
     }
-
-    // Update Redux state and Redirect
-    dispatch(completeOnboarding());
-    navigate("/");
   };
 
   return (
     <div
       ref={containerRef}
-      className="relative min-h-screen w-full bg-black overflow-hidden flex items-center justify-center p-6"
+      className="relative min-h-screen w-full bg-black overflow-hidden flex items-center justify-center font-sans text-white"
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-black to-black opacity-50" />
+      {/* Background Layer */}
+      <div className="absolute inset-0 z-0 select-none pointer-events-none">
+        <img
+          ref={bgImageRef}
+          src="/gettingStarted.png"
+          alt="Background"
+          className="absolute inset-1 w-full h-full object-cover opacity-60"
+          onError={(e) => {
+            e.currentTarget.src =
+              "https://images.unsplash.com/photo-1620641788421-7f1c338e61a9?q=80&w=2070";
+          }}
+        />
+        <div className="absolute inset-0 bg-linear-to-t from-black via-black/80 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-r from-black/80 via-transparent to-black/80" />
+        <div
+          className="absolute inset-0 z-10 opacity-40 transition-opacity duration-500"
+          style={{
+            background: `radial-gradient(600px circle at ${mousePos.x}px ${mousePos.y}px, rgba(99, 102, 241, 0.15), transparent 40%)`,
+          }}
+        />
+      </div>
 
-      <div
-        ref={contentRef}
-        className="relative z-10 text-center max-w-4xl mx-auto flex flex-col items-center"
-      >
-        {/* Header Content */}
-        <div className="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
-          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-          <span className="text-sm font-medium text-gray-300 tracking-wide uppercase">
-            Integri AI v1.0
-          </span>
+      {/* Main Content Grid */}
+      <div className="relative z-20 w-full max-w-7xl px-6 md:px-12 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        {/* Left: Hero Text */}
+        <div ref={contentRef} className="max-w-2xl text-left space-y-8">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900/50 border border-zinc-800 backdrop-blur-md"
+          >
+            <Sparkles size={14} className="text-indigo-400" />
+            <span className="text-xs font-medium text-zinc-300 tracking-wider uppercase">
+              Integri AI v1.0
+            </span>
+          </motion.div>
+
+          <h1 className="text-5xl md:text-7xl font-bold text-white leading-[1.1] tracking-tight">
+            The Future of Chat <br />
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500">
+              Is Here
+            </span>
+          </h1>
+
+          <p className="text-zinc-400 text-lg md:text-xl max-w-lg leading-relaxed font-light">
+            Finalize your profile to unlock the potential of next-gen
+            conversational AI.
+          </p>
         </div>
 
-        <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight tracking-tight">
-          {isNewUser ? "Complete Your Profile" : "The Future of Chat"} <br />
-          <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500">
-            {isNewUser ? "One Last Step" : "Is Here"}
-          </span>
-        </h1>
-
-        {/* --- CONDITIONAL RENDERING: Onboarding Form vs Standard Welcome --- */}
-        {isNewUser ? (
-          <div className="w-full max-w-md bg-[#18181B] border border-[#27272A] rounded-2xl p-6 shadow-2xl mb-8">
-            <p className="text-gray-400 mb-6 text-sm">
-              We detected your location to customize your experience. Please
-              confirm your details below.
-            </p>
-
-            <div className="space-y-4 text-left">
-              {/* Country Select */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-300 ml-1">
-                  Country
-                </label>
-                <div className="relative">
-                  <MapPin
-                    size={18}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-                  />
-                  <select
-                    value={onboardingData.country}
-                    onChange={(e) =>
-                      setOnboardingData({
-                        ...onboardingData,
-                        country: e.target.value,
-                      })
-                    }
-                    className="w-full bg-[#27272A] border border-[#3F3F46] rounded-xl py-3 pl-10 pr-4 text-white appearance-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
-                  >
-                    <option value="" disabled>
-                      Select Country
-                    </option>
-                    {COUNTRIES.map((c) => (
-                      <option key={c.code} value={c.name}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Language Select */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-300 ml-1">
-                  Language
-                </label>
-                <div className="relative">
-                  <Globe
-                    size={18}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-                  />
-                  <select
-                    value={onboardingData.language}
-                    onChange={(e) =>
-                      setOnboardingData({
-                        ...onboardingData,
-                        language: e.target.value,
-                      })
-                    }
-                    className="w-full bg-[#27272A] border border-[#3F3F46] rounded-xl py-3 pl-10 pr-4 text-white appearance-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
-                  >
-                    <option value="" disabled>
-                      Select Language
-                    </option>
-                    {LANGUAGES.map((l) => (
-                      <option key={l} value={l}>
-                        {l}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <p className="text-gray-300 mb-10 text-lg md:text-xl max-w-lg leading-relaxed font-light">
-            Unlock the potential of next-gen conversational AI. Integrated
-            seamlessly into your workflow for maximum productivity.
-          </p>
-        )}
-
-        <div className="flex flex-col sm:flex-row gap-4">
-          <button
-            onClick={handleGetStarted}
-            className="px-8 py-4 rounded-full bg-indigo-600 text-white font-bold text-lg shadow-[0_0_20px_rgba(79,70,229,0.5)] hover:bg-indigo-700 hover:scale-105 hover:shadow-[0_0_30px_rgba(79,70,229,0.6)] transition-all duration-300 flex items-center justify-center gap-2"
-          >
-            {isNewUser ? "Complete & Continue" : "Get Started"}
-            <ArrowRight size={20} />
-          </button>
-
-          {!isNewUser && (
-            <button
-              onClick={() => navigate("/login")}
-              className="px-8 py-4 rounded-full border border-white/20 text-white font-semibold hover:bg-white/10 hover:border-white/40 transition-all duration-300"
+        {/* Right: Onboarding Form (Gatekeeper) */}
+        <div className="flex justify-center lg:justify-end">
+          <AnimatePresence>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 1 }}
+              className="w-full max-w-md bg-zinc-950/70 border border-zinc-800/50 backdrop-blur-xl rounded-3xl p-8 shadow-2xl relative overflow-hidden"
             >
-              Log In
-            </button>
-          )}
+              <div className="absolute top-0 right-0 -mt-16 -mr-16 w-32 h-32 bg-indigo-500/20 blur-3xl rounded-full pointer-events-none" />
+              <div className="absolute bottom-0 left-0 -mb-16 -ml-16 w-32 h-32 bg-purple-500/20 blur-3xl rounded-full pointer-events-none" />
+
+              <div className="relative z-10 space-y-6">
+                <div>
+                  <h3 className="text-2xl font-bold text-white mb-2">
+                    Welcome Aboard
+                  </h3>
+                  <p className="text-zinc-400 text-sm">
+                    {isLoadingLocation
+                      ? "Identifying your region..."
+                      : "Confirm your region settings."}
+                  </p>
+                </div>
+
+                {isLoadingLocation ? (
+                  <div className="flex justify-center py-8">
+                    <Loader2
+                      className="animate-spin text-indigo-500"
+                      size={32}
+                    />
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {/* Country */}
+                    <div className="space-y-2 group">
+                      <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                        Region
+                      </label>
+                      <div className="relative">
+                        <MapPin
+                          className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500"
+                          size={18}
+                        />
+                        <select
+                        title="country"
+                          value={formData.country}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              country: e.target.value,
+                            })
+                          }
+                          className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl py-3.5 pl-11 pr-4 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all cursor-pointer hover:bg-zinc-900"
+                        >
+                          <option value="" disabled>
+                            Select Country
+                          </option>
+                          {COUNTRIES.map((c) => (
+                            <option key={c.code} value={c.name}>
+                              {c.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Language */}
+                    <div className="space-y-2 group">
+                      <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                        Language
+                      </label>
+                      <div className="relative">
+                        <Globe
+                          className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500"
+                          size={18}
+                        />
+                        <select
+                        title="language"
+                          value={formData.language}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              language: e.target.value,
+                            })
+                          }
+                          className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl py-3.5 pl-11 pr-4 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all cursor-pointer hover:bg-zinc-900"
+                        >
+                          <option value="" disabled>
+                            Select Language
+                          </option>
+                          {LANGUAGES.map((l) => (
+                            <option key={l} value={l}>
+                              {l}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={handleCompleteSetup}
+                      disabled={isSubmitting}
+                      className={cn(
+                        "w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 shadow-lg transition-all duration-300 mt-4",
+                        "bg-linear-to-r from-indigo-600 to-purple-600 text-white shadow-indigo-500/25 hover:shadow-indigo-500/40 cursor-pointer"
+                      )}
+                    >
+                      {isSubmitting ? (
+                        <span className="animate-pulse">Finalizing...</span>
+                      ) : (
+                        <>
+                          Get Started <CheckCircle2 size={20} />
+                        </>
+                      )}
+                    </motion.button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </div>

@@ -5,12 +5,11 @@ import {
   Navigate,
 } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./firebase"; // Removed 'db', 'doc', 'getDoc'
+import { auth } from "./firebase"; 
 import { useAppDispatch } from "../hooks/useRedux";
 
 //  IMPORT ACTIONS AND API
 import { setAuthUser } from "../features/auth/slices/authSlice";
-import { setTheme } from "../features/theme/themeSlice";
 import { getBackendToken } from "../api/backendApi";
 import { AuthService } from "../features/auth/services/authService"; // Import AuthService
 
@@ -82,8 +81,7 @@ const App: React.FC = () => {
 
           // 2. Apply theme if user has specific preference (Optional, depending on your logic)
           // Since new schema doesn't explicitly have 'defaultTheme', you might assume system default
-          // or check a different field. I'll leave the original dispatch logic but removed manual Firestore fetch.
-
+          // or check a different field. I'll leave the original dispatch logic but removed manual Firestore fetch
           // 3. Fetch Backend Token (Pass derived premium status)
           let accessToken = null;
           try {
