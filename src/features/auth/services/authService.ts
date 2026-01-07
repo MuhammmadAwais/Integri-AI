@@ -63,7 +63,7 @@ export interface UserData {
 // --- Helpers ---
 const generateMyCode = async (): Promise<number> => {
   try {
-    const coll = collection(db, "users");
+    const coll = collection(db, "Users");
     const snapshot = await getCountFromServer(coll);
     return 10000 + snapshot.data().count;
   } catch (error) {
@@ -90,7 +90,7 @@ export const AuthService = {
       );
     }
 
-    const userRef = doc(db, "users", firebaseUser.uid);
+    const userRef = doc(db, "Users", firebaseUser.uid);
     const userSnap = await getDoc(userRef);
 
     if (userSnap.exists()) {
@@ -169,7 +169,7 @@ export const AuthService = {
       notificationPreference: true,
     };
 
-    await setDoc(doc(db, "users", user.uid), newUser);
+    await setDoc(doc(db, "Users", user.uid), newUser);
 
     return {
       id: user.uid,
@@ -209,7 +209,7 @@ export const AuthService = {
   ): Promise<void> => {
     // Only update the necessary fields
     await setDoc(
-      doc(db, "users", uid),
+      doc(db, "Users", uid),
       {
         country: data.country,
         selectedLanguageCode: data.language,
