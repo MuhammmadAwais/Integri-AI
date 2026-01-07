@@ -1,8 +1,14 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { socketService } from "../../../services/WebSocketsService";
 import { SessionService } from "../../../api/backendApi";
 import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux";
-import { setActiveSessionConfig } from "../../chat/chatSlice";
+import {
+  setActiveSessionConfig,
+  setSessions,
+  addSession,
+  removeSession,
+  updateSessionTitle, // Import the reducer
+} from "../../chat/chatSlice";
 
 export interface Message {
   id?: string;
@@ -13,26 +19,25 @@ export interface Message {
     type: "image" | "file";
     url: string;
   };
-  // NEW: Track if this message is a placeholder for generating an image
   isGeneratingImage?: boolean;
 }
 
-export const triggerChatUpdate = () => {
+// --- UPGRADED: Event Trigger with Payload ---
+export const triggerChatUpdate = (newSession?: any) => {
   if (typeof window !== "undefined") {
-    window.dispatchEvent(new Event("chat-updated"));
+    const event = new CustomEvent("chat-updated", {
+      detail: newSession,
+    });
+    window.dispatchEvent(event);
   }
 };
 
-// --- HOOK 1: Sidebar List ---
-export const useChatList = (userId?: string) => {
-  // Suppress unused variable warning if intended
-  {
-    userId;
-  }
-
-  const [chats, setChats] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+// --- HOOK 1: Sidebar List (Redux Integrated) ---
+export const useChatList = () => {
+  const dispatch = useAppDispatch();
+  const chats = useAppSelector((state: any) => state.chat.sessions);
   const token = useAppSelector((state: any) => state.auth.accessToken);
+  const [loading, setLoading] = useState(true);
 
   const fetchChats = useCallback(async () => {
     if (!token) {
@@ -46,50 +51,62 @@ export const useChatList = (userId?: string) => {
           new Date(b.created_at || 0).getTime() -
           new Date(a.created_at || 0).getTime()
       );
-      setChats(sorted);
+      dispatch(setSessions(sorted));
     } catch (error) {
       console.error("Failed to fetch sessions", error);
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [token, dispatch]);
 
   useEffect(() => {
     fetchChats();
-    const handleUpdate = () => setTimeout(fetchChats, 300);
+
+    const handleUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail) {
+        dispatch(addSession(customEvent.detail));
+      } else {
+        fetchChats();
+      }
+    };
+
     window.addEventListener("chat-updated", handleUpdate);
     return () => window.removeEventListener("chat-updated", handleUpdate);
-  }, [fetchChats]);
+  }, [fetchChats, dispatch]);
 
   const handleDeleteChat = async (sessionId: string) => {
     if (!token) return;
-    const prevChats = [...chats];
-    setChats((prev) =>
-      prev.filter((c) => (c.session_id || c.id) !== sessionId)
-    );
+    dispatch(removeSession(sessionId));
     try {
       await SessionService.deleteSession(token, sessionId);
-      triggerChatUpdate();
     } catch (error) {
       console.error("Failed to delete", error);
-      setChats(prevChats);
+      fetchChats();
     }
   };
 
   return { chats, loading, refreshChats: fetchChats, handleDeleteChat };
 };
 
-// --- HOOK 2: Single Chat ---
+// --- HOOK 2: Single Chat (Updated with Title Sync) ---
 
 export const useChat = (sessionId: string | undefined) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [messagesLoaded, setMessagesLoaded] = useState(false); // <--- NEW FLAG
+  const [messagesLoaded, setMessagesLoaded] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
 
+  // Ref to track if we need to fetch title (prevents duplicate fetches)
+  const hasFetchedTitleRef = useRef(false);
+
   const dispatch = useAppDispatch();
   const token = useAppSelector((state: any) => state.auth.accessToken);
+
+  // Get sessions from Redux to check current title state
+  const sessions = useAppSelector((state: any) => state.chat.sessions);
+
   const activeConfig = useAppSelector(
     (state: any) => state.chat.activeSessionConfig
   );
@@ -104,23 +121,19 @@ export const useChat = (sessionId: string | undefined) => {
 
     const initChat = async () => {
       setIsLoading(true);
-      setMessagesLoaded(false); // Reset on ID change
+      setMessagesLoaded(false);
+      hasFetchedTitleRef.current = false; // Reset for new session
+
       try {
-        // Fetch History
         const history = await SessionService.getSessionMessages(
           token,
           sessionId
         );
         if (Array.isArray(history)) {
-          // Map history to include image attachments if present
           const mappedMessages = history.map((msg: any) => ({
             ...msg,
             attachment: msg.image_url
-              ? {
-                  name: "Generated Image",
-                  type: "image",
-                  url: msg.image_url,
-                }
+              ? { name: "Generated Image", type: "image", url: msg.image_url }
               : undefined,
           }));
           setMessages(mappedMessages);
@@ -128,12 +141,11 @@ export const useChat = (sessionId: string | undefined) => {
           setMessages([]);
         }
 
-        // Mark history as loaded
-        setMessagesLoaded(true); // <--- READY TO ACCEPT NEW MESSAGES
+        setMessagesLoaded(true);
 
-        // Fetch Session Config
         const details = await SessionService.getSession(token, sessionId);
         if (details) {
+          console.log(details , "hi how are you jsut console logging")
           dispatch(
             setActiveSessionConfig({
               modelId: details.model,
@@ -154,9 +166,77 @@ export const useChat = (sessionId: string | undefined) => {
     return () => socketService.disconnect();
   }, [sessionId, token, dispatch]);
 
-  // 2. Stream Handling
+  // 2. Intelligent Re-fetch Logic (Fallback)
+  // Watch for the end of the first assistant response
+  useEffect(() => {
+    if (!sessionId || !token || isStreaming || isThinking) return;
+
+    // Condition: We have a small number of messages (implying start of chat)
+    // and the title hasn't been fetched via fallback yet.
+    if (
+      messages.length > 0 &&
+      messages.length <= 4 &&
+      !hasFetchedTitleRef.current
+    ) {
+      const currentSession = sessions.find(
+        (s: any) => (s.id || s.session_id) === sessionId
+      );
+      const isDefaultTitle =
+        !currentSession ||
+        currentSession.title === "New Chat" ||
+        currentSession.title === "New Conversation";
+
+      if (isDefaultTitle) {
+        hasFetchedTitleRef.current = true;
+
+        // Wait a brief moment for backend NLP to finalize title
+        const timer = setTimeout(async () => {
+          try {
+            // Silent fetch - doesn't trigger global loading
+            const sessionData = await SessionService.getSession(
+              token,
+              sessionId
+            );
+            if (
+              sessionData &&
+              sessionData.title &&
+              sessionData.title !== "New Chat"
+            ) {
+              // Update Redux -> Sidebar updates automatically
+              dispatch(
+                updateSessionTitle({
+                  id: sessionId,
+                  title: sessionData.title,
+                })
+              );
+            } else {
+              // If still default, reset ref to try again next message
+              hasFetchedTitleRef.current = false;
+            }
+          } catch (e) {
+            console.error("Silent title refresh failed", e);
+            hasFetchedTitleRef.current = false;
+          }
+        }, 3000); // 3 second delay
+
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [messages, isStreaming, isThinking, sessionId, token, sessions, dispatch]);
+
+  // 3. Stream & Event Handling
   useEffect(() => {
     socketService.onMessage((data) => {
+      // --- NEW: Handle Event-Driven Title Updates ---
+      if (data.type === "title_generated" || data.type === "session_updated") {
+        const newTitle = data.title || data.session?.title;
+        if (newTitle && sessionId) {
+          dispatch(updateSessionTitle({ id: sessionId, title: newTitle }));
+          hasFetchedTitleRef.current = true; // Mark as done so fallback doesn't run
+        }
+        return;
+      }
+
       // A. Text Stream
       if (data.type === "stream") {
         setIsThinking(false);
@@ -172,7 +252,6 @@ export const useChat = (sessionId: string | undefined) => {
 
         setMessages((prev) => {
           const lastMsg = prev[prev.length - 1];
-          // Append to last message if it's assistant and NOT an image placeholder
           if (
             lastMsg &&
             lastMsg.role === "assistant" &&
@@ -189,7 +268,7 @@ export const useChat = (sessionId: string | undefined) => {
         });
       }
 
-      // B. Image Generation Status (Thinking state for images)
+      // B. Image Generation Status
       if (data.type === "status") {
         setIsThinking(false);
         setMessages((prev) => {
@@ -204,19 +283,16 @@ export const useChat = (sessionId: string | undefined) => {
         });
       }
 
-      // C. Image Generated (Final result)
+      // C. Image Generated
       if (data.type === "image_generated") {
         setIsThinking(false);
         setIsStreaming(false);
 
         const imageUrl = data.image_url || "";
         const caption = data.content || data.revised_prompt || "";
-;
 
         setMessages((prev) => {
           const lastMsg = prev[prev.length - 1];
-
-          // Replace the "Generating..." placeholder
           if (lastMsg?.role === "assistant" && lastMsg.isGeneratingImage) {
             return [
               ...prev.slice(0, -1),
@@ -232,8 +308,6 @@ export const useChat = (sessionId: string | undefined) => {
               },
             ];
           }
-
-          // Fallback: append new message
           return [
             ...prev,
             {
@@ -250,9 +324,9 @@ export const useChat = (sessionId: string | undefined) => {
         triggerChatUpdate();
       }
     });
-  }, []);
+  }, [dispatch, sessionId]); // Added dispatch and sessionId dependencies
 
-  // 3. Send Message
+  // 4. Send Message
   const sendMessage = useCallback(
     async (content: string, file?: File | null) => {
       if (!content.trim() && !file) return;
@@ -283,31 +357,17 @@ export const useChat = (sessionId: string | undefined) => {
 
         let fileIds: string[] = [];
 
-        // --- UPLOAD LOGIC ---
         if (file && token) {
           try {
-            console.log("Uploading file...");
-            // Step 1: Upload and wait for response
             const uploadedId = await SessionService.uploadFile(token, file);
-
-            // Step 2: Validate ID (matches Dart: where(id => id.isNotEmpty))
-            if (uploadedId) {
-              fileIds.push(uploadedId);
-              console.log("File uploaded, ID:", uploadedId);
-            }
+            if (uploadedId) fileIds.push(uploadedId);
           } catch (uploadError) {
             console.error("File upload failed:", uploadError);
-            // Matches Dart logic: if (fileIds.isEmpty) throw Exception...
-            // We stop the process here so we don't send a message without the required context
             setIsThinking(false);
-            // Optional: You could add a toast notification here
             return;
           }
         }
 
-        // --- SEND LOGIC ---
-        // Step 3: Send message ONLY after upload is processed
-        console.log(`Sending to ${provider}/${model} with fileIds:`, fileIds);
         if (sessionId) {
           socketService.sendMessage(content, model, provider, fileIds);
         }
@@ -328,7 +388,7 @@ export const useChat = (sessionId: string | undefined) => {
       console.error("Failed to delete message", error);
     }
   };
-  console.log("messages", messages);
+
   return {
     messages,
     sendMessage,
@@ -336,6 +396,6 @@ export const useChat = (sessionId: string | undefined) => {
     isLoading,
     isStreaming,
     isThinking,
-    messagesLoaded, // <--- Return this
+    messagesLoaded,
   };
 };

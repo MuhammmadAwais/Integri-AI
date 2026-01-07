@@ -1,5 +1,6 @@
 import { SessionService } from "../../../api/backendApi";
 import AVAILABLE_MODELS from "../../../../Constants";
+import { triggerChatUpdate } from "../hooks/useChat";
 
 export const ChatService = {
   // 1. Create a New Chat (Uses Backend API)
@@ -11,7 +12,6 @@ export const ChatService = {
     try {
       // Lookup the provider
       const selectedModel = AVAILABLE_MODELS.find((m) => m.id === modelId);
-      // Default to openai if not found, or use the model's defined provider
       const provider = selectedModel ? selectedModel.provider : "openai";
 
       // Pass token, model, provider AND custom_gpt_id to backendApi
@@ -21,7 +21,12 @@ export const ChatService = {
         provider,
         custom_gpt_id
       );
-      
+
+      // --- REACTIVE UPDATE ---
+      // Broadcast the full new session object immediately.
+      // This allows the Sidebar to update without waiting for a re-fetch.
+      triggerChatUpdate(response);
+
       return response.session_id;
     } catch (error) {
       console.error("Backend: Failed to create chat", error);
@@ -32,6 +37,9 @@ export const ChatService = {
   deleteChat: async (token: string, chatId: string) => {
     try {
       await SessionService.deleteSession(token, chatId);
+      // Trigger update without payload to force a refresh if needed
+      // (Though useChatList optimistic delete handles this locally usually)
+      triggerChatUpdate();
     } catch (error) {
       console.error("Backend: Failed to delete chat", error);
       throw error;

@@ -33,9 +33,9 @@ export class WebSocketService {
 
     this.socket.onmessage = (event) => {
       try {
-        console.log("📩 [WS] Received Message:",event);
+        // console.log("📩 [WS] Received Message:",event);
         const data = JSON.parse(event.data);
-        console.log("📩 [WS] Received Message:", data);
+        // console.log("📩 [WS] Received Message:", data);
         if (this.messageHandler) {
           this.messageHandler(data);
         }
@@ -65,11 +65,13 @@ export class WebSocketService {
       model: model,
       file_ids: fileIds, // Include file IDs in the payload
     };
-
+    
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      
+      console.log("📤 [WS] Sending Message:", message);
       this.send(message);
+      console.log("📤 [WS] Sending Message:", message);
     } else {
+      console.log("📤 [WS] Sending Message:", message);
       this.messageQueue.push(message);
     }
   }

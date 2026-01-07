@@ -81,7 +81,7 @@ export const SessionService = {
         custom_gpt_id: custom_gpt_id || null,
         is_voice_session: isVoice,
       };
-
+      console.log(payload)
       const response = await backendApi.post("/api/v1/sessions", payload, {
         headers: { Authorization: `Bearer ${token}` },
       });

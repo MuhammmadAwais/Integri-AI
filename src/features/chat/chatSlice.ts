@@ -6,6 +6,9 @@ interface ChatState {
   isContextSidebarOpen: boolean;
   activeSidebarTab: "home" | "history" | "library" | "settings";
 
+  // --- NEW: Global Sessions State ---
+  sessions: any[];
+
   newChatModel: {
     id: string;
     provider: string;
@@ -16,7 +19,6 @@ interface ChatState {
     provider: string;
   };
 
-  // --- NEW: Toggle for Voice Captions ---
   voiceShowCaptions: boolean;
 
   selectedAgentId: string | null;
@@ -34,12 +36,15 @@ const initialState: ChatState = {
   isMobileMenuOpen: false,
   isContextSidebarOpen: true,
   activeSidebarTab: "home",
+
+  // Initialize empty sessions array
+  sessions: [],
+
   newChatModel: { id: "integri", provider: "openai" },
   voiceChatModel: {
     id: VOICE_MODELS[0].id,
     provider: VOICE_MODELS[0].provider,
   },
-  // Default to hidden or visible as you prefer
   voiceShowCaptions: false,
   selectedAgentId: null,
   activeChatId: null,
@@ -63,6 +68,57 @@ export const chatSlice = createSlice({
     ) => {
       state.activeSidebarTab = action.payload;
     },
+
+    // --- NEW: Session Management Reducers ---
+
+    // 1. Set all sessions (initial load)
+    setSessions: (state, action: PayloadAction<any[]>) => {
+      state.sessions = action.payload;
+    },
+
+    // 2. Add or Update Session (The "Upsert" Fix)
+    addSession: (state, action: PayloadAction<any>) => {
+      const newSession = action.payload;
+      // Handle potential ID mismatch (backend uses session_id, frontend might use id)
+      const id = newSession.session_id || newSession.id;
+
+      // Check if session already exists
+      const index = state.sessions.findIndex(
+        (s) => (s.session_id || s.id) === id
+      );
+
+      if (index !== -1) {
+        // UPDATE: Merge existing data with new data (fixes Title lag)
+        state.sessions[index] = { ...state.sessions[index], ...newSession };
+      } else {
+        // INSERT: Prepend to list (fixes Duplicates)
+        state.sessions.unshift(newSession);
+      }
+    },
+
+    // 3. Remove Session
+    removeSession: (state, action: PayloadAction<string>) => {
+      state.sessions = state.sessions.filter(
+        (s) => (s.session_id || s.id) !== action.payload
+      );
+    },
+
+    // 4. Update Title Helper
+    updateSessionTitle: (
+      state,
+      action: PayloadAction<{ id: string; title: string }>
+    ) => {
+      const { id, title } = action.payload;
+      const index = state.sessions.findIndex(
+        (s) => (s.session_id || s.id) === id
+      );
+      if (index !== -1) {
+        state.sessions[index].title = title;
+      }
+    },
+
+    // --- End Session Management ---
+
     setNewChatModel: (
       state,
       action: PayloadAction<{ id: string; provider: string }>
@@ -75,7 +131,6 @@ export const chatSlice = createSlice({
     ) => {
       state.voiceChatModel = action.payload;
     },
-    // --- NEW: Action to Toggle Captions ---
     setVoiceShowCaptions: (state, action: PayloadAction<boolean>) => {
       state.voiceShowCaptions = action.payload;
     },
@@ -110,9 +165,13 @@ export const {
   toggleMobileMenu,
   setContextSidebarOpen,
   setActiveSidebarTab,
+  setSessions, // Exported
+  addSession, // Exported
+  removeSession, // Exported
+  updateSessionTitle, // Exported
   setNewChatModel,
   setVoiceChatModel,
-  setVoiceShowCaptions, // Export new action
+  setVoiceShowCaptions,
   setNewChatAgent,
   setActiveChat,
   setActiveSessionConfig,
