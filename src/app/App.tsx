@@ -5,15 +5,14 @@ import {
   Navigate,
 } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth, db } from "./firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { auth } from "./firebase"; // Removed 'db', 'doc', 'getDoc'
 import { useAppDispatch } from "../hooks/useRedux";
 
 //  IMPORT ACTIONS AND API
 import { setAuthUser } from "../features/auth/slices/authSlice";
 import { setTheme } from "../features/theme/themeSlice";
 import { getBackendToken } from "../api/backendApi";
-import { SubscriptionService } from "../features/subscriptions/services/subscriptionService";
+import { AuthService } from "../features/auth/services/authService"; // Import AuthService
 
 // --- Components & Pages ---
 import Home from "../pages/Home";
@@ -77,69 +76,31 @@ const App: React.FC = () => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
-          // 1. Sync with RevenueCat FIRST (Preserved)
-          const isPremiumStatus =
-            await SubscriptionService.syncStatusWithRevenueCat(
-              firebaseUser.uid
-            );
+          // 1. Use AuthService to get unified Profile + RC Status
+          // This handles mapping Firestore fields and checking Premium status logic centrally
+          const user = await AuthService.fetchUserProfile(firebaseUser);
 
-          let planId = "starter";
-          let country = "";
-          // Use Google photo by default, will override if Firestore has one
-          let avatarUrl = firebaseUser.photoURL;
+          // 2. Apply theme if user has specific preference (Optional, depending on your logic)
+          // Since new schema doesn't explicitly have 'defaultTheme', you might assume system default
+          // or check a different field. I'll leave the original dispatch logic but removed manual Firestore fetch.
 
-          // 2. Fetch User Profile & Settings from Firestore
-          try {
-            const userDocRef = doc(db, "users", firebaseUser.uid);
-            const userDocSnap = await getDoc(userDocRef);
-
-            if (userDocSnap.exists()) {
-              const userData = userDocSnap.data();
-
-              // Apply theme if set
-              if (userData.defaultTheme) {
-                const isDarkTheme = userData.defaultTheme === "dark";
-                dispatch(setTheme(isDarkTheme));
-              }
-
-              // Extract data
-              planId = userData.planId || "starter";
-              country = userData.country || "";
-
-              // NEW: Check if user has a custom uploaded photo
-              if (userData.photoURL) {
-                avatarUrl = userData.photoURL;
-              }
-            }
-          } catch (firestoreError) {
-            console.error("Failed to load user profile:", firestoreError);
-          }
-
-          // 3. Fetch Backend Token (PASSING PREMIUM STATUS) - Preserved
+          // 3. Fetch Backend Token (Pass derived premium status)
           let accessToken = null;
           try {
             const tokenData = await getBackendToken(
-              firebaseUser.uid,
-              firebaseUser.email,
-              isPremiumStatus
+              user.id,
+              user.email,
+              user.isPremium
             );
             accessToken = tokenData.access_token;
           } catch (tokenError) {
             console.error("Backend token error", tokenError);
           }
 
-          // 4. Dispatch Auth State
+          // 4. Dispatch Unified Auth State
           dispatch(
             setAuthUser({
-              user: {
-                id: firebaseUser.uid,
-                email: firebaseUser.email,
-                name: firebaseUser.displayName,
-                avatar: avatarUrl, // Updated to use the resolved URL
-                isPremium: isPremiumStatus,
-                planId: planId,
-                country: country, // Added country
-              },
+              user: user,
               accessToken: accessToken,
             })
           );

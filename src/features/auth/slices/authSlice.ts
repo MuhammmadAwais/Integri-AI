@@ -7,7 +7,6 @@ import {
   logoutUser,
   loginWithGoogle,
 } from "../thunks/authThunk";
-// Import the subscription action to listen for it
 import { purchaseSubscription } from "../../subscriptions/slices/subscriptionSlice";
 
 interface AuthState {
@@ -39,10 +38,17 @@ const authSlice = createSlice({
     ) => {
       state.user = action.payload.user;
       state.accessToken = action.payload.accessToken;
+      // If the user object is marked as new (missing Firestore doc), set flag
+      if (action.payload.user?.isNewUser) {
+        state.isNewUser = true;
+      }
       state.isLoading = false;
     },
     completeOnboarding: (state) => {
       state.isNewUser = false;
+      if (state.user) {
+        state.user.isNewUser = false;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -56,7 +62,8 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.user = action.payload.user;
         state.accessToken = action.payload.accessToken;
-        state.isNewUser = false;
+        // Check if the service returned isNewUser (e.g. Doc missing)
+        state.isNewUser = !!action.payload.user.isNewUser;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -72,7 +79,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.user = action.payload.user;
         state.accessToken = action.payload.accessToken;
-        state.isNewUser = true;
+        state.isNewUser = true; // Always true after fresh register until onboarding
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -88,7 +95,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.user = action.payload.user;
         state.accessToken = action.payload.accessToken;
-        state.isNewUser = false;
+        state.isNewUser = !!action.payload.user.isNewUser;
       })
       .addCase(loginWithGoogle.rejected, (state, action) => {
         state.isLoading = false;
@@ -100,14 +107,14 @@ const authSlice = createSlice({
         state.user = null;
         state.accessToken = null;
         state.isLoading = false;
+        state.isNewUser = false;
       })
 
       // --- SUBSCRIPTION INTEGRATION ---
-      // When subscription is successful, update the local user state immediately
       .addCase(purchaseSubscription.fulfilled, (state, action) => {
         if (state.user) {
           state.user.isPremium = true;
-          state.user.planId = action.payload; // payload contains the planId
+          state.user.planId = action.payload;
         }
       });
   },

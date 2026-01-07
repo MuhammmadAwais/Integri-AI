@@ -65,7 +65,7 @@ const AccountSettings: React.FC = () => {
       await updateProfile(currentUser, { photoURL: downloadURL });
 
       // 2. Update Firestore (so it persists across sessions as "custom")
-      const userRef = doc(db, "users", currentUser.uid);
+      const userRef = doc(db, "Users", currentUser.uid);
       await setDoc(userRef, { photoURL: downloadURL }, { merge: true });
 
       // 3. Update Redux
@@ -104,7 +104,7 @@ const AccountSettings: React.FC = () => {
       }
 
       // 2. Update Firestore (Name & Country)
-      const userRef = doc(db, "users", currentUser.uid);
+      const userRef = doc(db, "Users", currentUser.uid);
       await setDoc(
         userRef,
         { name: displayName, country: country },

@@ -68,7 +68,7 @@ const AgentDetailPage = () => {
       try {
         setLoading(true);
         const data = await AgentService.getAgentById(token, id);
-        
+
         setAgent(data);
 
         // Fetch Documents
@@ -141,6 +141,7 @@ const AgentDetailPage = () => {
         await dispatch(
           deleteAgentDocument({ token, gpt_id: id, document_id: docId })
         ).unwrap();
+        dispatch(fetchAgentDocuments({ token, gpt_id: id }));
       } catch (e: any) {
         setErrorModal({
           open: true,

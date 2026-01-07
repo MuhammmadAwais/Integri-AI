@@ -7,11 +7,11 @@ export const loginUser = createAsyncThunk(
   "auth/login",
   async (data: { email: string; password: string }, { rejectWithValue }) => {
     try {
-      // 1. Ask Firebase
+      // 1. Firebase Login & RevenueCat Check (No Firestore Write)
       const user = await AuthService.login(data.email, data.password);
 
       // 2. Ask Backend
-      // We send the ID and PREMIUM STATUS we just got from Firebase
+      // Pass the derived isPremium status (from RC)
       const backendData = await getBackendToken(
         user.id,
         user.email,
@@ -20,7 +20,7 @@ export const loginUser = createAsyncThunk(
 
       console.log("Backend auth successful:", backendData);
 
-      // 3. Return BOTH (The User + The Token)
+      // 3. Return Both
       return {
         user: user,
         accessToken: backendData.access_token,
@@ -39,7 +39,7 @@ export const registerUser = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      // 1. Register with Firebase
+      // 1. Register Firebase (Creates Firestore with defaults)
       const user = await AuthService.register(
         data.email,
         data.password,
@@ -47,14 +47,12 @@ export const registerUser = createAsyncThunk(
       );
 
       // 2. Get Token from Backend
-      // New users are usually not premium yet, but we pass the value from the user object to be safe
       const backendData = await getBackendToken(
         user.id,
         user.email,
         user.isPremium
       );
 
-      // 3. Return Both
       return {
         user: user,
         accessToken: backendData.access_token,
@@ -70,17 +68,16 @@ export const loginWithGoogle = createAsyncThunk(
   "auth/loginWithGoogle",
   async (_, { rejectWithValue }) => {
     try {
-      // Login with Google
+      // 1. Google Login (Returns isNewUser: true if Doc missing)
       const user = await AuthService.loginWithGoogle();
 
-      // Get Token from Backend
+      // 2. Get Token from Backend
       const backendData = await getBackendToken(
         user.id,
         user.email,
         user.isPremium
       );
 
-      // Return Both
       return {
         user: user,
         accessToken: backendData.access_token,

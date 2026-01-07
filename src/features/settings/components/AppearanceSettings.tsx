@@ -30,7 +30,7 @@ const AppearanceSettings: React.FC = () => {
     // 2. Persist to Firebase
     if (user?.id) {
       try {
-        const userRef = doc(db, "users", user.id);
+        const userRef = doc(db, "Users", user.id);
         await setDoc(userRef, { defaultTheme: selectedTheme }, { merge: true });
         toast.success(`Theme saved: ${selectedTheme}`, {
           theme: isDark ? "dark" : "light",
