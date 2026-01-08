@@ -164,7 +164,7 @@ const ModelMenu: React.FC<ModelMenuProps> = ({
                     )}
                   >
                     <div>
-                      <img src={isDark ? `/${m.dark_theme_logo}` : `/${m.light_theme_logo}`} alt="logo" className="w-6 h-6 shrink-0"  />
+                      <img src={isDark ? `${m.dark_theme_logo}` : `${m.light_theme_logo}`} alt="logo" className="w-6 h-6 shrink-0"  />
                       <div className="font-medium">{m.label || m.id}</div>
                       <div className="text-[10px] opacity-60 capitalize flex items-center gap-1.5">
                         {m.alt_provider || m.provider}
