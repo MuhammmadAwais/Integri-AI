@@ -13,6 +13,7 @@ import { cn } from "../../../lib/utils";
 import { useCloudStorage } from "../../../hooks/useCloudStorage";
 import { AnimatePresence, motion } from "framer-motion";
 import WhiteboardModal from "../../../Components/ui/WhiteboardModal";// Make sure path is correct
+import LoginModal from "../../auth/components/LoginModal";
 
 interface ChatInputProps {
   onSend?: (text: string, file?: File | null) => void;
@@ -27,12 +28,13 @@ const ChatInput: React.FC<ChatInputProps> = ({
   disabled,
   features = true,
 }) => {
+  const user = useAppSelector((state: any) => state.auth.user);
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   const [input, setInput] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [showAttachMenu, setShowAttachMenu] = useState(false);
   const [showWhiteboard, setShowWhiteboard] = useState(false); // State for whiteboard
-
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -71,6 +73,10 @@ const ChatInput: React.FC<ChatInputProps> = ({
   }, [input, features]);
 
   const handleSend = () => {
+    if (!user?.id){ 
+      setShowLoginModal(true);
+      return
+    }
     if (disabled || isCloudLoading) return;
     if ((input.trim() || file) && onSend) {
       onSend(input, file);
@@ -101,6 +107,10 @@ const ChatInput: React.FC<ChatInputProps> = ({
         !features && "relative"
       )}
     >
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      />
       {/* File Preview Bubble */}
       {file && (
         <div className="mb-2 flex w-fit items-center gap-2 rounded-xl bg-blue-500/10 px-3 py-1.5 text-xs font-medium text-blue-500 animate-in fade-in slide-in-from-bottom-2">
@@ -343,8 +353,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
                   </motion.div>
                 )}
               </AnimatePresence>
-
-              
             </div>
 
             {/* Right Tools (Send) */}

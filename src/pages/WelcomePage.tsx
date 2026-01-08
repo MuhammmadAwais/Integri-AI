@@ -19,6 +19,7 @@ import { useCloudStorage } from "../hooks/useCloudStorage";
 import { AnimatePresence, motion } from "framer-motion";
 import WhiteboardModal from "../Components/ui/WhiteboardModal"; 
 import SubscriptionOfferingCard from "../features/subscriptions/components/SubscriptionOfferingCard";
+import LoginModal from "../features/auth/components/LoginModal";
 
 const WelcomePage: React.FC = () => {
   const isDark = useAppSelector((state: any) => state.theme?.isDark);
@@ -28,7 +29,7 @@ const WelcomePage: React.FC = () => {
   const { newChatModel, selectedAgentId } = useAppSelector(
     (state: any) => state.chat
   );
-
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showAttachMenu, setShowAttachMenu] = useState(false);
@@ -106,6 +107,10 @@ const WelcomePage: React.FC = () => {
   };
 
   const startChat = async (text: string) => {
+    if(!user?.id) {
+      setShowLoginModal(true);
+      return
+    }
     if ((!text.trim() && !selectedFile) || !accessToken) return;
 
     const currentModelId = newChatModel.id;
@@ -173,7 +178,7 @@ const WelcomePage: React.FC = () => {
       <ParticleBackground />
 
    <SubscriptionOfferingCard />
-
+      <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
       <input
         title="file"
         type="file"

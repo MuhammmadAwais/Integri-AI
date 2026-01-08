@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect , useState } from "react";
 import { Plus, Box } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
@@ -15,6 +15,7 @@ import AgentCard from "../features/agents/components/AgentCard";
 import AgentModal from "../features/agents/components/AgentModal";
 import SkeletonLoader from "../Components/ui/SkeletonLoader";
 import ParticleBackground from "../Components/ui/ParticleBackground";
+import LoginModal from "../features/auth/components/LoginModal";
 
 const Agents: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -23,9 +24,10 @@ const Agents: React.FC = () => {
   const { items, isLoading, error, isModalOpen, editingAgent } = useAppSelector(
     (state: any) => state.agents
   );
-
+ const [showLoginModal, setShowLoginModal] = useState(false);
   const { isDark } = useAppSelector((state: any) => state.theme);
   const token = useAppSelector((state: any) => state.auth.accessToken);
+  const user = useAppSelector((state: any) => state.auth.user);
 
   // Initial fetch of agents
   useEffect(() => {
@@ -45,7 +47,13 @@ const Agents: React.FC = () => {
       dispatch(fetchAgents(token));
     }
   };
-
+  const handleopenCreateModal = () => {
+    if (!user?.id) {
+      setShowLoginModal(true);
+    } else {
+      dispatch(openCreateModal());
+    }
+  }
   return (
     <div
       className={cn(
@@ -54,6 +62,10 @@ const Agents: React.FC = () => {
       )}
     >
       <ParticleBackground />
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      />
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
         <div>
@@ -78,7 +90,7 @@ const Agents: React.FC = () => {
               ? "text-white hover:bg-gray-800"
               : "text-gray-900 hover:bg-blue-50"
           )}
-          onClick={() => dispatch(openCreateModal())}
+          onClick={() => handleopenCreateModal()}
         >
           <Plus
             size={20}
@@ -128,7 +140,7 @@ const Agents: React.FC = () => {
             Start by creating your first custom agent to automate tasks or
             roleplay specific scenarios.
           </p>
-          <Button variant="outline" onClick={() => dispatch(openCreateModal())}>
+          <Button variant="outline" onClick={() => handleopenCreateModal()}>
             Create Your First Agent
           </Button>
         </motion.div>

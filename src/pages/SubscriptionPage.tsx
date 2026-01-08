@@ -9,6 +9,7 @@ import ParticleBackground from "../Components/ui/ParticleBackground";
 import { cn } from "../lib/utils";
 import { ChevronDown, ChevronUp, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
+import LoginModal from "../features/auth/components/LoginModal";
 
 // Stagger Animation Variants
 const containerVariants = {
@@ -33,12 +34,13 @@ const SubscriptionPage: React.FC = () => {
 
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
-
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  
   const currentPlanId = user?.isPremium ? user.planId || "monthly" : "freemium";
 
   const handleSubscribe = async (planId: string) => {
-    if (!user) {
-      alert("Please login to subscribe.");
+    if (!user) {       
+      setShowLoginModal(true);    
       return;
     }
 
@@ -67,7 +69,10 @@ const SubscriptionPage: React.FC = () => {
     <div className={cn("w-full h-full min-h-screen", isDark ? "dark" : "")}>
       {/* Render the Success Modal - it handles its own visibility */}
       <SubscriptionSuccessModal />
-
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      />
       <div
         className={cn(
           "relative h-full w-full overflow-y-auto transition-colors duration-500",

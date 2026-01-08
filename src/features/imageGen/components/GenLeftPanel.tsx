@@ -3,6 +3,8 @@ import { Sparkles, Wand2, Monitor, Box, Zap } from "lucide-react";
 import ImageUploader from "./ImageUploader";
 import GenDropdown from "./GenDropdown";
 import AVAILABLE_MODELS from "../../../../Constants";
+import { useAppSelector } from "../../../hooks/useRedux";
+import LoginModal from "../../auth/components/LoginModal";
 
 interface Props {
   isDark: boolean;
@@ -46,13 +48,18 @@ const GenLeftPanel: React.FC<Props> = ({
   isGenerating,
   onGenerate,
 }) => {
+  const user = useAppSelector((state: any) => state.auth.user);
   const [prompt, setPrompt] = useState("");
   const [selectedModel, setSelectedModel] = useState(MODEL_OPTIONS[0]);
   const [selectedRatio, setSelectedRatio] = useState(RATIOS[1]);
   const [selectedRes, setSelectedRes] = useState(RESOLUTIONS[0]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const handleGenerate = () => {
+    if (!user) {
+      setShowLoginModal(true)
+      return
+    }
     if (!prompt.trim()) return;
     onGenerate({
       model: selectedModel,
@@ -65,6 +72,10 @@ const GenLeftPanel: React.FC<Props> = ({
 
   return (
     <div className="flex flex-col h-full font-sans">
+        <LoginModal
+              isOpen={showLoginModal}
+              onClose={() => setShowLoginModal(false)}
+            />
       {/* Scrollable Content Area */}
       <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
         <div>

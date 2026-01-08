@@ -18,6 +18,7 @@ import { ChatService } from "../features/chat/services/chatService";
 import Button from "../Components/ui/Button";
 import ParticleBackground from "../Components/ui/ParticleBackground";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import LoginModal from "../features/auth/components/LoginModal";
 
 interface Note {
   id: string;
@@ -32,11 +33,11 @@ const PdfChatPage: React.FC = () => {
   const location = useLocation();
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   const token = useAppSelector((state: any) => state.auth.accessToken);
-
+  const user = useAppSelector((state: any) => state.auth.user);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"chat" | "pdf">("chat");
   const [isUploading, setIsUploading] = useState(false);
-
+  const [showLoginModal, setShowLoginModal] = useState(false);
   // --- NOTES STATE ---
   const [notes, setNotes] = useState<Note[]>([]);
   const [isNoteMode, setIsNoteMode] = useState(false);
@@ -55,6 +56,11 @@ const PdfChatPage: React.FC = () => {
   }, [location.state]);
 
   const handleFileUpload = async (file: File) => {
+      if (!user) {
+        setShowLoginModal(true);
+        return
+      }
+    if (!token) return;
     if (!file || file.type !== "application/pdf") {
       alert("Please upload a PDF file.");
       return;
@@ -84,6 +90,7 @@ const PdfChatPage: React.FC = () => {
   };
 
   const onFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  
     if (e.target.files?.[0]) handleFileUpload(e.target.files[0]);
   };
 
@@ -243,6 +250,10 @@ const PdfChatPage: React.FC = () => {
         onDragOver={(e) => e.preventDefault()}
         onDrop={onDrop}
       >
+        <LoginModal
+                isOpen={showLoginModal}
+                onClose={() => setShowLoginModal(false)}
+              />
         <ParticleBackground />
         <motion.div
           initial={{ opacity: 0, y: 20 }}

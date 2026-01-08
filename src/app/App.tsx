@@ -8,7 +8,6 @@ import {
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
-import { Loader2 } from "lucide-react";
 
 //  IMPORT ACTIONS AND API
 import { setAuthUser } from "../features/auth/slices/authSlice";
@@ -37,33 +36,29 @@ import ImageGenPage from "../pages/ImageGenPage";
 // --- 1. GUARD COMPONENTS ---
 
 /**
- * Protects routes that require authentication.
- * - If loading: Shows spinner.
- * - If not logged in: Redirects to /signup (as requested).
- * - If new user (incomplete profile): Redirects to /getting-started.
+ * Modified for "Guest-First" access.
+ * - Previous behavior: Redirected to /signup if !user.
+ * - New behavior: Allows access to Outlet (Home) even if !user (Guest).
+ * - Still protects against incomplete profiles (isNewUser).
  */
 const ProtectedRoute = () => {
-  const { user, isLoading, isNewUser } = useAppSelector((state) => state.auth);
+  const { user, isNewUser } = useAppSelector((state) => state.auth);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen w-full bg-[#18181B] flex items-center justify-center">
-        <Loader2 className="animate-spin text-indigo-500 w-10 h-10" />
-      </div>
-    );
-  }
-
-  // Not logged in -> Go to Signup
-  if (!user) {
+  // --- CHANGED: REMOVED FORCED REDIRECT ---
+  // If no user, we simply allow them to pass through as a Guest.
+  // The specific features inside Home will now handle triggering the LoginModal.
+  
+  /* if (!user) {
     return <Navigate to="/signup" replace />;
-  }
+  } 
+  */
 
   // Logged in but profile incomplete -> Go to Onboarding
-  if (isNewUser) {
+  if (user && isNewUser) {
     return <Navigate to="/getting-started" replace />;
   }
 
-  // Authorized -> Render content
+  // Render content (Authenticated OR Guest)
   return <Outlet />;
 };
 
@@ -72,15 +67,7 @@ const ProtectedRoute = () => {
  * - If logged in: Redirects to Dashboard (prevents double login).
  */
 const PublicRoute = () => {
-  const { user, isLoading, isNewUser } = useAppSelector((state) => state.auth);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen w-full bg-[#18181B] flex items-center justify-center">
-        <Loader2 className="animate-spin text-indigo-500 w-10 h-10" />
-      </div>
-    );
-  }
+  const { user, isNewUser } = useAppSelector((state) => state.auth);
 
   // If logged in and setup is complete, send to Home
   if (user && !isNewUser) {
@@ -105,7 +92,7 @@ const router = createBrowserRouter([
   // Onboarding (Accessible to auth users who are 'new')
   { path: "/getting-started", element: <GettingStarted /> },
 
-  // Protected Routes (Redirect to Signup if not logged in)
+  // Main App Routes (Now Guest Accessible)
   {
     element: <ProtectedRoute />,
     children: [
@@ -131,7 +118,7 @@ const router = createBrowserRouter([
           // Catch-all inside protected area
           { path: "*", element: <Navigate to="/" replace /> },
         ],
-      },
+      }, 
     ],
   },
 
@@ -174,7 +161,7 @@ const App: React.FC = () => {
           dispatch(setAuthUser({ user: null, accessToken: null }));
         }
       } else {
-        // User is logged out -> ProtectedRoute will handle the redirect to /signup
+        // User is logged out -> Redux state cleared, UI stays on Home (Guest Mode)
         dispatch(setAuthUser({ user: null, accessToken: null }));
       }
     });

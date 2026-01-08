@@ -1,4 +1,4 @@
-import React from "react";
+import React , { useState } from "react";
 import ParticleSphere from "../Components/ui/ParticleSphere";
 import { Mic, PhoneOff } from "lucide-react";
 import { useVoiceChat } from "../features/voice/hooks/useVoiceChat";
@@ -6,6 +6,7 @@ import { useAppSelector } from "../hooks/useRedux";
 import ParticleBackground from "../Components/ui/ParticleBackground";
 import { cn } from "../lib/utils";
 import Captions from "../features/voice/components/Captions"; // Import updated component
+import LoginModal from "../features/auth/components/LoginModal";
 
 const Voice: React.FC = () => {
   const { accessToken, user } = useAppSelector((state: any) => state.auth);
@@ -18,11 +19,16 @@ const Voice: React.FC = () => {
   const { voiceChatModel, voiceShowCaptions } = useAppSelector(
     (state: any) => state.chat
   );
+ const [showLoginModal, setShowLoginModal] = useState(false);
 
   const { status, audioLevel, error, startSession, endSession, caption } =
     useVoiceChat(accessToken, voiceChatModel.id, voiceChatModel.provider);
 
   const handleToggle = () => {
+     if (!user?.id) {
+       setShowLoginModal(true);
+       return
+     }
     if (status === "disconnected") {
       startSession();
     } else {
@@ -36,7 +42,10 @@ const Voice: React.FC = () => {
   return (
     <div className="relative w-full h-screen overflow-hidden flex flex-col items-center justify-center">
       <ParticleBackground />
-
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      />
       {/* Header */}
       <div className="absolute top-10 z-10 text-center">
         <h2 className="text-4xl font-extrabold tracking-widest uppercase">
