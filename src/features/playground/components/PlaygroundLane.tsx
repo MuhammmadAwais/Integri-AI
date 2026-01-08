@@ -44,7 +44,7 @@ const PlaygroundLane: React.FC<PlaygroundLaneProps> = ({
       sendMessage(globalPrompt, globalFile);
     }
   }, [triggerId, globalPrompt, globalFile, sendMessage]);
-
+  
   return (
     <div
       className={cn(
@@ -64,15 +64,12 @@ const PlaygroundLane: React.FC<PlaygroundLaneProps> = ({
         )}
       >
         <div className="flex items-center gap-3 relative min-w-0 flex-1">
-          <div
-            className={cn(
-              "w-8 h-8 rounded-lg flex items-center justify-center border shrink-0",
-              isDark
-                ? "bg-linear-to-br from-indigo-500/20 to-purple-500/10 border-indigo-500/20 text-indigo-400"
-                : "bg-linear-to-br from-indigo-50 to-purple-50 border-indigo-100 text-indigo-600"
-            )}
-          >
-            <Sparkles size={14} className="fill-current opacity-80" />
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0">
+            <img
+              src={model.gpt_id ? isDark ? `/public/dark-theme-custom-gpt.png` : `/public/light-theme-custom-gpt.png` : isDark ? `/public/${model.dark_theme_logo}` : `/public/${model.light_theme_logo}`}
+              alt={model.label}
+              className="w-full h-full object-cover"
+            />
           </div>
 
           <div className="min-w-0 flex flex-col justify-center">
@@ -94,7 +91,7 @@ const PlaygroundLane: React.FC<PlaygroundLaneProps> = ({
           title="Remove Lane"
           onClick={onRemove}
           className={cn(
-            "p-1.5 ml-2 rounded transition-colors shrink-0",
+            "p-1.5 ml-2 rounded transition-colors shrink-0 hover:cursor-pointer",
             isDark
               ? "text-zinc-500 hover:bg-red-500/10 hover:text-red-400"
               : "text-zinc-400 hover:bg-red-50 hover:text-red-500"
