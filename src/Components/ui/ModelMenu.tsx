@@ -184,7 +184,7 @@ const ModelMenu: React.FC<ModelMenuProps> = ({
                       
                     </div>
 
-                   { m.isPremium && 
+                   { m.isPremium && !user?.isPremium && 
                     <img src="/crown_icon.png" alt="Premium" className="w-4 h-4 shrink-0"/>}
                   </button>
                 );
