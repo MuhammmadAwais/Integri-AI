@@ -19,6 +19,7 @@ import Button from "../Components/ui/Button";
 import ParticleBackground from "../Components/ui/ParticleBackground";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import LoginModal from "../features/auth/components/LoginModal";
+import SubscribeModal from "../features/subscriptions/components/SubscribeModal";
 
 interface Note {
   id: string;
@@ -38,6 +39,7 @@ const PdfChatPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"chat" | "pdf">("chat");
   const [isUploading, setIsUploading] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   // --- NOTES STATE ---
   const [notes, setNotes] = useState<Note[]>([]);
   const [isNoteMode, setIsNoteMode] = useState(false);
@@ -61,6 +63,10 @@ const PdfChatPage: React.FC = () => {
         return
       }
     if (!token) return;
+    if (!user?.isPremium) {
+      setShowSubscriptionModal(true);
+      return
+    }
     if (!file || file.type !== "application/pdf") {
       alert("Please upload a PDF file.");
       return;
@@ -251,9 +257,14 @@ const PdfChatPage: React.FC = () => {
         onDrop={onDrop}
       >
         <LoginModal
-                isOpen={showLoginModal}
-                onClose={() => setShowLoginModal(false)}
-              />
+          isOpen={showLoginModal}
+          onClose={() => setShowLoginModal(false)}
+        />
+        <SubscribeModal
+          featureName="PDF Chat"
+          isOpen={showSubscriptionModal}
+          onClose={() => setShowSubscriptionModal(false)}
+        />
         <ParticleBackground />
         <motion.div
           initial={{ opacity: 0, y: 20 }}

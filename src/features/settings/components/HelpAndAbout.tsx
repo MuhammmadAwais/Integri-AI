@@ -51,7 +51,7 @@ const HelpAndAbout: React.FC = () => {
     >
       <LinkItem
         icon={HelpCircle}
-        label="Help Center & FAQs"
+        label="FAQs"
         onClick={() => navigate("/help")}
       />
       <LinkItem
@@ -82,7 +82,7 @@ const HelpAndAbout: React.FC = () => {
         >
           Version 1.0.0 (Beta)
           <br />
-          © 2025 Integri AI. All rights reserved.
+          © 2024 Integri AI. All rights reserved.
           <br />
         </p>
       </div>
