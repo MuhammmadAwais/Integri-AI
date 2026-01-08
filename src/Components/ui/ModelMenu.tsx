@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "../../lib/utils";
 import AVAILABLE_MODELS from "../../../Constants";
-import { Bot, Check } from "lucide-react";
+import { Bot} from "lucide-react";
+import { useAppSelector } from "../../hooks/useRedux";
 
 interface ModelMenuProps {
   isOpen: boolean;
@@ -42,7 +43,7 @@ const ModelMenu: React.FC<ModelMenuProps> = ({
 
   // We use this ref to find the location of the trigger in the DOM
   const anchorRef = useRef<HTMLDivElement>(null);
-
+    const user = useAppSelector((state: any) => state.auth.user);
   useEffect(() => {
     if (isOpen && anchorRef.current) {
       // Find the parent element (the button/trigger)
@@ -145,12 +146,14 @@ const ModelMenu: React.FC<ModelMenuProps> = ({
                 return (
                   <button
                     key={m.id}
+                    disabled={!user?.isPremium && m.isPremium}
                     onClick={() => {
                       onSelect(m.id);
                       onClose();
                     }}
                     className={cn(
-                      "w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all duration-200 flex items-center justify-between group mb-0.5 relative",
+                      "w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all duration-200 flex items-center justify-between group mb-0.5 relative ",
+                      user?.isPremium || !m.isPremium ? "hover:cursor-pointer" : "hover:cursor-not-allowed",
                       isSelected
                         ? isDark
                           ? "bg-indigo-500/10 text-indigo-400"
@@ -161,6 +164,7 @@ const ModelMenu: React.FC<ModelMenuProps> = ({
                     )}
                   >
                     <div>
+                      <img src={isDark ? `/public/${m.dark_theme_logo}` : `/public/${m.light_theme_logo}`} alt="logo" className="w-6 h-6 shrink-0"  />
                       <div className="font-medium">{m.label || m.id}</div>
                       <div className="text-[10px] opacity-60 capitalize flex items-center gap-1.5">
                         {m.alt_provider || m.provider}
@@ -177,11 +181,11 @@ const ModelMenu: React.FC<ModelMenuProps> = ({
                           </span>
                         )}
                       </div>
+                      
                     </div>
 
-                    {isSelected && (
-                      <Check size={14} className="shrink-0 stroke-3" />
-                    )}
+                   { m.isPremium && 
+                    <img src="/public/crown_icon.png" alt="Premium" className="w-4 h-4 shrink-0"/>}
                   </button>
                 );
               })}

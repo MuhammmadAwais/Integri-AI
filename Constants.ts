@@ -5,6 +5,9 @@ const AVAILABLE_MODELS = [
     label: "Integri",
     provider: "openai",
     alt_provider: "integri",
+    light_theme_logo: "/light-theme-logo.png",
+    dark_theme_logo: "/dark-theme-logo.png",
+    isPremium: false,
   },
 
   // --- OpenAI ---
@@ -13,111 +16,172 @@ const AVAILABLE_MODELS = [
     label: "GPT-5.2",
     provider: "openai",
     badge: "New",
+    light_theme_logo: "/light-theme-openai.png",
+    dark_theme_logo: "/dark-theme-openai.png",
+    isPremium: true,
   },
   {
     id: "gpt-5.1",
     label: "GPT-5.1",
     provider: "openai",
     badge: "New",
+    light_theme_logo: "/light-theme-openai.png",
+    dark_theme_logo: "/dark-theme-openai.png",
+    isPremium: true,
   },
   {
     id: "gpt-5-mini",
     label: "GPT-5 Mini",
     provider: "openai",
     badge: "New",
+    light_theme_logo: "/light-theme-openai.png",
+    dark_theme_logo: "/dark-theme-openai.png",
+    isPremium: true,
   },
   {
     id: "gpt-5-nano",
     label: "GPT-5 Nano",
     provider: "openai",
     badge: "Fast",
+    light_theme_logo: "/light-theme-openai.png",
+    dark_theme_logo: "/dark-theme-openai.png",
+    isPremium: true,
   },
   {
     id: "gpt-4o-mini",
     label: "GPT-4o Mini",
     provider: "openai",
+    light_theme_logo: "/light-theme-openai.png",
+    dark_theme_logo: "/dark-theme-openai.png",
+    isPremium: true,
   },
   {
     id: "gpt-4.1-nano",
     label: "GPT-4.1 Nano",
     provider: "openai",
     badge: "Efficient",
+    light_theme_logo: "/light-theme-openai.png",
+    dark_theme_logo: "/dark-theme-openai.png",
+    isPremium: true,
   },
   {
     id: "gpt-3.5-turbo",
     label: "GPT-3.5 turbo",
     provider: "openai",
     badge: "Efficient",
+    light_theme_logo: "/light-theme-openai.png",
+    dark_theme_logo: "/dark-theme-openai.png",
+    isPremium: true,
   },
   {
     id: "gpt-4o-mini-search-preview",
     label: "gpt-4o mini-search-preview",
     provider: "openai",
     badge: "Efficient",
+    light_theme_logo: "/light-theme-openai.png",
+    dark_theme_logo: "/dark-theme-openai.png",
+    isPremium: true,
   },
   {
     id: "gpt-4o-mini-deep-research",
     label: "GPT-4o mini-deep-research",
     provider: "openai",
     badge: "Efficient",
+    light_theme_logo: "/light-theme-openai.png",
+    dark_theme_logo: "/dark-theme-openai.png",
+    isPremium: true,
   },
-
+  
   // --- Google ---
-  { id: "gemini-2.5-flash", label: "Gemini 2.5 Flash", provider: "gemini" },
-
+  {
+    id: "gemini-2.5-flash",
+    label: "Gemini 2.5 Flash",
+    provider: "gemini",
+    light_theme_logo: "/gemini.png",
+    dark_theme_logo: "/gemini.png",
+    isPremium: true,
+  },
+  
   {
     id: "gemini-2.5-flash-lite",
     label: "Gemini 2.5 Flash Lite",
     provider: "gemini",
+    light_theme_logo: "/gemini.png",
+    dark_theme_logo: "/gemini.png",
+    isPremium: true,
   },
   {
     id: "gemini-3-flash-preview",
     label: "Gemini 3 flash-preview",
     provider: "gemini",
+    light_theme_logo: "/gemini.png",
+    dark_theme_logo: "/gemini.png",
+    isPremium: true,
   },
-
+  
   // --- Grok ---
   {
     id: "grok-3-mini",
     label: "Grok 3 Mini",
     provider: "grok",
     badge: "Uncensored",
+    light_theme_logo: "/light-theme-grok.png",
+    dark_theme_logo: "/dark-theme-grok.png",
+    isPremium: true,
   },
   {
     id: "grok-4-1-fast-reasoning",
     label: "Grok 4-1 fast reasoning",
     provider: "grok",
     badge: "Uncensored",
+    light_theme_logo: "/light-theme-grok.png",
+    dark_theme_logo: "/dark-theme-grok.png",
+    isPremium: true,
   },
   {
     id: "grok-4-1-fast-non-reasoning",
     label: "Grok 4-1 fast non reasoning",
     provider: "grok",
     badge: "Uncensored",
+    light_theme_logo: "/light-theme-grok.png",
+    dark_theme_logo: "/dark-theme-grok.png",
+    isPremium: true,
   },
   {
     id: "grok-4-fast-reasoning",
     label: "Grok 4 fast reasoning",
     provider: "grok",
     badge: "Uncensored",
+    light_theme_logo: "/light-theme-grok.png",
+    dark_theme_logo: "/dark-theme-grok.png",
+    isPremium: true,
   },
   {
     id: "grok-4-fast-non-reasoning",
     label: "Grok 4 fast non reasoning",
     provider: "grok",
     badge: "Uncensored",
+    light_theme_logo: "/light-theme-grok.png",
+    dark_theme_logo: "/dark-theme-grok.png",
+    isPremium: true,
   },
-
+  
   // --- Claude ---
   {
     id: "claude-3.5-haiku",
     label: "Claude Instant 100k",
     provider: "claude",
+    light_theme_logo: "/claude.png",
+    dark_theme_logo: "/claude.png",
+    isPremium: true,
   },
   {
     id: "claude-haiku-3",
     label: "Claude haiku 3",
     provider: "claude",
+    light_theme_logo: "/claude.png",
+    dark_theme_logo: "/claude.png",
+    isPremium: true,
   },
   // --- DeepSeek ---
   {
@@ -125,26 +189,38 @@ const AVAILABLE_MODELS = [
     label: "DeepSeek Reasoner",
     provider: "deepseek",
     badge: "Reasoning",
+    light_theme_logo: "/deepseek.png",
+    dark_theme_logo: "/deepseek.png",
+    isPremium: true,
   },
   {
     id: "deepseek-chat",
     label: "DeepSeek Chat",
     provider: "deepseek",
+    light_theme_logo: "/deepseek.png",
+    dark_theme_logo: "/deepseek.png",
+    isPremium: true,
   },
-
+  
   // --- Perplexity ---
   {
     id: "perplexity-sonar",
     label: "Perplexity Sonar",
     provider: "perplexity",
     badge: "Search",
+    light_theme_logo: "/perplexity.png",
+    dark_theme_logo: "/perplexity.png",
+    isPremium: true,
   },
-
+  
   // --- Mistral ---
   {
     id: "mistral-medium-2505",
     label: "Mistral Medium",
     provider: "mistral",
+    light_theme_logo: "/mistral.png",
+    dark_theme_logo: "/mistral.png",
+    isPremium: true,
   },
 ];
 
