@@ -30,7 +30,6 @@ const MobileSidebar: React.FC = () => {
     isOpen;
   } // FOR VERCEL FIX
   const isDark = useAppSelector((state: any) => state.theme.isDark);
-  const user = useAppSelector((state: any) => state.auth.user);
   const token = useAppSelector((state: any) => state.auth.token);
   const currentModel = useAppSelector((state: any) => state.chat.currentModel);
 
@@ -39,7 +38,7 @@ const MobileSidebar: React.FC = () => {
   const [chatToDelete, setChatToDelete] = useState<string | null>(null);
 
   // Data Fetching
-  const { chats, handleDeleteChat, refreshChats } = useChatList(user?.id);
+  const { chats, handleDeleteChat, refreshChats } = useChatList();
 
   // --- ACTIONS ---
 
@@ -229,7 +228,7 @@ const MobileSidebar: React.FC = () => {
                 No recent conversations
               </div>
             ) : (
-              chats.map((chat) => {
+              chats.map((chat : any) => {
                 const sessionId = chat.session_id || chat.id;
                 if (!sessionId) return null; // Skip invalid
 

@@ -49,7 +49,6 @@ const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isDark = useAppSelector((state: any) => state.theme.isDark);
-  const user = useAppSelector((state: any) => state.auth.user);
   const SearchinputRef = useRef<HTMLInputElement | null>(null);
 
 
@@ -77,9 +76,9 @@ const Sidebar: React.FC = () => {
   }, []);
 
   // Data Fetching
-  const { chats = [], handleDeleteChat } = useChatList(user?.id);
+  const { chats = [], handleDeleteChat } = useChatList();
   // Filter Logic
-  const filteredChats = chats.filter((c) =>
+  const filteredChats = chats.filter((c :any) =>
     (c.title || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -275,7 +274,7 @@ const Sidebar: React.FC = () => {
                         No chats found
                       </div>
                     ) : (
-                      filteredChats.map((chat) => {
+                      filteredChats.map((chat: any) => {
                         const sessionId = chat.session_id || chat.id;
                         if (!sessionId) return null;
 

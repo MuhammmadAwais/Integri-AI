@@ -57,10 +57,9 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
   const token = useAppSelector(
     (state: any) => state.auth.accessToken || state.auth.token
   );
-  const user = useAppSelector((state: any) => state.auth.user);
   const isDark = useAppSelector((state: any) => state.theme.isDark);
 
-  const { chats, handleDeleteChat } = useChatList(user?.id);
+  const { chats, handleDeleteChat } = useChatList();
 
   /* ================= RESET ================= */
   useEffect(() => {
