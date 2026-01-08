@@ -22,12 +22,12 @@ export const getBackendToken = async (
       user_id: userId,
       email: email,
       // Dynamic User Type Logic
-      // user_type: isPremium ? "premium" : "freemium",
+      user_type: isPremium ? "premium" : "freemium",
 
 
 
       // FOR DEVELOPEMENT PURPOSES ONLY
-      user_type : isPremium ?  "premium" : "premium"// ONLY FOR DEVELOPERS
+      // user_type : isPremium ?  "premium" : "premium"// ONLY FOR DEVELOPERS
     });
     return response.data;
   } catch (error: any) {
