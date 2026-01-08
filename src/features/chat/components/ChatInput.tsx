@@ -12,7 +12,7 @@ import { useAppSelector } from "../../../hooks/useRedux";
 import { cn } from "../../../lib/utils";
 import { useCloudStorage } from "../../../hooks/useCloudStorage";
 import { AnimatePresence, motion } from "framer-motion";
-import WhiteboardModal from "../../../Components/ui/WhiteboardModal";// Make sure path is correct
+import WhiteboardModal from "../../../Components/ui/WhiteboardModal"; // Make sure path is correct
 import LoginModal from "../../auth/components/LoginModal";
 
 interface ChatInputProps {
@@ -73,9 +73,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
   }, [input, features]);
 
   const handleSend = () => {
-    if (!user?.id){ 
+    if (!user?.id) {
       setShowLoginModal(true);
-      return
+      return;
     }
     if (disabled || isCloudLoading) return;
     if ((input.trim() || file) && onSend) {
@@ -98,6 +98,29 @@ const ChatInput: React.FC<ChatInputProps> = ({
       setFile(e.target.files[0]);
       setShowAttachMenu(false);
     }
+  };
+
+  // --- NEW: Paste Handler Implementation ---
+  const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const items = e.clipboardData.items;
+
+    // Iterate through clipboard items to find a file
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].kind === "file") {
+        const pastedFile = items[i].getAsFile();
+        if (pastedFile) {
+          // Check for supported types if strictly necessary,
+          // or allow generally as we do with the file input.
+          // Prevents the file name from being pasted into the text area
+          e.preventDefault();
+          setFile(pastedFile);
+          setShowAttachMenu(false);
+          return; // Only attach the first valid file found
+        }
+      }
+    }
+    // If no file is found, the event bubbles up normally
+    // and text is pasted into the textarea via default browser behavior.
   };
 
   return (
@@ -149,6 +172,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
+          onPaste={handlePaste} // Attached the paste handler here
           placeholder={features ? "Message Integri AI..." : "Ask a question..."}
           disabled={disabled || isCloudLoading}
           rows={1}
