@@ -66,7 +66,7 @@ const PlaygroundLane: React.FC<PlaygroundLaneProps> = ({
         <div className="flex items-center gap-3 relative min-w-0 flex-1">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0">
             <img
-              src={model.gpt_id ? isDark ? `/public/dark-theme-custom-gpt.png` : `/public/light-theme-custom-gpt.png` : isDark ? `/public/${model.dark_theme_logo}` : `/public/${model.light_theme_logo}`}
+              src={model.gpt_id ? isDark ? `/dark-theme-custom-gpt.png` : `/light-theme-custom-gpt.png` : isDark ? `/${model.dark_theme_logo}` : `/${model.light_theme_logo}`}
               alt={model.label}
               className="w-full h-full object-cover"
             />
