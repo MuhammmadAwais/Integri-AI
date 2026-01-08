@@ -52,7 +52,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
           title="Close"
             onClick={onClose}
             className={`
-              absolute right-4 top-4 p-1 rounded-md transition-colors
+              absolute right-4 top-4 p-1 rounded-md transition-colors hover:cursor-pointer
               ${
                 isDark
                   ? "hover:bg-[#27272a] text-gray-400"
@@ -89,7 +89,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
             <button
               onClick={() => handleNavigation("/login")}
               className={`
-                w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg font-medium transition-all
+                w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg font-medium transition-all hover:cursor-pointer
                 ${
                   isDark
                     ? "bg-white text-black hover:bg-gray-200"
@@ -104,7 +104,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
             <button
               onClick={() => handleNavigation("/signup")}
               className={`
-                w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg font-medium border transition-all
+                w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg font-medium border transition-all hover:cursor-pointer
                 ${
                   isDark
                     ? "border-[#27272a] hover:bg-[#27272a] text-white"
