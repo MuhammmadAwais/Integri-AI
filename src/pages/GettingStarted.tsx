@@ -155,7 +155,7 @@ const GettingStarted: React.FC = () => {
           >
             <Sparkles size={14} className="text-indigo-400" />
             <span className="text-xs font-medium text-zinc-300 tracking-wider uppercase">
-              Integri AI v1.0
+              Integri AI 
             </span>
           </motion.div>
 

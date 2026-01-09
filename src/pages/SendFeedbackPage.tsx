@@ -38,7 +38,7 @@ const SendFeedbackPage: React.FC = () => {
     try {
       // Simulate or Real Firestore Submission
       if (db) {
-        await addDoc(collection(db, "feedback"), {
+        await addDoc(collection(db, "UserFeedbacks"), {
           userId: user?.id || "anonymous",
           userEmail: user?.email || "anonymous",
           category,
