@@ -230,7 +230,8 @@ const GettingStarted: React.FC = () => {
                             Select Country
                           </option>
                           {COUNTRIES.map((c) => (
-                            <option key={c.code} value={c.name}>// SHIFT TO SEND COUNTRY NAME TO THE BACKEND FIREBASE
+                            <option key={c.code} value={c.name}>
+                              {/* SHIFT TO SEND COUNTRY NAME TO THE BACKEND FIREBASE */}
                               {c.name}
                             </option>
                           ))}
