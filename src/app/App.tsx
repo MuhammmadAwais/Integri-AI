@@ -42,12 +42,12 @@ import ImageGenPage from "../pages/ImageGenPage";
  * - Still protects against incomplete profiles (isNewUser).
  */
 const ProtectedRoute = () => {
-  const { user, isNewUser } = useAppSelector((state) => state.auth);
+  const { user, isNewUser } = useAppSelector((state: any) => state.auth);
 
   // --- CHANGED: REMOVED FORCED REDIRECT ---
   // If no user, we simply allow them to pass through as a Guest.
   // The specific features inside Home will now handle triggering the LoginModal.
-  
+
   /* if (!user) {
     return <Navigate to="/signup" replace />;
   } 
@@ -67,7 +67,7 @@ const ProtectedRoute = () => {
  * - If logged in: Redirects to Dashboard (prevents double login).
  */
 const PublicRoute = () => {
-  const { user, isNewUser } = useAppSelector((state) => state.auth);
+  const { user, isNewUser } = useAppSelector((state: any) => state.auth);
 
   // If logged in and setup is complete, send to Home
   if (user && !isNewUser) {
@@ -118,7 +118,7 @@ const router = createBrowserRouter([
           // Catch-all inside protected area
           { path: "*", element: <Navigate to="/" replace /> },
         ],
-      }, 
+      },
     ],
   },
 
@@ -129,6 +129,18 @@ const router = createBrowserRouter([
 // --- 3. MAIN COMPONENT ---
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
+  // Get theme state
+  const isDark = useAppSelector((state: any) => state.theme.isDark);
+
+  // --- THEME APPLICATION EFFECT ---
+  // Apply the theme class to the HTML element whenever isDark changes
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [isDark]);
 
   useEffect(() => {
     // This listener handles the "Auto Login" logic by detecting the existing session

@@ -1,10 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { User, Palette, CreditCard, Download, HelpCircle } from "lucide-react";
+import { User, CreditCard, Download, HelpCircle } from "lucide-react";
 import { cn } from "../lib/utils";
 import { useAppSelector } from "../hooks/useRedux";
 import SettingsSection from "../features/settings/components/SettingsSection";
-import AppearanceSettings from "../features/settings/components/AppearanceSettings";
 import AccountSettings from "../features/settings/components/AccountSettings";
 import SubscriptionSettings from "../features/settings/components/SubscriptionSettings";
 import DownloadSettings from "../features/settings/components/DownloadSettings";
@@ -55,14 +54,6 @@ const SettingsPage: React.FC = () => {
           initial="hidden"
           animate="visible"
         >
-          <SettingsSection
-            icon={Palette}
-            title="Appearance"
-            description="Customize how Integri AI looks on your device."
-            isDark={isDark}
-          >
-            <AppearanceSettings />
-          </SettingsSection>
 
           <SettingsSection
             icon={User}

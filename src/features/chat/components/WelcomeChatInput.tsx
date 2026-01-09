@@ -260,7 +260,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
           // Layout: Flex Column with substantial min-height for the "Big Input" look
           "w-full relative group rounded-3xl transition-all duration-300 border shadow-sm flex flex-col justify-between",
           // Height: Starts big , grows with content
-          "min-h-40",
+          "min-h-30",
           isDark
             ? "bg-[#121212] border-[#2A2B32] hover:border-gray-700"
             : "bg-gray-50 border-gray-200 hover:border-gray-300"
@@ -313,7 +313,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
             rows={1}
             placeholder={`Hey ${firstName} .......`}
             className={cn(
-              "flex-1 w-full bg-transparent outline-none text-lg px-6 py-4 placeholder:text-gray-500/80 font-medium z-20 resize-none custom-scrollbar",
+              " flex-1 w-full bg-transparent outline-none text-lg px-6 py-4 placeholder:text-gray-500/80 font-medium z-20 resize-none webkit-scrollbar ",
               // Ensure it fills the space but respects the bottom bar
               "min-h-20",
               isDark ? "text-gray-100" : "text-gray-900"
