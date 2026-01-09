@@ -31,8 +31,6 @@ interface FirestoreUserModel {
   deviceToken: string;
   profile: string;
   id: string;
-  availSubscriptions: any[];
-  subscription: any;
   savedWordsCount: number;
   tokens: number;
   remainingQuestions: number;
@@ -72,11 +70,6 @@ const generateMyCode = async (): Promise<number> => {
 };
 
 const getInitialFeatureUsed = () => ({});
-const getInitialSubscription = () => ({
-  id: "free",
-  name: "Free",
-  price: 0,
-});
 
 export const AuthService = {
   fetchUserProfile: async (
@@ -155,8 +148,6 @@ export const AuthService = {
       confirmPassword: "",
       deviceToken: "",
       profile: user.photoURL || "",
-      availSubscriptions: [],
-      subscription: getInitialSubscription(),
       savedWordsCount: 0,
       tokens: 0,
       remainingQuestions: 0,

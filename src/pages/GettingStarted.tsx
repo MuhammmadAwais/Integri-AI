@@ -7,40 +7,17 @@ import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import { completeOnboarding } from "../features/auth/slices/authSlice";
 import { AuthService } from "../features/auth/services/authService";
 import { cn } from "../lib/utils";
-
-// --- Configuration ---
-const COUNTRIES = [
-  { name: "United States", code: "US", lang: "English" },
-  { name: "Germany", code: "DE", lang: "German" },
-  { name: "United Kingdom", code: "GB", lang: "English" },
-  { name: "Canada", code: "CA", lang: "English" },
-  { name: "India", code: "IN", lang: "Hindi" },
-  { name: "Pakistan", code: "PK", lang: "Urdu" },
-  { name: "Australia", code: "AU", lang: "English" },
-  { name: "France", code: "FR", lang: "French" },
-  { name: "Spain", code: "ES", lang: "Spanish" },
-];
-
-const LANGUAGES = [
-  "English",
-  "German",
-  "Spanish",
-  "French",
-  "Urdu",
-  "Hindi",
-  "Arabic",
-  "Mandarin",
-];
+import { COUNTRIES, LANGUAGES } from "../../Constants"; 
 
 const GettingStarted: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
 
-  // State
+  // State now stores CODES (e.g., 'US', 'en')
   const [formData, setFormData] = useState({
-    country: "",
-    language: "",
+    countryCode: "",
+    languageCode: "",
   });
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,29 +32,31 @@ const GettingStarted: React.FC = () => {
   useEffect(() => {
     const detectLocation = async () => {
       try {
-        // CHANGED: Use ipwho.is instead of ipapi.co to avoid CORS errors
         const response = await fetch("https://ipwho.is/");
         const data = await response.json();
-        // Check if the API request was successful
+
         if (data && data.success) {
+          // Attempt to match by code first (more reliable), then name
           const matchedCountry =
             COUNTRIES.find((c) => c.code === data.country_code) ||
             COUNTRIES.find((c) => c.name === data.country);
 
           if (matchedCountry) {
-            setFormData({
-              country: matchedCountry.name,
-              language: matchedCountry.lang,
-            });
+            setFormData((prev) => ({
+              ...prev,
+              countryCode: matchedCountry.code,
+              // Default to English if language isn't set, or add logic to map region to language
+              languageCode: prev.languageCode || "en",
+            }));
           } else {
-            // Fallback if country not in our supported list
-            setFormData({ country: "United States", language: "English" });
+            // Fallback
+            setFormData({ countryCode: "US", languageCode: "en" });
           }
         } else {
-          setFormData({ country: "United States", language: "English" });
+          setFormData({ countryCode: "US", languageCode: "en" });
         }
       } catch (err) {
-        setFormData({ country: "United States", language: "English" });
+        setFormData({ countryCode: "US", languageCode: "en" });
       } finally {
         setIsLoadingLocation(false);
       }
@@ -116,14 +95,15 @@ const GettingStarted: React.FC = () => {
 
   // --- Handler ---
   const handleCompleteSetup = async () => {
-    if (!formData.country || !formData.language) return;
+    if (!formData.countryCode || !formData.languageCode) return;
 
     setIsSubmitting(true);
     try {
       if (user?.id) {
+        // We are sending CODES to the backend
         await AuthService.completeOnboarding(user.id, {
-          country: formData.country,
-          language: formData.language,
+          country: formData.countryCode, // Sends 'US', 'DE', etc.
+          language: formData.languageCode, // Sends 'en', 'de', etc.
           email: user.email || "",
           name: user.name || "",
         });
@@ -225,7 +205,7 @@ const GettingStarted: React.FC = () => {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {/* Country */}
+                    {/* Country Selector */}
                     <div className="space-y-2 group">
                       <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider">
                         Region
@@ -236,12 +216,12 @@ const GettingStarted: React.FC = () => {
                           size={18}
                         />
                         <select
-                        title="country"
-                          value={formData.country}
+                          title="country"
+                          value={formData.countryCode}
                           onChange={(e) =>
                             setFormData({
                               ...formData,
-                              country: e.target.value,
+                              countryCode: e.target.value,
                             })
                           }
                           className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl py-3.5 pl-11 pr-4 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all cursor-pointer hover:bg-zinc-900"
@@ -250,7 +230,7 @@ const GettingStarted: React.FC = () => {
                             Select Country
                           </option>
                           {COUNTRIES.map((c) => (
-                            <option key={c.code} value={c.name}>
+                            <option key={c.code} value={c.code}>
                               {c.name}
                             </option>
                           ))}
@@ -258,7 +238,7 @@ const GettingStarted: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Language */}
+                    {/* Language Selector */}
                     <div className="space-y-2 group">
                       <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider">
                         Language
@@ -269,12 +249,12 @@ const GettingStarted: React.FC = () => {
                           size={18}
                         />
                         <select
-                        title="language"
-                          value={formData.language}
+                          title="language"
+                          value={formData.languageCode}
                           onChange={(e) =>
                             setFormData({
                               ...formData,
-                              language: e.target.value,
+                              languageCode: e.target.value,
                             })
                           }
                           className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl py-3.5 pl-11 pr-4 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all cursor-pointer hover:bg-zinc-900"
@@ -283,8 +263,8 @@ const GettingStarted: React.FC = () => {
                             Select Language
                           </option>
                           {LANGUAGES.map((l) => (
-                            <option key={l} value={l}>
-                              {l}
+                            <option key={l.code} value={l.code}>
+                              {l.flag} {l.name}
                             </option>
                           ))}
                         </select>
