@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { AlertTriangle, X, Loader2, Trash2 } from "lucide-react";
+import { AlertTriangle, X, Loader2, Trash2, Lock, Mail } from "lucide-react";
 import { cn } from "../../../lib/utils";
 
 interface DeletionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: (email: string, password?: string) => void; // Updated signature
   isDark: boolean;
   isLoading?: boolean;
+  authProvider: string; // 'password' or 'google.com' etc.
+  currentUserEmail?: string;
 }
 
 const DeletionModal: React.FC<DeletionModalProps> = ({
@@ -18,32 +20,42 @@ const DeletionModal: React.FC<DeletionModalProps> = ({
   onConfirm,
   isDark,
   isLoading = false,
+  authProvider,
+  currentUserEmail,
 }) => {
-  const [inputValue, setInputValue] = useState("");
-  const [isMatch, setIsMatch] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  // Validation States
+  const isDeleteTyped = deleteConfirmation.toLowerCase() === "delete";
+  const isEmailValid = email.toLowerCase() === currentUserEmail?.toLowerCase();
+  // Password is required only if provider is 'password'
+  const isPasswordValid =
+    authProvider === "password" ? password.length > 0 : true;
+
+  const canSubmit =
+    isDeleteTyped && isEmailValid && isPasswordValid && !isLoading;
 
   // Reset state when modal opens/closes
   useEffect(() => {
     if (isOpen) {
-      setInputValue("");
-      setIsMatch(false);
+      setDeleteConfirmation("");
+      setEmail("");
+      setPassword("");
     }
   }, [isOpen]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    setInputValue(val);
-    setIsMatch(val.toLowerCase() === "delete");
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (isMatch && !isLoading) {
-      onConfirm();
+    if (canSubmit) {
+      onConfirm(email, password);
     }
   };
 
   if (!isOpen) return null;
+
+  const isGoogle = authProvider === "google.com";
 
   return createPortal(
     <AnimatePresence>
@@ -79,7 +91,7 @@ const DeletionModal: React.FC<DeletionModalProps> = ({
                 <h3 className="text-lg font-bold">Delete Account</h3>
               </div>
               <button
-              title="close"
+                title="close"
                 onClick={onClose}
                 disabled={isLoading}
                 className={cn(
@@ -93,81 +105,147 @@ const DeletionModal: React.FC<DeletionModalProps> = ({
               </button>
             </div>
 
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-5">
               <p
                 className={cn(
                   "text-sm leading-relaxed",
                   isDark ? "text-zinc-400" : "text-zinc-600"
                 )}
               >
-                This action is <span className="font-bold">irreversible</span>.
-                This will permanently delete your account, active subscriptions,
-                and remove all your data from our servers.
+                This action is{" "}
+                <span className="font-bold text-red-500">irreversible</span>.
+                Please verify your credentials to confirm permanent deletion.
               </p>
 
-              {/* Confirmation Input */}
-              <div className="space-y-2">
-                <label
-                  className={cn(
-                    "block text-xs font-medium uppercase tracking-wider",
-                    isDark ? "text-zinc-500" : "text-zinc-500"
-                  )}
-                >
-                  Type <span className="text-red-500">delete</span> to confirm
-                </label>
-                <input
-                  type="text"
-                  value={inputValue}
-                  onChange={handleInputChange}
-                  placeholder="delete"
-                  disabled={isLoading}
-                  className={cn(
-                    "w-full rounded-xl border px-4 py-3 text-sm font-medium outline-none transition-all",
-                    isDark
-                      ? "bg-zinc-900/50 border-zinc-800 focus:border-red-500/50 placeholder:text-zinc-700"
-                      : "bg-gray-50 border-gray-200 focus:border-red-500/50 placeholder:text-gray-400"
-                  )}
-                />
-              </div>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {/* 1. Type Delete */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium uppercase tracking-wider opacity-70">
+                    Type <span className="text-red-500 font-bold">delete</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={deleteConfirmation}
+                    onChange={(e) => setDeleteConfirmation(e.target.value)}
+                    placeholder="delete"
+                    disabled={isLoading}
+                    className={cn(
+                      "w-full rounded-xl border px-4 py-3 text-sm font-medium outline-none transition-all",
+                      isDark
+                        ? "bg-zinc-900/50 border-zinc-800 focus:border-red-500/50"
+                        : "bg-gray-50 border-gray-200 focus:border-red-500/50"
+                    )}
+                  />
+                </div>
 
-              {/* Actions */}
-              <div className="flex gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  disabled={isLoading}
-                  className={cn(
-                    "flex-1 rounded-xl px-4 py-3 text-sm font-semibold transition-colors hover:cursor-pointer",
-                    isDark
-                      ? "bg-zinc-800 hover:bg-zinc-700 text-white"
-                      : "bg-gray-100 hover:bg-gray-200 text-gray-900"
-                  )}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSubmit}
-                  disabled={!isMatch || isLoading}
-                  className={cn(
-                    "flex-1 flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all shadow-lg hover:cursor-pointer",
-                    !isMatch || isLoading
-                      ? "opacity-50 cursor-not-allowed bg-red-600 text-white"
-                      : "bg-red-600 hover:bg-red-700 text-white shadow-red-500/20"
-                  )}
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="animate-spin" size={16} />
-                      Deleting...
-                    </>
-                  ) : (
-                    <>
-                      <Trash2 size={16} />
-                      Delete Forever
-                    </>
-                  )}
-                </button>
-              </div>
+                {/* 2. Confirm Email */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium uppercase tracking-wider opacity-70">
+                    Confirm Email Address
+                  </label>
+                  <div className="relative">
+                    <Mail
+                      className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50"
+                      size={16}
+                    />
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder={"Input your email here"}
+                      disabled={isLoading}
+                      className={cn(
+                        "w-full rounded-xl border pl-10 pr-4 py-3 text-sm font-medium outline-none transition-all",
+                        isDark
+                          ? "bg-zinc-900/50 border-zinc-800 focus:border-blue-500/50"
+                          : "bg-gray-50 border-gray-200 focus:border-blue-500/50"
+                      )}
+                    />
+                  </div>
+                </div>
+
+                {/* 3. Confirm Password (Only if using Password Auth) */}
+                {!isGoogle && (
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium uppercase tracking-wider opacity-70">
+                      Password
+                    </label>
+                    <div className="relative">
+                      <Lock
+                        className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50"
+                        size={16}
+                      />
+                      <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Enter your password"
+                        disabled={isLoading}
+                        className={cn(
+                          "w-full rounded-xl border pl-10 pr-4 py-3 text-sm font-medium outline-none transition-all",
+                          isDark
+                            ? "bg-zinc-900/50 border-zinc-800 focus:border-blue-500/50"
+                            : "bg-gray-50 border-gray-200 focus:border-blue-500/50"
+                        )}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Google Notice */}
+                {isGoogle && (
+                  <div
+                    className={cn(
+                      "p-3 rounded-lg text-xs border",
+                      isDark
+                        ? "bg-blue-900/10 border-blue-900/30 text-blue-200"
+                        : "bg-blue-50 border-blue-100 text-blue-700"
+                    )}
+                  >
+                    For security, you will be asked to sign in with Google again
+                    after clicking Delete.
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    disabled={isLoading}
+                    className={cn(
+                      "flex-1 rounded-xl px-4 py-3 text-sm font-semibold transition-colors hover:cursor-pointer",
+                      isDark
+                        ? "bg-zinc-800 hover:bg-zinc-700 text-white"
+                        : "bg-gray-100 hover:bg-gray-200 text-gray-900"
+                    )}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={!canSubmit || isLoading}
+                    className={cn(
+                      "flex-1 flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all shadow-lg ",
+                      !canSubmit || isLoading
+                        ? "opacity-50 cursor-not-allowed bg-red-600 text-white"
+                        : "bg-red-600 hover:bg-red-700 text-white shadow-red-500/20 hover:cursor-pointer"
+                    )}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="animate-spin" size={16} />
+                        Verifying...
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 size={16} />
+                        Delete Forever
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
             </div>
           </motion.div>
         </div>

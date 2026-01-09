@@ -1,6 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Loader2, Camera, User, Trash2, AlertTriangle } from "lucide-react";
-import { updateProfile, deleteUser } from "firebase/auth";
+import {
+  updateProfile,
+  deleteUser,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  GoogleAuthProvider,
+  reauthenticateWithPopup,
+} from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { toast } from "react-toastify";
@@ -12,7 +19,8 @@ import Button from "../../../Components/ui/Button";
 import { COUNTRIES, LANGUAGES } from "../../../../Constants";
 import { logoutUser } from "../../auth/thunks/authThunk";
 import { useNavigate } from "react-router-dom";
-import DeletionModal from "./DeletionModal"; // Import the new modal
+import DeletionModal from "./DeletionModal";
+import ErrorModal from "../../../Components/ui/ErrorModal"; // Import ErrorModal
 
 const AccountSettings: React.FC = () => {
   const { isDark } = useAppSelector((state: any) => state.theme);
@@ -28,6 +36,16 @@ const AccountSettings: React.FC = () => {
   // Modal State
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Error Modal State
+  const [errorModal, setErrorModal] = useState<{
+    open: boolean;
+    title?: string;
+    message: string;
+  }>({
+    open: false,
+    message: "",
+  });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -139,29 +157,97 @@ const AccountSettings: React.FC = () => {
     }
   };
 
-  // Logic executed when user types 'delete' and confirms in the modal
-  const handleConfirmDelete = async () => {
+  // --- DELETE ACCOUNT LOGIC ---
+  const getAuthProviderId = () => {
     const currentUser = auth.currentUser;
-    if (currentUser) {
-      setIsDeleting(true);
-      try {
-        await deleteUser(currentUser);
-        dispatch(logoutUser());
-        toast.success("Account deleted successfully.");
-        navigate("/login");
-      } catch (error: any) {
-        console.error("Error deleting account:", error);
-        setIsDeleteModalOpen(false); // Close modal on error to show toast
-        if (error.code === "auth/requires-recent-login") {
-          toast.error(
-            "Security requires you to re-login before deleting your account."
-          );
-        } else {
-          toast.error("Failed to delete account. Please try again.");
+    if (!currentUser) return "password";
+    const isGoogle = currentUser.providerData.some(
+      (p) => p.providerId === "google.com"
+    );
+    return isGoogle ? "google.com" : "password";
+  };
+
+  const handleConfirmDelete = async (email: string, password?: string) => {
+    const currentUser = auth.currentUser;
+    if (!currentUser || !currentUser.email) return;
+
+    if (email.toLowerCase() !== currentUser.email.toLowerCase()) {
+      setErrorModal({
+        open: true,
+        title: "Verification Failed",
+        message: "Email does not match our records.",
+      });
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      const providerId = getAuthProviderId();
+
+      // --- RE-AUTHENTICATION ---
+      if (providerId === "google.com") {
+        const provider = new GoogleAuthProvider();
+        await reauthenticateWithPopup(currentUser, provider);
+      } else {
+        if (!password) {
+          setErrorModal({
+            open: true,
+            title: "Missing Credentials",
+            message: "Password is required to delete account.",
+          });
+          setIsDeleting(false);
+          return;
         }
-      } finally {
-        setIsDeleting(false);
+        const credential = EmailAuthProvider.credential(
+          currentUser.email,
+          password
+        );
+        await reauthenticateWithCredential(currentUser, credential);
       }
+
+      // --- DELETION ---
+      await deleteUser(currentUser);
+      dispatch(logoutUser());
+
+      // Navigate immediately
+      navigate("/login");
+      toast.success("Account deleted successfully.");
+    } catch (error: any) {
+      console.error("Error deleting account:", error);
+
+      // Close deletion modal so we can show error modal
+      setIsDeleteModalOpen(false);
+
+      if (error.code === "auth/wrong-password") {
+        setErrorModal({
+          open: true,
+          title: "Authentication Failed",
+          message: "The password you entered is incorrect. Please try again.",
+        });
+      } else if (error.code === "auth/popup-closed-by-user") {
+        setErrorModal({
+          open: true,
+          title: "Action Cancelled",
+          message: "Google verification was cancelled.",
+        });
+      } else if (error.code === "auth/requires-recent-login") {
+        setErrorModal({
+          open: true,
+          title: "Security Alert",
+          message:
+            "For your security, please log out and log back in before deleting your account.",
+        });
+      } else {
+        setErrorModal({
+          open: true,
+          title: "Deletion Failed",
+          message:
+            error.message ||
+            "An unexpected error occurred. Please try again later.",
+        });
+      }
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -173,6 +259,15 @@ const AccountSettings: React.FC = () => {
         onConfirm={handleConfirmDelete}
         isDark={isDark}
         isLoading={isDeleting}
+        authProvider={getAuthProviderId()}
+        currentUserEmail={auth.currentUser?.email || ""}
+      />
+
+      <ErrorModal
+        isOpen={errorModal.open}
+        onClose={() => setErrorModal({ ...errorModal, open: false })}
+        title={errorModal.title}
+        message={errorModal.message}
       />
 
       <form onSubmit={handleUpdateProfile} className="space-y-8">
