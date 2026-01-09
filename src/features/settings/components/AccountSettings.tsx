@@ -250,7 +250,7 @@ const AccountSettings: React.FC = () => {
             <option value="" disabled>
               Select your country
             </option>
-            {COUNTRIES.map((c) => (
+            {COUNTRIES.map((c:any) => (
               <option key={c} value={c}>
                 {c}
               </option>
