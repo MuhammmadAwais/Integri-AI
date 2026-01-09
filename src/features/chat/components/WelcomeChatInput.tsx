@@ -3,7 +3,9 @@ import React, {
   useRef,
   useEffect,
   forwardRef,
+  useLayoutEffect,
 } from "react";
+import { createPortal } from "react-dom";
 import {
   Paperclip,
   ArrowUp,
@@ -44,8 +46,17 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
     const [showWhiteboard, setShowWhiteboard] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
 
+    // State for dynamic menu positioning
+    const [menuPosition, setMenuPosition] = useState<{
+      top: number;
+      left: number;
+    } | null>(null);
+
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // We need refs for both the button (trigger) and the menu (content) for click-outside logic
+    const buttonRef = useRef<HTMLButtonElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
 
     // --- 1. PERSISTENCE & RECOVERY (Guest Buffer) ---
@@ -109,16 +120,15 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
         // Reset to auto to calculate new scrollHeight
         textareaRef.current.style.height = "auto";
         const scrollHeight = textareaRef.current.scrollHeight;
-        
+
         // Ensure a decent minimum height for the 'big' look is respected logically
-        // We set CSS min-height, but here we cap the max expansion
-        const maxHeight = 300; 
-        
+        const maxHeight = 300;
+
         textareaRef.current.style.height = `${Math.min(
           scrollHeight,
           maxHeight
         )}px`;
-        
+
         textareaRef.current.style.overflowY =
           scrollHeight > maxHeight ? "auto" : "hidden";
       }
@@ -134,22 +144,71 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
       setShowAttachMenu(false);
     });
 
-    // --- 4. CLICK OUTSIDE MENU ---
+    // --- 4. POSITIONING LOGIC FOR PORTAL ---
+    const updateMenuPosition = () => {
+      if (buttonRef.current && showAttachMenu) {
+        const rect = buttonRef.current.getBoundingClientRect();
+        // Calculate position: align left with button, sit above button
+        // 10px gap is roughly margin-bottom-2 (8px) + slop
+        setMenuPosition({
+          top: rect.top - 10,
+          left: rect.left,
+        });
+      }
+    };
+
+    // Recalculate position when menu opens
+    useLayoutEffect(() => {
+      if (showAttachMenu) {
+        updateMenuPosition();
+      }
+    }, [showAttachMenu]);
+
+    // Close on resize to prevent floating menu in wrong place
+    useEffect(() => {
+      const handleResize = () => {
+        if (showAttachMenu) setShowAttachMenu(false);
+      };
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }, [showAttachMenu]);
+
+    // Update scroll listener to reposition if user scrolls while menu is open
+    useEffect(() => {
+      const handleScroll = () => {
+        if (showAttachMenu) updateMenuPosition();
+      };
+      window.addEventListener("scroll", handleScroll, true);
+      return () => window.removeEventListener("scroll", handleScroll, true);
+    }, [showAttachMenu]);
+
+    // --- 5. CLICK OUTSIDE MENU (Updated for Portal) ---
     useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
+        // Check if click is inside the trigger button
         if (
-          menuRef.current &&
-          !menuRef.current.contains(event.target as Node)
+          buttonRef.current &&
+          buttonRef.current.contains(event.target as Node)
         ) {
-          setShowAttachMenu(false);
+          return;
         }
+        // Check if click is inside the portal menu
+        if (menuRef.current && menuRef.current.contains(event.target as Node)) {
+          return;
+        }
+
+        // If neither, close the menu
+        setShowAttachMenu(false);
       };
-      document.addEventListener("mousedown", handleClickOutside);
+
+      if (showAttachMenu) {
+        document.addEventListener("mousedown", handleClickOutside);
+      }
       return () =>
         document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
+    }, [showAttachMenu]);
 
-    // --- 5. HANDLERS ---
+    // --- 6. HANDLERS ---
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.files && e.target.files[0]) {
         setSelectedFile(e.target.files[0]);
@@ -199,9 +258,9 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
         ref={ref}
         className={cn(
           // Layout: Flex Column with substantial min-height for the "Big Input" look
-          "w-full relative group rounded-3xl transition-all duration-300 border shadow-sm flex flex-col justify-between overflow-auto",
+          "w-full relative group rounded-3xl transition-all duration-300 border shadow-sm flex flex-col justify-between",
           // Height: Starts big (approx 160px), grows with content
-          "min-h-[120px]",
+          "min-h-40",
           isDark
             ? "bg-[#121212] border-[#2A2B32] hover:border-gray-700"
             : "bg-gray-50 border-gray-200 hover:border-gray-300"
@@ -254,7 +313,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
             rows={1}
             placeholder={`Hey ${firstName} .......`}
             className={cn(
-              "flex-1 w-full bg-transparent outline-none text-lg px-6 py-4 placeholder:text-gray-500/80 font-medium z-20 resize-none webkit-scrollbar",
+              "flex-1 w-full bg-transparent outline-none text-lg px-4 py-4 placeholder:text-gray-500/80 font-medium z-20 resize-none custom-scrollbar",
               // Ensure it fills the space but respects the bottom bar
               "min-h-20",
               isDark ? "text-gray-100" : "text-gray-900"
@@ -264,8 +323,8 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
 
         {/* --- BOTTOM SECTION: Fixed Controls --- */}
         <div className="flex items-center justify-between w-full px-3 pb-3 pt-2">
-          {/* LEFT: Attachment Menu */}
-          <div className="relative" ref={menuRef}>
+          {/* LEFT: Attachment Menu Trigger */}
+          <div className="relative">
             <input
               title="file"
               type="file"
@@ -275,6 +334,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
               accept=".jpg, .jpeg, .png, .gif, .pdf"
             />
             <button
+              ref={buttonRef} // Reference for positioning logic
               title="Attach File"
               onClick={() => setShowAttachMenu(!showAttachMenu)}
               className={cn(
@@ -292,158 +352,169 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
               <Paperclip size={20} strokeWidth={2.5} />
             </button>
 
-            {/* Popup Menu */}
-            <AnimatePresence>
-              {showAttachMenu && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  transition={{ duration: 0.1 }}
-                  className={cn(
-                    "absolute bottom-full left-0 mb-2 w-56 p-1.5 rounded-xl border shadow-xl backdrop-blur-md z-50 overflow-hidden",
-                    isDark
-                      ? "bg-[#18181b]/95 border-gray-700"
-                      : "bg-white/95 border-gray-200"
-                  )}
-                >
-                  <button
-                    onClick={() => {
-                      fileInputRef.current?.click();
-                      setShowAttachMenu(false);
+            {/* PORTAL: Renders Menu into document.body */}
+            {createPortal(
+              <AnimatePresence>
+                {showAttachMenu && menuPosition && (
+                  <motion.div
+                    ref={menuRef} // Reference for click-outside logic
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.1 }}
+                    style={{
+                      position: "fixed",
+                      top: menuPosition.top,
+                      left: menuPosition.left,
+                      // Adjust translateY to render *above* the calculated top (which is button top)
+                      transform: "translateY(-100%)",
                     }}
                     className={cn(
-                      "w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
+                      "w-56 p-1.5 rounded-xl border shadow-xl backdrop-blur-md z-9999 overflow-hidden",
                       isDark
-                        ? "hover:bg-white/10 text-gray-200"
-                        : "hover:bg-gray-100 text-gray-700"
+                        ? "bg-[#18181b]/95 border-gray-700"
+                        : "bg-white/95 border-gray-200"
                     )}
                   >
-                    <HardDrive size={18} className="text-emerald-500" />
-                    Local Computer
-                  </button>
-
-                  <div
-                    className={cn(
-                      "h-px w-full my-1",
-                      isDark ? "bg-gray-700" : "bg-gray-100"
-                    )}
-                  />
-
-                  <button
-                    onClick={handleGoogleDrivePick}
-                    disabled={isCloudLoading}
-                    className={cn(
-                      "w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
-                      isDark
-                        ? "hover:bg-white/10 text-gray-200"
-                        : "hover:bg-gray-100 text-gray-700"
-                    )}
-                  >
-                    <svg
-                      className="w-4 h-4 shrink-0"
-                      viewBox="0 0 87.3 78"
-                      xmlns="http://www.w3.org/2000/svg"
+                    <button
+                      onClick={() => {
+                        fileInputRef.current?.click();
+                        setShowAttachMenu(false);
+                      }}
+                      className={cn(
+                        "w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
+                        isDark
+                          ? "hover:bg-white/10 text-gray-200"
+                          : "hover:bg-gray-100 text-gray-700"
+                      )}
                     >
-                      <path
-                        d="m6.6 66.85 3.85 6.65c.8 1.4 1.9 2.5 3.2 3.2l2.5 1.3 65-37.5-3.85-6.65c-.8-1.4-1.9-2.5-3.2-3.2l-2.4-1.3z"
-                        fill="#0066da"
-                      />
-                      <path
-                        d="m43.65 25-25.8 44.7 9.55 16.55 25.8-44.7c-1.65-2.85-4.75-4.9-8.25-4.9s-6.6 2.05-8.25 4.9z"
-                        fill="#00ac47"
-                      />
-                      <path
-                        d="m73.55 76.8c4.4 7.6 13.75 7.6 18.15 0l-3.85-6.65-3.2-5.6-35-60.6c-1.65-2.85-2.05-6.45-1.15-9.65l-2.5 1.3c-4.4 2.55-7.25 7.55-7.25 12.65z"
-                        fill="#ea4335"
-                      />
-                      <path
-                        d="m43.65 25c1.65-2.85 4.75-4.9 8.25-4.9l-.05.05h33.85c5.1 0 10.1 2.85 12.65 7.25l2.5 1.3c2.55-4.45 2.55-9.95 0-14.4l-2.5-1.3c-2.55-4.4-7.55-7.25-12.65-7.25h-33.85c-3.5 0-6.6 2.05-8.25 4.9z"
-                        fill="#00832d"
-                      />
-                    </svg>
-                    Google Drive
-                  </button>
-                  <button
-                    onClick={handleOneDrivePick}
-                    disabled={isCloudLoading}
-                    className={cn(
-                      "w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
-                      isDark
-                        ? "hover:bg-white/10 text-gray-200"
-                        : "hover:bg-gray-100 text-gray-700"
-                    )}
-                  >
-                    <svg
-                      className="w-4 h-4 shrink-0"
-                      viewBox="0 0 64 64"
-                      xmlns="http://www.w3.org/2000/svg"
+                      <HardDrive size={18} className="text-emerald-500" />
+                      Local Computer
+                    </button>
+
+                    <div
+                      className={cn(
+                        "h-px w-full my-1",
+                        isDark ? "bg-gray-700" : "bg-gray-100"
+                      )}
+                    />
+
+                    <button
+                      onClick={handleGoogleDrivePick}
+                      disabled={isCloudLoading}
+                      className={cn(
+                        "w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
+                        isDark
+                          ? "hover:bg-white/10 text-gray-200"
+                          : "hover:bg-gray-100 text-gray-700"
+                      )}
                     >
-                      <path
-                        d="m39.243 45.426 12.839 7.749 6.294-10.587-12.516-7.854z"
-                        fill="#0072c6"
-                      />
-                      <path
-                        d="m18.145 23.335-5.328 3.013-4.253 10.641 9.47 5.766 8.397-13.655z"
-                        fill="#0072c6"
-                      />
-                      <path
-                        d="m27.502 18.04-10.428 5.86-1.129 1.909 9.873 6.007 10.081-16.791z"
-                        fill="#0072c6"
-                      />
-                      <path
-                        d="m18.256 42.662-8.675-5.334-1.956 2.032 10.825 6.467z"
-                        fill="#004578"
-                      />
-                      <path
-                        d="m51.916 42.684 6.46-10.697-3.23-1.935-12.28 7.355 1.258 2.032z"
-                        fill="#004578"
-                      />
-                      <path
-                        d="m36.726 14.156 2.56-4.173-10.669-6.419-2.56 4.173z"
-                        fill="#004578"
-                      />
-                      <path
-                        d="m28.632 24.322 13.033 7.854 12.351-20.241-12.984-7.806z"
-                        fill="#00bcf2"
-                      />
-                      <path
-                        d="m39.292 11.935 14.721 24.793 6.697-3.951-14.722-24.793z"
-                        fill="#00bcf2"
-                      />
-                      <path
-                        d="m26.695 31.821-8.397 13.655 20.945 12.96 8.29-13.881z"
-                        fill="#00bcf2"
-                      />
-                    </svg>
-                    OneDrive
-                  </button>
+                      <svg
+                        className="w-4 h-4 shrink-0"
+                        viewBox="0 0 87.3 78"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="m6.6 66.85 3.85 6.65c.8 1.4 1.9 2.5 3.2 3.2l2.5 1.3 65-37.5-3.85-6.65c-.8-1.4-1.9-2.5-3.2-3.2l-2.4-1.3z"
+                          fill="#0066da"
+                        />
+                        <path
+                          d="m43.65 25-25.8 44.7 9.55 16.55 25.8-44.7c-1.65-2.85-4.75-4.9-8.25-4.9s-6.6 2.05-8.25 4.9z"
+                          fill="#00ac47"
+                        />
+                        <path
+                          d="m73.55 76.8c4.4 7.6 13.75 7.6 18.15 0l-3.85-6.65-3.2-5.6-35-60.6c-1.65-2.85-2.05-6.45-1.15-9.65l-2.5 1.3c-4.4 2.55-7.25 7.55-7.25 12.65z"
+                          fill="#ea4335"
+                        />
+                        <path
+                          d="m43.65 25c1.65-2.85 4.75-4.9 8.25-4.9l-.05.05h33.85c5.1 0 10.1 2.85 12.65 7.25l2.5 1.3c2.55-4.45 2.55-9.95 0-14.4l-2.5-1.3c-2.55-4.4-7.55-7.25-12.65-7.25h-33.85c-3.5 0-6.6 2.05-8.25 4.9z"
+                          fill="#00832d"
+                        />
+                      </svg>
+                      Google Drive
+                    </button>
+                    <button
+                      onClick={handleOneDrivePick}
+                      disabled={isCloudLoading}
+                      className={cn(
+                        "w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
+                        isDark
+                          ? "hover:bg-white/10 text-gray-200"
+                          : "hover:bg-gray-100 text-gray-700"
+                      )}
+                    >
+                      <svg
+                        className="w-4 h-4 shrink-0"
+                        viewBox="0 0 64 64"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="m39.243 45.426 12.839 7.749 6.294-10.587-12.516-7.854z"
+                          fill="#0072c6"
+                        />
+                        <path
+                          d="m18.145 23.335-5.328 3.013-4.253 10.641 9.47 5.766 8.397-13.655z"
+                          fill="#0072c6"
+                        />
+                        <path
+                          d="m27.502 18.04-10.428 5.86-1.129 1.909 9.873 6.007 10.081-16.791z"
+                          fill="#0072c6"
+                        />
+                        <path
+                          d="m18.256 42.662-8.675-5.334-1.956 2.032 10.825 6.467z"
+                          fill="#004578"
+                        />
+                        <path
+                          d="m51.916 42.684 6.46-10.697-3.23-1.935-12.28 7.355 1.258 2.032z"
+                          fill="#004578"
+                        />
+                        <path
+                          d="m36.726 14.156 2.56-4.173-10.669-6.419-2.56 4.173z"
+                          fill="#004578"
+                        />
+                        <path
+                          d="m28.632 24.322 13.033 7.854 12.351-20.241-12.984-7.806z"
+                          fill="#00bcf2"
+                        />
+                        <path
+                          d="m39.292 11.935 14.721 24.793 6.697-3.951-14.722-24.793z"
+                          fill="#00bcf2"
+                        />
+                        <path
+                          d="m26.695 31.821-8.397 13.655 20.945 12.96 8.29-13.881z"
+                          fill="#00bcf2"
+                        />
+                      </svg>
+                      OneDrive
+                    </button>
 
-                  <div
-                    className={cn(
-                      "h-px w-full my-1",
-                      isDark ? "bg-gray-700" : "bg-gray-100"
-                    )}
-                  />
+                    <div
+                      className={cn(
+                        "h-px w-full my-1",
+                        isDark ? "bg-gray-700" : "bg-gray-100"
+                      )}
+                    />
 
-                  <button
-                    onClick={() => {
-                      setShowWhiteboard(true);
-                      setShowAttachMenu(false);
-                    }}
-                    className={cn(
-                      "w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
-                      isDark
-                        ? "hover:bg-white/10 text-gray-200"
-                        : "hover:bg-gray-100 text-gray-700"
-                    )}
-                  >
-                    <PenTool size={18} className="text-purple-500" />
-                    Draw Sketch
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                    <button
+                      onClick={() => {
+                        setShowWhiteboard(true);
+                        setShowAttachMenu(false);
+                      }}
+                      className={cn(
+                        "w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
+                        isDark
+                          ? "hover:bg-white/10 text-gray-200"
+                          : "hover:bg-gray-100 text-gray-700"
+                      )}
+                    >
+                      <PenTool size={18} className="text-purple-500" />
+                      Draw Sketch
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>,
+              document.body
+            )}
           </div>
 
           {/* RIGHT: Send / Voice Button */}
