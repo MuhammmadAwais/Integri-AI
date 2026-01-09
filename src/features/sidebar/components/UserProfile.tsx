@@ -83,7 +83,7 @@ const handleDivClick = (e: React.MouseEvent) => {
   };
   useEffect(() => {
       if (user) {
-        setProfileImage(user.avatar || null);
+        setProfileImage(user.profile || null);
       }
     }, [user]);
   // Close when clicking outside

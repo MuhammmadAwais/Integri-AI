@@ -50,7 +50,7 @@ export interface UserData {
   id: string;
   email: string | null;
   name: string | null;
-  avatar: string | null;
+  profile: string | null;
   isPremium: boolean;
   planId: string;
   country: string | null;
@@ -96,7 +96,7 @@ export const AuthService = {
         id: firebaseUser.uid,
         email: firebaseUser.email,
         name: data.userName || firebaseUser.displayName,
-        avatar: data.profile || firebaseUser.photoURL,
+        profile: data.profile || firebaseUser.photoURL,
         country: data.country || null,
         myCode: data.myCode,
         // FOR DEVELOPEMENT PURPOSES ONLY ( UNCOMMENT THE BELOW IN PRODUCTION )
@@ -111,7 +111,7 @@ export const AuthService = {
         id: firebaseUser.uid,
         email: firebaseUser.email,
         name: firebaseUser.displayName,
-        avatar: firebaseUser.photoURL,
+        profile: firebaseUser.photoURL,
         isPremium,
         planId: "freemium",
         country: null,
@@ -169,7 +169,7 @@ export const AuthService = {
       id: user.uid,
       email: user.email,
       name: name,
-      avatar: user.photoURL,
+      profile: user.photoURL,
       isPremium: false,
       planId: "freemium",
       country: null,
