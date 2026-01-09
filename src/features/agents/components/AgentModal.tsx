@@ -3,6 +3,8 @@ import { X, Loader2, Bot, Plus } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { AgentService } from "../../../api/backendApi";
 import AVAILABLE_MODELS from "../../../../Constants";
+import { useAppSelector } from "../../../hooks/useRedux";
+import { ModelSelector } from "./ModelSelector"; // Check this path
 
 interface AgentModalProps {
   isOpen: boolean;
@@ -23,6 +25,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const user = useAppSelector((state) => state.auth.user);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -136,10 +139,10 @@ const AgentModal: React.FC<AgentModalProps> = ({
             </h2>
           </div>
           <button
-          title="button"
+            title="button"
             onClick={onClose}
             className={cn(
-              "p-1 hover:rotate-90 transition-transform",
+              "p-1 hover:rotate-90 transition-transform hover:cursor-pointer",
               isDark ? "text-white" : "text-black"
             )}
           >
@@ -169,22 +172,20 @@ const AgentModal: React.FC<AgentModalProps> = ({
             />
           </div>
 
-          {/* Model Select */}
+          {/* --- NEW: Custom Model Selector --- */}
           <div>
-            <select
-              title="select"
-              value={formData.model}
-              onChange={(e) =>
-                setFormData({ ...formData, model: e.target.value })
+            <ModelSelector
+              models={AVAILABLE_MODELS.map((m) => ({
+                ...m,
+                name: m.label, // Mapping 'label' to 'name' for the component
+              }))}
+              selectedModelId={formData.model}
+              onChange={(newModelId) =>
+                setFormData({ ...formData, model: newModelId })
               }
-              className={inputClass}
-            >
-              {AVAILABLE_MODELS.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.label.toUpperCase()}
-                </option>
-              ))}
-            </select>
+              userIsPremium={user?.isPremium }
+              disabled={isSubmitting}
+            />
           </div>
 
           {/* Instructions */}
@@ -209,7 +210,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
                 className={inputClass}
               />
               <button
-              title="button"
+                title="button"
                 type="button"
                 onClick={() => {
                   if (!conversationStarter.trim()) return;
@@ -220,7 +221,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
                   setConversationStarter("");
                 }}
                 className={cn(
-                  "px-4 border transition-colors",
+                  "px-4 border transition-colors hover:cursor-pointer",
                   isDark
                     ? "border-zinc-700 hover:bg-white hover:text-black"
                     : "border-zinc-300 hover:bg-black hover:text-white"
@@ -249,7 +250,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
                           prev.filter((_, i) => i !== index)
                         )
                       }
-                      className="hover:text-red-500"
+                      className="hover:text-red-500 hover:cursor-pointer"
                     >
                       ×
                     </button>
@@ -271,7 +272,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
               onClick={onClose}
               disabled={isSubmitting}
               className={cn(
-                "px-6 py-3 text-sm font-bold uppercase tracking-wider transition-colors",
+                "px-6 py-3 text-sm font-bold uppercase tracking-wider transition-colors hover:cursor-pointer",
                 isDark
                   ? "text-zinc-500 hover:text-white"
                   : "text-zinc-500 hover:text-black"
@@ -283,7 +284,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
               type="submit"
               disabled={isSubmitting}
               className={cn(
-                "px-8 py-3 text-sm font-bold uppercase tracking-widest transition-all",
+                "px-8 py-3 text-sm font-bold uppercase tracking-widest transition-all hover:cursor-pointer",
                 isDark
                   ? "bg-white text-black hover:bg-zinc-200"
                   : "bg-black text-white hover:bg-zinc-800"
