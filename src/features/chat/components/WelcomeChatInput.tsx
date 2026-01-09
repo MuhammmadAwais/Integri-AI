@@ -256,7 +256,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
             className={cn(
               "flex-1 w-full bg-transparent outline-none text-lg px-6 py-4 placeholder:text-gray-500/80 font-medium z-20 resize-none webkit-scrollbar",
               // Ensure it fills the space but respects the bottom bar
-              "min-h-[80px]",
+              "min-h-20",
               isDark ? "text-gray-100" : "text-gray-900"
             )}
           />
