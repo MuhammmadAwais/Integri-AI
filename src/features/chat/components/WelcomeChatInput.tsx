@@ -16,12 +16,19 @@ import {
   HardDrive,
   PenTool,
 } from "lucide-react";
-import { cn } from "../../../lib/utils"; // Adjust path as needed
-import { useCloudStorage } from "../../../hooks/useCloudStorage"; // Adjust path
+import { cn } from "../../../lib/utils"; 
+import { useCloudStorage } from "../../../hooks/useCloudStorage"; 
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import WhiteboardModal from "../../../Components/ui/WhiteboardModal"; // Adjust path
-import LoginModal from "../../auth/components/LoginModal"; // Adjust path
+import WhiteboardModal from "../../../Components/ui/WhiteboardModal";
+import LoginModal from "../../auth/components/LoginModal";
+
+interface WelcomeChatInputProps {
+  onStartChat: (text: string, file: File | null) => void;
+  user: any;
+  isDark: boolean;
+  isLoading?: boolean;
+}
 
 // Define the shape of our saved draft
 interface SavedDraft {
@@ -29,13 +36,6 @@ interface SavedDraft {
   fileBase64?: string | null;
   fileName?: string;
   fileType?: string;
-}
-
-interface WelcomeChatInputProps {
-  onStartChat: (text: string, file: File | null) => void;
-  user: any;
-  isDark: boolean;
-  isLoading?: boolean;
 }
 
 const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
@@ -54,21 +54,17 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-
-    // We need refs for both the button (trigger) and the menu (content) for click-outside logic
     const buttonRef = useRef<HTMLButtonElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
 
     // --- 1. PERSISTENCE & RECOVERY (Guest Buffer) ---
     useEffect(() => {
-      // Recover draft on mount
       const savedDraft = localStorage.getItem("integri_guest_draft");
       if (savedDraft) {
         try {
           const parsed: SavedDraft = JSON.parse(savedDraft);
           if (parsed.text) setInputValue(parsed.text);
 
-          // Attempt to reconstruct file from base64 if it exists
           if (parsed.fileBase64 && parsed.fileName && parsed.fileType) {
             fetch(parsed.fileBase64)
               .then((res) => res.blob())
@@ -79,7 +75,6 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
                 setSelectedFile(recoveredFile);
               });
           }
-          // Clear immediately to prevent stale state on next legitimate reload
           localStorage.removeItem("integri_guest_draft");
         } catch (e) {
           console.error("Failed to restore draft", e);
@@ -89,8 +84,6 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
 
     const saveDraftAndLogin = async () => {
       let fileBase64: string | null = null;
-
-      // If file exists and is small enough (< 3MB), try to save it
       if (selectedFile && selectedFile.size < 3 * 1024 * 1024) {
         try {
           fileBase64 = await new Promise((resolve) => {
@@ -114,23 +107,33 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
       setShowLoginModal(true);
     };
 
-    // --- 2. DYNAMIC HEIGHT LOGIC (Refined) ---
+    // --- 2. DYNAMIC HEIGHT LOGIC (Gemini Style) ---
     useEffect(() => {
-      if (textareaRef.current) {
-        // Reset to auto to calculate new scrollHeight
-        textareaRef.current.style.height = "auto";
-        const scrollHeight = textareaRef.current.scrollHeight;
+      const textarea = textareaRef.current;
+      if (textarea) {
+        // We reset height to 'auto' to correctly calculate scrollHeight if text is deleted
+        textarea.style.height = "auto";
 
-        // Ensure a decent minimum height for the 'big' look is respected logically
-        const maxHeight = 300;
+        const scrollHeight = textarea.scrollHeight;
 
-        textareaRef.current.style.height = `${Math.min(
-          scrollHeight,
-          maxHeight
-        )}px`;
+        // Config: Start big (60px internal), Cap at ~8 lines (200px)
+        const MIN_HEIGHT = 60;
+        const MAX_HEIGHT = 200;
 
-        textareaRef.current.style.overflowY =
-          scrollHeight > maxHeight ? "auto" : "hidden";
+        // Calculate the target height: Grow freely between MIN and MAX
+        const targetHeight = Math.min(
+          Math.max(scrollHeight, MIN_HEIGHT),
+          MAX_HEIGHT
+        );
+
+        textarea.style.height = `${targetHeight}px`;
+
+        // Only show scrollbar if we have hit the MAX cap
+        if (scrollHeight > MAX_HEIGHT) {
+          textarea.style.overflowY = "auto";
+        } else {
+          textarea.style.overflowY = "hidden";
+        }
       }
     }, [inputValue]);
 
@@ -148,8 +151,6 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
     const updateMenuPosition = () => {
       if (buttonRef.current && showAttachMenu) {
         const rect = buttonRef.current.getBoundingClientRect();
-        // Calculate position: align left with button, sit above button
-        // 10px gap is roughly margin-bottom-2 (8px) + slop
         setMenuPosition({
           top: rect.top - 10,
           left: rect.left,
@@ -157,14 +158,10 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
       }
     };
 
-    // Recalculate position when menu opens
     useLayoutEffect(() => {
-      if (showAttachMenu) {
-        updateMenuPosition();
-      }
+      if (showAttachMenu) updateMenuPosition();
     }, [showAttachMenu]);
 
-    // Close on resize to prevent floating menu in wrong place
     useEffect(() => {
       const handleResize = () => {
         if (showAttachMenu) setShowAttachMenu(false);
@@ -173,7 +170,6 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
       return () => window.removeEventListener("resize", handleResize);
     }, [showAttachMenu]);
 
-    // Update scroll listener to reposition if user scrolls while menu is open
     useEffect(() => {
       const handleScroll = () => {
         if (showAttachMenu) updateMenuPosition();
@@ -182,22 +178,18 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
       return () => window.removeEventListener("scroll", handleScroll, true);
     }, [showAttachMenu]);
 
-    // --- 5. CLICK OUTSIDE MENU (Updated for Portal) ---
+    // --- 5. CLICK OUTSIDE MENU ---
     useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
-        // Check if click is inside the trigger button
         if (
           buttonRef.current &&
           buttonRef.current.contains(event.target as Node)
         ) {
           return;
         }
-        // Check if click is inside the portal menu
         if (menuRef.current && menuRef.current.contains(event.target as Node)) {
           return;
         }
-
-        // If neither, close the menu
         setShowAttachMenu(false);
       };
 
@@ -257,10 +249,9 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
       <div
         ref={ref}
         className={cn(
-          // Layout: Flex Column with substantial min-height for the "Big Input" look
-          "w-full relative group rounded-3xl transition-all duration-300 border shadow-sm flex flex-col justify-between",
-          // Height: Starts big , grows with content
-          "min-h-30",
+          // Container: Flex Column. "min-h-[140px]" ensures the big initial look.
+          // It will grow naturally because it's a block element with dynamic children.
+          "w-full relative group rounded-3xl transition-all duration-300 border shadow-sm flex flex-col justify-between min-h-[105px] hover:rounded-2xl",
           isDark
             ? "bg-[#121212] border-[#2A2B32] hover:border-gray-700"
             : "bg-gray-50 border-gray-200 hover:border-gray-300"
@@ -313,16 +304,38 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
             rows={1}
             placeholder={`Hey ${firstName} .......`}
             className={cn(
-              " flex-1 w-full bg-transparent outline-none text-lg px-6 py-4 placeholder:text-gray-500/80 font-medium z-20 resize-none webkit-scrollbar ",
-              // Ensure it fills the space but respects the bottom bar
-              "min-h-20",
-              isDark ? "text-gray-100" : "text-gray-900"
+              // Layout: w-full, transparent bg, no resize handle
+              "w-full bg-transparent outline-none text-lg px-6 py-2 placeholder:text-gray-500/80 font-medium z-20 resize-none",
+
+              // Colors
+              isDark ? "text-gray-100" : "text-gray-900",
+
+              // Spacing: Margin right ensures the scrollbar doesn't hit the rounded border
+              "mr-0 mt-2",
+
+              // Animation: Smooth height transition
+              "transition-[height] duration-200 ease-out",
+
+              // --- GEMINI SCROLLBAR STYLING ---
+              // Width
+              "[&::-webkit-scrollbar]:w-3",
+              // Track (Transparent)
+              "[&::-webkit-scrollbar-track]:bg-transparent",
+              // Thumb (Rounded & Colored)
+              "[&::-webkit-scrollbar-thumb]:rounded-tl-full hover:[&::-webkit-scrollbar-thumb]:rounded-lg",
+              "[&::-webkit-scrollbar]:h-7",
+              isDark
+                ? "[&::-webkit-scrollbar-thumb]:bg-zinc-700 hover:[&::-webkit-scrollbar-thumb]:bg-zinc-600"
+                : "[&::-webkit-scrollbar-thumb]:bg-zinc-300 hover:[&::-webkit-scrollbar-thumb]:bg-zinc-400"
             )}
+            // IMPORTANT: Remove any fixed height here to let the useEffect control it strictly
+            // But provide a min-height matching logic to prevent jump on load
+            style={{ minHeight: "45px", overflowY: "hidden" }}
           />
         </div>
 
         {/* --- BOTTOM SECTION: Fixed Controls --- */}
-        <div className="flex items-center justify-between w-full px-3 pb-3 pt-2">
+        <div className="flex items-center justify-between w-full px-3 pb-1 pt-1">
           {/* LEFT: Attachment Menu Trigger */}
           <div className="relative">
             <input
@@ -334,7 +347,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
               accept=".jpg, .jpeg, .png, .gif, .pdf"
             />
             <button
-              ref={buttonRef} // Reference for positioning logic
+              ref={buttonRef}
               title="Attach File"
               onClick={() => setShowAttachMenu(!showAttachMenu)}
               className={cn(
@@ -352,12 +365,12 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
               <Paperclip size={20} strokeWidth={2.5} />
             </button>
 
-            {/* PORTAL: Renders Menu into document.body */}
+            {/* PORTAL: Attachment Menu */}
             {createPortal(
               <AnimatePresence>
                 {showAttachMenu && menuPosition && (
                   <motion.div
-                    ref={menuRef} // Reference for click-outside logic
+                    ref={menuRef}
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -366,7 +379,6 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
                       position: "fixed",
                       top: menuPosition.top,
                       left: menuPosition.left,
-                      // Adjust translateY to render *above* the calculated top (which is button top)
                       transform: "translateY(-100%)",
                     }}
                     className={cn(
@@ -376,6 +388,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
                         : "bg-white/95 border-gray-200"
                     )}
                   >
+                    {/* Menu Options */}
                     <button
                       onClick={() => {
                         fileInputRef.current?.click();
@@ -429,6 +442,14 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
                         <path
                           d="m43.65 25c1.65-2.85 4.75-4.9 8.25-4.9l-.05.05h33.85c5.1 0 10.1 2.85 12.65 7.25l2.5 1.3c2.55-4.45 2.55-9.95 0-14.4l-2.5-1.3c-2.55-4.4-7.55-7.25-12.65-7.25h-33.85c-3.5 0-6.6 2.05-8.25 4.9z"
                           fill="#00832d"
+                        />
+                        <path
+                          d="m59.8 53.7h-32.35l-3.2 5.6-3.85 6.65h39.4c5.1 0 10.1-2.85 12.65-7.25l2.5-1.3c2.55 4.45 2.55 9.95 0 14.4l-2.5 1.3c-2.55 4.4-7.55 7.25-12.65 7.25h32.35z"
+                          fill="#2684fc"
+                        />
+                        <path
+                          d="m19.65 24.35 2.5 1.3 25.8 44.7c1.65 2.85 2.05 6.45 1.15 9.65l2.5-1.3c4.4-2.55 7.25-7.55 7.25-12.65 0-1.7-.3-3.35-.9-4.9l-25.8-44.7c-4.4-7.6-13.75-7.6-18.15 0z"
+                          fill="#ffba00"
                         />
                       </svg>
                       Google Drive
@@ -518,25 +539,8 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
           </div>
 
           {/* RIGHT: Send / Voice Button */}
-          <div>
-            {inputValue.trim().length > 0 || selectedFile ? (
-              <button
-                title="Send Message"
-                onClick={handleSubmit}
-                className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center transition-transform active:scale-95 animate-in zoom-in duration-200 hover:cursor-pointer",
-                  isDark
-                    ? "bg-white text-black hover:bg-gray-200"
-                    : "bg-black text-white hover:bg-gray-800"
-                )}
-              >
-                {isLoading || isCloudLoading ? (
-                  <div className="animate-spin h-4 w-4 border-2 border-black/30 border-t-black rounded-full dark:border-white/30 dark:border-t-white" />
-                ) : (
-                  <ArrowUp size={18} strokeWidth={3} />
-                )}
-              </button>
-            ) : (
+          <div className="flex gap-4">
+            {inputValue.trim().length > 0 || selectedFile ? null : (
               <Link to="/voice">
                 <button
                   title="Voice Input"
@@ -551,6 +555,26 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
                 </button>
               </Link>
             )}
+            <button
+              title="Send Message"
+              onClick={
+                inputValue.trim().length > 0 || selectedFile
+                  ? handleSubmit
+                  : undefined
+              }
+              className={cn(
+                "w-8 h-8 rounded-full flex items-center justify-center transition-transform active:scale-95 animate-in zoom-in duration-200 hover:cursor-pointer",
+                isDark
+                  ? "bg-white text-black hover:bg-gray-200"
+                  : "bg-black text-white hover:bg-gray-800"
+              )}
+            >
+              {isLoading || isCloudLoading ? (
+                <div className="animate-spin h-4 w-4 border-2 border-black/30 border-t-black rounded-full dark:border-white/30 dark:border-t-white" />
+              ) : (
+                <ArrowUp size={18} strokeWidth={3} />
+              )}
+            </button>
           </div>
         </div>
 

@@ -6,7 +6,6 @@ import { ChatService } from "../features/chat/services/chatService";
 import gsap from "gsap";
 import ParticleBackground from "../Components/ui/ParticleBackground";
 import SubscriptionOfferingCard from "../features/subscriptions/components/SubscriptionOfferingCard";
-// Import the new component
 import WelcomeChatInput from "../features/chat/components/WelcomeChatInput";
 
 const WelcomePage: React.FC = () => {
@@ -30,13 +29,13 @@ const WelcomePage: React.FC = () => {
 
       tl.fromTo(
         logoRef.current,
-        { y: 20, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8 }
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1 }
       ).fromTo(
         inputRef.current,
-        { scale: 0.95, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.6 },
-        "-=0.4"
+        { scale: 0.98, opacity: 0, y: 10 },
+        { scale: 1, opacity: 1, y: 0, duration: 0.8 },
+        "-=0.6"
       );
     }, containerRef);
 
@@ -90,14 +89,16 @@ const WelcomePage: React.FC = () => {
     }
   };
 
+  const firstName = user?.name?.split(" ")[0] || "Friend";
+
   return (
     <div
       ref={containerRef}
       className={cn(
         "flex flex-col items-center justify-center h-dvh w-full relative overflow-hidden transition-colors duration-300 font-sans",
         isDark
-          ? "bg-[#000000] selection:bg-gray-800 selection:text-white"
-          : "bg-white selection:bg-blue-100 selection:text-black"
+          ? "bg-[#000000] selection:bg-zinc-800 selection:text-white"
+          : "bg-white selection:bg-blue-100 selection:text-blue-900"
       )}
     >
       <ParticleBackground />
@@ -105,25 +106,32 @@ const WelcomePage: React.FC = () => {
       <SubscriptionOfferingCard />
 
       {/* CONTENT */}
-      <div className="w-full max-w-[720px] px-4 flex flex-col items-center -mt-16 z-10 relative">
+      <div className="w-full max-w-[720px] px-6 flex flex-col items-center -mt-12 z-10 relative">
         <div
           ref={logoRef}
-          className="mb-18 flex items-center-safe justify-center "
+          className="mb-10 flex flex-col items-center justify-center text-center gap-4"
         >
           <Link to="/">
             <h1
               className={cn(
-                "text-5xl font-extrabold tracking-tight hover:cursor-pointer",
+                "text-6xl sm:text-7xl font-bold tracking-tighter hover:cursor-pointer transition-opacity hover:opacity-90",
                 isDark ? "text-white" : "text-black"
               )}
             >
               Integri
             </h1>
           </Link>
+          <h2
+            className={cn(
+              "text-lg sm:text-xl font-medium tracking-normal mt-2",
+              isDark ? "text-zinc-400" : "text-zinc-500"
+            )}
+          >
+            {`Hey ${firstName}, how can I assist you today? Let's make it a great day!`}
+          </h2>
         </div>
 
         {/* REUSABLE INPUT COMPONENT */}
-        {/* We pass the ref from WelcomePage to the component for GSAP animation */}
         <WelcomeChatInput
           ref={inputRef}
           user={user}
@@ -131,7 +139,7 @@ const WelcomePage: React.FC = () => {
           onStartChat={handleStartChat}
         />
 
-        <div className="mt-8 text-xs text-gray-500 opacity-60">
+        <div className="mt-6 text-xs font-medium text-zinc-400/60 dark:text-zinc-600/60 select-none">
           All LLMs can make mistakes. Verify the information you receive.
         </div>
       </div>
