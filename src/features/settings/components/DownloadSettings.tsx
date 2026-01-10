@@ -7,19 +7,29 @@ import appleDark from "../../../../public/dark-theme-apple.png";
 import playstore from "../../../../public/playstore.png";
 import qrCodeApple from "../../../../public/AppstoreQR.jpeg";
 import qrCodeAndroid from "../../../../public/PlaystoreQR.jpeg";
+import { motion } from "framer-motion";
 
 interface AppButtonProps {
   iconSrc: string;
   title: string;
   subtitle: string;
   href: string;
-  qrCodeImage?: string; // This is the actual QR code image to show in modal
+  qrCodeImage?: string;
 }
 
 interface DownloadSettingsProps {
   isSidebar?: boolean;
+  style?: React.CSSProperties; // New prop for dynamic positioning
+  onMouseEnter?: () => void; // Keep menu open
+  onMouseLeave?: () => void; // Close menu
 }
-const DownloadSettings: React.FC<DownloadSettingsProps> = ({ isSidebar }) => {
+
+const DownloadSettings: React.FC<DownloadSettingsProps> = ({
+  isSidebar,
+  style,
+  onMouseEnter,
+  onMouseLeave,
+}) => {
   const isDark = useAppSelector((state: any) => state.theme.isDark);
 
   const AppButton: React.FC<AppButtonProps> = ({
@@ -40,7 +50,6 @@ const DownloadSettings: React.FC<DownloadSettingsProps> = ({ isSidebar }) => {
             : "bg-white border-gray-200 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-500/5"
         )}
       >
-        {/* Main Clickable Area for Link */}
         <a
           href={href}
           target="_blank"
@@ -80,7 +89,6 @@ const DownloadSettings: React.FC<DownloadSettingsProps> = ({ isSidebar }) => {
           </div>
         </a>
 
-        {/* Vertical Divider */}
         <div
           className={cn(
             "w-px h-8 mx-2",
@@ -88,13 +96,11 @@ const DownloadSettings: React.FC<DownloadSettingsProps> = ({ isSidebar }) => {
           )}
         />
 
-        {/* QR Code Trigger Area */}
         <div
           className="relative flex flex-col items-center justify-center"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          {/* The Modal appears relative to this container */}
           <DownloadModal
             isOpen={isHovered}
             isDark={isDark}
@@ -126,65 +132,113 @@ const DownloadSettings: React.FC<DownloadSettingsProps> = ({ isSidebar }) => {
     );
   };
 
-
-    if (isSidebar) {
-      return (
-        <div className="w-full animate-in fade-in slide-in-from-bottom-2 duration-500">
-          <div
+  // --- NEW SIDEBAR VARIANT ---
+  if (isSidebar) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, x: -10 }}
+        animate={{ opacity: 1, scale: 1, x: 0 }}
+        exit={{ opacity: 0, scale: 0.95, x: -10 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+        style={style}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        className={cn(
+          "fixed z-9999 p-6 rounded-3xl border shadow-2xl backdrop-blur-xl max-w-[460px] w-auto hidden md:block",
+          isDark
+            ? "bg-[#18181b]/95 border-zinc-700/50 shadow-black/50"
+            : "bg-white/95 border-gray-200 shadow-xl"
+        )}
+      >
+        {/* Header */}
+        <div className="mb-5 text-center">
+          <h4
             className={cn(
-              "flex flex-row gap-4 p-4 rounded-xl border",
-              isDark
-                ? "bg-[#18181b] border-white/5"
-                : "bg-white border-gray-200 shadow-sm"
+              "text-lg font-bold",
+              isDark ? "text-white" : "text-zinc-900"
             )}
           >
-            {/* Row 1: iOS */}
-            <div className="flex flex-col items-center justify-between group">
-              <div className="flex items-center gap-3">
-                <div
-                  className={cn(
-                    "p-1.5 rounded-lg",
-                  )}
-                >
-                  <p className="ml-1">Appstore</p>
-                </div>
-              </div>
-              <div className="bg-white p-1 rounded-md border border-gray-100 shadow-sm">
-                <img
-                  src={qrCodeApple}
-                  alt="iOS QR"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-            </div>     
+            Scan to Download
+          </h4>
+          <p
+            className={cn(
+              "text-xs mt-1",
+              isDark ? "text-zinc-400" : "text-zinc-500"
+            )}
+          >
+            Get the full Integri experience on mobile
+          </p>
+        </div>
 
-            {/* Row 2: Android */}
-            <div className="flex flex-col items-center justify-between group">
-              <div className="flex items-center gap-3">
-                <div
-                  className={cn(
-                    "p-1.5 flex gap-1 items-center rounded-lg "
-                    
-                  )}
-                >
-                 
-                  <p className="ml-1">Playstore</p>
-                </div>
-              </div>
-              <div className="bg-white p-1 rounded-md border border-gray-100 shadow-sm">
-                <img
-                  src={qrCodeAndroid}
-                  alt="Android QR"
-                  className="w-full h-full object-contain"
-                />
-              </div>
+        {/* QR Grid */}
+        <div className="grid grid-cols-2 gap-4">
+          {/* iOS Column */}
+          <div className="flex flex-col items-center gap-3">
+            <div
+              className={cn(
+                "p-2 rounded-xl border w-full aspect-square flex items-center justify-center bg-white",
+                isDark ? "border-zinc-700" : "border-zinc-100"
+              )}
+            >
+              <img
+                src={qrCodeApple}
+                alt="App Store QR"
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <img
+                src={isDark ? appleDark : appleLight}
+                alt="Apple"
+                className="w-4 h-4 object-contain"
+              />
+              <span
+                className={cn(
+                  "text-xs font-semibold",
+                  isDark ? "text-zinc-300" : "text-zinc-700"
+                )}
+              >
+                iOS
+              </span>
+            </div>
+          </div>
+
+          {/* Android Column */}
+          <div className="flex flex-col items-center gap-3">
+            <div
+              className={cn(
+                "p-2 rounded-xl border w-full aspect-square flex items-center justify-center bg-white",
+                isDark ? "border-zinc-700" : "border-zinc-100"
+              )}
+            >
+              <img
+                src={qrCodeAndroid}
+                alt="Play Store QR"
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <img
+                src={playstore}
+                alt="Android"
+                className="w-4 h-4 object-contain"
+              />
+              <span
+                className={cn(
+                  "text-xs font-semibold",
+                  isDark ? "text-zinc-300" : "text-zinc-700"
+                )}
+              >
+                Android
+              </span>
             </div>
           </div>
         </div>
-      );
-    }
+      </motion.div>
+    );
+  }
 
-
+  // --- DEFAULT VARIANT (Settings Page) ---
   return (
     <div className="flex flex-col w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="mb-6">

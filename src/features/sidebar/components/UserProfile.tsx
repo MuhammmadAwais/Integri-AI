@@ -31,33 +31,54 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
   const [profileImage, setProfileImage] = useState<string | null>(null);
+
+  // Refs
   const containerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-    //Profile states
-  const [isHovered, setIsHovered] = useState(false);
+  const downloadButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Profile states
+  // We use a timeout to bridge the gap between button and portal
+  const [isDownloadHovered, setIsDownloadHovered] = useState(false);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [popoverCoords, setPopoverCoords] = useState<React.CSSProperties>({});
 
   // Mock Data
   const initials = user?.name ? user.name.substring(0, 1).toUpperCase() : "G";
   const fullName = user?.name || "Guest User";
   const username = user?.email || "No account active";
 
+  // --- POPUP POSITIONING LOGIC ---
+  const handleDownloadEnter = () => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
 
-   const handleMouseEnter = () => {
-     setIsHovered(true);
-   };
+    if (downloadButtonRef.current) {
+      const rect = downloadButtonRef.current.getBoundingClientRect();
 
-   const handleMouseLeave = () => {
-     setIsHovered(false);
-   };
+      // Calculate position
+      // If expanded: Position floating slightly above/right or just right
+      // Sidebar implies fixed left, so we pop to the right.
+      setPopoverCoords({
+        left: rect.right - 98, // 12px gap to the right
+        bottom: window.innerHeight - rect.bottom, // Align bottoms
+        // Alternatively, to center vertically relative to button:
+        // top: rect.top + (rect.height / 2) - (POPOVER_HEIGHT / 2)
+        // But bottom alignment is safer for footer menus
+      });
+    }
+    setIsDownloadHovered(true);
+  };
 
-   const handleClick = () => {
-     setIsHovered(false);
-   };
-const handleDivClick = (e: React.MouseEvent) => {
-  handleClick();
-  handleToggleMenu(e);
-};
-   
+  const handleDownloadLeave = () => {
+    // Delay closing to allow mouse to enter the portal
+    hoverTimeoutRef.current = setTimeout(() => {
+      setIsDownloadHovered(false);
+    }, 200);
+  };
+
+  const handleDivClick = (e: React.MouseEvent) => {
+    handleToggleMenu(e);
+  };
 
   const handleToggleMenu = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -70,22 +91,23 @@ const handleDivClick = (e: React.MouseEvent) => {
     if (containerRef.current) {
       const rect = containerRef.current.getBoundingClientRect();
 
-      // Calculate position: Open UPWARDS from the footer
       setMenuStyle({
         position: "absolute",
-        left: isExpanded ? rect.left : rect.left + 70, // If collapsed, push to right
-        bottom: window.innerHeight - rect.top + 10, // Anchor to bottom of viewport relative to element top
+        left: isExpanded ? rect.left : rect.left + 70,
+        bottom: window.innerHeight - rect.top + 10,
         width: "240px",
       });
 
       setShowMenu(true);
     }
   };
+
   useEffect(() => {
-      if (user) {
-        setProfileImage(user.profile || null);
-      }
-    }, [user]);
+    if (user) {
+      setProfileImage(user.profile || null);
+    }
+  }, [user]);
+
   // Close when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -113,17 +135,21 @@ const handleDivClick = (e: React.MouseEvent) => {
 
   return (
     <>
-      {isHovered && (
-        
-          
-          <DownloadSettings isSidebar={true} />
-       
+      {/* PORTAL FOR DOWNLOAD APP POPOVER */}
+      {isDownloadHovered && (
+        <Portal>
+          <DownloadSettings
+            isSidebar={true}
+            style={popoverCoords}
+            onMouseEnter={handleDownloadEnter} // Keep open if hovering portal
+            onMouseLeave={handleDownloadLeave} // Close if leaving portal
+          />
+        </Portal>
       )}
+
       <div
-        ref={containerRef}
         onClick={handleDivClick}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        ref={containerRef}
         className={cn(
           "flex items-center rounded-xl transition-colors cursor-pointer relative group select-none",
           isExpanded
@@ -212,7 +238,7 @@ const handleDivClick = (e: React.MouseEvent) => {
             ref={menuRef}
             style={menuStyle}
             className={cn(
-              "z-9999 rounded-xl shadow-2xl border overflow-hidden py-1 animate-in fade-in zoom-in-95 duration-100",
+              "z-9990 rounded-xl shadow-2xl border overflow-hidden py-1 animate-in fade-in zoom-in-95 duration-100",
               isDark
                 ? "bg-[#1E1E1E] border-gray-700"
                 : "bg-white border-gray-200"
@@ -276,8 +302,13 @@ const handleDivClick = (e: React.MouseEvent) => {
                 >
                   <LogOut size={16} /> Logout
                 </button>
+
+                {/* --- DOWNLOAD BUTTON TRIGGER --- */}
                 <Link to="/settings">
                   <button
+                    ref={downloadButtonRef}
+                    onMouseEnter={handleDownloadEnter}
+                    onMouseLeave={handleDownloadLeave}
                     className={cn(
                       "w-full text-left px-4 py-2 text-sm flex items-center gap-2 cursor-pointer transition-colors",
                       isDark
@@ -288,6 +319,7 @@ const handleDivClick = (e: React.MouseEvent) => {
                     Download the app
                   </button>
                 </Link>
+
                 <Link to="/settings">
                   <button
                     className={cn(
