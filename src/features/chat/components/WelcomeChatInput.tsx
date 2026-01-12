@@ -243,7 +243,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
       }
     };
 
-    const firstName = user?.name?.split(" ")[0] || "Friend";
+    // const firstName = user?.name?.split(" ")[0] || "Friend";  //for later use
 
     return (
       <div
@@ -302,7 +302,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
             onKeyDown={handleKeyDown}
             onPaste={handlePaste}
             rows={1}
-            placeholder={`Hey ${firstName} .......`}
+            placeholder={`Ask me anything .......`}
             className={cn(
               // Layout: w-full, transparent bg, no resize handle
               "w-full bg-transparent outline-none text-lg px-6 py-2 placeholder:text-gray-500/80 font-medium z-20 resize-none",
@@ -395,7 +395,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
                         setShowAttachMenu(false);
                       }}
                       className={cn(
-                        "w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
+                        "w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors hover:cursor-pointer",
                         isDark
                           ? "hover:bg-white/10 text-gray-200"
                           : "hover:bg-gray-100 text-gray-700"
@@ -416,7 +416,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
                       onClick={handleGoogleDrivePick}
                       disabled={isCloudLoading}
                       className={cn(
-                        "w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
+                        "w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors hover:cursor-pointer",
                         isDark
                           ? "hover:bg-white/10 text-gray-200"
                           : "hover:bg-gray-100 text-gray-700"
@@ -458,7 +458,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
                       onClick={handleOneDrivePick}
                       disabled={isCloudLoading}
                       className={cn(
-                        "w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
+                        "w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors hover:cursor-pointer",
                         isDark
                           ? "hover:bg-white/10 text-gray-200"
                           : "hover:bg-gray-100 text-gray-700"
@@ -522,7 +522,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
                         setShowAttachMenu(false);
                       }}
                       className={cn(
-                        "w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
+                        "w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors hover:cursor-pointer",
                         isDark
                           ? "hover:bg-white/10 text-gray-200"
                           : "hover:bg-gray-100 text-gray-700"

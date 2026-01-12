@@ -123,11 +123,11 @@ const WelcomePage: React.FC = () => {
           </Link>
           <h2
             className={cn(
-              "text-lg sm:text-xl font-medium tracking-normal mt-2",
+              "text-lg sm:text-xl font-semibold tracking-widest mt-2",
               isDark ? "text-zinc-400" : "text-zinc-500"
             )}
           >
-            {`Hey ${firstName}, how can I assist you today? Let's make it a great day!`}
+            {`Hey ${firstName}, how can I help you today?`}
           </h2>
         </div>
 
