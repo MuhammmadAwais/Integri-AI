@@ -319,6 +319,18 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                     Download the app
                   </button>
                 </Link>
+                <Link to="/contactUs">
+                  <button
+                    className={cn(
+                      "w-full text-left px-4 py-2 text-sm flex items-center gap-2 cursor-pointer transition-colors",
+                      isDark
+                        ? "hover:bg-white/5 text-white"
+                        : "hover:bg-gray-200 text-black"
+                    )}
+                  >
+                    Contact Us
+                  </button>
+                </Link>
 
                 <Link to="/settings">
                   <button

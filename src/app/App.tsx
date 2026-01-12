@@ -32,6 +32,7 @@ import Agents from "../pages/Agents";
 import AgentDetailsPage from "../features/agents/components/AgentDetailsPage";
 import SubscriptionPage from "../pages/SubscriptionPage";
 import ImageGenPage from "../pages/ImageGenPage";
+import ContactUs from "../pages/ContactUs";
 
 // --- 1. GUARD COMPONENTS ---
 
@@ -115,6 +116,7 @@ const router = createBrowserRouter([
           { path: "agents/:id", element: <AgentDetailsPage /> },
           { path: "subscriptions", element: <SubscriptionPage /> },
           { path: "imageGen", element: <ImageGenPage /> },
+          { path: "contactUs", element: <ContactUs /> },
           // Catch-all inside protected area
           { path: "*", element: <Navigate to="/" replace /> },
         ],
