@@ -384,10 +384,11 @@ const ContactUs: React.FC = () => {
           <TiltCard isDark={isDark}>
             <div
               className={cn(
-                "flex flex-col lg:flex-row min-h-[650px] relative",
-                isDark ? "bg-[#18181b]" : "bg-white"
+                "flex flex-col lg:flex-row min-h-[650px] relative bg-transparent",
+                
               )}
             >
+              <ParticleBackground/>
               {/* === LEFT: FORM === */}
               <div className="flex-1 p-8 lg:p-14 flex flex-col justify-center relative z-20">
                 <div className="mb-10">
@@ -502,10 +503,11 @@ const ContactUs: React.FC = () => {
                 {/* THE ORGANIC WAVE SEPARATOR */}
                 <div
                   className={cn(
-                    "absolute top-0 bottom-0 -left-px z-20 w-16 h-full pointer-events-none",
+                    "absolute top-0 bottom-0 -left-px z-20 w-20 h-full pointer-events-none",
                     isDark ? "text-[#18181b]" : "text-white"
                   )}
                 >
+                  
                   <svg
                     viewBox="0 0 100 800"
                     preserveAspectRatio="none"

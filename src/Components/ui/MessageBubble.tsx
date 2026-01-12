@@ -23,6 +23,8 @@ interface MessageProps {
   isGeneratingImage?: boolean; // New prop for image generation skeleton
   onDelete?: (id: string) => void;
   onRegenerate?: () => void;
+  provider: string;
+  is_custom_gpt: boolean;
 }
 
 // --- MAIN COMPONENT ---
@@ -35,11 +37,12 @@ const MessageBubble: React.FC<MessageProps> = ({
   isGeneratingImage,
   onDelete,
   onRegenerate,
+  provider,
+  is_custom_gpt,
 }) => {
   const bubbleRef = useRef<HTMLDivElement>(null);
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   const isUser = role === "user";
-
   // Entrance Animation
   useLayoutEffect(() => {
     if (bubbleRef.current && gsap) {
@@ -66,7 +69,12 @@ const MessageBubble: React.FC<MessageProps> = ({
         )}
       >
         {/* 1. Avatar */}
-        <MessageAvatar isUser={isUser} isDark={isDark} />
+        <MessageAvatar
+          is_custom_gpt={is_custom_gpt}
+          provider={provider}
+          isUser={isUser}
+          isDark={isDark}
+        />
 
         <div
           className={cn(

@@ -129,6 +129,8 @@ const PlaygroundLane: React.FC<PlaygroundLaneProps> = ({
         ) : (
           messages.map((msg: any, idx: number) => (
             <MessageBubble
+              is_custom_gpt={!!model.gpt_id}
+              provider={model.provider}
               key={idx}
               role={msg.role}
               content={msg.content}

@@ -123,8 +123,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
       >
         <div className="max-w-3xl mx-auto space-y-6 pb-4">
           {messages.map((msg, index) => (
-            
             <MessageBubble
+              is_custom_gpt={selectedAgentId ? true : false}
+              provider={newChatModel.provider}
               key={msg.id || index}
               role={msg.role}
               content={msg.content}
