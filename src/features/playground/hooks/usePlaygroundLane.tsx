@@ -12,6 +12,7 @@ const triggerGlobalUpdate = () => {
 export const usePlaygroundLane = (modelConfig: {
   id: string;
   provider: string;
+  gpt_id?: string; // Added optional gpt_id to interface
 }) => {
   const token = useAppSelector((state: any) => state.auth.accessToken);
   const socketRef = useRef<WebSocketService | null>(null);
@@ -56,10 +57,12 @@ export const usePlaygroundLane = (modelConfig: {
 
         try {
           setIsLoading(true);
+          // FIX: Pass the custom_gpt_id (modelConfig.gpt_id) as the 4th argument
           const res = await SessionService.createSession(
             token,
             modelConfig.id,
-            modelConfig.provider
+            modelConfig.provider,
+            modelConfig.gpt_id // Correctly passing the ID here
           );
 
           if (res?.session_id) {

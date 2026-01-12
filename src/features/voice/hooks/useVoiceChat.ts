@@ -3,8 +3,8 @@ import { voiceSocketService } from "../../../services/VoiceWebSocketService";
 import { SessionService } from "../../../api/backendApi";
 
 const INPUT_SAMPLE_RATE = 16000;
-const SILENCE_THRESHOLD_MS = 3000;
-const VAD_THRESHOLD = 0.02;
+const SILENCE_THRESHOLD_MS = 2000; // Adjusted for snappier response
+const VAD_THRESHOLD = 0.02; // Sensitivity
 
 export const useVoiceChat = (
   token: string | null,
@@ -19,6 +19,7 @@ export const useVoiceChat = (
     | "connected"
     | "speaking"
     | "listening"
+    | "processing"
   >("disconnected");
 
   const [audioLevel, setAudioLevel] = useState(0);
@@ -28,21 +29,19 @@ export const useVoiceChat = (
   const [caption, setCaption] = useState<string | null>(null);
   const captionBuffer = useRef<string>("");
 
+  // --- AUDIO REFS ---
   const audioContextRef = useRef<AudioContext | null>(null);
   const processorRef = useRef<ScriptProcessorNode | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const nextStartTimeRef = useRef<number>(0);
+
+  // Track all active sources to kill them instantly on interrupt
+  const activeSourcesRef = useRef<AudioBufferSourceNode[]>([]);
+
+  // State Flags
   const isAssistantSpeakingRef = useRef(false);
   const silenceStartRef = useRef<number>(Date.now());
   const isUserSpeakingRef = useRef(false);
-
-  // Helper logging
-  const log = (msg: string) => {
-    console.log(
-      `%c[useVoiceChat] ${msg}`,
-      "color: #00e5ff; font-weight: bold;"
-    );
-  };
 
   // -- Helpers --
   const floatTo16BitPCM = (input: Float32Array) => {
@@ -73,6 +72,28 @@ export const useVoiceChat = (
     return bytes.buffer;
   };
 
+  // --- CRITICAL: INSTANTLY KILL AUDIO ---
+  const cancelAudioPlayback = useCallback(() => {
+    // 1. Stop all scheduled nodes immediately
+    activeSourcesRef.current.forEach((source) => {
+      try {
+        source.stop(0);
+        source.disconnect();
+      } catch (e) {
+        // Ignore errors if source already stopped
+      }
+    });
+    activeSourcesRef.current = [];
+
+    // 2. Reset clock to 'Now' so new audio doesn't schedule in the future
+    if (audioContextRef.current) {
+      nextStartTimeRef.current = audioContextRef.current.currentTime;
+    }
+
+    // 3. Reset Assistant Flag
+    isAssistantSpeakingRef.current = false;
+  }, []);
+
   // -- 1. Effect: Socket Connection --
   useEffect(() => {
     if (!token || !sessionId) return;
@@ -83,44 +104,44 @@ export const useVoiceChat = (
 
       // --- 1. Audio Handling ---
       if (data.type === "audio" && data.data) {
+        // If user has already started speaking/interrupting, DISCARD incoming AI audio
+        if (isUserSpeakingRef.current) return;
+
         setStatus("speaking");
         isAssistantSpeakingRef.current = true;
         playAudioChunk(data.data);
       }
 
-      // --- 2. Turn Management (Clear captions when switching speakers) ---
+      // --- 2. Turn Management ---
       else if (data.type === "input_audio_buffer.speech_started") {
+        // Backend confirms user started speaking
+        cancelAudioPlayback();
         captionBuffer.current = "";
         setCaption(null);
         setStatus("listening");
-      } else if (data.type === "response.content_part.added") {
-        captionBuffer.current = "";
-        setCaption(null);
       }
 
-      // --- 3. Speech Ended ---
-      else if (data.type === "speech_ended" || data.type === "response.done") {
+      // --- 3. Speech Ended / Done ---
+      else if (data.type === "response.done") {
+        // Natural end of AI speech
+        // We don't force stop here, we let the buffer play out
         isAssistantSpeakingRef.current = false;
         setStatus("connected");
       } else if (data.type === "interrupt" || data.type === "response.cancel") {
-        isAssistantSpeakingRef.current = false;
+        cancelAudioPlayback();
         captionBuffer.current = "";
         setCaption(null);
+        setStatus("connected");
       }
 
-      // --- 4. CAPTIONS (FIXED) ---
-      // Catching the specific event "assistant_transcript" you mentioned
+      // --- 4. CAPTIONS ---
       else if (data.type === "assistant_transcript") {
-        // The text is likely in data.text based on your log
         const newText = data.text || "";
         if (newText) {
           captionBuffer.current += newText;
           setCaption(captionBuffer.current);
         }
-      }
-
-      // Fallback for other standard events
-      else if (data.type === "response.audio_transcript.delta") {
+      } else if (data.type === "response.audio_transcript.delta") {
         if (data.delta) {
           captionBuffer.current += data.delta;
           setCaption(captionBuffer.current);
@@ -139,7 +160,6 @@ export const useVoiceChat = (
 
     const handleOpen = () => {
       setStatus("connected");
-      log("Socket Connected");
     };
 
     const handleClose = () => {
@@ -168,12 +188,13 @@ export const useVoiceChat = (
       voiceSocketService.removeEventListener("error", handleError);
       voiceSocketService.disconnect();
     };
-  }, [token, sessionId, model]);
+  }, [token, sessionId, model, cancelAudioPlayback]);
 
   const playAudioChunk = (base64Data: string) => {
     if (!audioContextRef.current) return;
     const ctx = audioContextRef.current;
 
+    // Decode PCM
     const int16Data = new Int16Array(base64ToArrayBuffer(base64Data));
     const float32Data = new Float32Array(int16Data.length);
     for (let i = 0; i < int16Data.length; i++) {
@@ -187,13 +208,26 @@ export const useVoiceChat = (
     source.buffer = buffer;
     source.connect(ctx.destination);
 
+    // Jitter Buffer & Scheduling
     const currentTime = ctx.currentTime;
+
+    // If we are starting a new phrase or lagged behind, reset clock + small buffer
     if (nextStartTimeRef.current < currentTime) {
-      nextStartTimeRef.current = currentTime;
+      nextStartTimeRef.current = currentTime + 0.05; // 50ms look-ahead buffer to prevent pops
     }
 
     source.start(nextStartTimeRef.current);
     nextStartTimeRef.current += buffer.duration;
+
+    // Track this source so we can kill it later
+    activeSourcesRef.current.push(source);
+
+    // Auto-cleanup on natural end
+    source.onended = () => {
+      activeSourcesRef.current = activeSourcesRef.current.filter(
+        (s) => s !== source
+      );
+    };
   };
 
   const disconnectMic = useCallback(() => {
@@ -209,7 +243,8 @@ export const useVoiceChat = (
       audioContextRef.current.close();
       audioContextRef.current = null;
     }
-  }, []);
+    cancelAudioPlayback();
+  }, [cancelAudioPlayback]);
 
   const startSession = useCallback(async () => {
     if (!token) {
@@ -241,11 +276,14 @@ export const useVoiceChat = (
           sampleRate: INPUT_SAMPLE_RATE,
           channelCount: 1,
           echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
         },
       });
       streamRef.current = stream;
 
       const source = ctx.createMediaStreamSource(stream);
+      // Buffer Size 4096 gives ~0.25s latency block
       const processor = ctx.createScriptProcessor(4096, 1, 1);
       processorRef.current = processor;
 
@@ -254,6 +292,7 @@ export const useVoiceChat = (
 
         const inputData = e.inputBuffer.getChannelData(0);
 
+        // VAD (RMS Calculation)
         let sum = 0;
         for (let i = 0; i < inputData.length; i++) {
           sum += inputData[i] * inputData[i];
@@ -261,15 +300,18 @@ export const useVoiceChat = (
         const rms = Math.sqrt(sum / inputData.length);
         setAudioLevel(rms);
 
-        // Interrupt Logic
+        // --- INTERRUPT LOGIC (High Priority) ---
         if (rms > VAD_THRESHOLD && isAssistantSpeakingRef.current) {
+          // 1. Immediately kill local audio
+          cancelAudioPlayback();
+
+          // 2. Notify Backend
           voiceSocketService.sendInterrupt();
-          isAssistantSpeakingRef.current = false;
-          if (audioContextRef.current) {
-            nextStartTimeRef.current = audioContextRef.current.currentTime;
-          }
+
+          // 3. Clear State Locally
           setCaption(null);
           captionBuffer.current = "";
+          setStatus("listening");
         }
 
         // Send Audio
@@ -277,13 +319,15 @@ export const useVoiceChat = (
         const base64 = arrayBufferToBase64(pcm16.buffer);
         voiceSocketService.sendAudioChunk(base64);
 
-        // Commit Logic
+        // --- COMMIT LOGIC ---
         if (rms > VAD_THRESHOLD) {
           silenceStartRef.current = Date.now();
           if (!isUserSpeakingRef.current) {
             isUserSpeakingRef.current = true;
+            // Clear captions as soon as user starts talking
             setCaption(null);
             captionBuffer.current = "";
+            setStatus("listening");
           }
         } else {
           const silenceDuration = Date.now() - silenceStartRef.current;
@@ -293,6 +337,7 @@ export const useVoiceChat = (
           ) {
             voiceSocketService.sendCommit();
             isUserSpeakingRef.current = false;
+            setStatus("processing"); // Optional visual feedback
           }
         }
       };
@@ -307,7 +352,7 @@ export const useVoiceChat = (
       disconnectMic();
       setStatus("disconnected");
     }
-  }, [token, model, provider, disconnectMic]);
+  }, [token, model, provider, disconnectMic, cancelAudioPlayback]);
 
   const endSession = useCallback(() => {
     disconnectMic();

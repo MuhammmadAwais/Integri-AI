@@ -21,9 +21,11 @@ const PlaygroundLane: React.FC<PlaygroundLaneProps> = ({
   globalFile,
   triggerId,
 }) => {
+  // FIX: Passed gpt_id to the hook so it can be sent to createSession
   const { messages, sendMessage, isStreaming, isLoading } = usePlaygroundLane({
     id: model.id,
     provider: model.provider,
+    gpt_id: model.gpt_id, // Ensure this property exists on the model object from Redux
   });
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -44,7 +46,7 @@ const PlaygroundLane: React.FC<PlaygroundLaneProps> = ({
       sendMessage(globalPrompt, globalFile);
     }
   }, [triggerId, globalPrompt, globalFile, sendMessage]);
-  
+
   return (
     <div
       className={cn(
@@ -66,7 +68,15 @@ const PlaygroundLane: React.FC<PlaygroundLaneProps> = ({
         <div className="flex items-center gap-3 relative min-w-0 flex-1">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0">
             <img
-              src={model.gpt_id ? isDark ? `/dark-theme-custom-gpt.png` : `/light-theme-custom-gpt.png` : isDark ? `${model.dark_theme_logo}` : `${model.light_theme_logo}`}
+              src={
+                model.gpt_id
+                  ? isDark
+                    ? `/dark-theme-custom-gpt.png`
+                    : `/light-theme-custom-gpt.png`
+                  : isDark
+                  ? `${model.dark_theme_logo}`
+                  : `${model.light_theme_logo}`
+              }
               alt={model.label}
               className="w-full h-full object-cover"
             />

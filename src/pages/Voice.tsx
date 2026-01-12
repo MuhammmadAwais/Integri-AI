@@ -1,34 +1,32 @@
-import React , { useState } from "react";
+import React, { useState } from "react";
 import ParticleSphere from "../Components/ui/ParticleSphere";
 import { Mic, PhoneOff } from "lucide-react";
 import { useVoiceChat } from "../features/voice/hooks/useVoiceChat";
 import { useAppSelector } from "../hooks/useRedux";
 import ParticleBackground from "../Components/ui/ParticleBackground";
 import { cn } from "../lib/utils";
-import Captions from "../features/voice/components/Captions"; // Import updated component
+import Captions from "../features/voice/components/Captions";
 import LoginModal from "../features/auth/components/LoginModal";
 
 const Voice: React.FC = () => {
   const { accessToken, user } = useAppSelector((state: any) => state.auth);
-  {
-    user;
-  } // prevent unused var warning
 
   const { isDark } = useAppSelector((state: any) => state.theme);
   // Get voice config + caption visibility from Redux
   const { voiceChatModel, voiceShowCaptions } = useAppSelector(
     (state: any) => state.chat
   );
- const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
+  // Hook now manages advanced interrupt logic internally
   const { status, audioLevel, error, startSession, endSession, caption } =
     useVoiceChat(accessToken, voiceChatModel.id, voiceChatModel.provider);
 
   const handleToggle = () => {
-     if (!user?.id) {
-       setShowLoginModal(true);
-       return
-     }
+    if (!user?.id) {
+      setShowLoginModal(true);
+      return;
+    }
     if (status === "disconnected") {
       startSession();
     } else {
@@ -37,7 +35,10 @@ const Voice: React.FC = () => {
   };
 
   const isActive =
-    status === "speaking" || status === "listening" || status === "connected";
+    status === "speaking" ||
+    status === "listening" ||
+    status === "connected" ||
+    status === "processing";
 
   return (
     <div className="relative w-full h-screen overflow-hidden flex flex-col items-center justify-center">
@@ -48,11 +49,13 @@ const Voice: React.FC = () => {
       />
       {/* Header */}
       <div className="absolute top-10 z-10 text-center">
-        <h2 className="text-4xl font-extrabold tracking-widest uppercase">
+        <h2 className="text-4xl font-extrabold tracking-widest uppercase transition-all duration-300">
           {status === "disconnected"
             ? "Ready"
             : status === "speaking"
             ? "AI Speaking"
+            : status === "processing"
+            ? "Thinking..."
             : "Listening..."}
         </h2>
 
@@ -60,7 +63,7 @@ const Voice: React.FC = () => {
         <div
           className={`mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono
           ${
-            status === "connected"
+            status !== "disconnected"
               ? "bg-green-900/30 text-green-400"
               : "bg-gray-800 text-gray-400"
           }
@@ -68,12 +71,12 @@ const Voice: React.FC = () => {
         >
           <div
             className={`w-2 h-2 rounded-full ${
-              status === "connected"
+              status !== "disconnected"
                 ? "bg-green-400 animate-pulse"
                 : "bg-gray-500"
             }`}
           />
-          {status.toUpperCase()}
+          {status === "disconnected" ? "DISCONNECTED" : "LIVE SESSION"}
         </div>
 
         {error && <div className="text-red-500 mt-2 text-sm">{error}</div>}
@@ -105,7 +108,7 @@ const Voice: React.FC = () => {
 
       {/* Controls */}
       <div className="absolute bottom-12 z-20 flex flex-col items-center gap-6">
-        {status === "connected" && (
+        {status !== "disconnected" && (
           <div className="font-mono text-[10px] text-white/30 tracking-tighter">
             VAD ACTIVE • 3S SILENCE COMMIT
           </div>
