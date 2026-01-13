@@ -74,7 +74,7 @@ const NavbarLeft: React.FC = () => {
         <button
           onClick={() => dispatch(setVoiceShowCaptions(!voiceShowCaptions))}
           className={cn(
-            "p-2 rounded-xl border transition-all hover:cursor-pointer relative group",
+            "p-2 rounded-xl border transition-all hover:cursor-pointer relative group sm:m-0 ml-10 ",
             voiceShowCaptions
               ? "bg-zinc-600 text-white border-zinc-500 shadow-lg shadow-indigo-500/20"
               : isDark
