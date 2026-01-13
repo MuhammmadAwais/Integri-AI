@@ -207,23 +207,7 @@ const AVAILABLE_MODELS = [
 ];
 
 export const VOICE_MODELS = [
-  {
-    id: "gpt-realtime",
-    label: "GPT-realtime",
-    provider: "openai",
-    badge: "Fast",
-  },
-  {
-    id: "gpt-4o-realtime-preview",
-    label: "GPT-4o realtime preview",
-    provider: "openai",
-  },
-  {
-    id: "gpt-realtime-mini",
-    label: "GPT-realtime mini",
-    provider: "openai",
-    badge: "Smart",
-  },
+
   {
     id: "gpt-4o-mini-realtime-preview",
     label: "GPT-4o mini realtime preview",

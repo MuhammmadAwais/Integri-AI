@@ -39,7 +39,7 @@ const NavbarLeft: React.FC = () => {
     return (
       <div className="flex items-center gap-2 relative">
         {/* Model Selector */}
-        <div className="relative">
+        <div className="relative hidden">
           <button
             onClick={() => setShowVoiceMenu(!showVoiceMenu)}
             className={cn(
@@ -68,7 +68,7 @@ const NavbarLeft: React.FC = () => {
           />
         </div>
 
-        <div className="w-px h-5 bg-gray-500/20 mx-1" />
+     
 
         {/* NEW: Toggle Captions Button */}
         <button
