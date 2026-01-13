@@ -29,7 +29,9 @@ export const getBackendToken = async (
       // FOR DEVELOPEMENT PURPOSES ONLY
       // user_type : isPremium ?  "premium" : "premium"// ONLY FOR DEVELOPERS
     });
+    console.log("✅ [API] Auth Success:", response.data);
     return response.data;
+
   } catch (error: any) {
     console.error("❌ [API] Auth Failed:", error);
     throw error;
@@ -64,6 +66,8 @@ export const SessionService = {
       return null;
     }
   },
+
+  
 
   // FIX 1: Added custom_gpt_id support for Agent Chatting
   createSession: async (

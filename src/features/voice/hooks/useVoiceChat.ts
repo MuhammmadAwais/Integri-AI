@@ -8,7 +8,7 @@ const VAD_THRESHOLD = 0.02; // Sensitivity
 
 export const useVoiceChat = (
   token: string | null,
-  model: string = "gpt-realtime-mini",
+  model: string = "gpt-4o-mini-realtime-preview",
   provider: string = "openai"
 ) => {
   const [sessionId, setSessionId] = useState<string | null>(null);

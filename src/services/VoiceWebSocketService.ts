@@ -35,7 +35,7 @@ class VoiceWebSocketService extends EventTarget {
   connect(
     token: string,
     sessionId: string,
-    model: string = "gpt-realtime-mini"
+    model: string = "gpt-4o-mini-realtime-preview"
   ) {
     if (
       this.socket &&

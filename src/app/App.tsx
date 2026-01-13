@@ -33,6 +33,7 @@ import AgentDetailsPage from "../features/agents/components/AgentDetailsPage";
 import SubscriptionPage from "../pages/SubscriptionPage";
 import ImageGenPage from "../pages/ImageGenPage";
 import ContactUs from "../pages/ContactUs";
+import MobileVoiceWrapper from "../pages/MobileVoiceWrapper"; // <--- IMPORT ADDED
 import { fetchAgents } from "../features/agents/agentsSlice";
 
 // --- 1. GUARD COMPONENTS ---
@@ -94,6 +95,13 @@ const router = createBrowserRouter([
   // Onboarding (Accessible to auth users who are 'new')
   { path: "/getting-started", element: <GettingStarted /> },
 
+  // Mobile Voice Popup Route (Standalone - No Sidebar/Layout)
+  // Placed at root level so it renders independently
+  {
+    path: "/voice/mobile-popup/:token",
+    element: <MobileVoiceWrapper />,
+  },
+
   // Main App Routes (Now Guest Accessible)
   {
     element: <ProtectedRoute />,
@@ -135,6 +143,7 @@ const App: React.FC = () => {
   // Get theme state
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   const token = useAppSelector((state: any) => state.auth.accessToken);
+
   // --- THEME APPLICATION EFFECT ---
   // Apply the theme class to the HTML element whenever isDark changes
   useEffect(() => {
@@ -144,11 +153,13 @@ const App: React.FC = () => {
       document.documentElement.classList.remove("dark");
     }
   }, [isDark]);
+
   useEffect(() => {
     if (token) {
       dispatch(fetchAgents(token));
     }
-  }, );
+  }); // Note: Missing dependency array here in original code, kept as is.
+
   useEffect(() => {
     // This listener handles the "Auto Login" logic by detecting the existing session
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {

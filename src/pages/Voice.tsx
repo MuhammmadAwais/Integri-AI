@@ -8,25 +8,36 @@ import { cn } from "../lib/utils";
 import Captions from "../features/voice/components/Captions";
 import LoginModal from "../features/auth/components/LoginModal";
 
-const Voice: React.FC = () => {
-  const { accessToken, user } = useAppSelector((state: any) => state.auth);
+// 1. Define Props Interface
+interface VoiceProps {
+  overrideToken?: string;
+}
 
+// 2. Accept Props
+const Voice: React.FC<VoiceProps> = ({ overrideToken }) => {
+  const { accessToken, user } = useAppSelector((state: any) => state.auth);
   const { isDark } = useAppSelector((state: any) => state.theme);
-  // Get voice config + caption visibility from Redux
   const { voiceChatModel, voiceShowCaptions } = useAppSelector(
     (state: any) => state.chat
   );
   const [showLoginModal, setShowLoginModal] = useState(false);
 
-  // Hook now manages advanced interrupt logic internally
+  // 3. LOGIC: Determine Token and Mode
+  // If overrideToken is present (from Mobile Wrapper), use it. Otherwise fall back to Redux.
+  const activeToken = overrideToken || accessToken;
+  const isMobileMode = !!overrideToken;
+
   const { status, audioLevel, error, startSession, endSession, caption } =
-    useVoiceChat(accessToken, voiceChatModel.id, voiceChatModel.provider);
+    useVoiceChat(activeToken, voiceChatModel.id, voiceChatModel.provider);
 
   const handleToggle = () => {
-    if (!user?.id) {
+    // 4. SECURITY BYPASS FOR MOBILE
+    // If we are in mobile mode (have a token), skip the "user logged in" check.
+    if (!isMobileMode && !user?.id) {
       setShowLoginModal(true);
       return;
     }
+
     if (status === "disconnected") {
       startSession();
     } else {
@@ -43,10 +54,15 @@ const Voice: React.FC = () => {
   return (
     <div className="relative w-full h-screen overflow-hidden flex flex-col items-center justify-center">
       <ParticleBackground />
-      <LoginModal
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-      />
+
+      {/* 5. Hide Login Modal in Mobile Mode just in case */}
+      {!isMobileMode && (
+        <LoginModal
+          isOpen={showLoginModal}
+          onClose={() => setShowLoginModal(false)}
+        />
+      )}
+
       {/* Header */}
       <div className="absolute top-10 z-10 text-center">
         <h2 className="text-4xl font-extrabold tracking-widest uppercase transition-all duration-300">
@@ -73,10 +89,14 @@ const Voice: React.FC = () => {
             className={`w-2 h-2 rounded-full ${
               status !== "disconnected"
                 ? "bg-green-400 animate-pulse"
-                : "bg-gray-500"
+                : "bg-gray-50"
             }`}
           />
-          {status === "disconnected" ? "DISCONNECTED" : "LIVE SESSION"}
+          {status === "disconnected"
+            ? "DISCONNECTED"
+            : isMobileMode
+            ? "MOBILE SESSION"
+            : "LIVE SESSION"}
         </div>
 
         {error && <div className="text-red-500 mt-2 text-sm">{error}</div>}
@@ -86,11 +106,8 @@ const Voice: React.FC = () => {
       <div className="w-full max-w-2xl h-[500px] flex items-center justify-center relative transition-all duration-700">
         <ParticleSphere
           count={isActive ? 1000 : 500}
-          // Speed up when AI is speaking OR User is speaking (audioLevel high)
           speed={status === "speaking" ? 0.02 : 0.005 + audioLevel * 0.05}
-          // Expand when loud
           size={isActive ? 0.5 + audioLevel * 0.8 : 0.5}
-          // Color shift: Cyan for AI, Green for User, White for Idle
           color={
             status === "speaking"
               ? "#00ccff"
@@ -103,7 +120,6 @@ const Voice: React.FC = () => {
         />
       </div>
 
-      {/* CAPTIONS: Controlled by Redux state from Navbar */}
       <Captions text={caption} status={status} isVisible={voiceShowCaptions} />
 
       {/* Controls */}
