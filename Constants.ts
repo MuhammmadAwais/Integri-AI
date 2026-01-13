@@ -64,15 +64,6 @@ const AVAILABLE_MODELS = [
     dark_theme_logo: "/dark-theme-openai.png",
     isPremium: true,
   },
-  {
-    id: "gpt-3.5-turbo",
-    label: "GPT-3.5 turbo",
-    provider: "openai",
-    badge: "Efficient",
-    light_theme_logo: "/light-theme-openai.png",
-    dark_theme_logo: "/dark-theme-openai.png",
-    isPremium: true,
-  },
   
   // --- Google ---
   {
