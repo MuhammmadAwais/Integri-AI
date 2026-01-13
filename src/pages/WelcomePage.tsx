@@ -103,7 +103,7 @@ const WelcomePage: React.FC = () => {
     >
       <ParticleBackground />
 
-      <SubscriptionOfferingCard />
+     {user && ( <SubscriptionOfferingCard />)}
 
       {/* CONTENT */}
       <div className="w-full max-w-[720px] px-6 flex flex-col items-center -mt-12 z-10 relative">
