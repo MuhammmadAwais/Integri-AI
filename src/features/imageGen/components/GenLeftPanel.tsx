@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { Sparkles, Wand2, Monitor, Box, Zap } from "lucide-react";
+import { Sparkles, Wand2, Monitor, Box} from "lucide-react";
 import ImageUploader from "./ImageUploader";
 import GenDropdown from "./GenDropdown";
-import AVAILABLE_MODELS from "../../../../Constants";
 import { useAppSelector } from "../../../hooks/useRedux";
 import LoginModal from "../../auth/components/LoginModal";
 
@@ -18,17 +17,6 @@ interface Props {
   }) => void;
 }
 
-const MODEL_OPTIONS = AVAILABLE_MODELS.map((m) => ({
-  id: m.id,
-  label: m.label,
-  desc:
-    m.provider === "integri"
-      ? "High-end photorealism"
-      : `Powered by ${m.provider}`,
-  badge: m.badge,
-  provider: m.provider,
-}));
-
 const RATIOS = [
   { id: "1:1", label: "Square (1:1)", desc: "Social Media" },
   { id: "9:16", label: "Vertical (9:16)", desc: "Stories / Reels / Shorts" },
@@ -43,6 +31,15 @@ const RESOLUTIONS = [
   { id: "uhd", label: "Ultra HD 4K", desc: "Maximum quality" },
 ];
 
+const MODEL_OPTIONS = [ {
+    id: "gpt-5.1",
+    label: "GPT-5.1",
+    provider: "openai",
+    badge: "New",
+    light_theme_logo: "/light-theme-openai.png",
+    dark_theme_logo: "/dark-theme-openai.png",
+    isPremium: true,
+  },];
 const GenLeftPanel: React.FC<Props> = ({
   isDark,
   isGenerating,
@@ -69,7 +66,7 @@ const GenLeftPanel: React.FC<Props> = ({
       file: selectedFile,
     });
   };
-
+{setSelectedModel;} //FOR VERCEL UNUSED VARIABLE WARNING (SUPPRESS)
   return (
     <div className="flex flex-col h-full font-sans">
         <LoginModal
@@ -95,15 +92,6 @@ const GenLeftPanel: React.FC<Props> = ({
             Create stunning visuals with AI.
           </p>
         </div>
-
-        <GenDropdown
-          label="Model"
-          value={selectedModel}
-          options={MODEL_OPTIONS}
-          onChange={setSelectedModel as any}
-          isDark={isDark}
-          icon={Zap}
-        />
 
         <div className="space-y-2">
           <label

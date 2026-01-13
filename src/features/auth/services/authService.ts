@@ -101,10 +101,10 @@ export const AuthService = {
         country: data.country || null,
         myCode: data.myCode,
         // FOR DEVELOPEMENT PURPOSES ONLY ( UNCOMMENT THE BELOW IN PRODUCTION )
-        isPremium,
-        // isPremium : true,
-        planId: isPremium ? "premium" : "freemium",
-        // planId: "premium",
+        // isPremium,
+        isPremium : true,
+        // planId: isPremium ? "premium" : "freemium",
+        planId: "premium",
         isNewUser: isIncomplete,
       };
     } else {
