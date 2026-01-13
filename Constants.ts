@@ -73,24 +73,6 @@ const AVAILABLE_MODELS = [
     dark_theme_logo: "/dark-theme-openai.png",
     isPremium: true,
   },
-  {
-    id: "gpt-4o-mini-search-preview",
-    label: "gpt-4o mini-search-preview",
-    provider: "openai",
-    badge: "Efficient",
-    light_theme_logo: "/light-theme-openai.png",
-    dark_theme_logo: "/dark-theme-openai.png",
-    isPremium: true,
-  },
-  {
-    id: "gpt-4o-mini-deep-research",
-    label: "GPT-4o mini-deep-research",
-    provider: "openai",
-    badge: "Efficient",
-    light_theme_logo: "/light-theme-openai.png",
-    dark_theme_logo: "/dark-theme-openai.png",
-    isPremium: true,
-  },
   
   // --- Google ---
   {
