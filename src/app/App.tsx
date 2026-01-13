@@ -9,7 +9,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 
-//  IMPORT ACTIONS AND API
+// --- IMPORT ACTIONS AND API ---
 import { setAuthUser } from "../features/auth/slices/authSlice";
 import { getBackendToken } from "../api/backendApi";
 import { AuthService } from "../features/auth/services/authService";

@@ -44,6 +44,7 @@ interface FirestoreUserModel {
   freeDayStartDateTime: any | null;
   subscribedNotificationCategoriesIds: string[] | null;
   notificationPreference: boolean;
+  dateOfBirth: Date | null;
 }
 
 export interface UserData {
@@ -161,6 +162,7 @@ export const AuthService = {
       freeDayStartDateTime: null,
       subscribedNotificationCategoriesIds: null,
       notificationPreference: true,
+      dateOfBirth: null, // To be set during onboarding ( Getting Started )
     };
 
     await setDoc(doc(db, "Users", user.uid), newUser);
@@ -199,7 +201,7 @@ export const AuthService = {
 
   completeOnboarding: async (
     uid: string,
-    data: { country: string; language: string; name?: string; email?: string }
+    data: { country: string; language: string; name?: string; email?: string; dateOfBirth: Date }
   ): Promise<void> => {
     // Only update the necessary fields
     await setDoc(
@@ -207,6 +209,7 @@ export const AuthService = {
       {
         country: data.country,
         selectedLanguageCode: data.language,
+        dateOfBirth: data.dateOfBirth, // To be set during onboarding ( Getting Started )
         // Ensure name/email are synced if they were missing (e.g. Google Auth edge cases)
         ...(data.name && { userName: data.name }),
         ...(data.email && { email: data.email }),
