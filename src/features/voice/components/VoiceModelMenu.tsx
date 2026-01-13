@@ -141,7 +141,7 @@ const VoiceModelMenu: React.FC<VoiceModelMenuProps> = ({
                   <div>
                     <div className="font-medium">{m.label}</div>
                     <div className="text-[10px] opacity-60 capitalize">
-                      {m.badge || m.provider}
+                      { m.provider}
                     </div>
                   </div>
                 </div>
