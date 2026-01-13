@@ -25,7 +25,7 @@ const NAV_ITEMS = [
   { id: "chat", label: "Chat", icon: MessageCircle, path: "/" },
   {
     id: "playground",
-    label: "Playground",
+    label: "Multi Chat",
     icon: PenSquare,
     path: "/playground",
   },

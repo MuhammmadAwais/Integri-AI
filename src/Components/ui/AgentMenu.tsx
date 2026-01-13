@@ -132,7 +132,7 @@ const AgentMenu: React.FC<AgentMenuProps> = ({
                   onClose();
                 }}
                 className={cn(
-                  "w-full px-3 py-2.5 rounded-lg text-sm transition-all flex items-center justify-between mb-1 group",
+                  "w-full px-3 py-2.5 rounded-lg text-sm transition-all flex items-center justify-between mb-1 group hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white hover:shadow-sm  hover:duration-150 hover:ease-in hover:cursor-pointer",
                   !selectedId
                     ? isDark
                       ? "bg-blue-500/10 text-blue-400"
@@ -164,7 +164,7 @@ const AgentMenu: React.FC<AgentMenuProps> = ({
                           onClose();
                         }}
                         className={cn(
-                          "w-full px-3 py-2.5 rounded-lg text-sm transition-all flex items-center justify-between mb-1 group",
+                          "w-full px-3 py-2.5 rounded-lg text-sm transition-all flex items-center justify-between mb-1 group hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white hover:shadow-sm  hover:duration-150 hover:ease-in hover:cursor-pointer",
                           isSelected
                             ? isDark
                               ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
@@ -207,7 +207,7 @@ const AgentMenu: React.FC<AgentMenuProps> = ({
                     navigate("/agents");
                   }}
                   className={cn(
-                    "w-full px-3 py-3 mt-2 rounded-lg text-sm transition-all flex items-center justify-center gap-2 border border-dashed",
+                    "w-full px-3 py-3 mt-2 rounded-lg text-sm transition-all flex items-center justify-center gap-2 border border-dashed hover:shadow-sm hover:duration-150 hover:ease-in hover:cursor-pointer",
                     isDark
                       ? "border-zinc-800 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900"
                       : "border-zinc-200 text-zinc-500 hover:text-zinc-700 hover:bg-zinc-50"

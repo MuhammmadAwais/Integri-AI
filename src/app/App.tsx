@@ -33,6 +33,7 @@ import AgentDetailsPage from "../features/agents/components/AgentDetailsPage";
 import SubscriptionPage from "../pages/SubscriptionPage";
 import ImageGenPage from "../pages/ImageGenPage";
 import ContactUs from "../pages/ContactUs";
+import { fetchAgents } from "../features/agents/agentsSlice";
 
 // --- 1. GUARD COMPONENTS ---
 
@@ -133,7 +134,7 @@ const App: React.FC = () => {
   const dispatch = useAppDispatch();
   // Get theme state
   const isDark = useAppSelector((state: any) => state.theme.isDark);
-
+  const token = useAppSelector((state: any) => state.auth.accessToken);
   // --- THEME APPLICATION EFFECT ---
   // Apply the theme class to the HTML element whenever isDark changes
   useEffect(() => {
@@ -143,7 +144,11 @@ const App: React.FC = () => {
       document.documentElement.classList.remove("dark");
     }
   }, [isDark]);
-
+  useEffect(() => {
+    if (token) {
+      dispatch(fetchAgents(token));
+    }
+  }, );
   useEffect(() => {
     // This listener handles the "Auto Login" logic by detecting the existing session
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
