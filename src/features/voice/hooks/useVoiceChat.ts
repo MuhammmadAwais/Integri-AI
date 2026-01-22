@@ -361,6 +361,6 @@ export const useVoiceChat = (
     setStatus("disconnected");
     setCaption(null);
   }, [disconnectMic]);
-
+  console.log("useVoiceChat status:", status , error);
   return { status, audioLevel, error, startSession, endSession, caption };
 };

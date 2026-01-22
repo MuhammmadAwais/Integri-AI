@@ -1,6 +1,6 @@
 import React from "react";
 import { motion , type Variants } from "framer-motion";
-import { cn } from "../../../lib/utils"; // Adjust path if needed relative to folder
+import { cn } from "../../../lib/utils"; 
 
 interface SettingsSectionProps {
   icon: any;
