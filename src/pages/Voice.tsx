@@ -65,7 +65,7 @@ const Voice: React.FC<VoiceProps> = ({ overrideToken }) => {
 
       {/* Header */}
       <div className="absolute top-10 z-10 text-center">
-        <h2 className="text-4xl font-extrabold tracking-widest uppercase transition-all duration-300">
+        <h2 className={cn("text-4xl font-extrabold tracking-widest uppercase transition-all duration-300", isDark ? "text-white" : "text-black")}>
           {status === "disconnected"
             ? "Ready"
             : status === "speaking"
