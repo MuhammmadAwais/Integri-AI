@@ -4,7 +4,6 @@ import {
   collection,
   addDoc,
   serverTimestamp,
-  Timestamp,
   FieldValue,
 } from "firebase/firestore";
 
@@ -62,7 +61,7 @@ export const useErrorStore = () => {
         // If a date is provided, use it. Otherwise, use serverTimestamp for consistency.
 
         timestamp: date ? date : serverTimestamp(),
-        
+
         userAgent: navigator.userAgent,
       };
 
