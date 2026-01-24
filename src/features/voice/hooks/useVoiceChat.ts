@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { voiceSocketService } from "../../../services/VoiceWebSocketService";
 import { SessionService } from "../../../api/backendApi";
+import { useErrorStore } from "../../../hooks/useErrorStore";
 
 const INPUT_SAMPLE_RATE = 16000;
 const SILENCE_THRESHOLD_MS = 2000; // Adjusted for snappier response
@@ -11,6 +12,7 @@ export const useVoiceChat = (
   model: string = "gpt-4o-mini-realtime-preview",
   provider: string = "openai"
 ) => {
+  const { logError } = useErrorStore();
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [status, setStatus] = useState<
     | "disconnected"
@@ -347,10 +349,18 @@ export const useVoiceChat = (
 
       setSessionId(newSessionId);
     } catch (err: any) {
+      await logError({
+        errorDetails: err,
+        username: "HardCodedTest",
+        email: "hardtest@example.com",
+      });
+
+      alert("Something went wrong, but our team has been notified!");
       console.error("Session Start Failed:", err);
       setError(err.message);
       disconnectMic();
       setStatus("disconnected");
+      
     }
   }, [token, model, provider, disconnectMic, cancelAudioPlayback]);
 

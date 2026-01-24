@@ -16,6 +16,7 @@ export const SubscriptionService = {
 
       // 2. Check Customer Info for Active Entitlement
       const customerInfo = await purchases.getCustomerInfo();
+      console.log("Customer Info:", customerInfo);
       const isPremium =
         customerInfo.entitlements.all.integri?.isActive || false;
 
