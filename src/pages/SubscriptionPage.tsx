@@ -8,23 +8,14 @@ import SubscriptionSuccessModal from "../features/subscriptions/components/Subsc
 import ParticleBackground from "../Components/ui/ParticleBackground";
 import { cn } from "../lib/utils";
 import { ChevronDown, ChevronUp, ShieldCheck } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import LoginModal from "../features/auth/components/LoginModal";
 
-// Stagger Animation Variants
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-    },
-  },
-};
-
+// Animation variants for the grid items
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  visible: { opacity: 1, y: 0 },
+  exit: { opacity: 0, scale: 0.95, transition: { duration: 0.2 } },
 };
 
 const SubscriptionPage: React.FC = () => {
@@ -37,8 +28,8 @@ const SubscriptionPage: React.FC = () => {
 
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [billingInterval, setBillingInterval] = useState<"Monthly" | "Annual">(
-    "Monthly",
+  const [billingInterval, setBillingInterval] = useState<"monthly" | "annual">(
+    "monthly",
   );
 
   const toggleFaq = (index: number) => {
@@ -50,29 +41,32 @@ const SubscriptionPage: React.FC = () => {
       setShowLoginModal(true);
       return;
     }
-    // Dispatch the purchase action with the specific planId (e.g., integri_pro_Annual)
     await dispatch(purchaseSubscription({ userId: user.id, planId }));
   };
 
-  // Filter plans based on the selected billing interval
-  // Logic: Check if the plan ID string contains the interval keyword (robust convention)
-  // or checks strictly if your Constants IDs are exactly "integri_pro_Monthly" etc.
-  const displayedPlans = SUBSCRIPTION_PLANS.filter((plan) =>
-    plan.id.includes(billingInterval),
-  );
+  // --- FIXED FILTERING LOGIC ---
+  const displayedPlans = SUBSCRIPTION_PLANS.filter((plan) => {
+    const id = plan.id.toLowerCase();
+    if (billingInterval === "monthly") {
+      // Matches "Monthly Pro Subscription"
+      return id.includes("monthly");
+    } else {
+      // Matches "Anual Pro Subscription" (and handles standard spelling just in case)
+      return id.includes("annual") || id.includes("anual");
+    }
+  });
 
   return (
-      <div
-        className={cn(
-          "relative h-full w-full overflow-y-auto transition-colors duration-500",
-          isDark ? "bg-black text-white" : "bg-gray-50 text-gray-900",
-          "scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent"
-        )}
-      >
+    <div
+      className={cn(
+        "relative h-full w-full overflow-x-hidden overflow-y-auto transition-colors duration-500",
+        isDark ? "bg-black text-white" : "bg-gray-50 text-gray-900",
+        "scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent",
+      )}
+    >
       <ParticleBackground />
 
       <div className="relative z-10 container mx-auto px-4 py-20 lg:py-32">
-        {/* Header Section */}
         <PricingHeader />
 
         {/* Billing Toggle */}
@@ -83,7 +77,6 @@ const SubscriptionPage: React.FC = () => {
               isDark ? "bg-white/10" : "bg-gray-200",
             )}
           >
-            {/* Sliding Background */}
             <motion.div
               className={cn(
                 "absolute top-1 bottom-1 rounded-full shadow-sm",
@@ -91,18 +84,18 @@ const SubscriptionPage: React.FC = () => {
               )}
               initial={false}
               animate={{
-                x: billingInterval === "Monthly" ? 4 : "100%",
-                left: billingInterval === "Annual" ? -4 : 0,
+                x: billingInterval === "monthly" ? 4 : "100%",
+                left: billingInterval === "annual" ? -4 : 0,
                 width: "50%",
               }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             />
 
             <button
-              onClick={() => setBillingInterval("Monthly")}
+              onClick={() => setBillingInterval("monthly")}
               className={cn(
-                "px-6 py-2 rounded-full text-sm font-medium z-10 transition-colors relative w-32",
-                billingInterval === "Monthly"
+                "px-6 py-2 rounded-full text-sm font-medium z-10 transition-colors relative w-32 hover:cursor-pointer",
+                billingInterval === "monthly"
                   ? isDark
                     ? "text-white"
                     : "text-black"
@@ -114,10 +107,10 @@ const SubscriptionPage: React.FC = () => {
               Monthly
             </button>
             <button
-              onClick={() => setBillingInterval("Annual")}
+              onClick={() => setBillingInterval("annual")}
               className={cn(
-                "px-6 py-2 rounded-full text-sm font-medium z-10 transition-colors relative w-32 flex justify-center items-center gap-2",
-                billingInterval === "Annual"
+                "px-6 py-2 rounded-full text-sm font-medium z-10 transition-colors relative w-32 flex justify-center items-center gap-2 hover:cursor-pointer",
+                billingInterval === "annual"
                   ? isDark
                     ? "text-white"
                     : "text-black"
@@ -134,25 +127,37 @@ const SubscriptionPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Pricing Cards */}
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          {displayedPlans.map((plan) => (
-            <motion.div key={plan.id} variants={itemVariants}>
-              <PricingCard
-                plan={plan}
-                billingInterval={billingInterval}
-                currentPlanId={user?.planId} // Check against specific ID (e.g. integri_pro_Monthly)
-                onSubscribe={handleSubscribe}
-                isLoading={isLoading}
-              />
+        {/* Pricing Cards Grid */}
+        <div className="max-w-5xl mx-auto min-h-[500px]">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={billingInterval} // Re-render grid when interval changes
+              className="grid grid-cols-1 md:grid-cols-2 gap-8"
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              variants={{
+                visible: { transition: { staggerChildren: 0.1 } },
+              }}
+            >
+              {displayedPlans.map((plan) => (
+                <motion.div
+                  key={plan.id}
+                  variants={itemVariants}
+                  layout="position"
+                >
+                  <PricingCard
+                    plan={plan}
+                    billingInterval={billingInterval}
+                    currentPlanId={user?.planId}
+                    onSubscribe={handleSubscribe}
+                    isLoading={isLoading}
+                  />
+                </motion.div>
+              ))}
             </motion.div>
-          ))}
-        </motion.div>
+          </AnimatePresence>
+        </div>
 
         {/* Error Message */}
         {error && (
@@ -233,10 +238,8 @@ const SubscriptionPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Success Modal */}
       {successMessage && <SubscriptionSuccessModal />}
 
-      {/* Login Modal */}
       <LoginModal
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}

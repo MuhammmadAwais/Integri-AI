@@ -256,7 +256,7 @@ export const SUBSCRIPTION_PLANS = [
       "HD Image Generation",
       "10x Higher File Limits",
     ],
-    isPopular: false,
+    isPopular: true,
     buttonText: "Go Premium",
   },
   {

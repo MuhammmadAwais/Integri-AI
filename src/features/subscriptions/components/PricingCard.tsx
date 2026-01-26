@@ -10,13 +10,13 @@ interface PricingCardProps {
     name: string;
     description: string;
     priceMonthly: number;
-    priceYearly: number; // Not strictly used for display if we pass pre-calculated price, but good to have
+    priceYearly: number;
     features: string[];
     isPopular?: boolean;
     buttonText: string;
     tier?: string;
   };
-  billingInterval: "Monthly" | "Annual";
+  billingInterval: "monthly" | "annual";
   currentPlanId?: string;
   onSubscribe: (planId: string) => void;
   isLoading?: boolean;
@@ -31,25 +31,20 @@ const PricingCard: React.FC<PricingCardProps> = ({
 }) => {
   const { isDark } = useAppSelector((state: any) => state.theme);
 
-  // Determine if this specific card is the user's current plan
+  // Strict check: Is this the EXACT plan ID the user has?
   const isCurrent = currentPlanId === plan.id;
 
-  // Format price based on the plan object.
-  // We assume the parent component passes the correct specific plan object (e.g. Pro Monthly)
-  // So we just display plan.priceMonthly (which effectively acts as the price for this specific package)
-  // OR if your constant structure has different fields, we adapt.
-  // Based on Phase 1 constants: priceMonthly and priceYearly were stored.
-  // Ideally, for a specific package card, we just show the relevant price.
-
+  // Determine which price to show based on the toggle state
   const displayPrice =
-    billingInterval === "Monthly" ? plan.priceMonthly : plan.priceYearly;
-  const periodLabel = billingInterval === "Monthly" ? "/ month" : "/ year";
+    billingInterval === "monthly" ? plan.priceMonthly : plan.priceYearly;
+  const periodLabel = billingInterval === "monthly" ? "/ month" : "/ year";
 
   return (
     <motion.div
+      layout // Helps animate position changes smoothly
       whileHover={{ y: -8, transition: { type: "spring", stiffness: 300 } }}
       className={cn(
-        "relative flex flex-col p-6 rounded-2xl border transition-all duration-300",
+        "relative flex flex-col p-6 rounded-2xl border transition-all duration-300 h-full",
         isDark ? "bg-white/5 border-white/10" : "bg-white border-gray-200",
         plan.isPopular &&
           (isDark
