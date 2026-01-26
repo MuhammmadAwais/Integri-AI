@@ -211,7 +211,7 @@ export type SubscriptionTier = "free" | "pro" | "premium";
 
 export const SUBSCRIPTION_PLANS = [
   {
-    id: "integri_pro_monthly",
+    id: "Monthly Pro Subscription",
     name: "Integri Pro Monthly",
     description: "Advanced AI for daily productivity.",
     priceMonthly: 15.0,
@@ -228,7 +228,7 @@ export const SUBSCRIPTION_PLANS = [
     buttonText: "Go Pro",
   },
   {
-    id: "integri_pro_annual",
+    id: "Anual Pro Subscription",
     name: "Integri Pro Annual",
     description: "Best value for consistent power.",
     priceMonthly: 12.0,
@@ -243,7 +243,7 @@ export const SUBSCRIPTION_PLANS = [
     buttonText: "Subscribe Yearly",
   },
   {
-    id: "integri_premium_monthly",
+    id: "Monthly Premium Subscription",
     name: "Integri Premium Monthly",
     description: "Next-gen models and ultimate limits.",
     priceMonthly: 29.0,
@@ -260,7 +260,7 @@ export const SUBSCRIPTION_PLANS = [
     buttonText: "Go Premium",
   },
   {
-    id: "integri_premium_annual",
+    id: "Anual Premium Subscription",
     name: "Integri Premium Annual",
     description: "The ultimate AI experience.",
     priceMonthly: 23.25,
