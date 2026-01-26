@@ -12,7 +12,7 @@ export const SubscriptionService = {
     try {
       const purchases = Purchases.configure(
         import.meta.env.VITE_REVENUECAT_WEB_API_KEY ||
-         "rcb_sb_mwZxSDDpQucNvPaTMjAumrkzb",
+          "rcb_sb_mwZxSDDpQucNvPaTMjAumrkzb",
         userId,
       );
 
@@ -44,9 +44,9 @@ export const SubscriptionService = {
       const REVENUECAT_ID = import.meta.env.VITE_REVENUECAT_ID;
       const purchases = Purchases.getSharedInstance();
       const offerings = await purchases.getOfferings();
-      console.log("Offerings:", offerings);
+
       let currentOffering = offerings.current;
-      console.log("Current Offering:", currentOffering);
+
       if (!currentOffering && offerings.all[REVENUECAT_ID]) {
         currentOffering = offerings.all[REVENUECAT_ID];
       }
