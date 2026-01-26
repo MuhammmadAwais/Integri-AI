@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { SubscriptionTier } from "../../Constants";
 
 const API_URL =
   import.meta.env.VITE_APP_BACKEND_API_BASE_URL || "https://integri.cloud";
@@ -11,27 +12,22 @@ const backendApi = axios.create({
 });
 
 // --- AUTH ---
-// Updated to accept 'isPremium' boolean
+
+
 export const getBackendToken = async (
   userId: any,
   email: any,
-  isPremium: boolean
+  subscriptionTier: SubscriptionTier
 ) => {
   try {
+    console.log("Requesting backend token for:", { userId, email, subscriptionTier });
     const response = await backendApi.post("/api/v1/auth/token", {
       user_id: userId,
       email: email,
-      // Dynamic User Type Logic
-      user_type: isPremium ? "premium" : "freemium",
-
-
-
-      // FOR DEVELOPEMENT PURPOSES ONLY
-      // user_type : isPremium ?  "premium" : "premium"// ONLY FOR DEVELOPERS
+      // Map the internal tier to what the backend expects
+      user_type: subscriptionTier === 'free' ? "freemium" : subscriptionTier,
     });
-    console.log("✅ [API] Auth Success:", response.data);
     return response.data;
-
   } catch (error: any) {
     console.error("❌ [API] Auth Failed:", error);
     throw error;

@@ -17,6 +17,7 @@ import {
 } from "firebase/firestore";
 import { auth, db } from "../../../app/firebase";
 import { SubscriptionService } from "../../subscriptions/services/subscriptionService";
+import type { SubscriptionTier } from "../../../../Constants";
 
 // --- Types ---
 interface FirestoreUserModel {
@@ -52,10 +53,10 @@ export interface UserData {
   email: string | null;
   name: string | null;
   profile: string | null;
-  isPremium: boolean;
+  subscriptionTier: SubscriptionTier; // UPDATED: Changed from isPremium boolean
   planId: string;
   country: string | null;
-  myCode?: number;
+  myCode: number;
   isNewUser?: boolean;
 }
 
@@ -73,64 +74,51 @@ const generateMyCode = async (): Promise<number> => {
 const getInitialFeatureUsed = () => ({});
 
 export const AuthService = {
-  fetchUserProfile: async (
-    firebaseUser: User,
-    forceIsPremium?: boolean
-  ): Promise<UserData> => {
-    let isPremium = forceIsPremium;
-    if (isPremium === undefined) {
-      isPremium = await SubscriptionService.syncStatusWithRevenueCat(
-        firebaseUser.uid
-      );
-    }
+  fetchUserProfile: async (user: User): Promise<UserData> => {
+    const userDoc = await getDoc(doc(db, "Users", user.uid));
 
-    const userRef = doc(db, "Users", firebaseUser.uid);
-    const userSnap = await getDoc(userRef);
+    // UPDATED: Sync real status from RevenueCat immediately
+    const tier = await SubscriptionService.syncStatusWithRevenueCat(user.uid);
 
-    if (userSnap.exists()) {
-      const data = userSnap.data() as FirestoreUserModel;
-
-      // If country is missing, treat as New User to force Onboarding
-      const isIncomplete = !data.country || !data.selectedLanguageCode;
-
+    if (userDoc.exists()) {
+      const data = userDoc.data() as FirestoreUserModel;
       return {
-        id: firebaseUser.uid,
-        email: firebaseUser.email,
-        name: data.userName || firebaseUser.displayName,
-        profile: data.profile || firebaseUser.photoURL,
-        country: data.country || null,
+        id: user.uid,
+        email: user.email,
+        name: data.userName,
+        profile: user.photoURL,
+        subscriptionTier: tier, // Set the fetched tier
+        planId: tier === "free" ? "freemium" : tier,
+        country: data.country,
         myCode: data.myCode,
-        // FOR DEVELOPEMENT PURPOSES ONLY ( UNCOMMENT THE BELOW IN PRODUCTION )
-        // isPremium,
-        isPremium : true,
-        // planId: isPremium ? "premium" : "freemium",
-        planId: "premium",
-        isNewUser: isIncomplete,
-      };
-    } else {
-      return {
-        id: firebaseUser.uid,
-        email: firebaseUser.email,
-        name: firebaseUser.displayName,
-        profile: firebaseUser.photoURL,
-        isPremium,
-        planId: "freemium",
-        country: null,
-        isNewUser: true,
       };
     }
+
+    // New User / Fallback Logic
+    const myCode = Math.floor(100000 + Math.random() * 900000);
+    return {
+      id: user.uid,
+      email: user.email,
+      name: user.displayName || "User",
+      profile: user.photoURL,
+      subscriptionTier: tier, // Set the fetched tier
+      planId: "freemium",
+      country: null,
+      myCode,
+      isNewUser: true, // Force redirect to GettingStarted
+    };
   },
 
   register: async (
     email: string,
     password: string,
     name: string,
-    phoneNumber?: string
+    phoneNumber?: string,
   ): Promise<UserData> => {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
-      password
+      password,
     );
     const user = userCredential.user;
     await updateProfile(user, { displayName: name });
@@ -172,7 +160,7 @@ export const AuthService = {
       email: user.email,
       name: name,
       profile: user.photoURL,
-      isPremium: false,
+      subscriptionTier: "free", // New users start with free tier
       planId: "freemium",
       country: null,
       myCode,
@@ -184,7 +172,7 @@ export const AuthService = {
     const userCredential = await signInWithEmailAndPassword(
       auth,
       email,
-      password
+      password,
     );
     return await AuthService.fetchUserProfile(userCredential.user);
   },
@@ -201,7 +189,13 @@ export const AuthService = {
 
   completeOnboarding: async (
     uid: string,
-    data: { country: string; language: string; name?: string; email?: string; dateOfBirth: Date }
+    data: {
+      country: string;
+      language: string;
+      name?: string;
+      email?: string;
+      dateOfBirth: Date;
+    },
   ): Promise<void> => {
     // Only update the necessary fields
     await setDoc(
@@ -214,7 +208,7 @@ export const AuthService = {
         ...(data.name && { userName: data.name }),
         ...(data.email && { email: data.email }),
       },
-      { merge: true }
+      { merge: true },
     );
   },
 };

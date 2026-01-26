@@ -7,6 +7,7 @@ import {
   loginWithGoogle,
 } from "../thunks/authThunk";
 import { purchaseSubscription } from "../../subscriptions/slices/subscriptionSlice";
+import type { SubscriptionTier } from "../../../../Constants";
 
 interface AuthState {
   user: UserData | null;
@@ -33,7 +34,7 @@ const authSlice = createSlice({
       action: PayloadAction<{
         user: UserData | null;
         accessToken: string | null;
-      }>
+      }>,
     ) => {
       state.user = action.payload.user;
       state.accessToken = action.payload.accessToken;
@@ -63,6 +64,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.user = action.payload.user;
         state.accessToken = action.payload.accessToken;
+        // Check if user needs onboarding
         state.isNewUser = !!action.payload.user.isNewUser;
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -86,7 +88,7 @@ const authSlice = createSlice({
         state.error = action.payload as string;
       })
 
-      // --- GOOGLE ---
+      // --- GOOGLE ---\
       .addCase(loginWithGoogle.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -113,12 +115,12 @@ const authSlice = createSlice({
       // --- SUBSCRIPTION ---
       .addCase(purchaseSubscription.fulfilled, (state, action) => {
         if (state.user) {
-          state.user.isPremium = true;
-          state.user.planId = action.payload;
+          // UPDATED: Correctly typecast payload as SubscriptionTier
+          state.user.subscriptionTier = action.payload as SubscriptionTier;
         }
       });
   },
 });
 
-export const { setAuthUser, completeOnboarding } = authSlice.actions;
+export const { setAuthUser , completeOnboarding } = authSlice.actions;
 export default authSlice.reducer;

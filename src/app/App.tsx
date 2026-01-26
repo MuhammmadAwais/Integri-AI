@@ -140,25 +140,14 @@ const router = createBrowserRouter([
 // --- 3. MAIN COMPONENT ---
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
-  // Get theme state
-  const isDark = useAppSelector((state: any) => state.theme.isDark);
-  const token = useAppSelector((state: any) => state.auth.accessToken);
+  const token = useAppSelector((state) => state.auth.accessToken);
 
-  // --- THEME APPLICATION EFFECT ---
-  // Apply the theme class to the HTML element whenever isDark changes
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [isDark]);
-
+  // Fetch agents whenever we have a valid token
   useEffect(() => {
     if (token) {
       dispatch(fetchAgents(token));
     }
-  }); // Note: Missing dependency array here in original code, kept as is.
+  });
 
   useEffect(() => {
     // This listener handles the "Auto Login" logic by detecting the existing session
@@ -170,10 +159,11 @@ const App: React.FC = () => {
           // Get Backend Token
           let accessToken = null;
           try {
+            // UPDATED: Pass user.subscriptionTier instead of user.isPremium
             const tokenData = await getBackendToken(
               user.id,
               user.email,
-              user.isPremium
+              user.subscriptionTier
             );
             accessToken = tokenData.access_token;
           } catch (tokenError) {
@@ -206,6 +196,6 @@ const App: React.FC = () => {
       </div>
     </>
   );
-};
+}
 
 export default App;

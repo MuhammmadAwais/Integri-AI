@@ -11,11 +11,11 @@ export const loginUser = createAsyncThunk(
       const user = await AuthService.login(data.email, data.password);
 
       // 2. Ask Backend
-      // Pass the derived isPremium status (from RC)
+      // UPDATED: Pass subscriptionTier instead of isPremium
       const backendData = await getBackendToken(
         user.id,
         user.email,
-        user.isPremium
+        user.subscriptionTier,
       );
 
       console.log("Backend auth successful:", backendData);
@@ -28,7 +28,7 @@ export const loginUser = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.message || "Login failed");
     }
-  }
+  },
 );
 
 // --- REGISTER THUNK ---
@@ -36,21 +36,22 @@ export const registerUser = createAsyncThunk(
   "auth/register",
   async (
     data: { email: string; password: string; name: string },
-    { rejectWithValue }
+    { rejectWithValue },
   ) => {
     try {
       // 1. Register Firebase (Creates Firestore with defaults)
       const user = await AuthService.register(
         data.email,
         data.password,
-        data.name
+        data.name,
       );
 
       // 2. Get Token from Backend
+      // UPDATED: Pass subscriptionTier
       const backendData = await getBackendToken(
         user.id,
         user.email,
-        user.isPremium
+        user.subscriptionTier,
       );
 
       return {
@@ -60,7 +61,7 @@ export const registerUser = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.message || "Registration failed");
     }
-  }
+  },
 );
 
 // --- GOOGLE LOGIN THUNK ---
@@ -72,10 +73,11 @@ export const loginWithGoogle = createAsyncThunk(
       const user = await AuthService.loginWithGoogle();
 
       // 2. Get Token from Backend
+      // UPDATED: Pass subscriptionTier
       const backendData = await getBackendToken(
         user.id,
         user.email,
-        user.isPremium
+        user.subscriptionTier,
       );
 
       return {
@@ -85,16 +87,10 @@ export const loginWithGoogle = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.message || "Google login failed");
     }
-  }
+  },
 );
 
-export const logoutUser = createAsyncThunk(
-  "auth/logout",
-  async (_, { rejectWithValue }) => {
-    try {
-      await AuthService.logout();
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Logout failed");
-    }
-  }
-);
+// --- LOGOUT THUNK ---
+export const logoutUser = createAsyncThunk("auth/logout", async () => {
+  await AuthService.logout();
+});
