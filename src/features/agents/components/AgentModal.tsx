@@ -183,7 +183,6 @@ const AgentModal: React.FC<AgentModalProps> = ({
               onChange={(newModelId) =>
                 setFormData({ ...formData, model: newModelId })
               }
-              userIsPremium={isPremium}
               disabled={isSubmitting}
             />
           </div>

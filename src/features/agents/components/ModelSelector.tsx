@@ -2,12 +2,15 @@ import React, { useState, useRef, useEffect } from "react";
 import { ChevronDown, Check, Lock } from "lucide-react";
 import { cn } from "../../../lib/utils"; // Adjust path to your utils
 import { useAppSelector } from "../../../hooks/useRedux";
+import { useSubscription } from "../../subscriptions/hooks/useSubscription";
 
 // Interface for the Model object
 export interface Model {
   id: string;
   name: string;
-  isPremium: boolean;
+  isPremium?: boolean;
+  isPro?: boolean;
+  isFree?: boolean;
   provider?: string;
   light_theme_logo: string;
   dark_theme_logo: string;
@@ -17,7 +20,6 @@ interface ModelSelectorProps {
   models: Model[];
   selectedModelId: string;
   onChange: (modelId: string) => void;
-  userIsPremium: boolean | null | undefined;
   disabled?: boolean;
 }
 
@@ -25,7 +27,6 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
   models,
   selectedModelId,
   onChange,
-  userIsPremium,
   disabled = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,6 +34,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
 
   // Access global theme state for conditional styling
   const isDark = useAppSelector((state: any) => state.theme.isDark);
+  const { availableModels } = useSubscription();
 
   // Find the currently selected model object for display
   const selectedModel = models.find((m) => m.id === selectedModelId);
@@ -52,8 +54,8 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
   }, []);
 
   const handleSelect = (model: Model) => {
-    // Logic: If user is NOT premium AND model IS premium, prevent selection
-    const isLocked = !userIsPremium && model.isPremium;
+    // Logic: Check if the model is in the user's available models list
+    const isLocked = !availableModels.some((am) => am.id === model.id);
 
     if (isLocked) return;
 
@@ -145,7 +147,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
         >
           <ul className="max-h-60 overflow-y-auto py-1 custom-scrollbar">
             {models.map((model) => {
-              const isLocked = !userIsPremium && model.isPremium;
+              const isLocked = !availableModels.some((am) => am.id === model.id);
               const isSelected = selectedModelId === model.id;
 
               return (
