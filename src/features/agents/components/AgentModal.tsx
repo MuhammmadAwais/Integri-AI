@@ -3,7 +3,7 @@ import { X, Loader2, Bot, Plus } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { AgentService } from "../../../api/backendApi";
 import AVAILABLE_MODELS from "../../../../Constants";
-import { useAppSelector } from "../../../hooks/useRedux";
+import { useSubscription } from "../../subscriptions/hooks/useSubscription";
 import { ModelSelector } from "./ModelSelector"; // Check this path
 
 interface AgentModalProps {
@@ -25,7 +25,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const user = useAppSelector((state) => state.auth.user);
+  const { availableModels, isPremium } = useSubscription();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -175,7 +175,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
           {/* --- NEW: Custom Model Selector --- */}
           <div>
             <ModelSelector
-              models={AVAILABLE_MODELS.map((m) => ({
+              models={availableModels.map((m) => ({
                 ...m,
                 name: m.label, // Mapping 'label' to 'name' for the component
               }))}
@@ -183,7 +183,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
               onChange={(newModelId) =>
                 setFormData({ ...formData, model: newModelId })
               }
-              userIsPremium={user?.isPremium }
+              userIsPremium={isPremium}
               disabled={isSubmitting}
             />
           </div>

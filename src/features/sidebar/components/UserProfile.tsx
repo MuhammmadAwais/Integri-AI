@@ -12,6 +12,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { cn } from "../../../lib/utils";
 import Portal from "../../../Components/ui/Portal";
 import DownloadSettings from "../../settings/components/DownloadSettings";
+import { useSubscription } from "../../subscriptions/hooks/useSubscription";
 
 interface UserProfileProps {
   isExpanded: boolean;
@@ -28,6 +29,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
+  const { isPremium, isPro } = useSubscription();
   const [showMenu, setShowMenu] = useState(false);
   const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -165,10 +167,14 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
             className={cn(
               "rounded-full bg-gray-600 flex items-center justify-center text-white font-bold text-sm shrink-0 ring-3 ring-transparent  transition-all shadow-sm",
               isExpanded ? "w-9 h-9" : "w-8 h-8",
-              user?.isPremium
+              isPremium
                 ? isDark
-                  ? "ring-yellow-400 group-hover:ring-yellow-600 "
-                  : "ring-yellow-400  group-hover:ring-yellow-500 "
+                  ? "ring-yellow-400 group-hover:ring-yellow-300 shadow-[0_0_10px_rgba(250,204,21,0.4)]"
+                  : "ring-yellow-500 group-hover:ring-yellow-600"
+                : isPro
+                ? isDark
+                  ? "ring-purple-500 group-hover:ring-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.4)]"
+                  : "ring-purple-600 group-hover:ring-purple-700"
                 : "group-hover:ring-indigo-500"
             )}
           >
@@ -181,8 +187,17 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
         ) : (
           <div
             className={cn(
-              "rounded-full bg-gray-600 flex items-center justify-center text-white font-bold text-sm shrink-0 ring-2 ring-transparent group-hover:ring-indigo-500 transition-all shadow-sm",
-              isExpanded ? "w-9 h-9" : "w-8 h-8"
+              "rounded-full bg-gray-600 flex items-center justify-center text-white font-bold text-sm shrink-0 ring-3 ring-transparent transition-all shadow-sm",
+              isExpanded ? "w-9 h-9" : "w-8 h-8",
+              isPremium
+                ? isDark
+                  ? "ring-yellow-400 group-hover:ring-yellow-300 shadow-[0_0_10px_rgba(250,204,21,0.4)]"
+                  : "ring-yellow-500 group-hover:ring-yellow-600"
+                : isPro
+                ? isDark
+                  ? "ring-purple-500 group-hover:ring-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.4)]"
+                  : "ring-purple-600 group-hover:ring-purple-700"
+                : "group-hover:ring-indigo-500"
             )}
           >
             {initials}

@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Crown } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { useAppSelector } from "../../../hooks/useRedux";
-import { useSubscription } from "../../subscriptions/hooks/useSubscription";
+import { useSubscription } from "../hooks/useSubscription";
 
 const SubscriptionOfferingCard: React.FC = () => {
   const { isDark } = useAppSelector((state: any) => state.theme);

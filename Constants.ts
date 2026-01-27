@@ -7,7 +7,9 @@ const AVAILABLE_MODELS = [
     alt_provider: "integri",
     light_theme_logo: "/light-theme-logo.png",
     dark_theme_logo: "/dark-theme-logo.png",
-    isPremium: false,
+    isPro: true,
+    isPremium: true,
+    isFree: true,
   },
 
   // --- OpenAI ---
@@ -18,7 +20,9 @@ const AVAILABLE_MODELS = [
     badge: "New",
     light_theme_logo: "/light-theme-openai.png",
     dark_theme_logo: "/dark-theme-openai.png",
-    isPremium: true,
+    isPro: true,
+    isPremium: false,
+    isFree: false,
   },
   {
     id: "gpt-5.1",
@@ -27,7 +31,9 @@ const AVAILABLE_MODELS = [
     badge: "New",
     light_theme_logo: "/light-theme-openai.png",
     dark_theme_logo: "/dark-theme-openai.png",
-    isPremium: true,
+    isPro: true,
+    isPremium: false,
+    isFree: false,
   },
   {
     id: "gpt-5-mini",
@@ -36,7 +42,9 @@ const AVAILABLE_MODELS = [
     badge: "New",
     light_theme_logo: "/light-theme-openai.png",
     dark_theme_logo: "/dark-theme-openai.png",
-    isPremium: true,
+    isPro: true,
+    isPremium: false,
+    isFree: false,
   },
   {
     id: "gpt-5-nano",
@@ -45,7 +53,9 @@ const AVAILABLE_MODELS = [
     badge: "Fast",
     light_theme_logo: "/light-theme-openai.png",
     dark_theme_logo: "/dark-theme-openai.png",
+    isPro: true,
     isPremium: true,
+    isFree: true,
   },
   {
     id: "gpt-4o-mini",
@@ -53,7 +63,9 @@ const AVAILABLE_MODELS = [
     provider: "openai",
     light_theme_logo: "/light-theme-openai.png",
     dark_theme_logo: "/dark-theme-openai.png",
+    isPro: true,
     isPremium: true,
+    isFree: true,
   },
   {
     id: "gpt-4.1-nano",
@@ -62,9 +74,11 @@ const AVAILABLE_MODELS = [
     badge: "Efficient",
     light_theme_logo: "/light-theme-openai.png",
     dark_theme_logo: "/dark-theme-openai.png",
+    isPro: true,
     isPremium: true,
+    isFree: false,
   },
-  
+
   // --- Google ---
   {
     id: "gemini-2.5-flash",
@@ -72,16 +86,20 @@ const AVAILABLE_MODELS = [
     provider: "gemini",
     light_theme_logo: "/gemini.png",
     dark_theme_logo: "/gemini.png",
+    isPro: true,
     isPremium: true,
+    isFree: false,
   },
-  
+
   {
     id: "gemini-2.5-flash-lite",
     label: "Gemini 2.5 Flash Lite",
     provider: "gemini",
     light_theme_logo: "/gemini.png",
     dark_theme_logo: "/gemini.png",
+    isPro: true,
     isPremium: true,
+    isFree: false,
   },
   {
     id: "gemini-3-flash-preview",
@@ -89,9 +107,11 @@ const AVAILABLE_MODELS = [
     provider: "gemini",
     light_theme_logo: "/gemini.png",
     dark_theme_logo: "/gemini.png",
-    isPremium: true,
+    isPro: true,
+    isPremium: false,
+    isFree: false,
   },
-  
+
   // --- Grok ---
   {
     id: "grok-3-mini",
@@ -100,7 +120,9 @@ const AVAILABLE_MODELS = [
     badge: "Uncensored",
     light_theme_logo: "/light-theme-grok.png",
     dark_theme_logo: "/dark-theme-grok.png",
+    isPro: true,
     isPremium: true,
+    isFree: false,
   },
   {
     id: "grok-4-1-fast-reasoning",
@@ -109,7 +131,9 @@ const AVAILABLE_MODELS = [
     badge: "Uncensored",
     light_theme_logo: "/light-theme-grok.png",
     dark_theme_logo: "/dark-theme-grok.png",
+    isPro: true,
     isPremium: true,
+    isFree: false,
   },
   {
     id: "grok-4-1-fast-non-reasoning",
@@ -118,7 +142,9 @@ const AVAILABLE_MODELS = [
     badge: "Uncensored",
     light_theme_logo: "/light-theme-grok.png",
     dark_theme_logo: "/dark-theme-grok.png",
+    isPro: true,
     isPremium: true,
+    isFree: false,
   },
   {
     id: "grok-4-fast-reasoning",
@@ -127,7 +153,9 @@ const AVAILABLE_MODELS = [
     badge: "Uncensored",
     light_theme_logo: "/light-theme-grok.png",
     dark_theme_logo: "/dark-theme-grok.png",
+    isPro: true,
     isPremium: true,
+    isFree: false,
   },
   {
     id: "grok-4-fast-non-reasoning",
@@ -136,9 +164,11 @@ const AVAILABLE_MODELS = [
     badge: "Uncensored",
     light_theme_logo: "/light-theme-grok.png",
     dark_theme_logo: "/dark-theme-grok.png",
+    isPro: true,
     isPremium: true,
+    isFree: false,
   },
-  
+
   // --- Claude ---
   {
     id: "claude-3.5-haiku",
@@ -146,7 +176,9 @@ const AVAILABLE_MODELS = [
     provider: "claude",
     light_theme_logo: "/claude.png",
     dark_theme_logo: "/claude.png",
-    isPremium: true,
+    isPro: true,
+    isPremium: false,
+    isFree: false,
   },
   {
     id: "claude-haiku-3",
@@ -154,7 +186,9 @@ const AVAILABLE_MODELS = [
     provider: "claude",
     light_theme_logo: "/claude.png",
     dark_theme_logo: "/claude.png",
+    isPro: true,
     isPremium: true,
+    isFree: false,
   },
   // --- DeepSeek ---
   {
@@ -164,7 +198,9 @@ const AVAILABLE_MODELS = [
     badge: "Reasoning",
     light_theme_logo: "/deepseek.png",
     dark_theme_logo: "/deepseek.png",
+    isPro: true,
     isPremium: true,
+    isFree: false,
   },
   {
     id: "deepseek-chat",
@@ -172,9 +208,11 @@ const AVAILABLE_MODELS = [
     provider: "deepseek",
     light_theme_logo: "/deepseek.png",
     dark_theme_logo: "/deepseek.png",
+    isPro: true,
     isPremium: true,
+    isFree: false,
   },
-  
+
   // --- Perplexity ---
   {
     id: "perplexity-sonar",
@@ -183,9 +221,11 @@ const AVAILABLE_MODELS = [
     badge: "Search",
     light_theme_logo: "/perplexity.png",
     dark_theme_logo: "/perplexity.png",
+    isPro: true,
     isPremium: true,
+    isFree: false,
   },
-  
+
   // --- Mistral ---
   {
     id: "mistral-medium-2505",
@@ -193,7 +233,9 @@ const AVAILABLE_MODELS = [
     provider: "mistral",
     light_theme_logo: "/mistral.png",
     dark_theme_logo: "/mistral.png",
+    isPro: true,
     isPremium: true,
+    isFree: false,
   },
 ];
 // models available for voice mode ( NOTE : WE ARE STILL USING DYNAMIC MODELS BUT RIGHT NOW MODEL SELECTION IS DISABLED FOR VOICE MODE SO ONLY ONE MODEL IS HERE AND THE VOICE MODELS LIST IS HIDDEN IN THE UI BUT IT IS KEPT FOR FUTURE USE )

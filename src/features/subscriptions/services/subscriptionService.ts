@@ -42,7 +42,11 @@ export const SubscriptionService = {
   ): Promise<SubscriptionTier> => {
     try {
       const REVENUECAT_ID = import.meta.env.VITE_REVENUECAT_ID;
-      const purchases = Purchases.getSharedInstance();
+      const purchases = Purchases.configure(
+        import.meta.env.VITE_REVENUECAT_WEB_API_KEY ||
+          "rcb_sb_mwZxSDDpQucNvPaTMjAumrkzb",
+        userId,
+      );
       const offerings = await purchases.getOfferings();
       console.log("Offerings:", offerings);
       let currentOffering = offerings.current;
