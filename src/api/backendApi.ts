@@ -242,7 +242,10 @@ export const AgentService = {
         name: agentData.name,
         description: agentData.description,
         instructions: agentData.instructions,
-        conversation_starters: agentData.conversation_starters || [],
+        conversation_starters:
+          agentData.conversation_starters?.length
+            ? agentData.conversation_starters
+            : [agentData.name],
         recommended_model: agentData.recommended_model,
         recommended_provider: agentData.recommended_provider,
       };

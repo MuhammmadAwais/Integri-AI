@@ -44,18 +44,23 @@ const haveFreeDaysToUseApp = async (userId: string): Promise<boolean> => {
 
     const userDoc = await getDoc(doc(db, "Users", userId));
     if (!userDoc.exists()) {
+      console.log("[FreeDays] No user document found for", userId);
       return false;
     }
 
     const data = userDoc.data();
-    const freeDays = data.freeDays as number | null;
-    const freeDayStartDateTime = data.freeDayStartDateTime;
+    // Support both camelCase and snake_case (e.g. from backend/admin)
+    const freeDays = (data.freeDays ?? data.free_days) as number | null;
+    const freeDayStartDateTime =
+      data.freeDayStartDateTime ?? data.free_day_start_date_time;
 
     if (freeDays === null || freeDays === 0) {
+      console.log("[FreeDays] freeDays missing or zero:", freeDays);
       return false;
     }
 
     if (!freeDayStartDateTime) {
+      console.log("[FreeDays] freeDayStartDateTime missing");
       return false;
     }
 
@@ -79,8 +84,18 @@ const haveFreeDaysToUseApp = async (userId: string): Promise<boolean> => {
     const endDate = new Date(startDate);
     endDate.setDate(endDate.getDate() + freeDays);
     const now = new Date();
-
-    return now < endDate;
+    const stillValid = now < endDate;
+    if (!stillValid) {
+      console.log(
+        "[FreeDays] Period ended - start:",
+        startDate.toISOString(),
+        "end:",
+        endDate.toISOString(),
+        "now:",
+        now.toISOString()
+      );
+    }
+    return stillValid;
   } catch (error) {
     console.error("Error checking free days:", error);
     return false;
@@ -329,6 +344,16 @@ export const SubscriptionService = {
       return "free";
     } catch (error) {
       console.error("RevenueCat Check Error:", error);
+      // When RevenueCat fails (e.g. network, not configured), still honor free days from Firestore
+      try {
+        const hasFreeDays = await haveFreeDaysToUseApp(userId);
+        if (hasFreeDays) {
+          console.log("RevenueCat failed but free days available - granting premium access");
+          return "premium";
+        }
+      } catch (freeDaysError) {
+        console.error("Free days check failed:", freeDaysError);
+      }
       return "free";
     }
   },

@@ -20,6 +20,7 @@ import ParticleBackground from "../Components/ui/ParticleBackground";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import LoginModal from "../features/auth/components/LoginModal";
 import SubscribeModal from "../features/subscriptions/components/SubscribeModal";
+import { useSubscription } from "../features/subscriptions/hooks/useSubscription";
 
 interface Note {
   id: string;
@@ -35,6 +36,7 @@ const PdfChatPage: React.FC = () => {
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   const token = useAppSelector((state: any) => state.auth.accessToken);
   const user = useAppSelector((state: any) => state.auth.user);
+  const { isAtLeastPro } = useSubscription();
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"chat" | "pdf">("chat");
   const [isUploading, setIsUploading] = useState(false);
@@ -63,9 +65,9 @@ const PdfChatPage: React.FC = () => {
         return
       }
     if (!token) return;
-    if (!user?.isPremium) {
+    if (!isAtLeastPro) {
       setShowSubscriptionModal(true);
-      return
+      return;
     }
     if (!file || file.type !== "application/pdf") {
       alert("Please upload a PDF file.");

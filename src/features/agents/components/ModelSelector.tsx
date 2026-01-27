@@ -105,13 +105,6 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
               >
                 {selectedModel.name}
               </span>
-              {selectedModel.isPremium && (
-                <img
-                  src="/crown_icon.png"
-                  alt="Premium"
-                  className="h-4 w-4 object-contain ml-1"
-                />
-              )}
             </>
           ) : (
             <span
@@ -194,25 +187,13 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                     >
                       {model.name}
                     </span>
-
-                    {/* Icon Support: Crown for Premium */}
-                    {model.isPremium && (
-                      <div className="flex items-center gap-1.5 ml-1">
-                        <img
-                          src="/crown_icon.png"
-                          alt="Premium"
-                          className="h-4 w-4 object-contain"
-                        />
-                        {/* Lock icon for non-premium users */}
-                        {isLocked && (
-                          <Lock
-                            size={12}
-                            className={
-                              isDark ? "text-zinc-500" : "text-zinc-400"
-                            }
-                          />
-                        )}
-                      </div>
+                    {model.isPremium && isLocked && (
+                      <Lock
+                        size={12}
+                        className={
+                          isDark ? "text-zinc-500" : "text-zinc-400"
+                        }
+                      />
                     )}
                   </div>
 

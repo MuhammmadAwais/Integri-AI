@@ -78,7 +78,8 @@ const AgentModal: React.FC<AgentModalProps> = ({
         name: formData.name,
         description: formData.description,
         instructions: formData.instructions,
-        conversation_starters: conversationStarters,
+        conversation_starters:
+          conversationStarters.length > 0 ? conversationStarters : [formData.name],
         recommended_model: formData.model,
         recommended_provider: provider,
       };

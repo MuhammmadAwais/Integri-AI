@@ -165,25 +165,26 @@ const ModelMenu: React.FC<ModelMenuProps> = ({
                         : "text-gray-700 hover:bg-gray-100"
                     )}
                   >
-                    <div>
-                      <img src={isDark ? `${m.dark_theme_logo}` : `${m.light_theme_logo}`} alt="logo" className="w-6 h-6 shrink-0"  />
-                      <div className="font-medium">{m.label || m.id}</div>
-                      <div className="text-[10px] opacity-60 capitalize flex items-center gap-1.5">
-                        {m.alt_provider || m.provider}
-                        {m.badge && (
-                          <span
-                            className={cn(
-                              "px-1 rounded-[3px] text-[9px] font-medium leading-none py-0.5",
-                              isDark
-                                ? "bg-gray-800 text-gray-400"
-                                : "bg-gray-200 text-gray-600"
-                            )}
-                          >
-                            {m.badge}
-                          </span>
-                        )}
+                    <div className="flex items-center gap-3 w-full min-w-0">
+                      <img src={isDark ? `${m.dark_theme_logo}` : `${m.light_theme_logo}`} alt="logo" className="w-6 h-6 shrink-0 object-contain" />
+                      <div className="flex flex-col min-w-0 text-left">
+                        <div className="font-medium truncate">{m.label || m.id}</div>
+                        <div className="text-[10px] opacity-60 capitalize flex items-center gap-1.5">
+                          {m.alt_provider || m.provider}
+                          {m.badge && (
+                            <span
+                              className={cn(
+                                "px-1 rounded-[3px] text-[9px] font-medium leading-none py-0.5",
+                                isDark
+                                  ? "bg-gray-800 text-gray-400"
+                                  : "bg-gray-200 text-gray-600"
+                              )}
+                            >
+                              {m.badge}
+                            </span>
+                          )}
+                        </div>
                       </div>
-                      
                     </div>
 
                    { isLocked && 
