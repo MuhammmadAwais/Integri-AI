@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Crown } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { useAppSelector } from "../../../hooks/useRedux";
 import { useSubscription } from "../hooks/useSubscription";

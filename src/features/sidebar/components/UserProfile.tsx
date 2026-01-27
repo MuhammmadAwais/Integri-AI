@@ -5,7 +5,6 @@ import {
   LogIn,
   LogOut,
   User as UserIcon,
-  CreditCard,
 } from "lucide-react";
 import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux";
 import { logoutUser } from "../../auth/thunks/authThunk";
