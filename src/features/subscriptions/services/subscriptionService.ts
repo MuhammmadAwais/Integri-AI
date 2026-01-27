@@ -206,27 +206,32 @@ export const SubscriptionService = {
           // Use product description if available, otherwise use tier-based description
           const descriptions: Record<SubscriptionTier, string> = {
             free: "Basic AI features",
-            pro: "Advanced AI for daily productivity.",
-            premium: "Next-gen models and ultimate limits.",
+            pro: "Everything in PREMIUM plus GPT 5.2, GPT 5.1, Claude Haiku 4.5, Gemini 3 Flash, Advanced Voice, HD Image Gen, and more.",
+            premium: "Almost all LLMs, no ads, unlimited agents, standard voice and image, PDF chats, and multi chats.",
           };
           const description = product.description || descriptions[tier];
 
-          // Generate features based on tier
+          // Generate features based on tier (per product differentiation)
           const featuresByTier: Record<SubscriptionTier, string[]> = {
             free: ["Basic AI features", "Limited usage"],
             pro: [
-              "GPT-4o & Claude 3.5 Sonnet",
-              "Unlimited Chat History",
-              "Standard Voice Mode",
-              "Standard Image Generation",
+              "Everything in PREMIUM",
+              "GPT 5.2, GPT 5.1, Claude Haiku 4.5, and Gemini 3 Flash",
+              "Advanced Real-time Voice",
+              "10x Higher File Limits",
+              "HD Image Generation",
+              "PDF chats with higher LLMs and OCR",
+              "Multi chats with all LLMs",
               "Priority Email Support",
             ],
             premium: [
-              "Everything in Pro",
-              "GPT-5 Access",
-              "Advanced Real-time Voice",
-              "HD Image Generation",
-              "10x Higher File Limits",
+              "Almost all LLMs",
+              "No ads",
+              "Unlimited Agents creation",
+              "Standard Voice Mode",
+              "Standard Image Generation",
+              "PDF chats",
+              "Multi chats",
             ],
           };
 

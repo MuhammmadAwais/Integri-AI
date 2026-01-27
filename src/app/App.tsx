@@ -35,6 +35,7 @@ import ImageGenPage from "../pages/ImageGenPage";
 import ContactUs from "../pages/ContactUs";
 import MobileVoiceWrapper from "../pages/MobileVoiceWrapper"; // <--- IMPORT ADDED
 import { fetchAgents } from "../features/agents/agentsSlice";
+import AppDownloadSheet from "../Components/ui/AppDownloadSheet";
 
 // --- 1. GUARD COMPONENTS ---
 
@@ -194,6 +195,7 @@ const App: React.FC = () => {
       <div>
         <RouterProvider router={router} />
       </div>
+      <AppDownloadSheet />
     </>
   );
 }
