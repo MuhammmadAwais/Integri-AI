@@ -19,13 +19,12 @@ import HistoryModal from "./HistoryModal";
 import DeleteModal from "../../../Components/ui/DeleteModal";
 import UserProfile from "./UserProfile";
 
-
 // --- NAVIGATION ITEMS CONFIG ---
 const NAV_ITEMS = [
   { id: "chat", label: "Chat", icon: MessageCircle, path: "/" },
   {
     id: "playground",
-    label: "Multi Chat",
+    label: "Multi Chats",
     icon: PenSquare,
     path: "/playground",
   },
@@ -40,7 +39,6 @@ const Sidebar: React.FC = () => {
   const [isHistoryOpen, setIsHistoryOpen] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
-
   // Modal States
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -51,10 +49,7 @@ const Sidebar: React.FC = () => {
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   const SearchinputRef = useRef<HTMLInputElement | null>(null);
 
-
   // Profile Functionailities
-;
-
   // Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -78,8 +73,8 @@ const Sidebar: React.FC = () => {
   // Data Fetching
   const { chats = [], handleDeleteChat } = useChatList();
   // Filter Logic
-  const filteredChats = chats.filter((c :any) =>
-    (c.title || "").toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredChats = chats.filter((c: any) =>
+    (c.title || "").toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const handleNavClick = (path: string) => {
@@ -151,21 +146,23 @@ const Sidebar: React.FC = () => {
           isExpanded ? "w-60" : "w-[60px]",
           isDark
             ? "bg-[#000000] border-[#1F1F1F] text-[#E7E9EA]"
-            : "bg-white border-gray-200 text-gray-900"
+            : "bg-white border-gray-200 text-gray-900",
         )}
       >
         {/* --- 1. HEADER LOGO --- */}
         <div
           className={cn(
             "flex items-center my-2 h-[52px]",
-            isExpanded ? "px-5" : "justify-center"
+            isExpanded ? "px-5" : "justify-center",
           )}
         >
           <Link to="/" className="hover:opacity-80 transition-opacity">
             <h1
               className={cn(
                 "",
-                isExpanded ? "text-2xl font-extrabold" : "text xs font-semibold"
+                isExpanded
+                  ? "text-2xl font-extrabold"
+                  : "text xs font-semibold",
               )}
             >
               Integri
@@ -181,7 +178,7 @@ const Sidebar: React.FC = () => {
                 "flex items-center gap-2.5 px-3 py-1.5 rounded-full border transition-all group",
                 isDark
                   ? "bg-[#101010] border-[#1F1F1F] focus-within:border-gray-700 focus-within:bg-black"
-                  : "bg-gray-50 border-gray-200 focus-within:bg-white focus-within:border-gray-300"
+                  : "bg-gray-50 border-gray-200 focus-within:bg-white focus-within:border-gray-300",
               )}
             >
               <Search size={14} className="text-gray-500" />
@@ -191,7 +188,7 @@ const Sidebar: React.FC = () => {
                 placeholder="Search"
                 className={cn(
                   "bg-transparent border-none outline-none w-full text-[13px] placeholder:text-gray-500",
-                  isDark ? "text-white" : "text-black"
+                  isDark ? "text-white" : "text-black",
                 )}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -208,7 +205,7 @@ const Sidebar: React.FC = () => {
                 "w-9 h-9 rounded-full flex items-center justify-center transition-colors",
                 isDark
                   ? "hover:bg-[#1A1A1A] text-gray-400"
-                  : "hover:bg-gray-100"
+                  : "hover:bg-gray-100",
               )}
             >
               <Search size={20} />
@@ -238,7 +235,7 @@ const Sidebar: React.FC = () => {
               <button
                 className={cn(
                   "flex justify-between items-center w-full px-2 py-2 text-[#71767B]  transition-colors group mb-1",
-                  isDark ? "hover:text-white" : "hover:text-black"
+                  isDark ? "hover:text-white" : "hover:text-black",
                 )}
               >
                 <Link
@@ -288,7 +285,7 @@ const Sidebar: React.FC = () => {
                                   ? "text-[#E7E9EA] hover:bg-[#1A1A1A]"
                                   : "text-gray-700 hover:bg-gray-100",
                                 location.pathname.includes(sessionId) &&
-                                  (isDark ? "bg-[#1A1A1A]" : "bg-gray-100")
+                                  (isDark ? "bg-[#1A1A1A]" : "bg-gray-100"),
                               )}
                             >
                               {chat.title || "New Conversation"}
@@ -300,7 +297,7 @@ const Sidebar: React.FC = () => {
                                 "hover:cursor-pointer absolute right-1 top-1/2 -translate-y-1/2 p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity",
                                 isDark
                                   ? "hover:bg-[#2C2C2C] text-gray-400 hover:text-red-400"
-                                  : "hover:bg-gray-200 text-gray-500 hover:text-red-500"
+                                  : "hover:bg-gray-200 text-gray-500 hover:text-red-500",
                               )}
                               title="Delete chat"
                             >
@@ -315,7 +312,7 @@ const Sidebar: React.FC = () => {
                     onClick={() => setShowHistoryModal(true)}
                     className={cn(
                       "text-[12px] text-[#71767B] px-2 py-1 hover:underline text-left block w-full hover:cursor-pointer mt-2",
-                      isDark ? "hover:text-white" : "hover:text-black"
+                      isDark ? "hover:text-white" : "hover:text-black",
                     )}
                   >
                     See all
@@ -331,7 +328,7 @@ const Sidebar: React.FC = () => {
                 "w-9 h-9 mx-auto rounded-lg flex items-center justify-center transition-colors mt-2",
                 isDark
                   ? "hover:bg-[#1A1A1A] text-gray-500"
-                  : "hover:bg-gray-100"
+                  : "hover:bg-gray-100",
               )}
             >
               <History size={20} />
@@ -339,14 +336,11 @@ const Sidebar: React.FC = () => {
           )}
         </div>
 
-        
-
         {/* --- 5. FOOTER (UserProfile) --- */}
         <div
-          
           className={cn(
             "p-2 mt-auto relative z-50",
-            isDark ? "border-t border-[#1F1F1F]" : "border-t border-gray-200"
+            isDark ? "border-t border-[#1F1F1F]" : "border-t border-gray-200",
           )}
         >
           <UserProfile
@@ -377,8 +371,8 @@ const NavItem = ({
           ? "bg-[#1A1A1A] text-white"
           : "bg-gray-100 text-black"
         : isDark
-        ? "text-[#999] hover:bg-[#111] hover:text-[#E7E9EA]"
-        : "text-gray-600 hover:bg-gray-50"
+          ? "text-[#999] hover:bg-[#111] hover:text-[#E7E9EA]"
+          : "text-gray-600 hover:bg-gray-50",
     )}
   >
     <Icon size={18} strokeWidth={2} className="shrink-0 hover:cursor-pointer" />
