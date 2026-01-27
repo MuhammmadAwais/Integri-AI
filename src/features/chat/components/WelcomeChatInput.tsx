@@ -15,6 +15,8 @@ import {
   FileText,
   HardDrive,
   PenTool,
+  Search,
+  SearchX,
 } from "lucide-react";
 import { cn } from "../../../lib/utils"; 
 import { useCloudStorage } from "../../../hooks/useCloudStorage"; 
@@ -22,9 +24,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import WhiteboardModal from "../../../Components/ui/WhiteboardModal";
 import LoginModal from "../../auth/components/LoginModal";
+import { useSubscription } from "../../subscriptions/hooks/useSubscription";
+
+type SearchMode = null | "search" | "deep-search";
 
 interface WelcomeChatInputProps {
-  onStartChat: (text: string, file: File | null) => void;
+  onStartChat: (text: string, file: File | null, searchMode?: SearchMode) => void;
   user: any;
   isDark: boolean;
   isLoading?: boolean;
@@ -45,6 +50,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
     const [showAttachMenu, setShowAttachMenu] = useState(false);
     const [showWhiteboard, setShowWhiteboard] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
+    const [searchMode, setSearchMode] = useState<SearchMode>(null);
 
     // State for dynamic menu positioning
     const [menuPosition, setMenuPosition] = useState<{
@@ -223,6 +229,10 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
       }
     };
 
+    // Check subscription tier for search features
+    const { isPro, isPremium } = useSubscription();
+    const canUseSearch = isPro || isPremium;
+
     const handleSubmit = () => {
       if (!inputValue.trim() && !selectedFile) return;
 
@@ -231,9 +241,10 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
         return;
       }
 
-      onStartChat(inputValue, selectedFile);
+      onStartChat(inputValue, selectedFile, searchMode);
       setInputValue("");
       setSelectedFile(null);
+      setSearchMode(null); // Reset search mode after sending
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -538,8 +549,50 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
             )}
           </div>
 
-          {/* RIGHT: Send / Voice Button */}
-          <div className="flex gap-4">
+          {/* RIGHT: Search Modes / Voice / Send Button */}
+          <div className="flex gap-2 items-center">
+            {/* Search Mode Icons - Only show for Pro/Premium users */}
+            {canUseSearch && (
+              <>
+                <button
+                  title="Search Mode"
+                  onClick={() => {
+                    setSearchMode(searchMode === "search" ? null : "search");
+                  }}
+                  className={cn(
+                    "w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:cursor-pointer",
+                    searchMode === "search"
+                      ? isDark
+                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                        : "bg-blue-100 text-blue-600 border border-blue-300"
+                      : isDark
+                      ? "text-gray-400 hover:bg-white/10 hover:text-white"
+                      : "text-gray-500 hover:bg-black/5 hover:text-black"
+                  )}
+                >
+                  <Search size={18} />
+                </button>
+                <button
+                  title="Deep Search Mode"
+                  onClick={() => {
+                    const newMode = searchMode === "deep-search" ? null : "deep-search";
+                    setSearchMode(newMode);
+                  }}
+                  className={cn(
+                    "w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:cursor-pointer",
+                    searchMode === "deep-search"
+                      ? isDark
+                        ? "bg-purple-500/20 text-purple-400 border border-purple-500/30"
+                        : "bg-purple-100 text-purple-600 border border-purple-300"
+                      : isDark
+                      ? "text-gray-400 hover:bg-white/10 hover:text-white"
+                      : "text-gray-500 hover:bg-black/5 hover:text-black"
+                  )}
+                >
+                  <SearchX size={18} />
+                </button>
+              </>
+            )}
             {inputValue.trim().length > 0 || selectedFile ? null : (
               <Link to="/voice">
                 <button

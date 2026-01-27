@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { useAppSelector, useAppDispatch } from "../hooks/useRedux";
 import { purchaseSubscription } from "../features/subscriptions/slices/subscriptionSlice";
-import { SUBSCRIPTION_PLANS, SUBSCRIPTION_FAQS } from "../../Constants";
+import { SUBSCRIPTION_FAQS } from "../../Constants";
+import { useOfferings } from "../features/subscriptions/hooks/useOfferings";
 import PricingCard from "../features/subscriptions/components/PricingCard";
 import PricingHeader from "../features/subscriptions/components/PricingHeader";
 import SubscriptionSuccessModal from "../features/subscriptions/components/SubscriptionSuccessModal";
 import ParticleBackground from "../Components/ui/ParticleBackground";
 import { cn } from "../lib/utils";
-import { ChevronDown, ChevronUp, ShieldCheck } from "lucide-react";
+import { ChevronDown, ChevronUp, ShieldCheck, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import LoginModal from "../features/auth/components/LoginModal";
 
@@ -22,9 +23,12 @@ const SubscriptionPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state: any) => state.auth);
   const { isDark } = useAppSelector((state: any) => state.theme);
-  const { isLoading, error, successMessage } = useAppSelector(
+  const { isLoading: isPurchasing, error, successMessage } = useAppSelector(
     (state: any) => state.subscription,
   );
+
+  // Fetch dynamic offerings from RevenueCat
+  const { plans, isLoading: isLoadingOfferings, error: offeringsError } = useOfferings();
 
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -41,19 +45,33 @@ const SubscriptionPage: React.FC = () => {
       setShowLoginModal(true);
       return;
     }
-    await dispatch(purchaseSubscription({ userId: user.id, planId }));
+    await dispatch(purchaseSubscription({ 
+      userId: user.id, 
+      planId,
+      email: user.email 
+    }));
   };
 
-  // --- FIXED FILTERING LOGIC ---
-  const displayedPlans = SUBSCRIPTION_PLANS.filter((plan) => {
-    const id = plan.id.toLowerCase();
+  // Filter plans based on billing interval
+  const filteredPlans = plans.filter((plan) => {
+    const identifier = plan.id.toLowerCase();
     if (billingInterval === "monthly") {
-      // Matches "Monthly Pro Subscription"
-      return id.includes("monthly");
+      return identifier.includes("monthly") || identifier.includes("month");
     } else {
-      // Matches "Anual Pro Subscription" (and handles standard spelling just in case)
-      return id.includes("annual") || id.includes("anual");
+      return identifier.includes("annual") || 
+             identifier.includes("yearly") || 
+             identifier.includes("year");
     }
+  });
+
+  // Sort plans: Premium first, then Pro, then Free
+  const displayedPlans = filteredPlans.sort((a, b) => {
+    const tierOrder: Record<string, number> = {
+      premium: 0,
+      pro: 1,
+      free: 2,
+    };
+    return (tierOrder[a.tier] || 99) - (tierOrder[b.tier] || 99);
   });
 
   return (
@@ -129,37 +147,56 @@ const SubscriptionPage: React.FC = () => {
 
         {/* Pricing Cards Grid */}
         <div className="max-w-5xl mx-auto min-h-[500px]">
-          <AnimatePresence mode="wait">
+          {isLoadingOfferings ? (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="w-8 h-8 animate-spin text-[#00A9A4]" />
+              <span className="ml-3 text-gray-500">Loading subscription plans...</span>
+            </div>
+          ) : offeringsError ? (
             <motion.div
-              key={billingInterval} // Re-render grid when interval changes
-              className="grid grid-cols-1 md:grid-cols-2 gap-8"
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              variants={{
-                visible: { transition: { staggerChildren: 0.1 } },
-              }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-8 max-w-md mx-auto p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-center"
             >
-              {displayedPlans.map((plan) => (
-                <motion.div
-                  key={plan.id}
-                  variants={itemVariants}
-                  layout="position"
-                >
-                  <PricingCard
-                    plan={plan}
-                    billingInterval={billingInterval}
-                    currentPlanId={user?.planId}
-                    onSubscribe={handleSubscribe}
-                    isLoading={isLoading}
-                  />
-                </motion.div>
-              ))}
+              {offeringsError}
             </motion.div>
-          </AnimatePresence>
+          ) : displayedPlans.length === 0 ? (
+            <div className="text-center py-20 text-gray-500">
+              No subscription plans available at this time.
+            </div>
+          ) : (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={billingInterval} // Re-render grid when interval changes
+                className="grid grid-cols-1 md:grid-cols-2 gap-8"
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                variants={{
+                  visible: { transition: { staggerChildren: 0.1 } },
+                }}
+              >
+                {displayedPlans.map((plan) => (
+                  <motion.div
+                    key={plan.id}
+                    variants={itemVariants}
+                    layout="position"
+                  >
+                    <PricingCard
+                      plan={plan}
+                      billingInterval={billingInterval}
+                      currentPlanId={user?.planId}
+                      onSubscribe={handleSubscribe}
+                      isLoading={isPurchasing}
+                    />
+                  </motion.div>
+                ))}
+              </motion.div>
+            </AnimatePresence>
+          )}
         </div>
 
-        {/* Error Message */}
+        {/* Purchase Error Message */}
         {error && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}

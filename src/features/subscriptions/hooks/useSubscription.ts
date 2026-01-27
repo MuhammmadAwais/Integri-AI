@@ -1,6 +1,9 @@
 import { useMemo } from "react";
 import { useAppSelector } from "../../../hooks/useRedux";
-import AVAILABLE_MODELS, { type SubscriptionTier } from "../../../../Constants";
+import {
+  getAvailableModelsByTier,
+  type SubscriptionTier,
+} from "../../../../Constants";
 
 const TIER_LEVELS: Record<SubscriptionTier, number> = {
   free: 0,
@@ -31,12 +34,9 @@ export const useSubscription = () => {
       betaAccess: currentLevel >= TIER_LEVELS.premium, // Early access to experimental features
     };
 
-    const availableModels = AVAILABLE_MODELS.filter((model) => {
-      if (model.isFree) return true;
-      if (currentLevel >= TIER_LEVELS.pro && model.isPro) return true;
-      if (currentLevel >= TIER_LEVELS.premium && model.isPremium) return true;
-      return false;
-    });
+    // Use the exact allowed models list based on subscription tier
+    // This matches the backend API allowed_models configuration
+    const availableModels = getAvailableModelsByTier(tier);
 
     return {
       tier,

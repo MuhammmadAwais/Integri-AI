@@ -1,20 +1,36 @@
 // src/features/subscription/slices/subscriptionSlice.ts
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { SubscriptionService } from "../services/subscriptionService";
+import { getBackendToken } from "../../../api/backendApi";
+import type { SubscriptionTier } from "../../../../Constants";
 
 // Thunk to handle the async purchase
 export const purchaseSubscription = createAsyncThunk(
   "subscription/purchase",
   async (
-    { userId, planId }: { userId: string; planId: string },
+    { userId, planId, email }: { userId: string; planId: string; email: string | null },
     { rejectWithValue }
   ) => {
     try {
-      const result = await SubscriptionService.purchaseSubscription(
+      // 1. Purchase the subscription
+      const newTier = await SubscriptionService.purchaseSubscription(
         userId,
         planId
       );
-      return result; // Returns the planId
+      
+      // 2. Refresh backend token with new subscription tier
+      let accessToken: string | null = null;
+      if (email) {
+        try {
+          const tokenData = await getBackendToken(userId, email, newTier);
+          accessToken = tokenData.access_token;
+        } catch (tokenError) {
+          console.error("Failed to refresh backend token after purchase:", tokenError);
+          // Don't fail the purchase if token refresh fails, but log it
+        }
+      }
+      
+      return { tier: newTier, accessToken }; // Returns both tier and token
     } catch (error: any) {
       return rejectWithValue(
         error.message || "Failed to purchase subscription"

@@ -36,7 +36,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
     isStreaming,
     isThinking,
     messagesLoaded, // <--- Now available
-  } = useChat(id);
+  } = useChat(id, location.state?.initialMessage, location.state?.initialFile);
 
   const hasAutoSent = useRef(false);
 
@@ -53,7 +53,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
       hasAutoSent.current = true;
       const { initialMessage, initialFile } = location.state;
 
-      // Optimistically show and send
+      // Always call sendMessage - it will check if message exists and avoid duplicates
+      // but will still send via socket if needed
       sendMessage(initialMessage, initialFile);
 
       // Clear state to prevent re-sending on refresh
@@ -79,11 +80,21 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
   };
 
   // 3. MAIN SEND HANDLER
-  const handleSend = async (text: string, file?: File | null) => {
+  const handleSend = async (text: string, file?: File | null, searchMode?: "search" | "deep-search" | null) => {
     if (!text.trim() && !file) return;
 
+    // Override model if search mode is active
+    let modelId = newChatModel.id;
+    if (searchMode === "search") {
+      modelId = "gpt-4o-mini-search-preview";
+    } else if (searchMode === "deep-search") {
+      modelId = "gpt-4o-mini-deep-research";
+    }
+
     if (id) {
-      sendMessage(text, file);
+      // For existing chats, we need to update the model in useChat
+      // For now, send with the search model override
+      sendMessage(text, file, modelId);
       setTimeout(scrollToBottom, 100);
       return;
     }
@@ -94,7 +105,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
       setIsCreatingSession(true);
       const newSessionId = await ChatService.createChat(
         token,
-        newChatModel.id,
+        modelId,
         selectedAgentId || undefined
       );
 
@@ -106,6 +117,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
         state: {
           initialMessage: text,
           initialFile: file,
+          model: modelId,
         },
       });
     } catch (error) {

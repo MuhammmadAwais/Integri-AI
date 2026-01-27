@@ -5,6 +5,7 @@ import {
   LogIn,
   LogOut,
   User as UserIcon,
+  CreditCard,
 } from "lucide-react";
 import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux";
 import { logoutUser } from "../../auth/thunks/authThunk";
@@ -23,7 +24,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   // @ts-ignore
   const { user, isGuest } = useAppSelector(
-    (state: any) => state.auth || { user: null, isGuest: true }
+    (state: any) => state.auth || { user: null, isGuest: true },
   );
 
   const dispatch = useAppDispatch();
@@ -158,7 +159,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
             ? isDark
               ? "p-2 hover:bg-[#181818] "
               : " p-2 hover:bg-transparent"
-            : "justify-center p-0 mt-2 w-full aspect-square hover:bg-transparent"
+            : "justify-center p-0 mt-2 w-full aspect-square hover:bg-transparent",
         )}
       >
         {/* 1. Avatar */}
@@ -172,10 +173,10 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                   ? "ring-yellow-400 group-hover:ring-yellow-300 shadow-[0_0_10px_rgba(250,204,21,0.4)]"
                   : "ring-yellow-500 group-hover:ring-yellow-600"
                 : isPro
-                ? isDark
-                  ? "ring-purple-500 group-hover:ring-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.4)]"
-                  : "ring-purple-600 group-hover:ring-purple-700"
-                : "group-hover:ring-indigo-500"
+                  ? isDark
+                    ? "ring-purple-500 group-hover:ring-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.4)]"
+                    : "ring-purple-600 group-hover:ring-purple-700"
+                  : "group-hover:ring-indigo-500",
             )}
           >
             <img
@@ -194,10 +195,10 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                   ? "ring-yellow-400 group-hover:ring-yellow-300 shadow-[0_0_10px_rgba(250,204,21,0.4)]"
                   : "ring-yellow-500 group-hover:ring-yellow-600"
                 : isPro
-                ? isDark
-                  ? "ring-purple-500 group-hover:ring-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.4)]"
-                  : "ring-purple-600 group-hover:ring-purple-700"
-                : "group-hover:ring-indigo-500"
+                  ? isDark
+                    ? "ring-purple-500 group-hover:ring-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.4)]"
+                    : "ring-purple-600 group-hover:ring-purple-700"
+                  : "group-hover:ring-indigo-500",
             )}
           >
             {initials}
@@ -208,13 +209,13 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
         <div
           className={cn(
             "flex-1 ml-3 overflow-hidden transition-all duration-200",
-            isExpanded ? "opacity-100 w-auto" : "opacity-0 w-0 hidden"
+            isExpanded ? "opacity-100 w-auto" : "opacity-0 w-0 hidden",
           )}
         >
           <p
             className={cn(
               "font-bold text-sm truncate",
-              isDark ? "text-[#E7E9EA]" : "text-black"
+              isDark ? "text-[#E7E9EA]" : "text-black",
             )}
           >
             {fullName}
@@ -239,7 +240,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
             // Position Logic
             isExpanded
               ? "w-6 h-6 right-2 top-1/2 -translate-y-1/2 opacity-75 group-hover:opacity-100 hover:cursor-pointer" // Inside right, visible on hover
-              : "w-5 h-5 -right-1 -top-3 opacity-75 md:opacity-0 group-hover:opacity-100 hover:cursor-pointer" // Top-right corner of avatar when collapsed
+              : "w-5 h-5 -right-1 -top-3 opacity-75 md:opacity-0 group-hover:opacity-100 hover:cursor-pointer", // Top-right corner of avatar when collapsed
           )}
         >
           {isExpanded ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
@@ -256,14 +257,14 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
               "z-9990 rounded-xl shadow-2xl border overflow-hidden py-1 animate-in fade-in zoom-in-95 duration-100",
               isDark
                 ? "bg-[#1E1E1E] border-gray-700"
-                : "bg-white border-gray-200"
+                : "bg-white border-gray-200",
             )}
           >
             <div className="px-4 py-3 border-b border-gray-700/50">
               <p
                 className={cn(
                   "text-sm font-medium",
-                  isDark ? "text-white" : "text-gray-900"
+                  isDark ? "text-white" : "text-gray-900",
                 )}
               >
                 {fullName}
@@ -271,7 +272,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
               <p
                 className={cn(
                   "text-xs truncate",
-                  isDark ? "text-gray-400" : "text-gray-500"
+                  isDark ? "text-gray-400" : "text-gray-500",
                 )}
               >
                 {username}
@@ -289,7 +290,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                     "w-full text-left px-4 py-2 text-sm flex items-center gap-2 cursor-pointer transition-colors",
                     isDark
                       ? "text-gray-300 hover:bg-white/5"
-                      : "text-gray-700 hover:bg-gray-50"
+                      : "text-gray-700 hover:bg-gray-50",
                   )}
                 >
                   <LogIn size={16} /> Login
@@ -303,7 +304,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                     "w-full text-left px-4 py-2 text-sm flex items-center gap-2 cursor-pointer transition-colors",
                     isDark
                       ? "text-gray-300 hover:bg-white/5"
-                      : "text-gray-700 hover:bg-gray-50"
+                      : "text-gray-700 hover:bg-gray-50",
                   )}
                 >
                   <UserIcon size={16} /> Sign Up
@@ -328,7 +329,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                       "w-full text-left px-4 py-2 text-sm flex items-center gap-2 cursor-pointer transition-colors",
                       isDark
                         ? "hover:bg-white/5 text-white"
-                        : "hover:bg-gray-200 text-black"
+                        : "hover:bg-gray-200 text-black",
                     )}
                   >
                     Download the app
@@ -340,10 +341,23 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                       "w-full text-left px-4 py-2 text-sm flex items-center gap-2 cursor-pointer transition-colors",
                       isDark
                         ? "hover:bg-white/5 text-white"
-                        : "hover:bg-gray-200 text-black"
+                        : "hover:bg-gray-200 text-black",
                     )}
                   >
                     Contact Us
+                  </button>
+                </Link>
+
+                <Link to="/subscriptions">
+                  <button
+                    className={cn(
+                      "w-full text-left px-4 py-2 text-sm flex items-center gap-2 cursor-pointer transition-colors",
+                      isDark
+                        ? "hover:bg-white/5 text-white"
+                        : "hover:bg-gray-200 text-black",
+                    )}
+                  >
+                    Subscription
                   </button>
                 </Link>
 
@@ -353,7 +367,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                       "w-full text-left px-4 py-2 text-sm flex items-center gap-2 cursor-pointer transition-colors",
                       isDark
                         ? "hover:bg-white/5 text-white"
-                        : "hover:bg-gray-200 text-black"
+                        : "hover:bg-gray-200 text-black",
                     )}
                   >
                     Settings

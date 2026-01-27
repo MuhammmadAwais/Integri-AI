@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { Sparkles, Wand2, Monitor, Box} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import ImageUploader from "./ImageUploader";
 import GenDropdown from "./GenDropdown";
 import { useAppSelector } from "../../../hooks/useRedux";
 import LoginModal from "../../auth/components/LoginModal";
+import { useSubscription } from "../../subscriptions/hooks/useSubscription";
 
 interface Props {
   isDark: boolean;
@@ -46,6 +48,8 @@ const GenLeftPanel: React.FC<Props> = ({
   onGenerate,
 }) => {
   const user = useAppSelector((state: any) => state.auth.user);
+  const navigate = useNavigate();
+  const { isFree } = useSubscription();
   const [prompt, setPrompt] = useState("");
   const [selectedModel, setSelectedModel] = useState(MODEL_OPTIONS[0]);
   const [selectedRatio, setSelectedRatio] = useState(RATIOS[1]);
@@ -58,6 +62,13 @@ const GenLeftPanel: React.FC<Props> = ({
       return
     }
     if (!prompt.trim()) return;
+    
+    // Check if user has free subscription - redirect to subscription page
+    if (isFree) {
+      navigate("/subscriptions");
+      return;
+    }
+    
     onGenerate({
       model: selectedModel,
       prompt,

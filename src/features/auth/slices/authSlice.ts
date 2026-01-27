@@ -115,8 +115,15 @@ const authSlice = createSlice({
       // --- SUBSCRIPTION ---
       .addCase(purchaseSubscription.fulfilled, (state, action) => {
         if (state.user) {
-          // UPDATED: Correctly typecast payload as SubscriptionTier
-          state.user.subscriptionTier = action.payload as SubscriptionTier;
+          const { tier, accessToken } = action.payload as { tier: SubscriptionTier; accessToken: string | null };
+          // Update subscription tier
+          state.user.subscriptionTier = tier;
+          // Update planId to match the tier
+          state.user.planId = tier === "free" ? "freemium" : tier;
+          // Update backend token if available
+          if (accessToken) {
+            state.accessToken = accessToken;
+          }
         }
       });
   },

@@ -79,6 +79,7 @@ export const AuthService = {
 
     // UPDATED: Sync real status from RevenueCat immediately
     const tier = await SubscriptionService.syncStatusWithRevenueCat(user.uid);
+    console.log("Tier:", tier);
 
     if (userDoc.exists()) {
       const data = userDoc.data() as FirestoreUserModel;

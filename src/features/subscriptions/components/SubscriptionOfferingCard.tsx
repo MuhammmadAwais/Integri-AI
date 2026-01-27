@@ -12,37 +12,22 @@ const SubscriptionOfferingCard: React.FC = () => {
   // Use the hook for reliable tier checking
   const { isPremium, isPro } = useSubscription();
 
-  // If user is already Premium (Top Tier), don't show the upsell card
-  if (isPremium) return null;
+  // Hide card if user has Pro or Premium subscription
+  if (isPro || isPremium) {
+    return null;
+  }
 
   // Strategy:
   // If Free: Standard "Upgrade Now" message.
-  // If Pro: "VIP Upgrade" message focusing on Next-Gen power (positive reinforcement).
-  const content = isPro
-    ? {
-        label: "Pro Active",
-        headline: "Unlock Ultimate Power",
-        subtext: "Get O1 & Real-time Voice",
-        highlightColor: "text-purple-400",
-        hoverColor: "group-hover:text-purple-400",
-        overlayColor: isDark ? "bg-purple-500/20" : "bg-purple-100/50",
-        icon: (
-          <Crown
-            size={10}
-            className="text-amber-400 mr-1 inline"
-            fill="currentColor"
-          />
-        ),
-      }
-    : {
-        label: "Free Plan",
-        headline: "Upgrade Now",
-        subtext: null,
-        highlightColor: "text-[#00A9A4]",
-        hoverColor: "group-hover:text-[#00A9A4]",
-        overlayColor: isDark ? "bg-teal-500/10" : "bg-transparent",
-        icon: null,
-      };
+  const content = {
+    label: "Free Plan",
+    headline: "Upgrade Now",
+    subtext: null,
+    highlightColor: "text-[#00A9A4]",
+    hoverColor: "group-hover:text-[#00A9A4]",
+    overlayColor: isDark ? "bg-teal-500/10" : "bg-transparent",
+    icon: null,
+  };
 
   return (
     <motion.div
@@ -58,11 +43,6 @@ const SubscriptionOfferingCard: React.FC = () => {
             isDark
               ? "bg-black/20 border-zinc-800 hover:bg-black/60 hover:border-white/20 text-white"
               : "bg-white/40 border-zinc-200 hover:bg-white/80 hover:border-zinc-300 text-zinc-800",
-            // Add a subtle glow for Pro users to make it feel special
-            isPro &&
-              (isDark
-                ? "shadow-[0_0_15px_rgba(168,85,247,0.15)] border-purple-500/30"
-                : "shadow-sm border-purple-200"),
           )}
         >
           {/* Animated Icon Container */}
@@ -98,7 +78,6 @@ const SubscriptionOfferingCard: React.FC = () => {
               className={cn(
                 "text-[10px] uppercase font-bold tracking-widest leading-none mb-0.5 flex items-center",
                 isDark ? "text-zinc-500" : "text-zinc-400",
-                isPro && (isDark ? "text-amber-400/80" : "text-amber-600/80"), // Gold tint for Pro label
               )}
             >
               {content.icon}

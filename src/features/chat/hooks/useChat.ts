@@ -9,6 +9,7 @@ import {
   removeSession,
   updateSessionTitle, // Import the reducer
 } from "../../chat/chatSlice";
+import AVAILABLE_MODELS from "../../../../Constants";
 
 export interface Message {
   id?: string;
@@ -91,7 +92,7 @@ export const useChatList = () => {
 
 // --- HOOK 2: Single Chat (Updated with Title Sync) ---
 
-export const useChat = (sessionId: string | undefined) => {
+export const useChat = (sessionId: string | undefined, initialMessage?: string, initialFile?: File | null) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [messagesLoaded, setMessagesLoaded] = useState(false);
@@ -100,6 +101,10 @@ export const useChat = (sessionId: string | undefined) => {
 
   // Ref to track if we need to fetch title (prevents duplicate fetches)
   const hasFetchedTitleRef = useRef(false);
+  // Ref to track if initial message has been added optimistically for current session
+  const hasAddedInitialMessageRef = useRef<string | null>(null);
+  // Ref to store initial message and file for current session
+  const initialMessageRef = useRef<{ message?: string; file?: File | null }>({});
 
   const dispatch = useAppDispatch();
   const token = useAppSelector((state: any) => state.auth.accessToken);
@@ -112,6 +117,13 @@ export const useChat = (sessionId: string | undefined) => {
   );
   const newChatPref = useAppSelector((state: any) => state.chat.newChatModel);
 
+  // Store initial message when it changes
+  useEffect(() => {
+    if (initialMessage || initialFile) {
+      initialMessageRef.current = { message: initialMessage, file: initialFile };
+    }
+  }, [initialMessage, initialFile]);
+
   // 1. Initialize
   useEffect(() => {
     if (!sessionId || !token) {
@@ -123,40 +135,80 @@ export const useChat = (sessionId: string | undefined) => {
       setIsLoading(true);
       setMessagesLoaded(false);
       hasFetchedTitleRef.current = false; // Reset for new session
+      
+      // Reset initial message ref if this is a new session
+      if (hasAddedInitialMessageRef.current !== sessionId) {
+        hasAddedInitialMessageRef.current = null;
+      }
+
+      // Add initial message optimistically BEFORE fetching history
+      // This ensures it's visible immediately and won't be cleared by empty history
+      const { message, file } = initialMessageRef.current;
+      if (message && hasAddedInitialMessageRef.current !== sessionId) {
+        hasAddedInitialMessageRef.current = sessionId;
+        const attachment = file
+          ? {
+              name: file.name,
+              type: file.type.startsWith("image/")
+                ? ("image" as const)
+                : ("file" as const),
+              url: URL.createObjectURL(file),
+            }
+          : undefined;
+        
+        setMessages([
+          { role: "user", content: message, attachment },
+        ]);
+      }
 
       try {
         const history = await SessionService.getSessionMessages(
           token,
           sessionId
         );
-        if (Array.isArray(history)) {
+        if (Array.isArray(history) && history.length > 0) {
           const mappedMessages = history.map((msg: any) => ({
             ...msg,
             attachment: msg.image_url
               ? { name: "Generated Image", type: "image", url: msg.image_url }
               : undefined,
           }));
+          // Replace with fetched history (which should include the message we just sent)
           setMessages(mappedMessages);
-        } else {
+        } else if (!message) {
+          // Only clear if we don't have an initial message to show
           setMessages([]);
         }
+        // If history is empty but we have initialMessage, keep the optimistic message
 
         setMessagesLoaded(true);
 
-        const details = await SessionService.getSession(token, sessionId);
-        if (details) {
-          console.log(details , "hi how are you jsut console logging")
-          dispatch(
-            setActiveSessionConfig({
-              modelId: details.model,
-              provider: details.provider,
-            })
-          );
+        try {
+          const details = await SessionService.getSession(token, sessionId);
+          if (details) {
+            console.log(details , "hi how are you jsut console logging")
+            dispatch(
+              setActiveSessionConfig({
+                modelId: details.model,
+                provider: details.provider,
+              })
+            );
+          }
+        } catch (detailsError) {
+          console.error("Error fetching session details:", detailsError);
+          // Don't throw - continue with initialization
         }
 
-        socketService.connect(token, sessionId);
+        try {
+          socketService.connect(token, sessionId);
+        } catch (socketError) {
+          console.error("Error connecting socket:", socketError);
+          // Don't throw - messages can still be displayed
+        }
       } catch (error) {
         console.error("Error initializing chat:", error);
+        // Ensure messagesLoaded is set even on error so UI doesn't hang
+        setMessagesLoaded(true);
       } finally {
         setIsLoading(false);
       }
@@ -164,7 +216,7 @@ export const useChat = (sessionId: string | undefined) => {
 
     initChat();
     return () => socketService.disconnect();
-  }, [sessionId, token, dispatch]);
+  }, [sessionId, token, dispatch]); // Removed initialMessage and initialFile from deps to prevent re-initialization loops
 
   // 2. Intelligent Re-fetch Logic (Fallback)
   // Watch for the end of the first assistant response
@@ -328,7 +380,7 @@ export const useChat = (sessionId: string | undefined) => {
 
   // 4. Send Message
   const sendMessage = useCallback(
-    async (content: string, file?: File | null) => {
+    async (content: string, file?: File | null, modelOverride?: string) => {
       if (!content.trim() && !file) return;
 
       const attachment = file
@@ -341,19 +393,32 @@ export const useChat = (sessionId: string | undefined) => {
           }
         : undefined;
 
-      setMessages((prev) => [
-        ...prev,
-        { role: "user", content: content, attachment },
-      ]);
+      // Check if message already exists (from optimistic add)
+      setMessages((prev) => {
+        const messageExists = prev.some(
+          (msg) => msg.role === "user" && msg.content === content && 
+          (!file || msg.attachment?.name === file.name)
+        );
+        if (messageExists) {
+          // Message already exists, don't add it again
+          return prev;
+        }
+        // Add new message
+        return [...prev, { role: "user", content: content, attachment }];
+      });
       setIsThinking(true);
 
       try {
-        const model =
-          sessionId && activeConfig ? activeConfig.modelId : newChatPref.id;
-        const provider =
-          sessionId && activeConfig
+        // Use model override if provided (for search modes), otherwise use session config or default
+        const model = modelOverride || 
+          (sessionId && activeConfig ? activeConfig.modelId : newChatPref.id);
+        
+        // Find provider for the model
+        const modelData = AVAILABLE_MODELS.find((m) => m.id === model);
+        const provider = modelData?.provider || 
+          (sessionId && activeConfig
             ? activeConfig.provider
-            : newChatPref.provider;
+            : newChatPref.provider);
 
         let fileIds: string[] = [];
 

@@ -35,17 +35,17 @@ const AVAILABLE_MODELS = [
     isPremium: false,
     isFree: false,
   },
-  {
-    id: "gpt-5-mini",
-    label: "GPT-5 Mini",
-    provider: "openai",
-    badge: "New",
-    light_theme_logo: "/light-theme-openai.png",
-    dark_theme_logo: "/dark-theme-openai.png",
-    isPro: true,
-    isPremium: false,
-    isFree: false,
-  },
+  // {
+  //   id: "gpt-5-mini",
+  //   label: "GPT-5 Mini",
+  //   provider: "openai",
+  //   badge: "New",
+  //   light_theme_logo: "/light-theme-openai.png",
+  //   dark_theme_logo: "/dark-theme-openai.png",
+  //   isPro: true,
+  //   isPremium: false,
+  //   isFree: false,
+  // },
   {
     id: "gpt-5-nano",
     label: "GPT-5 Nano",
@@ -68,10 +68,42 @@ const AVAILABLE_MODELS = [
     isFree: true,
   },
   {
+    id: "gpt-4o-mini-search-preview",
+    label: "GPT-4o Mini Search Preview",
+    provider: "openai",
+    badge: "Search",
+    light_theme_logo: "/light-theme-openai.png",
+    dark_theme_logo: "/dark-theme-openai.png",
+    isPro: true,
+    isPremium: true,
+    isFree: false,
+  },
+  {
+    id: "gpt-4o-mini-deep-research",
+    label: "GPT-4o Mini Deep Research",
+    provider: "openai",
+    badge: "Research",
+    light_theme_logo: "/light-theme-openai.png",
+    dark_theme_logo: "/dark-theme-openai.png",
+    isPro: true,
+    isPremium: true,
+    isFree: false,
+  },
+  {
     id: "gpt-4.1-nano",
     label: "GPT-4.1 Nano",
     provider: "openai",
     badge: "Efficient",
+    light_theme_logo: "/light-theme-openai.png",
+    dark_theme_logo: "/dark-theme-openai.png",
+    isPro: true,
+    isPremium: true,
+    isFree: false,
+  },
+  {
+    id: "gpt-3.5-turbo",
+    label: "GPT-3.5 Turbo",
+    provider: "openai",
     light_theme_logo: "/light-theme-openai.png",
     dark_theme_logo: "/dark-theme-openai.png",
     isPro: true,
@@ -170,16 +202,7 @@ const AVAILABLE_MODELS = [
   },
 
   // --- Claude ---
-  {
-    id: "claude-3.5-haiku",
-    label: "Claude Instant 100k",
-    provider: "claude",
-    light_theme_logo: "/claude.png",
-    dark_theme_logo: "/claude.png",
-    isPro: true,
-    isPremium: false,
-    isFree: false,
-  },
+
   {
     id: "claude-haiku-3",
     label: "Claude haiku 3",
@@ -188,6 +211,17 @@ const AVAILABLE_MODELS = [
     dark_theme_logo: "/claude.png",
     isPro: true,
     isPremium: true,
+    isFree: false,
+  },
+  {
+    id: "claude-haiku-4.5",
+    label: "Claude Haiku 4.5",
+    provider: "claude",
+    badge: "New",
+    light_theme_logo: "/claude.png",
+    dark_theme_logo: "/claude.png",
+    isPro: true,
+    isPremium: false,
     isFree: false,
   },
   // --- DeepSeek ---
@@ -225,6 +259,17 @@ const AVAILABLE_MODELS = [
     isPremium: true,
     isFree: false,
   },
+  {
+    id: "sonar-reasoning",
+    label: "Sonar Reasoning",
+    provider: "perplexity",
+    badge: "Reasoning",
+    light_theme_logo: "/perplexity.png",
+    dark_theme_logo: "/perplexity.png",
+    isPro: true,
+    isPremium: true,
+    isFree: false,
+  },
 
   // --- Mistral ---
   {
@@ -237,10 +282,31 @@ const AVAILABLE_MODELS = [
     isPremium: true,
     isFree: false,
   },
+
+  // --- GLM ---
+  {
+    id: "glm-4.6",
+    label: "GLM-4.6",
+    provider: "glm",
+    light_theme_logo: "/zai.png",
+    dark_theme_logo: "/zai.png",
+    isPro: true,
+    isPremium: true,
+    isFree: false,
+  },
+  {
+    id: "glm-4.7",
+    label: "GLM-4.7",
+    provider: "glm",
+    light_theme_logo: "/zai.png",
+    dark_theme_logo: "/zai.png",
+    isPro: true,
+    isPremium: true,
+    isFree: false,
+  },
 ];
 // models available for voice mode ( NOTE : WE ARE STILL USING DYNAMIC MODELS BUT RIGHT NOW MODEL SELECTION IS DISABLED FOR VOICE MODE SO ONLY ONE MODEL IS HERE AND THE VOICE MODELS LIST IS HIDDEN IN THE UI BUT IT IS KEPT FOR FUTURE USE )
 export const VOICE_MODELS = [
-
   {
     id: "gpt-4o-mini-realtime-preview",
     label: "GPT-4o mini realtime preview",
@@ -248,16 +314,90 @@ export const VOICE_MODELS = [
   },
 ];
 
-
 export type SubscriptionTier = "free" | "pro" | "premium";
+
+/**
+ * Allowed models per subscription tier
+ * Based on backend API allowed_models configuration
+ */
+export const ALLOWED_MODELS_BY_TIER: Record<SubscriptionTier, string[]> = {
+  free: ["integri", "gpt-4o-mini", "gpt-5-nano"],
+  premium: [
+    "integri",
+    "gpt-4o-mini",
+    "gpt-5-nano",
+    "gpt-4o-mini-search-preview",
+    "gpt-4o-mini-deep-research",
+    "gpt-4.1-nano",
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
+    "grok-3-mini",
+    "grok-4-1-fast-reasoning",
+    "grok-4-1-fast-non-reasoning",
+    "grok-4-fast-reasoning",
+    "grok-4-fast-non-reasoning",
+    "claude-haiku-3",
+    "deepseek-reasoner",
+    "deepseek-chat",
+    "mistral-medium-2505",
+    "glm-4.6",
+    "glm-4.7",
+    "gpt-3.5-turbo",
+    "perplexity-sonar",
+    "sonar-reasoning",
+  ],
+  pro: [
+    "integri",
+    "gpt-4o-mini",
+    "gpt-5-nano",
+    "gpt-4o-mini-search-preview",
+    "gpt-4o-mini-deep-research",
+    "gpt-4.1-nano",
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
+    "grok-3-mini",
+    "grok-4-1-fast-reasoning",
+    "grok-4-1-fast-non-reasoning",
+    "grok-4-fast-reasoning",
+    "grok-4-fast-non-reasoning",
+    "claude-haiku-3",
+    "deepseek-reasoner",
+    "deepseek-chat",
+    "mistral-medium-2505",
+    "glm-4.6",
+    "glm-4.7",
+    "gpt-3.5-turbo",
+    "perplexity-sonar",
+    "sonar-reasoning",
+    "gpt-5.2",
+    "gpt-5.1",
+    "claude-haiku-4.5",
+    "gemini-3-flash-preview",
+  ],
+};
+
+/**
+ * Get allowed model IDs for a given subscription tier
+ */
+export const getAllowedModelIds = (tier: SubscriptionTier): string[] => {
+  return ALLOWED_MODELS_BY_TIER[tier] || ALLOWED_MODELS_BY_TIER.free;
+};
+
+/**
+ * Get available models filtered by subscription tier
+ */
+export const getAvailableModelsByTier = (tier: SubscriptionTier) => {
+  const allowedIds = getAllowedModelIds(tier);
+  return AVAILABLE_MODELS.filter((model) => allowedIds.includes(model.id));
+};
 
 export const SUBSCRIPTION_PLANS = [
   {
     id: "Monthly Pro Subscription",
     name: "Integri Pro Monthly",
     description: "Advanced AI for daily productivity.",
-    priceMonthly: 15.0,
-    priceYearly: 15.0,
+    priceMonthly: 11.99,
+    priceYearly: 11.99,
     tier: "pro" as SubscriptionTier,
     features: [
       "GPT-4o & Claude 3.5 Sonnet",
@@ -270,7 +410,7 @@ export const SUBSCRIPTION_PLANS = [
     buttonText: "Go Pro",
   },
   {
-    id: "Anual Pro Subscription",
+    id: "Annual Pro Subscription",
     name: "Integri Pro Annual",
     description: "Best value for consistent power.",
     priceMonthly: 12.0,
@@ -288,8 +428,8 @@ export const SUBSCRIPTION_PLANS = [
     id: "Monthly Premium Subscription",
     name: "Integri Premium Monthly",
     description: "Next-gen models and ultimate limits.",
-    priceMonthly: 29.0,
-    priceYearly: 29.0,
+    priceMonthly: 6.99,
+    priceYearly: 6.99,
     tier: "premium" as SubscriptionTier,
     features: [
       "Everything in Pro",
@@ -302,7 +442,7 @@ export const SUBSCRIPTION_PLANS = [
     buttonText: "Go Premium",
   },
   {
-    id: "Anual Premium Subscription",
+    id: "Annual Premium Subscription",
     name: "Integri Premium Annual",
     description: "The ultimate AI experience.",
     priceMonthly: 23.25,
@@ -525,5 +665,3 @@ export const LANGUAGES = [
 ];
 
 export default AVAILABLE_MODELS;
-
-

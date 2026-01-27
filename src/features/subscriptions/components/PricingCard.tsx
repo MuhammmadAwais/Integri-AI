@@ -87,7 +87,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
               isDark ? "text-white" : "text-gray-900",
             )}
           >
-            ${displayPrice}
+            €{displayPrice}
           </span>
           <span
             className={cn(

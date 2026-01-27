@@ -7,6 +7,8 @@ import {
   Image as ImageIcon,
   HardDrive,
   PenTool, // Imported Pen Icon
+  Search,
+  SearchX,
 } from "lucide-react";
 import { useAppSelector } from "../../../hooks/useRedux";
 import { cn } from "../../../lib/utils";
@@ -14,9 +16,12 @@ import { useCloudStorage } from "../../../hooks/useCloudStorage";
 import { AnimatePresence, motion } from "framer-motion";
 import WhiteboardModal from "../../../Components/ui/WhiteboardModal"; // Make sure path is correct
 import LoginModal from "../../auth/components/LoginModal";
+import { useSubscription } from "../../subscriptions/hooks/useSubscription";
+
+type SearchMode = null | "search" | "deep-search";
 
 interface ChatInputProps {
-  onSend?: (text: string, file?: File | null) => void;
+  onSend?: (text: string, file?: File | null, searchMode?: SearchMode) => void;
   placeholder?: string;
   isDark?: boolean;
   disabled?: boolean;
@@ -35,6 +40,11 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const [showAttachMenu, setShowAttachMenu] = useState(false);
   const [showWhiteboard, setShowWhiteboard] = useState(false); // State for whiteboard
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [searchMode, setSearchMode] = useState<SearchMode>(null);
+
+  // Check subscription tier for search features
+  const { isPro, isPremium } = useSubscription();
+  const canUseSearch = isPro || isPremium;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -79,9 +89,10 @@ const ChatInput: React.FC<ChatInputProps> = ({
     }
     if (disabled || isCloudLoading) return;
     if ((input.trim() || file) && onSend) {
-      onSend(input, file);
+      onSend(input, file, searchMode);
       setInput("");
       setFile(null);
+      setSearchMode(null); // Reset search mode after sending
       if (textareaRef.current) textareaRef.current.style.height = "auto";
     }
   };
@@ -379,8 +390,45 @@ const ChatInput: React.FC<ChatInputProps> = ({
               </AnimatePresence>
             </div>
 
-            {/* Right Tools (Send) */}
-            <div className="flex items-center gap-3">
+            {/* Right Tools (Search Modes / Send) */}
+            <div className="flex items-center gap-2">
+              {/* Search Mode Icons - Only show for Pro/Premium users when input has content */}
+              {canUseSearch && (input.trim() || file) && (
+                <>
+                  <button
+                    title="Search Mode"
+                    onClick={() => setSearchMode(searchMode === "search" ? null : "search")}
+                    className={cn(
+                      "p-2 rounded-full transition-colors flex items-center justify-center",
+                      searchMode === "search"
+                        ? isDark
+                          ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                          : "bg-blue-100 text-blue-600 border border-blue-300"
+                        : isDark
+                        ? "text-gray-400 hover:bg-gray-800 hover:text-white"
+                        : "text-gray-500 hover:bg-gray-200 hover:text-black"
+                    )}
+                  >
+                    <Search size={18} />
+                  </button>
+                  <button
+                    title="Deep Search Mode"
+                    onClick={() => setSearchMode(searchMode === "deep-search" ? null : "deep-search")}
+                    className={cn(
+                      "p-2 rounded-full transition-colors flex items-center justify-center",
+                      searchMode === "deep-search"
+                        ? isDark
+                          ? "bg-purple-500/20 text-purple-400 border border-purple-500/30"
+                          : "bg-purple-100 text-purple-600 border border-purple-300"
+                        : isDark
+                        ? "text-gray-400 hover:bg-gray-800 hover:text-white"
+                        : "text-gray-500 hover:bg-gray-200 hover:text-black"
+                    )}
+                  >
+                    <SearchX size={18} />
+                  </button>
+                </>
+              )}
               <span
                 className={cn(
                   "text-xs hidden sm:block",

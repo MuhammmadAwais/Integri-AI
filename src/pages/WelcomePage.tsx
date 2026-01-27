@@ -42,10 +42,16 @@ const WelcomePage: React.FC = () => {
     return () => ctx.revert();
   }, []);
 
-  const handleStartChat = async (text: string, file: File | null) => {
+  const handleStartChat = async (text: string, file: File | null, searchMode?: "search" | "deep-search" | null) => {
     if ((!text.trim() && !file) || !accessToken) return;
 
-    const currentModelId = newChatModel.id;
+    // Override model if search mode is active
+    let currentModelId = newChatModel.id;
+    if (searchMode === "search") {
+      currentModelId = "gpt-4o-mini-search-preview";
+    } else if (searchMode === "deep-search") {
+      currentModelId = "gpt-4o-mini-deep-research";
+    }
 
     // Check if we should route to PDF Chat
     if (file?.type === "application/pdf") {
