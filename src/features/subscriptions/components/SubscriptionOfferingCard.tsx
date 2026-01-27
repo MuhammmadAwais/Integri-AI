@@ -51,7 +51,7 @@ const SubscriptionOfferingCard: React.FC = () => {
       transition={{ delay: 0.5, duration: 0.6, ease: "easeOut" }}
       className="absolute top-6 left-6 z-50 "
     >
-      <Link to="/subscription">
+      <Link to="/subscriptions">
         <div
           className={cn(
             "group flex items-center gap-3 p-1.5 pr-5 rounded-full border backdrop-blur-md transition-all duration-300 cursor-pointer",
