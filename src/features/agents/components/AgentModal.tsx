@@ -25,7 +25,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { availableModels, isPremium } = useSubscription();
+  const { availableModels } = useSubscription();
 
   const [formData, setFormData] = useState({
     name: "",
