@@ -209,10 +209,13 @@ function getConfigForPath(pathname: string): PageSEOConfig & { canonicalPath: st
     }
   }
 
+  // Unknown/junk routes (e.g. /recruit, /12345.htm, /siteinfo/...) — same SPA HTML.
+  // Use canonical "/" + noindex to fix "Duplicate without user-selected canonical".
   return {
     title: SITE_DEFAULT_TITLE,
     description: SITE_DEFAULT_DESCRIPTION,
-    canonicalPath: pathname || "/",
+    canonicalPath: "/",
+    noindex: true,
     keywords: SITE_KEYWORDS,
     breadcrumbLabel: SITE_NAME,
   };

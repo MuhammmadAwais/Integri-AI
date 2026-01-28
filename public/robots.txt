@@ -4,11 +4,13 @@
 User-agent: *
 Allow: /
 
+# Block junk / duplicate URLs (not real app routes) — fixes "Duplicate without user-selected canonical"
+Disallow: /*.htm
+Disallow: /*.shtml
+Disallow: /siteinfo/
+Disallow: /contact/
+Disallow: /recruit
+Disallow: /qsave
+
 # Sitemap
 Sitemap: https://integri.app/sitemap.xml
-
-# Optional: disallow user-specific or duplicate content (adjust if your app serves these)
-# Disallow: /chat/
-# Disallow: /c/
-# Disallow: /voice/mobile-popup/
-# Disallow: /agents/  (if you noindex agent detail pages)
