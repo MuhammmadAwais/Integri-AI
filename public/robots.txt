@@ -1,0 +1,14 @@
+# Integri AI - Custom agents, chatbots, and all AI models in one place
+# https://integri.app
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://integri.app/sitemap.xml
+
+# Optional: disallow user-specific or duplicate content (adjust if your app serves these)
+# Disallow: /chat/
+# Disallow: /c/
+# Disallow: /voice/mobile-popup/
+# Disallow: /agents/  (if you noindex agent detail pages)

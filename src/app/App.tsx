@@ -5,6 +5,7 @@ import {
   Navigate,
   Outlet,
 } from "react-router-dom";
+import { HelmetProvider } from "react-v19-helmet-async";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
@@ -13,6 +14,9 @@ import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import { setAuthUser } from "../features/auth/slices/authSlice";
 import { getBackendToken } from "../api/backendApi";
 import { AuthService } from "../features/auth/services/authService";
+
+// --- SEO ---
+import PageSEO from "../Components/seo/PageSEO";
 
 // --- Components & Pages ---
 import Home from "../pages/Home";
@@ -82,60 +86,68 @@ const PublicRoute = () => {
   return <Outlet />;
 };
 
+// --- SEO root layout: PageSEO + Outlet for all routes ---
+const SEOLayout = () => (
+  <>
+    <PageSEO />
+    <Outlet />
+  </>
+);
+
 // --- 2. ROUTER CONFIGURATION ---
 const router = createBrowserRouter([
-  // Public Routes (Redirect to Home if already logged in)
   {
-    element: <PublicRoute />,
+    element: (
+      <HelmetProvider>
+        <SEOLayout />
+      </HelmetProvider>
+    ),
     children: [
-      { path: "/login", element: <Login /> },
-      { path: "/signup", element: <Signup /> },
-    ],
-  },
-
-  // Onboarding (Accessible to auth users who are 'new')
-  { path: "/getting-started", element: <GettingStarted /> },
-
-  // Mobile Voice Popup Route (Standalone - No Sidebar/Layout)
-  // Placed at root level so it renders independently
-  {
-    path: "/voice/mobile-popup/:token",
-    element: <MobileVoiceWrapper />,
-  },
-
-  // Main App Routes (Now Guest Accessible)
-  {
-    element: <ProtectedRoute />,
-    children: [
+      // Public Routes (Redirect to Home if already logged in)
       {
-        path: "/",
-        element: <Home />,
+        element: <PublicRoute />,
         children: [
-          { index: true, element: <Welcome /> },
-          { path: "chat/:id", element: <ChatInterface /> },
-          { path: "c/:id", element: <ChatInterface /> },
-          { path: "history", element: <HistoryPage /> },
-          { path: "playground", element: <Playground /> },
-          { path: "voice", element: <Voice /> },
-          { path: "pdf", element: <PdfChatPage /> },
-          { path: "pdf/:id", element: <PdfChatPage /> },
-          { path: "settings", element: <SettingsPage /> },
-          { path: "feedback", element: <SendFeedbackPage /> },
-          { path: "help", element: <HelpPage /> },
-          { path: "agents", element: <Agents /> },
-          { path: "agents/:id", element: <AgentDetailsPage /> },
-          { path: "subscriptions", element: <SubscriptionPage /> },
-          { path: "imageGen", element: <ImageGenPage /> },
-          { path: "contactUs", element: <ContactUs /> },
-          // Catch-all inside protected area
-          { path: "*", element: <Navigate to="/" replace /> },
+          { path: "/login", element: <Login /> },
+          { path: "/signup", element: <Signup /> },
         ],
       },
+      { path: "/getting-started", element: <GettingStarted /> },
+      {
+        path: "/voice/mobile-popup/:token",
+        element: <MobileVoiceWrapper />,
+      },
+      // Main App Routes (Guest Accessible)
+      {
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: "/",
+            element: <Home />,
+            children: [
+              { index: true, element: <Welcome /> },
+              { path: "chat/:id", element: <ChatInterface /> },
+              { path: "c/:id", element: <ChatInterface /> },
+              { path: "history", element: <HistoryPage /> },
+              { path: "playground", element: <Playground /> },
+              { path: "voice", element: <Voice /> },
+              { path: "pdf", element: <PdfChatPage /> },
+              { path: "pdf/:id", element: <PdfChatPage /> },
+              { path: "settings", element: <SettingsPage /> },
+              { path: "feedback", element: <SendFeedbackPage /> },
+              { path: "help", element: <HelpPage /> },
+              { path: "agents", element: <Agents /> },
+              { path: "agents/:id", element: <AgentDetailsPage /> },
+              { path: "subscriptions", element: <SubscriptionPage /> },
+              { path: "imageGen", element: <ImageGenPage /> },
+              { path: "contactUs", element: <ContactUs /> },
+              { path: "*", element: <Navigate to="/" replace /> },
+            ],
+          },
+        ],
+      },
+      { path: "*", element: <Navigate to="/signup" replace /> },
     ],
   },
-
-  // Global Fallback
-  { path: "*", element: <Navigate to="/signup" replace /> },
 ]);
 
 // --- 3. MAIN COMPONENT ---
