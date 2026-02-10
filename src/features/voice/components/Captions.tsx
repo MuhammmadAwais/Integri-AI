@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 import { cn } from "../../../lib/utils";
 import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux";
 import { GripHorizontal, Pin, PinOff, X } from "lucide-react";
@@ -12,6 +13,7 @@ interface CaptionsProps {
 }
 
 const Captions: React.FC<CaptionsProps> = ({ text, status, isVisible }) => {
+  const { t } = useTranslation();
   const { isDark } = useAppSelector((state: any) => state.theme);
   const dispatch = useAppDispatch();
 
@@ -106,14 +108,15 @@ const Captions: React.FC<CaptionsProps> = ({ text, status, isVisible }) => {
   // If globally disabled from navbar, don't render
   if (!isVisible) return null;
 
-  const shouldRender = showBox || displayText;
+  // Box is visible whenever captions are enabled (open by default)
+  const shouldRender = isVisible;
 
   const BoxContent = (
     <div
       className={cn(
         "z-9999 transition-all duration-300 ease-in-out flex flex-col items-center draggable-box",
         isFixed
-          ? "absolute bottom-36 left-1/2 -translate-x-1/2 w-[95%] md:w-[600px]" // Fixed: Centered, wider
+          ? "absolute left-6 top-1/2 -translate-y-1/2 w-[90%] max-w-[420px]" // Fixed: Center left
           : "fixed w-[90vw] md:w-[500px]" // Draggable: Responsive width
       )}
       style={!isFixed ? { left: position.x, top: position.y } : {}}
@@ -141,7 +144,7 @@ const Captions: React.FC<CaptionsProps> = ({ text, status, isVisible }) => {
           <div className="flex items-center gap-2 opacity-60">
             {!isFixed && <GripHorizontal size={16} />}
             <span className="text-[11px] font-bold uppercase tracking-wider">
-              Live Captions
+              {t("voice.liveCaptions")}
             </span>
           </div>
 
@@ -152,7 +155,7 @@ const Captions: React.FC<CaptionsProps> = ({ text, status, isVisible }) => {
                 "p-1.5 rounded-md transition-colors hover:cursor-pointer",
                 isDark ? "hover:bg-white/10" : "hover:bg-black/5"
               )}
-              title={isFixed ? "Unpin (Enable Drag)" : "Pin to Bottom"}
+              title={isFixed ? t("voice.unpinEnableDrag") : t("voice.pinToBottom")}
             >
               {isFixed ? <PinOff size={14} /> : <Pin size={14} />}
             </button>
@@ -162,7 +165,7 @@ const Captions: React.FC<CaptionsProps> = ({ text, status, isVisible }) => {
               className={cn(
                 "p-1.5 rounded-md transition-colors hover:cursor-pointer hover:bg-red-500/10 hover:text-red-500"
               )}
-              title="Close Captions"
+              title={t("voice.closeCaptions")}
             >
               <X size={14} />
             </button>
@@ -182,7 +185,7 @@ const Captions: React.FC<CaptionsProps> = ({ text, status, isVisible }) => {
           >
             {displayText || (
               <span className="opacity-30 italic text-base">
-                Listening for speech...
+                {t("voice.listeningForSpeech")}
               </span>
             )}
           </p>

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Paperclip,
   ArrowUp,
@@ -33,6 +34,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   disabled,
   features = true,
 }) => {
+  const { t } = useTranslation();
   const user = useAppSelector((state: any) => state.auth.user);
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   const [input, setInput] = useState("");
@@ -184,7 +186,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           onPaste={handlePaste} // Attached the paste handler here
-          placeholder={features ? "Message Integri AI..." : "Ask a question..."}
+          placeholder={features ? t("chat.messageIntegriAi") : t("chat.askQuestion")}
           disabled={disabled || isCloudLoading}
           rows={1}
           className={cn(
@@ -219,7 +221,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                     ? "hover:bg-gray-800 text-gray-400"
                     : "hover:bg-gray-200 text-gray-500"
                 )}
-                title="Attach file"
+                title={t("common.attachFile")}
               >
                 <Paperclip size={18} />
               </button>
@@ -253,7 +255,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                         )}
                       >
                         <HardDrive size={16} className="text-blue-500" />
-                        Local Computer
+                        {t("chat.localComputer")}
                       </button>
 
                       <div
@@ -303,7 +305,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                             fill="#ffba00"
                           />
                         </svg>
-                        Google Drive
+                        {t("chat.googleDrive")}
                       </button>
 
                       {/* OneDrive */}
@@ -358,7 +360,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                             fill="#00bcf2"
                           />
                         </svg>
-                        OneDrive
+                        {t("chat.oneDrive")}
                       </button>
 
                       <div
@@ -382,7 +384,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                         )}
                       >
                         <PenTool size={16} className="text-purple-500" />
-                        Draw Sketch
+                        {t("chat.drawSketch")}
                       </button>
                     </div>
                   </motion.div>
@@ -396,7 +398,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
               {canUseSearch && (input.trim() || file) && (
                 <>
                   <button
-                    title="Search Mode"
+                    title={t("chat.searchMode")}
                     onClick={() => setSearchMode(searchMode === "search" ? null : "search")}
                     className={cn(
                       "p-2 rounded-full transition-colors flex items-center justify-center",
@@ -412,7 +414,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                     <Search size={18} />
                   </button>
                   <button
-                    title="Deep Search Mode"
+                    title={t("chat.deepSearchMode")}
                     onClick={() => setSearchMode(searchMode === "deep-search" ? null : "deep-search")}
                     className={cn(
                       "p-2 rounded-full transition-colors flex items-center justify-center",
@@ -435,7 +437,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                   isDark ? "text-gray-600" : "text-gray-400"
                 )}
               >
-                {input.length} / 2000
+                {t("chat.characterCount", { current: input.length })}
               </span>
               <button
                 title="button"

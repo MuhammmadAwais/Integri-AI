@@ -3,7 +3,9 @@ import { Moon, Sun, MessageSquarePlus } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import { toggleTheme } from "../theme/themeSlice";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { cn } from "../../lib/utils";
+import LanguageSwitcher from "../../Components/ui/LanguageSwitcher";
 
 const NavActionBtn = ({ icon: Icon, onClick, label, active = false }: any) => {
   const isDark = useAppSelector((state) => state.theme.isDark);
@@ -28,22 +30,26 @@ const NavbarRight: React.FC = () => {
   const isDark = useAppSelector((state) => state.theme.isDark);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className="flex items-center gap-1 sm:gap-2 relative">
       {/* New Chat Button */}
       <NavActionBtn
         icon={MessageSquarePlus}
-        label="New Chat"
+        label={t("nav.newChat")}
         onClick={() => navigate("/")}
       />
 
       <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1" />
 
+      {/* Language Switcher */}
+      <LanguageSwitcher />
+
       {/* Theme Toggle */}
       <NavActionBtn
         icon={isDark ? Sun : Moon}
-        label="Toggle Theme"
+        label={t("nav.toggleTheme")}
         onClick={() => dispatch(toggleTheme())}
       />
     </div>

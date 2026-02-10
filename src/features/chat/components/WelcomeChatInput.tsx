@@ -6,6 +6,7 @@ import React, {
   useLayoutEffect,
 } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 import {
   Paperclip,
   ArrowUp,
@@ -45,6 +46,7 @@ interface SavedDraft {
 
 const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
   ({ onStartChat, user, isDark, isLoading }, ref) => {
+    const { t } = useTranslation();
     const [inputValue, setInputValue] = useState("");
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [showAttachMenu, setShowAttachMenu] = useState(false);
@@ -295,7 +297,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
                   {selectedFile.name}
                 </span>
                 <button
-                  title="Remove File"
+                  title={t("common.removeFile")}
                   onClick={() => setSelectedFile(null)}
                   className="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded-full ml-1"
                 >
@@ -313,7 +315,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
             onKeyDown={handleKeyDown}
             onPaste={handlePaste}
             rows={1}
-            placeholder={`Ask me anything .......`}
+            placeholder={t("chat.askMeAnything")}
             className={cn(
               // Layout: w-full, transparent bg, no resize handle
               "w-full bg-transparent outline-none text-lg px-6 py-2 placeholder:text-gray-500/80 font-medium z-20 resize-none",
@@ -359,7 +361,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
             />
             <button
               ref={buttonRef}
-              title="Attach File"
+              title={t("common.attachFile")}
               onClick={() => setShowAttachMenu(!showAttachMenu)}
               className={cn(
                 "p-2.5 rounded-full transition-colors shrink-0 hover:cursor-pointer",
@@ -413,7 +415,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
                       )}
                     >
                       <HardDrive size={18} className="text-emerald-500" />
-                      Local Computer
+                      {t("chat.localComputer")}
                     </button>
 
                     <div
@@ -463,7 +465,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
                           fill="#ffba00"
                         />
                       </svg>
-                      Google Drive
+                      {t("chat.googleDrive")}
                     </button>
                     <button
                       onClick={handleOneDrivePick}
@@ -517,7 +519,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
                           fill="#00bcf2"
                         />
                       </svg>
-                      OneDrive
+                      {t("chat.oneDrive")}
                     </button>
 
                     <div
@@ -540,7 +542,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
                       )}
                     >
                       <PenTool size={18} className="text-purple-500" />
-                      Draw Sketch
+                      {t("chat.drawSketch")}
                     </button>
                   </motion.div>
                 )}
@@ -555,7 +557,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
             {canUseSearch && (
               <>
                 <button
-                  title="Search Mode"
+                  title={t("chat.searchMode")}
                   onClick={() => {
                     setSearchMode(searchMode === "search" ? null : "search");
                   }}
@@ -573,7 +575,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
                   <Search size={18} />
                 </button>
                 <button
-                  title="Deep Search Mode"
+                  title={t("chat.deepSearchMode")}
                   onClick={() => {
                     const newMode = searchMode === "deep-search" ? null : "deep-search";
                     setSearchMode(newMode);
@@ -596,7 +598,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
             {inputValue.trim().length > 0 || selectedFile ? null : (
               <Link to="/voice">
                 <button
-                  title="Voice Input"
+                  title={t("chat.voiceInput")}
                   className={cn(
                     "w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:cursor-pointer",
                     isDark
@@ -609,7 +611,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
               </Link>
             )}
             <button
-              title="Send Message"
+              title={t("chat.sendMessage")}
               onClick={
                 inputValue.trim().length > 0 || selectedFile
                   ? handleSubmit

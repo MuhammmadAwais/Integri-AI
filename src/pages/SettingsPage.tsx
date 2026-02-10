@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { User, CreditCard, Download, HelpCircle } from "lucide-react";
 import { cn } from "../lib/utils";
@@ -19,6 +20,7 @@ const containerVariants = {
 };
 
 const SettingsPage: React.FC = () => {
+  const { t } = useTranslation();
   const isDark = useAppSelector((state: any) => state.theme.isDark);
 
   return (
@@ -37,14 +39,14 @@ const SettingsPage: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t("settings.title")}</h1>
           <p
             className={cn(
               "text-muted-foreground mt-1",
               isDark ? "text-gray-400" : "text-gray-500"
             )}
           >
-            Manage your account preferences and application settings.
+            {t("settings.subtitle")}
           </p>
         </motion.div>
 
@@ -57,8 +59,8 @@ const SettingsPage: React.FC = () => {
 
           <SettingsSection
             icon={User}
-            title="Account"
-            description="Update your profile details and personal information."
+            title={t("settings.account")}
+            description={t("settings.accountDescription")}
             isDark={isDark}
           >
             <AccountSettings />
@@ -66,8 +68,8 @@ const SettingsPage: React.FC = () => {
             
           <SettingsSection
             icon={CreditCard}
-            title="Subscription"
-            description="Manage your plan, billing, and usage."
+            title={t("settings.subscription")}
+            description={t("settings.subscriptionDescription")}
             isDark={isDark}
           >
             <SubscriptionSettings />
@@ -75,8 +77,8 @@ const SettingsPage: React.FC = () => {
 
           <SettingsSection
             icon={Download}
-            title="Get the App"
-            description="Download Integri AI for all your devices."
+            title={t("settings.getTheApp")}
+            description={t("settings.getTheAppDescription")}
             isDark={isDark}
           >
             <DownloadSettings />
@@ -84,8 +86,8 @@ const SettingsPage: React.FC = () => {
 
           <SettingsSection
             icon={HelpCircle}
-            title="Help & Support"
-            description="Find answers, send feedback, or learn more about us."
+            title={t("settings.helpSupport")}
+            description={t("settings.helpSupportDescription")}
             isDark={isDark}
           >
             <HelpAndAbout />

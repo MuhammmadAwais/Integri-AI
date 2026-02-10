@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import ChatInput from "./ChatInput";
 import MessageBubble from "../../../Components/ui/MessageBubble";
 import SkeletonLoader from "../../../Components/ui/SkeletonLoader";
@@ -14,6 +15,7 @@ interface ChatInterfaceProps {
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -174,7 +176,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
           {features && (
             <div className="text-center mt-2">
               <span className="text-[10px] text-gray-500">
-                All LLMs can make mistakes. Verify the information you receive.
+                {t("chat.llmDisclaimer")}
               </span>
             </div>
           )}

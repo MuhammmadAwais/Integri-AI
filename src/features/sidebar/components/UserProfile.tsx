@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ChevronRight,
   ChevronLeft,
@@ -47,8 +48,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
 
   // Mock Data
   const initials = user?.name ? user.name.substring(0, 1).toUpperCase() : "G";
-  const fullName = user?.name || "Guest User";
-  const username = user?.email || "No account active";
+  const { t } = useTranslation();
+  const fullName = user?.name || t("common.guestUser");
+  const username = user?.email || t("common.noAccountActive");
 
   // --- POPUP POSITIONING LOGIC ---
   const handleDownloadEnter = () => {
@@ -92,12 +94,15 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
 
     if (containerRef.current) {
       const rect = containerRef.current.getBoundingClientRect();
+      const menuWidth = 240;
+      const offsetLeft = 16; // Shift menu left for spacing from edge (helps RTL and LTR)
+      const left = (isExpanded ? rect.left : rect.left + 70) - offsetLeft;
 
       setMenuStyle({
         position: "absolute",
-        left: isExpanded ? rect.left : rect.left + 70,
+        left,
         bottom: window.innerHeight - rect.top + 10,
-        width: "240px",
+        width: `${menuWidth}px`,
       });
 
       setShowMenu(true);
@@ -230,7 +235,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
             e.stopPropagation();
             onToggle();
           }}
-          title={isExpanded ? "Collapse Sidebar" : "Expand Sidebar"}
+          title={isExpanded ? t("common.collapseSidebar") : t("common.expandSidebar")}
           className={cn(
             "absolute flex items-center justify-center rounded-full shadow-md border transition-all duration-200 z-50 mb-4",
             isDark
@@ -292,7 +297,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                       : "text-gray-700 hover:bg-gray-50",
                   )}
                 >
-                  <LogIn size={16} /> Login
+                  <LogIn size={16} /> {t("auth.login")}
                 </button>
                 <button
                   onClick={() => {
@@ -306,7 +311,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                       : "text-gray-700 hover:bg-gray-50",
                   )}
                 >
-                  <UserIcon size={16} /> Sign Up
+                  <UserIcon size={16} /> {t("auth.signUp")}
                 </button>
               </>
             ) : (
@@ -315,7 +320,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                   onClick={handleLogout}
                   className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 text-red-500 hover:bg-red-500/10 cursor-pointer transition-colors"
                 >
-                  <LogOut size={16} /> Logout
+                  <LogOut size={16} /> {t("auth.logout")}
                 </button>
 
                 {/* --- DOWNLOAD BUTTON TRIGGER --- */}
@@ -331,7 +336,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                         : "hover:bg-gray-200 text-black",
                     )}
                   >
-                    Download the app
+                    {t("userProfile.downloadTheApp")}
                   </button>
                 </Link>
                 <Link to="/contactUs">
@@ -343,7 +348,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                         : "hover:bg-gray-200 text-black",
                     )}
                   >
-                    Contact Us
+                    {t("userProfile.contactUs")}
                   </button>
                 </Link>
 
@@ -356,7 +361,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                         : "hover:bg-gray-200 text-black",
                     )}
                   >
-                    Subscription
+                    {t("userProfile.subscription")}
                   </button>
                 </Link>
 
@@ -369,7 +374,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                         : "hover:bg-gray-200 text-black",
                     )}
                   >
-                    Settings
+                    {t("userProfile.settings")}
                   </button>
                 </Link>
               </>

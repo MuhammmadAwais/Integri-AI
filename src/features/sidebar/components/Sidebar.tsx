@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Search,
   PenSquare,
@@ -19,21 +20,17 @@ import HistoryModal from "./HistoryModal";
 import DeleteModal from "../../../Components/ui/DeleteModal";
 import UserProfile from "./UserProfile";
 
-// --- NAVIGATION ITEMS CONFIG ---
+// --- NAVIGATION ITEMS: labels come from t() inside component ---
 const NAV_ITEMS = [
-  { id: "chat", label: "Chat", icon: MessageCircle, path: "/" },
-  {
-    id: "playground",
-    label: "Multi Chats",
-    icon: PenSquare,
-    path: "/playground",
-  },
-  { id: "agents", label: "Agents", icon: CheckCircle, path: "/agents" },
-  { id: "imageGen", label: "Image Gen", icon: ImageIcon, path: "/imageGen" },
-  { id: "pdf", label: "PDF Chat", icon: FileText, path: "/pdf" },
+  { id: "chat", labelKey: "nav.chat", icon: MessageCircle, path: "/" },
+  { id: "playground", labelKey: "nav.multiChats", icon: PenSquare, path: "/playground" },
+  { id: "agents", labelKey: "nav.agents", icon: CheckCircle, path: "/agents" },
+  { id: "imageGen", labelKey: "nav.imageGen", icon: ImageIcon, path: "/imageGen" },
+  { id: "pdf", labelKey: "nav.pdfChat", icon: FileText, path: "/pdf" },
 ];
 
 const Sidebar: React.FC = () => {
+  const { t } = useTranslation();
   // State
   const [isExpanded, setIsExpanded] = useState(true);
   const [isHistoryOpen, setIsHistoryOpen] = useState(true);
@@ -142,7 +139,7 @@ const Sidebar: React.FC = () => {
 
       <div
         className={cn(
-          "flex flex-col h-full border-r transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] relative z-40 select-none",
+          "flex flex-col h-full border-e transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] relative z-40 select-none",
           isExpanded ? "w-60" : "w-[60px]",
           isDark
             ? "bg-[#000000] border-[#1F1F1F] text-[#E7E9EA]"
@@ -153,7 +150,7 @@ const Sidebar: React.FC = () => {
         <div
           className={cn(
             "flex items-center my-2 h-[52px]",
-            isExpanded ? "px-5" : "justify-center",
+            isExpanded ? "ps-5 pe-5" : "justify-center",
           )}
         >
           <Link to="/" className="hover:opacity-80 transition-opacity">
@@ -165,17 +162,17 @@ const Sidebar: React.FC = () => {
                   : "text xs font-semibold",
               )}
             >
-              Integri
+              {t("sidebar.integri")}
             </h1>
           </Link>
         </div>
 
         {/* --- 2. SEARCH --- */}
-        <div className="px-3 mb-2">
+        <div className="ps-4 pe-4 mb-2">
           {isExpanded ? (
             <div
               className={cn(
-                "flex items-center gap-2.5 px-3 py-1.5 rounded-full border transition-all group",
+                "flex items-center gap-2.5 ps-3 pe-3 py-1.5 rounded-full border transition-all group",
                 isDark
                   ? "bg-[#101010] border-[#1F1F1F] focus-within:border-gray-700 focus-within:bg-black"
                   : "bg-gray-50 border-gray-200 focus-within:bg-white focus-within:border-gray-300",
@@ -185,7 +182,7 @@ const Sidebar: React.FC = () => {
               <input
                 ref={SearchinputRef}
                 type="text"
-                placeholder="Search"
+                placeholder={t("sidebar.searchPlaceholder")}
                 className={cn(
                   "bg-transparent border-none outline-none w-full text-[13px] placeholder:text-gray-500",
                   isDark ? "text-white" : "text-black",
@@ -194,12 +191,12 @@ const Sidebar: React.FC = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
               <span className="text-[10px] text-gray-600 font-medium">
-                Ctrl+K
+                {t("nav.searchShortcut")}
               </span>
             </div>
           ) : (
             <button
-              title="Search"
+              title={t("common.search")}
               onClick={() => setIsExpanded(true)}
               className={cn(
                 "w-9 h-9 rounded-full flex items-center justify-center transition-colors",
@@ -214,12 +211,12 @@ const Sidebar: React.FC = () => {
         </div>
 
         {/* --- 3. MAIN NAV --- */}
-        <div className="flex flex-col gap-0.5 px-2">
+        <div className="flex flex-col gap-0.5 ps-4 pe-4">
           {NAV_ITEMS.map((item) => (
             <NavItem
               key={item.id}
               icon={item.icon}
-              label={item.label}
+              label={t(item.labelKey)}
               isActive={location.pathname === item.path}
               isExpanded={isExpanded}
               onClick={() => handleNavClick(item.path)}
@@ -229,12 +226,12 @@ const Sidebar: React.FC = () => {
         </div>
 
         {/* --- 4. HISTORY --- */}
-        <div className="flex-1 overflow-y-auto mt-4 custom-scrollbar px-2">
+        <div className="flex-1 overflow-y-auto mt-4 custom-scrollbar ps-4 pe-4">
           {isExpanded ? (
             <div className="animate-in fade-in duration-300">
               <button
                 className={cn(
-                  "flex justify-between items-center w-full px-2 py-2 text-[#71767B]  transition-colors group mb-1",
+                  "flex justify-between items-center w-full ps-2 pe-2 py-2 text-[#71767B]  transition-colors group mb-1",
                   isDark ? "hover:text-white" : "hover:text-black",
                 )}
               >
@@ -243,7 +240,7 @@ const Sidebar: React.FC = () => {
                   className="flex items-center gap-2 font-bold "
                 >
                   <History className="mt-0.5" size={14} />
-                  <span className="text-[13px] font-abold ">History</span>
+                  <span className="text-[13px] font-abold ">{t("nav.history")}</span>
                 </Link>
                 {isHistoryOpen ? (
                   <ChevronDown
@@ -261,14 +258,14 @@ const Sidebar: React.FC = () => {
               </button>
 
               {isHistoryOpen && (
-                <div className="pl-2 space-y-1">
+                <div className="ps-4 space-y-1">
                   <div>
-                    <h4 className="text-[11px] font-semibold text-[#505050] px-2 mb-1 mt-2">
-                      Recent
+                    <h4 className="text-[11px] font-semibold text-[#505050] ps-2 pe-2 mb-1 mt-2">
+                      {t("nav.recent")}
                     </h4>
                     {filteredChats.length === 0 ? (
-                      <div className="text-[12px] text-gray-600 px-2 py-1">
-                        No chats found
+                      <div className="text-[12px] text-gray-600 ps-2 pe-2 py-1">
+                        {t("nav.noChatsFound")}
                       </div>
                     ) : (
                       filteredChats.map((chat: any) => {
@@ -280,7 +277,7 @@ const Sidebar: React.FC = () => {
                             <Link
                               to={`/chat/${sessionId}`}
                               className={cn(
-                                "block px-2 py-1 rounded text-[13px] truncate transition-colors pr-8",
+                                "block ps-2 pe-8 py-1 rounded text-[13px] truncate transition-colors",
                                 isDark
                                   ? "text-[#E7E9EA] hover:bg-[#1A1A1A]"
                                   : "text-gray-700 hover:bg-gray-100",
@@ -288,18 +285,18 @@ const Sidebar: React.FC = () => {
                                   (isDark ? "bg-[#1A1A1A]" : "bg-gray-100"),
                               )}
                             >
-                              {chat.title || "New Conversation"}
+                              {chat.title || t("common.newConversation")}
                             </Link>
 
                             <button
                               onClick={(e) => requestDelete(e, sessionId)}
                               className={cn(
-                                "hover:cursor-pointer absolute right-1 top-1/2 -translate-y-1/2 p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity",
+                                "hover:cursor-pointer absolute end-1 top-1/2 -translate-y-1/2 p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity",
                                 isDark
                                   ? "hover:bg-[#2C2C2C] text-gray-400 hover:text-red-400"
                                   : "hover:bg-gray-200 text-gray-500 hover:text-red-500",
                               )}
-                              title="Delete chat"
+                              title={t("nav.deleteChat")}
                             >
                               <Trash2 size={13} />
                             </button>
@@ -311,18 +308,18 @@ const Sidebar: React.FC = () => {
                   <button
                     onClick={() => setShowHistoryModal(true)}
                     className={cn(
-                      "text-[12px] text-[#71767B] px-2 py-1 hover:underline text-left block w-full hover:cursor-pointer mt-2",
+                      "text-[12px] text-[#71767B] ps-2 pe-2 py-1 hover:underline text-start block w-full hover:cursor-pointer mt-2",
                       isDark ? "hover:text-white" : "hover:text-black",
                     )}
                   >
-                    See all
+                    {t("nav.seeAll")}
                   </button>
                 </div>
               )}
             </div>
           ) : (
             <button
-              title="History"
+              title={t("nav.history")}
               onClick={() => setIsExpanded(true)}
               className={cn(
                 "w-9 h-9 mx-auto rounded-lg flex items-center justify-center transition-colors mt-2",
@@ -339,7 +336,7 @@ const Sidebar: React.FC = () => {
         {/* --- 5. FOOTER (UserProfile) --- */}
         <div
           className={cn(
-            "p-2 mt-auto relative z-50",
+            "ps-4 pe-4 py-3 mt-auto relative z-50",
             isDark ? "border-t border-[#1F1F1F]" : "border-t border-gray-200",
           )}
         >
@@ -364,8 +361,8 @@ const NavItem = ({
   <button
     onClick={onClick}
     className={cn(
-      "flex items-center gap-3 py-2 rounded-lg transition-all duration-150 group w-full text-left hover:cursor-pointer",
-      isExpanded ? "px-3" : "justify-center px-0",
+      "flex items-center gap-3 py-2 rounded-lg transition-all duration-150 group w-full text-start hover:cursor-pointer",
+      isExpanded ? "ps-4 pe-4" : "justify-center ps-0 pe-0",
       isActive
         ? isDark
           ? "bg-[#1A1A1A] text-white"

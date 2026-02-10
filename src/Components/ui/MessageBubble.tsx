@@ -1,4 +1,5 @@
 import React, { useLayoutEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { cn } from "../../lib/utils";
 import gsap from "gsap";
 import { Trash2, FileText, Sparkles } from "lucide-react";
@@ -40,6 +41,7 @@ const MessageBubble: React.FC<MessageProps> = ({
   provider,
   is_custom_gpt,
 }) => {
+  const { t } = useTranslation();
   const bubbleRef = useRef<HTMLDivElement>(null);
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   const isUser = role === "user";
@@ -111,7 +113,7 @@ const MessageBubble: React.FC<MessageProps> = ({
                   <button
                     onClick={() => onDelete(id)}
                     className="absolute -left-8 top-1 p-1.5 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                    title="Delete Message"
+                    title={t("common.deleteMessage")}
                   >
                     <Trash2 size={14} />
                   </button>

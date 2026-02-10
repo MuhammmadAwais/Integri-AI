@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { AlertTriangle } from "lucide-react";
 import { cn } from "../../lib/utils";
 import Portal from "./Portal"; 
@@ -16,6 +17,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
   onConfirm,
   isDark,
 }) => {
+  const { t } = useTranslation();
   if (!isOpen) return null;
 
   return (
@@ -47,15 +49,14 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
 
           {/* Text */}
           <div className="text-center mb-6">
-            <h3 className="text-lg font-bold mb-2">Delete Conversation?</h3>
+            <h3 className="text-lg font-bold mb-2">{t("modals.deleteConversation")}</h3>
             <p
               className={cn(
                 "text-sm leading-relaxed px-2",
                 isDark ? "text-gray-400" : "text-gray-500"
               )}
             >
-              This action cannot be undone. The chat will be permanently
-              removed.
+              {t("modals.deleteConversationDescription")}
             </p>
           </div>
 
@@ -70,13 +71,13 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
                   : "bg-gray-100 hover:bg-gray-200 text-gray-700"
               )}
             >
-              Cancel
+              {t("common.cancel")}
             </button>
             <button
               onClick={onConfirm}
               className="hover:cursor-pointer flex-1 px-4 py-2.5 rounded-xl font-medium transition-colors text-sm bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-500/20"
             >
-              Delete
+              {t("common.delete")}
             </button>
           </div>
         </div>

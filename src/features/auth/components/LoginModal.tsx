@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { X, Lock, LogIn, UserPlus } from "lucide-react";
 import Portal from "../../../Components/ui/Portal";
 import { useAppSelector } from "../../../hooks/useRedux";
@@ -14,11 +15,14 @@ interface LoginModalProps {
 const LoginModal: React.FC<LoginModalProps> = ({
   isOpen,
   onClose,
-  title = "Authentication Required",
-  description = "Login or Signup to continue using Integri AI features.",
+  title,
+  description,
 }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const isDark = useAppSelector((state: any) => state.theme?.isDark ?? true); // Default to dark if theme slice invalid
+  const modalTitle = title ?? t("auth.authRequired");
+  const modalDescription = description ?? t("auth.authDescription");
 
   if (!isOpen) return null;
 
@@ -49,7 +53,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
         >
           {/* Close Button */}
           <button
-          title="Close"
+          title={t("common.close")}
             onClick={onClose}
             className={`
               absolute right-4 top-4 p-1 rounded-md transition-colors hover:cursor-pointer
@@ -74,13 +78,13 @@ const LoginModal: React.FC<LoginModalProps> = ({
               <Lock size={24} />
             </div>
 
-            <h2 className="text-xl font-bold tracking-tight mb-2">{title}</h2>
+            <h2 className="text-xl font-bold tracking-tight mb-2">{modalTitle}</h2>
             <p
               className={`text-sm ${
                 isDark ? "text-gray-400" : "text-gray-500"
               }`}
             >
-              {description}
+              {modalDescription}
             </p>
           </div>
 
@@ -98,7 +102,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
               `}
             >
               <LogIn size={16} />
-              Log In
+              {t("auth.logIn")}
             </button>
 
             <button
@@ -113,7 +117,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
               `}
             >
               <UserPlus size={16} />
-              Sign Up
+              {t("auth.signUp")}
             </button>
           </div>
 
@@ -128,7 +132,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
             }
           `}
           >
-            By continuing, you agree to our Terms of Service.
+            {t("common.termsOfService")}
           </div>
         </div>
       </div>

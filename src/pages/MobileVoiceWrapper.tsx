@@ -1,5 +1,6 @@
 import React from "react";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Voice from "./Voice";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import { cn } from "../lib/utils";
@@ -10,7 +11,7 @@ import { toggleTheme } from "../features/theme/themeSlice";
 import { setVoiceShowCaptions } from "../features/chat/chatSlice";
 
 const MobileVoiceWrapper: React.FC = () => {
-  // Extract the JWT Token from the URL parameters
+  const { t } = useTranslation();
   const { token } = useParams<{ token: string }>();
   const dispatch = useAppDispatch();
 
@@ -54,7 +55,7 @@ const MobileVoiceWrapper: React.FC = () => {
               ? "bg-black/20 border-white/10 text-gray-400 hover:bg-white/10 hover:text-gray-200"
               : "bg-white/20 border-black/5 text-gray-600 hover:bg-black/5 hover:text-gray-900"
           )}
-          title={voiceShowCaptions ? "Hide Captions" : "Show Captions"}
+          title={voiceShowCaptions ? t("nav.hideCaptions") : t("nav.showCaptions")}
         >
           <Captions size={20} strokeWidth={voiceShowCaptions ? 2.5 : 2} />
         </button>

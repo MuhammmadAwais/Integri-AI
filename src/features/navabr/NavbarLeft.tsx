@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import { cn } from "../../lib/utils";
 import { ChevronDown, Plus, Sparkles, Mic, Captions } from "lucide-react"; // Added Captions icon
@@ -18,6 +19,7 @@ import {
 const NavbarLeft: React.FC = () => {
   const location = useLocation();
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
   const isDark = useAppSelector((state) => state.theme.isDark);
   const { token } = useAppSelector((state: any) => state.auth);
 
@@ -81,7 +83,7 @@ const NavbarLeft: React.FC = () => {
               ? "border-white/10 text-gray-400 hover:bg-white/5 hover:text-gray-200"
               : "border-black/5 text-gray-400 hover:bg-gray-100 hover:text-gray-700"
           )}
-          title={voiceShowCaptions ? "Hide Captions" : "Show Captions"}
+          title={voiceShowCaptions ? t("nav.hideCaptions") : t("nav.showCaptions")}
         >
           <Captions size={18} strokeWidth={voiceShowCaptions ? 2.5 : 2} />
         </button>
@@ -111,7 +113,7 @@ const NavbarLeft: React.FC = () => {
             )}
           >
             <span className="opacity-90">
-              {selectedAgentId ? "Agent Active" : selectedModelLabel}
+              {selectedAgentId ? t("nav.agentActive") : selectedModelLabel}
             </span>
             {!selectedAgentId && <ChevronDown size={16} />}
           </button>
@@ -154,7 +156,7 @@ const NavbarLeft: React.FC = () => {
               size={14}
               className={selectedAgentId ? "animate-pulse" : ""}
             />
-            <span>{selectedAgent?.name || "Select Agent"}</span>
+            <span>{selectedAgent?.name || t("nav.selectAgent")}</span>
             <ChevronDown
               size={14}
               className={cn(
@@ -205,7 +207,7 @@ const NavbarLeft: React.FC = () => {
             )}
           >
             <Plus size={16} />
-            <span className="text-xs font-bold uppercase">Add Model</span>
+            <span className="text-xs font-bold uppercase">{t("nav.addModel")}</span>
           </button>
           <ModelMenu
             isOpen={showAddMenu}
@@ -233,7 +235,7 @@ const NavbarLeft: React.FC = () => {
             )}
           >
             <Sparkles size={16} />
-            <span className="text-xs font-bold uppercase">Add Agent</span>
+            <span className="text-xs font-bold uppercase">{t("nav.addAgent")}</span>
           </button>
 
           <AgentMenu

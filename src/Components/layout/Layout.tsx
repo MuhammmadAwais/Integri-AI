@@ -56,8 +56,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           isMobileOpen ? "translate-x-0" : "-translate-x-full",
           // Explicit Background Colors are CRITICAL to fix the "glitch"
           isDark
-            ? "bg-[#000000] border-r border-[#1F1F1F]"
-            : "bg-white border-r border-gray-200"
+            ? "bg-[#000000] border-e border-[#1F1F1F]"
+            : "bg-white border-e border-gray-200"
         )}
       >
         <Sidebar />

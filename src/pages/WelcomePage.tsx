@@ -1,4 +1,5 @@
 import React, { useRef, useLayoutEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useAppSelector } from "../hooks/useRedux";
 import { cn } from "../lib/utils";
 import { Link, useNavigate } from "react-router-dom";
@@ -9,6 +10,7 @@ import SubscriptionOfferingCard from "../features/subscriptions/components/Subsc
 import WelcomeChatInput from "../features/chat/components/WelcomeChatInput";
 
 const WelcomePage: React.FC = () => {
+  const { t } = useTranslation();
   const isDark = useAppSelector((state: any) => state.theme?.isDark);
   const { user, accessToken } = useAppSelector((state: any) => state.auth);
 
@@ -63,7 +65,7 @@ const WelcomePage: React.FC = () => {
         );
         navigate(`/chat/${newChatId}`, {
           state: {
-            initialMessage: text || "Explain this",
+            initialMessage: text || t("chat.explainThis"),
             initialFile: file,
             file: file,
           },
@@ -133,7 +135,7 @@ const WelcomePage: React.FC = () => {
               isDark ? "text-zinc-400" : "text-zinc-500"
             )}
           >
-            {`Hey ${firstName}, how can I help you today?`}
+{t("welcome.greeting", { name: firstName })}
           </h2>
         </div>
 
@@ -146,7 +148,7 @@ const WelcomePage: React.FC = () => {
         />
 
         <div className="mt-6 text-xs font-medium text-zinc-400/60 dark:text-zinc-600/60 select-none">
-          All LLMs can make mistakes. Verify the information you receive.
+          {t("chat.llmDisclaimer")}
         </div>
       </div>
     </div>

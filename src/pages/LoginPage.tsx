@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Mail, Lock, LogIn, Chrome } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import { loginUser, loginWithGoogle } from "../features/auth/thunks/authThunk"; //
@@ -8,6 +9,7 @@ import AuthInput from "../features/auth/components/AuthInput";
 import AuthButton from "../features/auth/components/AuthButton";
 
 const Login: React.FC = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -31,15 +33,15 @@ const Login: React.FC = () => {
 
   return (
     <AuthLayout
-      title="Welcome Back"
-      subtitle="Enter your credentials to access your workspace."
+      title={t("auth.welcomeBack")}
+      subtitle={t("auth.enterCredentials")}
     >
       <form onSubmit={handleSubmit} className="space-y-5 mt-6">
         <AuthInput
-          label="Email"
+          label={t("auth.email")}
           icon={Mail}
           type="email"
-          placeholder="name@example.com"
+          placeholder={t("auth.emailPlaceholder")}
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           required
@@ -47,10 +49,10 @@ const Login: React.FC = () => {
 
         <div className="space-y-2">
           <AuthInput
-            label="Password"
+            label={t("auth.password")}
             icon={Lock}
             type="password"
-            placeholder="••••••••"
+            placeholder={t("auth.passwordPlaceholder")}
             value={formData.password}
             onChange={(e) =>
               setFormData({ ...formData, password: e.target.value })
@@ -62,7 +64,7 @@ const Login: React.FC = () => {
               to="/forgot-password"
               className="text-sm text-gray-400 hover:text-red-500 transition-colors"
             >
-              Forgot Password?
+              {t("auth.forgotPassword")}
             </Link>
           </div>
         </div>
@@ -74,7 +76,7 @@ const Login: React.FC = () => {
         )}
 
         <AuthButton isLoading={isLoading} className="hover:cursor-pointer">
-          Sign In <LogIn size={18} />
+          {t("auth.signIn")} <LogIn size={18} />
         </AuthButton>
 
         <div className="relative my-6">
@@ -83,7 +85,7 @@ const Login: React.FC = () => {
           </div>
           <div className="relative flex justify-center text-sm">
             <span className="px-2 bg-[#18181B] text-gray-500">
-              Or continue with
+              {t("login.orContinueWith")}
             </span>
           </div>
         </div>
@@ -100,12 +102,12 @@ const Login: React.FC = () => {
         </AuthButton>
 
         <p className="text-center text-sm text-gray-500 mt-6">
-          Don't have an account?{" "}
+          {t("login.dontHaveAccount")}{" "}
           <Link
             to="/signup"
             className="text-red-500 hover:text-red-400 font-semibold transition-colors hover:cursor-pointer"
           >
-            Sign up
+            {t("login.signUpLink")}
           </Link>
         </p>
       </form>

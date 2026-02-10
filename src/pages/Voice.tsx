@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import ParticleSphere from "../Components/ui/ParticleSphere";
 import { Mic, PhoneOff } from "lucide-react";
 import { useVoiceChat } from "../features/voice/hooks/useVoiceChat";
@@ -15,6 +16,7 @@ interface VoiceProps {
 
 // 2. Accept Props
 const Voice: React.FC<VoiceProps> = ({ overrideToken }) => {
+  const { t } = useTranslation();
   const { accessToken, user } = useAppSelector((state: any) => state.auth);
   const { isDark } = useAppSelector((state: any) => state.theme);
   const { voiceChatModel, voiceShowCaptions } = useAppSelector(
@@ -67,12 +69,12 @@ const Voice: React.FC<VoiceProps> = ({ overrideToken }) => {
       <div className="absolute top-10 z-10 text-center">
         <h2 className={cn("text-4xl font-extrabold tracking-widest uppercase transition-all duration-300", isDark ? "text-white" : "text-black")}>
           {status === "disconnected"
-            ? "Ready"
+            ? t("voice.ready")
             : status === "speaking"
-            ? "AI Speaking"
+            ? t("voice.aiSpeaking")
             : status === "processing"
-            ? "Thinking..."
-            : "Listening..."}
+            ? t("voice.thinking")
+            : t("voice.listening")}
         </h2>
 
         {/* Connection Badge */}
@@ -93,10 +95,10 @@ const Voice: React.FC<VoiceProps> = ({ overrideToken }) => {
             }`}
           />
           {status === "disconnected"
-            ? "DISCONNECTED"
+            ? t("voice.disconnected")
             : isMobileMode
-            ? "MOBILE SESSION"
-            : "LIVE SESSION"}
+            ? t("voice.mobileSession")
+            : t("voice.liveSession")}
         </div>
 
         {error && <div className="text-red-500 mt-2 text-sm">{error}</div>}
@@ -126,7 +128,7 @@ const Voice: React.FC<VoiceProps> = ({ overrideToken }) => {
       <div className="absolute bottom-12 z-20 flex flex-col items-center gap-6">
         {status !== "disconnected" && (
           <div className="font-mono text-[10px] text-white/30 tracking-tighter">
-            VAD ACTIVE • 3S SILENCE COMMIT
+            {t("voice.vadActive")}
           </div>
         )}
 
@@ -157,7 +159,7 @@ const Voice: React.FC<VoiceProps> = ({ overrideToken }) => {
         </button>
 
         <p className="text-white/40 text-sm font-light">
-          {isActive ? "Tap to End Session" : "Tap to Start Conversation"}
+          {isActive ? t("voice.tapToEndSession") : t("voice.tapToStartConversation")}
         </p>
       </div>
     </div>

@@ -45,7 +45,7 @@ const initialState: ChatState = {
     id: VOICE_MODELS[0].id,
     provider: VOICE_MODELS[0].provider,
   },
-  voiceShowCaptions: false,
+  voiceShowCaptions: true,
   selectedAgentId: null,
   activeChatId: null,
   activeSessionConfig: null,

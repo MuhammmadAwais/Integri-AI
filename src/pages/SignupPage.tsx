@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Mail, Lock, User, ArrowRight, Chrome, Phone } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import {
@@ -11,6 +12,7 @@ import AuthInput from "../features/auth/components/AuthInput";
 import AuthButton from "../features/auth/components/AuthButton";
 
 const Signup: React.FC = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -29,7 +31,7 @@ const Signup: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      setConfirmPasswordError("Passwords do not match.");
+      setConfirmPasswordError(t("signup.passwordsDoNotMatch"));
       return;
     }
 
@@ -58,23 +60,23 @@ const Signup: React.FC = () => {
 
   return (
     <AuthLayout
-      title="Create an account"
-      subtitle="Join Integri AI to start building the future."
+      title={t("signup.title")}
+      subtitle={t("signup.subtitle")}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <AuthInput
-          label="Full Name"
+          label={t("signup.fullName")}
           type="text"
-          placeholder="John Doe"
+          placeholder={t("signup.fullNamePlaceholder")}
           icon={User}
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           required
         />
         <AuthInput
-          label="Email"
+          label={t("signup.email")}
           type="email"
-          placeholder="name@example.com"
+          placeholder={t("signup.emailPlaceholder")}
           icon={Mail}
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -82,9 +84,9 @@ const Signup: React.FC = () => {
         />
 
         <AuthInput
-          label="Phone Number (Optional)"
+          label={t("signup.phoneOptional")}
           type="tel"
-          placeholder="+1 234 567 890"
+          placeholder={t("signup.phonePlaceholder")}
           icon={Phone}
           value={formData.phoneNumber}
           onChange={(e) =>
@@ -93,9 +95,9 @@ const Signup: React.FC = () => {
         />
 
         <AuthInput
-          label="Password"
+          label={t("signup.password")}
           type="password"
-          placeholder="••••••••"
+          placeholder={t("signup.passwordPlaceholder")}
           icon={Lock}
           value={formData.password}
           onChange={(e) =>
@@ -104,9 +106,9 @@ const Signup: React.FC = () => {
           required
         />
         <AuthInput
-          label="Confirm Password"
+          label={t("signup.confirmPassword")}
           type="password"
-          placeholder="••••••••"
+          placeholder={t("signup.confirmPasswordPlaceholder")}
           icon={Lock}
           value={formData.confirmPassword}
           onChange={(e) =>
@@ -128,7 +130,7 @@ const Signup: React.FC = () => {
             variant="createAccount"
             className="hover:cursor-pointer flex-1"
           >
-            Create Account <ArrowRight size={18} />
+            {t("signup.createAccount")} <ArrowRight size={18} />
           </AuthButton>
 
           <AuthButton
@@ -142,12 +144,12 @@ const Signup: React.FC = () => {
         </div>
 
         <p className="text-center text-sm text-gray-500 mt-6">
-          Already have an account?{" "}
+          {t("signup.alreadyHaveAccount")}{" "}
           <Link
             to="/login"
             className="text-red-500 hover:text-red-400 font-semibold transition-colors hover:cursor-pointer"
           >
-            Sign in
+            {t("signup.signInLink")}
           </Link>
         </p>
       </form>
