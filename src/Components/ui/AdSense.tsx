@@ -24,7 +24,7 @@ const AdSense: React.FC<AdSenseProps> = ({
   fullWidthResponsive = true,
   className = "",
 }) => {
-  const insRef = useRef<HTMLElement>(null);
+  const insRef = useRef<HTMLModElement>(null);
   const pushedRef = useRef(false);
 
   useEffect(() => {
