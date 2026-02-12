@@ -9,11 +9,62 @@ interface AdBlockGuardProps {
   children?: React.ReactNode;
 }
 
+// Global state to track subscription page activity
+let globalSubscriptionPageActive = false;
+let globalModalDisabled = false;
+
 const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
   const { isPro, isPremium } = useSubscription();
   const { isBlocked } = useAdBlockDetector();
+  const [isOnSubscriptionPage, setIsOnSubscriptionPage] = useState(false);
+  const [shouldShowModal, setShouldShowModal] = useState(true);
+  const suspiciousActivityDetectedRef = useRef(false);
+
+  // Check if we're on subscription page using window.location
+  useEffect(() => {
+    let previousPath = window.location.pathname;
+    
+    const checkPath = () => {
+      const currentPath = window.location.pathname;
+      const isCurrentlyOnSubscriptions = currentPath === "/subscriptions";
+      const wasOnSubscriptions = previousPath === "/subscriptions";
+      
+      setIsOnSubscriptionPage(isCurrentlyOnSubscriptions);
+      
+      // Update global state
+      globalSubscriptionPageActive = isCurrentlyOnSubscriptions;
+      
+      // If user is on subscription page, disable modal (unless suspicious activity)
+      if (isCurrentlyOnSubscriptions) {
+        if (!suspiciousActivityDetectedRef.current) {
+          globalModalDisabled = true;
+          setShouldShowModal(false);
+        }
+      } else if (wasOnSubscriptions && !isCurrentlyOnSubscriptions) {
+        // User tried to navigate away from subscription page - suspicious activity
+        suspiciousActivityDetectedRef.current = true;
+        globalModalDisabled = false;
+        setShouldShowModal(true);
+      }
+      
+      previousPath = currentPath;
+    };
+    checkPath();
+    
+    // Listen for popstate events (back/forward navigation)
+    window.addEventListener("popstate", checkPath);
+    
+    // Poll for pathname changes (since we can't use useLocation)
+    const interval = setInterval(checkPath, 100);
+    
+    return () => {
+      window.removeEventListener("popstate", checkPath);
+      clearInterval(interval);
+    };
+  }, []);
 
   const [isMobile, setIsMobile] = useState(false);
+  const isNavigatingToSubscriptionsRef = useRef(false);
 
   const modalRef = useRef<HTMLDivElement>(null);
   const leftPaneRef = useRef<HTMLDivElement>(null);
@@ -307,8 +358,144 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
   };
 
   const handleUpgrade = () => {
+    // Set global flags to disable modal when navigating to subscription page
+    isNavigatingToSubscriptionsRef.current = true;
+    globalSubscriptionPageActive = true;
+    globalModalDisabled = true;
+    setShouldShowModal(false);
+    // Reset suspicious activity flag when user clicks upgrade again
+    suspiciousActivityDetectedRef.current = false;
     window.location.href = "/subscriptions";
   };
+
+  // Redirect to subscription page if adblock detected and not already there
+  // But don't redirect if user is already navigating there or already on the page
+  useEffect(() => {
+    const currentPath = window.location.pathname;
+    const isCurrentlyOnSubscriptions = currentPath === "/subscriptions";
+    
+    // Don't redirect if:
+    // 1. User is already on subscription page
+    // 2. User is manually navigating there (flag is set)
+    // 3. User is Pro/Premium
+    // 4. Adblock is not detected
+    if (
+      isCurrentlyOnSubscriptions ||
+      isNavigatingToSubscriptionsRef.current ||
+      isPro ||
+      isPremium ||
+      !isBlocked
+    ) {
+      // Reset the flag after a short delay if we're on the page
+      if (isCurrentlyOnSubscriptions) {
+        setTimeout(() => {
+          isNavigatingToSubscriptionsRef.current = false;
+        }, 500);
+      }
+      return;
+    }
+
+    // Only redirect if adblock is detected and user is not on subscription page
+    window.location.replace("/subscriptions");
+  }, [isBlocked, isOnSubscriptionPage, isPro, isPremium]);
+
+  // Detect suspicious activity when user tries to navigate away from subscription page
+  useEffect(() => {
+    if (!isBlocked || isPro || isPremium || !isOnSubscriptionPage) return;
+
+    // If user tries to navigate away, mark as suspicious and show modal again
+    const handleBeforeUnload = () => {
+      if (globalSubscriptionPageActive) {
+        suspiciousActivityDetectedRef.current = true;
+        globalModalDisabled = false;
+        setShouldShowModal(true);
+      }
+    };
+
+    // Block navigation away from subscription page when adblock is detected
+
+    // Store original pushState and replaceState
+    const originalPushState = window.history.pushState;
+    const originalReplaceState = window.history.replaceState;
+
+    // Override pushState to block navigation away from /subscriptions
+    window.history.pushState = function(...args) {
+      const url = args[2] as string;
+      if (url && url !== "/subscriptions" && !url.includes("/subscriptions")) {
+        // Suspicious activity detected - user trying to navigate away
+        suspiciousActivityDetectedRef.current = true;
+        globalModalDisabled = false;
+        setShouldShowModal(true);
+        // Block navigation, keep user on subscription page
+        return;
+      }
+      return originalPushState.apply(window.history, args);
+    };
+
+    // Override replaceState similarly
+    window.history.replaceState = function(...args) {
+      const url = args[2] as string;
+      if (url && url !== "/subscriptions" && !url.includes("/subscriptions")) {
+        // Suspicious activity detected - user trying to navigate away
+        suspiciousActivityDetectedRef.current = true;
+        globalModalDisabled = false;
+        setShouldShowModal(true);
+        // Block navigation, keep user on subscription page
+        return;
+      }
+      return originalReplaceState.apply(window.history, args);
+    };
+
+    // Block clicks on links that navigate away
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const link = target.closest("a");
+      
+      if (link) {
+        const href = link.getAttribute("href");
+        // Block navigation to other routes, allow only subscription page
+        if (href && href !== "/subscriptions" && !href.startsWith("#") && !href.startsWith("mailto:") && !href.startsWith("tel:") && !href.startsWith("http")) {
+          e.preventDefault();
+          e.stopPropagation();
+          // Mark as suspicious activity and show modal again
+          suspiciousActivityDetectedRef.current = true;
+          globalModalDisabled = false;
+          setShouldShowModal(true);
+          // The modal will remain visible
+          return false;
+        }
+      }
+    };
+
+    // Block browser back/forward navigation
+    const handlePopState = (e: PopStateEvent) => {
+      if (isBlocked && !isPro && !isPremium) {
+        const currentPath = window.location.pathname;
+        if (currentPath !== "/subscriptions" && globalSubscriptionPageActive) {
+          // User tried to navigate away - suspicious activity
+          suspiciousActivityDetectedRef.current = true;
+          globalModalDisabled = false;
+          setShouldShowModal(true);
+          // Push subscription page back to history
+          window.history.pushState(null, "", "/subscriptions");
+          window.location.replace("/subscriptions");
+        }
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    document.addEventListener("click", handleClick, true);
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      // Restore original functions
+      window.history.pushState = originalPushState;
+      window.history.replaceState = originalReplaceState;
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      document.removeEventListener("click", handleClick, true);
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [isBlocked, isPro, isPremium, isOnSubscriptionPage]);
 
   // Bypass for Pro/Premium users - return children immediately
   // Only show guard if subscription !== 'pro' (i.e., not pro and not premium)
@@ -320,6 +507,13 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
   if (!isBlocked) {
     return <>{children}</>;
   }
+
+  // Don't show modal if user is on subscription page and modal is disabled (unless suspicious activity detected)
+  if (isOnSubscriptionPage && globalModalDisabled && !suspiciousActivityDetectedRef.current) {
+    return <>{children}</>;
+  }
+
+  // Show guard modal - user must be on subscription page when adblock is detected
 
   // Browser instructions data
   const browserInstructions = [
@@ -377,7 +571,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
       <div
         ref={containerRef}
         tabIndex={-1}
-        className="fixed inset-0 z-[999999] flex items-center justify-center bg-zinc-950/40 backdrop-blur-[20px] p-4"
+        className="fixed inset-0 z-[999999] flex items-center justify-center bg-zinc-800 backdrop-blur-[20px] p-4"
       >
         {/* Zinc Dashboard Modal - 16:10 Wide Format */}
         <div
@@ -537,7 +731,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
                 onClick={() => setIsAccordionOpen(!isAccordionOpen)}
                 className="w-full flex items-center justify-between p-4 text-zinc-400 hover:text-zinc-300 hover:cursor-pointer transition-colors"
               >
-                <span className="text-sm uppercase tracking-wider font-semibold">How to Fix</span>
+                <span className="text-sm pl-6 uppercase tracking-wider font-semibold">How to Fix</span>
                 <ChevronDown 
                   size={18} 
                   className={cn(
