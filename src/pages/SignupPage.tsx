@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Mail, Lock, User, ArrowRight, Chrome, Phone } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
@@ -10,6 +10,15 @@ import {
 import AuthLayout from "../Components/layout/AuthLayout";
 import AuthInput from "../features/auth/components/AuthInput";
 import AuthButton from "../features/auth/components/AuthButton";
+
+// Device detection function
+function isMobileDevice(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent || navigator.vendor;
+  return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
+    ua.toLowerCase()
+  );
+}
 
 const Signup: React.FC = () => {
   const { t } = useTranslation();
@@ -26,7 +35,16 @@ const Signup: React.FC = () => {
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { isLoading, error } = useAppSelector((state) => state.auth);
+
+  // Redirect desktop users to QR code signup page
+  useEffect(() => {
+    // Only redirect if not already on QR page and not on mobile
+    if (!isMobileDevice() && location.pathname === "/signup") {
+      navigate("/signup-qr", { replace: true });
+    }
+  }, [navigate, location.pathname]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

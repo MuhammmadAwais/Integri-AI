@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Sparkles, Wand2, Monitor, Box} from "lucide-react";
+import { Sparkles, Wand2, Monitor, Box } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ImageUploader from "./ImageUploader";
 import GenDropdown from "./GenDropdown";
@@ -33,7 +33,8 @@ const RESOLUTIONS = [
   { id: "uhd", label: "Ultra HD 4K", desc: "Maximum quality" },
 ];
 
-const MODEL_OPTIONS = [ {
+const MODEL_OPTIONS = [
+  {
     id: "gpt-5.1",
     label: "GPT-5.1",
     provider: "openai",
@@ -41,7 +42,8 @@ const MODEL_OPTIONS = [ {
     light_theme_logo: "/light-theme-openai.png",
     dark_theme_logo: "/dark-theme-openai.png",
     isPremium: true,
-  },];
+  },
+];
 const GenLeftPanel: React.FC<Props> = ({
   isDark,
   isGenerating,
@@ -58,17 +60,17 @@ const GenLeftPanel: React.FC<Props> = ({
   const [showLoginModal, setShowLoginModal] = useState(false);
   const handleGenerate = () => {
     if (!user) {
-      setShowLoginModal(true)
-      return
+      setShowLoginModal(true);
+      return;
     }
     if (!prompt.trim()) return;
-    
+
     // Check if user has free subscription - redirect to subscription page
     if (isFree) {
       navigate("/subscriptions");
       return;
     }
-    
+
     onGenerate({
       model: selectedModel,
       prompt,
@@ -77,13 +79,15 @@ const GenLeftPanel: React.FC<Props> = ({
       file: selectedFile,
     });
   };
-{setSelectedModel;} //FOR VERCEL UNUSED VARIABLE WARNING (SUPPRESS)
+  {
+    setSelectedModel;
+  } //FOR VERCEL UNUSED VARIABLE WARNING (SUPPRESS)
   return (
     <div className="flex flex-col h-full font-sans">
-        <LoginModal
-              isOpen={showLoginModal}
-              onClose={() => setShowLoginModal(false)}
-            />
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      />
       {/* Scrollable Content Area */}
       <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
         <div>

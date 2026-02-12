@@ -51,12 +51,14 @@ export class WebSocketService {
     };
   }
 
-  // Updated signature to accept fileIds
+  // Updated signature to accept fileIds and image generation parameters
   sendMessage(
     content: string,
     model: string,
     provider: string,
-    fileIds: string[] = []
+    fileIds: string[] = [],
+    aspectRatio?: string,
+    quality?: string,
   ) {
     const message: WebSocketMessage = {
       type: "message",
@@ -64,8 +66,10 @@ export class WebSocketService {
       provider: provider,
       model: model,
       file_ids: fileIds, // Include file IDs in the payload
+      ...(aspectRatio && { aspect_ratio: aspectRatio }), // Include aspect ratio if provided
+      ...(quality && { quality: quality }), // Include quality/resolution if provided
     };
-    
+
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       console.log("📤 [WS] Sending Message:", message);
       this.send(message);

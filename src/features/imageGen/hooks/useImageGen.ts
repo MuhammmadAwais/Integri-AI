@@ -21,7 +21,7 @@ interface GenerateParams {
 export const useImageGen = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<GeneratedImage | null>(
-    null
+    null,
   );
   const [error, setError] = useState<string | null>(null);
 
@@ -63,7 +63,7 @@ export const useImageGen = () => {
           token,
           modelId,
           provider,
-          null
+          null,
         );
 
         const newSessionId = sessionData.session_id;
@@ -102,14 +102,31 @@ export const useImageGen = () => {
         });
 
         // 5. Construct Prompt & Send
-        const engineeredPrompt = `${prompt} in ${quality} quality and ${aspectRatio} aspect ratio.`;
+        // Check if prompt already contains image generation keywords
+        const promptLower = prompt.toLowerCase();
+        const hasImageKeywords = 
+          promptLower.includes("generate image") ||
+          promptLower.includes("create image") ||
+          promptLower.includes("make image") ||
+          promptLower.includes("draw image") ||
+          promptLower.includes("generate a") ||
+          promptLower.includes("create a") ||
+          promptLower.includes("make a") ||
+          promptLower.includes("draw a");
+
+        // If no image generation keywords found, prepend "generate image"
+        const basePrompt = hasImageKeywords 
+          ? prompt 
+          : `generate image ${prompt}`;
+
+        const engineeredPrompt = `${basePrompt} in ${quality} quality and ${aspectRatio} aspect ratio.`;
 
         setTimeout(() => {
           socketService.sendMessage(
             engineeredPrompt,
             modelId,
             provider,
-            fileIds
+            fileIds,
           );
         }, 500);
       } catch (err: any) {
@@ -118,7 +135,7 @@ export const useImageGen = () => {
         setIsGenerating(false);
       }
     },
-    [token]
+    [token],
   );
 
   const downloadImage = useCallback(async (url: string, filename: string) => {
