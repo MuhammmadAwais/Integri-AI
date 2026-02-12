@@ -3,7 +3,7 @@ import gsap from "gsap";
 import { useSubscription } from "../hooks/useSubscription";
 import { useAdBlockDetector } from "../hooks/useAdBlockDetector";
 import { cn } from "../../../lib/utils";
-import { RefreshCw, Chrome, Globe, Shield as ShieldIcon, ChevronDown } from "lucide-react";
+import { RefreshCw, Chrome, Globe, Shield as ShieldIcon, ChevronDown, ArrowLeft, Power, Settings } from "lucide-react";
 
 interface AdBlockGuardProps {
   children?: React.ReactNode;
@@ -25,6 +25,9 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const sidebarItemsRef = useRef<(HTMLDivElement | null)[]>([]);
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
+  const [activeGuide, setActiveGuide] = useState<string | null>(null);
+  const rightPaneContentRef = useRef<HTMLDivElement>(null);
+  const guideContentRef = useRef<HTMLDivElement>(null);
 
   // Check for mobile viewport
   useEffect(() => {
@@ -124,17 +127,19 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
         },
       );
 
-      // Stagger animation for panes
+      // Stagger animation for panes (no scale, only opacity and y translation)
       if (leftPaneRef.current && rightPaneRef.current) {
         gsap.fromTo(
           [leftPaneRef.current, rightPaneRef.current],
           {
             opacity: 0,
             y: 20,
+            scale: 1, // Explicitly set scale to 1 to prevent any scaling
           },
           {
             opacity: 1,
             y: 0,
+            scale: 1, // Keep scale at 1
             duration: 0.6,
             delay: 0.4,
             stagger: 0.1,
@@ -143,30 +148,11 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
         );
       }
 
-      // Shield pulse animation (slow GSAP pulse)
-      if (shieldRef.current) {
-        gsap.to(shieldRef.current, {
-          scale: 1.05,
-          duration: 2.5,
-          ease: "sine.inOut",
-          repeat: -1,
-          yoyo: true,
-        });
-      }
-
-      // Electric Blue glow breathing animation for shield
-      if (shieldGlowRef.current) {
-        gsap.to(shieldGlowRef.current, {
-          scale: 1.15,
-          opacity: 0.6,
-          duration: 2.5,
-          ease: "sine.inOut",
-          repeat: -1,
-          yoyo: true,
-        });
-      }
+      // Shield pulse animation disabled - static display only
+      // Shield glow animation disabled - static display only
 
       // Constant slow shimmer ray for Pro button (continuous loop)
+      // Only animate if shimmer element exists (default view)
       if (shimmerPrimaryRef.current) {
         const shimmerTimeline = gsap.timeline({
           repeat: -1,
@@ -190,6 +176,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
     if (!isBlocked || isMobile) return;
 
     const items = sidebarItemsRef.current.filter(Boolean);
+    const cleanupFunctions: (() => void)[] = [];
     
     items.forEach((item) => {
       if (!item) return;
@@ -213,12 +200,62 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
       item.addEventListener("mouseenter", handleMouseEnter);
       item.addEventListener("mouseleave", handleMouseLeave);
 
-      return () => {
+      cleanupFunctions.push(() => {
         item.removeEventListener("mouseenter", handleMouseEnter);
         item.removeEventListener("mouseleave", handleMouseLeave);
-      };
+      });
     });
+
+    return () => {
+      cleanupFunctions.forEach((cleanup) => cleanup());
+    };
   }, [isBlocked, isMobile]);
+
+  // GSAP transition for guide content swap (no scale, only opacity and x translation)
+  useEffect(() => {
+    if (!isBlocked || isMobile || !rightPaneContentRef.current) return;
+
+    const content = rightPaneContentRef.current;
+    
+    if (activeGuide) {
+      // Slide in guide view from left
+      gsap.fromTo(
+        content,
+        {
+          opacity: 0,
+          x: -20,
+          scale: 1, // Explicitly prevent scaling
+        },
+        {
+          opacity: 1,
+          x: 0,
+          scale: 1, // Keep scale at 1
+          duration: 0.4,
+          ease: "power2.out",
+        }
+      );
+    } else {
+      // Slide out guide view to right, then slide in main view from left
+      gsap.to(content, {
+        opacity: 0,
+        x: 20,
+        scale: 1, // Keep scale at 1
+        duration: 0.3,
+        ease: "power2.in",
+        onComplete: () => {
+          // Reset position and slide in main view
+          gsap.set(content, { x: -20, scale: 1 });
+          gsap.to(content, {
+            opacity: 1,
+            x: 0,
+            scale: 1, // Keep scale at 1
+            duration: 0.4,
+            ease: "power2.out",
+          });
+        },
+      });
+    }
+  }, [activeGuide, isBlocked, isMobile]);
 
   // Magnetic button effect
   useEffect(() => {
@@ -287,24 +324,50 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
   // Browser instructions data
   const browserInstructions = [
     {
-      name: "Chrome",
+      id: "chrome",
+      name: "Chrome/Edge",
       icon: Chrome,
       instruction: "Click the Puzzle/Shield icon in your toolbar → find your AdBlocker → Toggle 'OFF' for this site.",
+      detailedSteps: [
+        { icon: ShieldIcon, text: "Look for the Puzzle piece icon or Shield icon in your browser toolbar", action: "click", color: "#3b82f6" },
+        { icon: Settings, text: "Find your AdBlocker extension in the dropdown menu", action: "click", color: "#3b82f6" },
+        { icon: Power, text: "Toggle the switch to 'OFF' for this site", action: "disable", color: "#ef4444" },
+        { icon: RefreshCw, text: "Refresh the page to continue", action: "click", color: "#3b82f6" },
+      ],
     },
     {
+      id: "brave",
       name: "Brave",
       icon: ShieldIcon,
       instruction: "Click the Lion icon next to the URL bar → Toggle Shields to 'Down'.",
+      detailedSteps: [
+        { icon: ShieldIcon, text: "Locate the Brave Lion icon next to the address bar", action: "click", color: "#3b82f6" },
+        { icon: Power, text: "Click 'Shields' and toggle it to 'Down' for this site", action: "disable", color: "#ef4444" },
+        { icon: RefreshCw, text: "Refresh the page to continue", action: "click", color: "#3b82f6" },
+      ],
     },
     {
+      id: "safari",
       name: "Safari",
       icon: Globe,
       instruction: "Go to Settings → Safari → Content Blockers → Disable for Integri AI.",
+      detailedSteps: [
+        { icon: Settings, text: "Open Safari Settings (Safari menu → Preferences)", action: "click", color: "#3b82f6" },
+        { icon: ShieldIcon, text: "Navigate to the 'Websites' tab → 'Content Blockers'", action: "click", color: "#3b82f6" },
+        { icon: Power, text: "Find 'Integri AI' and disable content blocking", action: "disable", color: "#ef4444" },
+        { icon: RefreshCw, text: "Refresh the page to continue", action: "click", color: "#3b82f6" },
+      ],
     },
     {
+      id: "ublock",
       name: "uBlock Origin",
       icon: ShieldIcon,
       instruction: "Click the uBlock icon → Click the large Power Button → Refresh.",
+      detailedSteps: [
+        { icon: ShieldIcon, text: "Click the uBlock Origin icon in your toolbar", action: "click", color: "#3b82f6" },
+        { icon: Power, text: "Click the large Power Button to disable uBlock for this site", action: "disable", color: "#ef4444" },
+        { icon: RefreshCw, text: "Refresh the page to continue", action: "click", color: "#3b82f6" },
+      ],
     },
   ];
 
@@ -339,20 +402,33 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
               <div className="space-y-4">
                 {browserInstructions.map((browser, index) => {
                   const Icon = browser.icon;
+                  const isActive = activeGuide === browser.id;
                   return (
                     <div
-                      key={browser.name}
+                      key={browser.id}
                       ref={(el) => {
                         sidebarItemsRef.current[index] = el;
                       }}
-                      className="flex items-start gap-3 cursor-pointer group"
+                      onClick={() => setActiveGuide(isActive ? null : browser.id)}
+                      className={cn(
+                        "flex items-start gap-3 cursor-pointer hover:cursor-pointer group transition-all",
+                        isActive 
+                          ? "bg-zinc-800/50 rounded-lg py-4 px-3 my-2" 
+                          : "py-1"
+                      )}
                     >
                       <Icon 
-                        className="text-zinc-400 group-hover:text-[#3b82f6] mt-1 shrink-0 transition-colors" 
+                        className={cn(
+                          "mt-1 shrink-0 transition-colors",
+                          isActive ? "text-[#3b82f6]" : "text-zinc-400 group-hover:text-[#3b82f6]"
+                        )} 
                         size={20} 
                       />
                       <div>
-                        <p className="text-zinc-300 text-sm font-medium mb-1 group-hover:text-[#3b82f6] transition-colors">
+                        <p className={cn(
+                          "text-sm font-medium mb-1 transition-colors",
+                          isActive ? "text-[#3b82f6]" : "text-zinc-300 group-hover:text-[#3b82f6]"
+                        )}>
                           {browser.name}
                         </p>
                         <p className="text-zinc-500 text-xs leading-relaxed">
@@ -423,7 +499,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
               {/* Pro Button with Constant Shimmer */}
               <button
                 onClick={handleUpgrade}
-                className="relative overflow-hidden bg-zinc-100 text-zinc-950 rounded-2xl py-4 px-6 font-bold hover:bg-white transition-all"
+                className="relative overflow-hidden bg-zinc-100 text-zinc-950 rounded-2xl py-4 px-6 font-bold hover:bg-white hover:cursor-pointer transition-all"
               >
                 {/* Constant Slow Shimmer Ray */}
                 <div
@@ -441,7 +517,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
               <button
                 ref={buttonRef}
                 onClick={handleRefresh}
-                className="relative overflow-hidden border-2 rounded-2xl py-4 px-6 font-medium transition-all flex items-center justify-center gap-2"
+                className="relative overflow-hidden border-2 rounded-2xl py-4 px-6 font-medium hover:cursor-pointer transition-all flex items-center justify-center gap-2"
                 style={{
                   borderColor: "#3b82f6",
                   color: "#3b82f6",
@@ -459,7 +535,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
             <div className="w-full border-t border-white/5 flex-shrink-0">
               <button
                 onClick={() => setIsAccordionOpen(!isAccordionOpen)}
-                className="w-full flex items-center justify-between p-4 text-zinc-400 hover:text-zinc-300 transition-colors"
+                className="w-full flex items-center justify-between p-4 text-zinc-400 hover:text-zinc-300 hover:cursor-pointer transition-colors"
               >
                 <span className="text-sm uppercase tracking-wider font-semibold">How to Fix</span>
                 <ChevronDown 
@@ -494,88 +570,206 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
           {!isMobile && (
             <div
               ref={rightPaneRef}
-              className="w-[60%] flex flex-col items-center justify-center p-12 text-center"
+              className="w-[60%] relative overflow-hidden"
             >
-              {/* Shield Icon with Electric Blue Glow */}
-              <div className="relative mb-8 flex items-center justify-center">
-                {/* Electric Blue Glow Effect */}
-                <div
-                  ref={shieldGlowRef}
-                  className="absolute rounded-full blur-3xl w-48 h-48"
-                  style={{ backgroundColor: "rgba(59, 130, 246, 0.4)" }}
-                />
+              <div
+                ref={rightPaneContentRef}
+                className="absolute inset-0 flex flex-col p-12"
+              >
+                {!activeGuide ? (
+                  /* Default View: Shield/Locked */
+                  <div className="flex flex-col items-center justify-center h-full text-center">
+                    {/* Shield Icon with Electric Blue Glow */}
+                    <div className="relative mb-8 flex items-center justify-center">
+                      {/* Electric Blue Glow Effect */}
+                      <div
+                        ref={shieldGlowRef}
+                        className="absolute rounded-full blur-3xl w-48 h-48"
+                        style={{ backgroundColor: "rgba(59, 130, 246, 0.4)" }}
+                      />
 
-                {/* Shield SVG */}
-                <svg
-                  ref={shieldRef}
-                  width="120"
-                  height="120"
-                  viewBox="0 0 64 64"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="text-zinc-100 relative z-10"
-                >
-                  <path
-                    d="M32 8L12 16V32C12 42.5 18 51.5 32 56C46 51.5 52 42.5 52 32V16L32 8Z"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    fill="rgba(244, 244, 245, 0.1)"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M24 32L28 36L40 24"
-                    stroke="currentColor"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
+                      {/* Shield SVG */}
+                      <svg
+                        ref={shieldRef}
+                        width="120"
+                        height="120"
+                        viewBox="0 0 64 64"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="text-zinc-100 relative z-10"
+                      >
+                        <path
+                          d="M32 8L12 16V32C12 42.5 18 51.5 32 56C46 51.5 52 42.5 52 32V16L32 8Z"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          fill="rgba(244, 244, 245, 0.1)"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M24 32L28 36L40 24"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </div>
 
-              {/* Header with Signal Red LOCKED */}
-              <h2 className="text-zinc-100 text-3xl font-bold mb-4 tracking-[0.2em] uppercase">
-                SYSTEM INTEGRITY: <span className="text-[#ef4444]" style={{ textShadow: "0 0 20px rgba(239, 68, 68, 0.5)" }}>LOCKED</span>
-              </h2>
+                    {/* Header with Signal Red LOCKED */}
+                    <h2 className="text-zinc-100 text-3xl font-bold mb-4 tracking-[0.2em] uppercase">
+                      SYSTEM INTEGRITY: <span className="text-[#ef4444]" style={{ textShadow: "0 0 20px rgba(239, 68, 68, 0.5)" }}>LOCKED</span>
+                    </h2>
 
-              {/* Subtext */}
-              <p className="text-zinc-400 text-base mb-8 leading-relaxed max-w-md">
-                To protect Integri's high-performance AI models, please disable your blocker to continue.
-              </p>
+                    {/* Subtext */}
+                    <p className="text-zinc-400 text-base mb-8 leading-relaxed max-w-md">
+                      To protect Integri's high-performance AI models, please disable your blocker to continue.
+                    </p>
 
-              {/* Action Buttons */}
-              <div className="flex flex-col gap-3 w-full max-w-sm">
-                {/* Pro Button - Pure Zinc-100 Metallic with Constant Shimmer */}
-                <button
-                  onClick={handleUpgrade}
-                  className="relative overflow-hidden bg-zinc-100 text-zinc-950 rounded-2xl py-4 px-8 font-bold hover:bg-white transition-all"
-                >
-                  {/* Constant Slow Shimmer Ray */}
-                  <div
-                    ref={shimmerPrimaryRef}
-                    className="absolute inset-0 opacity-50"
-                    style={{
-                      background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent)",
-                      width: "40%",
-                    }}
-                  />
-                  <span className="relative z-10">Upgrade to Pro</span>
-                </button>
+                    {/* Action Buttons */}
+                    <div className="flex flex-col gap-3 w-full max-w-sm">
+                      {/* Pro Button - Pure Zinc-100 Metallic with Constant Shimmer */}
+                      <button
+                        onClick={handleUpgrade}
+                        className="relative overflow-hidden bg-zinc-100 text-zinc-950 rounded-2xl py-4 px-8 font-bold hover:bg-white hover:cursor-pointer transition-all"
+                      >
+                        {/* Constant Slow Shimmer Ray */}
+                        <div
+                          ref={shimmerPrimaryRef}
+                          className="absolute inset-0 opacity-50"
+                          style={{
+                            background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent)",
+                            width: "40%",
+                          }}
+                        />
+                        <span className="relative z-10">Upgrade to Pro</span>
+                      </button>
 
-                {/* Secondary Ghost Button with Red/Blue Border Glow */}
-                <button
-                  ref={buttonRef}
-                  onClick={handleRefresh}
-                  className="relative overflow-hidden border-2 rounded-2xl py-4 px-8 font-medium transition-all flex items-center justify-center gap-2"
-                  style={{
-                    borderColor: "#3b82f6",
-                    color: "#3b82f6",
-                    boxShadow: "0 0 15px rgba(59, 130, 246, 0.3), 0 0 15px rgba(239, 68, 68, 0.2)",
-                  }}
-                >
-                  <RefreshCw size={18} className="relative z-10" />
-                  <span className="relative z-10">I've Disabled It</span>
-                </button>
+                      {/* Secondary Ghost Button with Red/Blue Border Glow */}
+                      <button
+                        ref={buttonRef}
+                        onClick={handleRefresh}
+                        className="relative overflow-hidden border-2 rounded-2xl py-4 px-8 font-medium hover:cursor-pointer transition-all flex items-center justify-center gap-2"
+                        style={{
+                          borderColor: "#3b82f6",
+                          color: "#3b82f6",
+                          boxShadow: "0 0 15px rgba(59, 130, 246, 0.3), 0 0 15px rgba(239, 68, 68, 0.2)",
+                        }}
+                      >
+                        <RefreshCw size={18} className="relative z-10" />
+                        <span className="relative z-10">I've Disabled It</span>
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  /* Detailed Guide View */
+                  <div ref={guideContentRef} className="flex flex-col h-full">
+                    {/* Back Button */}
+                    <button
+                      onClick={() => setActiveGuide(null)}
+                      className="flex items-center gap-2 text-zinc-400 hover:text-zinc-300 hover:cursor-pointer transition-colors mb-6 self-start"
+                    >
+                      <ArrowLeft size={18} />
+                      <span className="text-sm">Back</span>
+                    </button>
+
+                    {/* Guide Content */}
+                    {(() => {
+                      const guide = browserInstructions.find((b) => b.id === activeGuide);
+                      if (!guide) return null;
+
+                      const GuideIcon = guide.icon;
+
+                      return (
+                        <div className="flex flex-col flex-1 overflow-y-auto">
+                          {/* Large Browser Icon */}
+                          <div className="flex justify-center mb-8">
+                            <div className="relative">
+                              <div
+                                className="absolute rounded-full blur-2xl w-32 h-32"
+                                style={{ backgroundColor: "rgba(59, 130, 246, 0.3)" }}
+                              />
+                              <GuideIcon
+                                className="relative z-10"
+                                size={80}
+                                style={{ color: "#3b82f6" }}
+                              />
+                            </div>
+                          </div>
+
+                          {/* Guide Title */}
+                          <h3 className="text-zinc-100 text-2xl font-bold mb-2 text-center">
+                            {guide.name} Guide
+                          </h3>
+
+                          {/* Step-by-Step Instructions */}
+                          <div className="space-y-4 mt-6">
+                            {guide.detailedSteps.map((step, index) => {
+                              const StepIcon = step.icon;
+                              const isClickAction = step.action === "click";
+                              const isDisableAction = step.action === "disable";
+
+                              return (
+                                <div
+                                  key={index}
+                                  className="flex items-start gap-4 p-4 rounded-lg bg-zinc-800/30 border border-white/5"
+                                >
+                                  {/* Step Number */}
+                                  <div
+                                    className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
+                                    style={{
+                                      backgroundColor: step.color + "20",
+                                      color: step.color,
+                                    }}
+                                  >
+                                    {index + 1}
+                                  </div>
+
+                                  {/* Step Content */}
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <StepIcon
+                                        size={18}
+                                        style={{
+                                          color: step.color,
+                                        }}
+                                      />
+                                      <span
+                                        className="text-zinc-100 text-sm font-medium"
+                                        style={{
+                                          color: isClickAction ? "#3b82f6" : isDisableAction ? "#ef4444" : "#e4e4e7",
+                                        }}
+                                      >
+                                        {step.text}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+
+                          {/* Action Button */}
+                          <div className="mt-8 pt-6 border-t border-white/5">
+                            <button
+                              ref={buttonRef}
+                              onClick={handleRefresh}
+                              className="w-full relative overflow-hidden border-2 rounded-2xl py-4 px-8 font-medium hover:cursor-pointer transition-all flex items-center justify-center gap-2"
+                              style={{
+                                borderColor: "#3b82f6",
+                                color: "#3b82f6",
+                                boxShadow: "0 0 15px rgba(59, 130, 246, 0.3), 0 0 15px rgba(239, 68, 68, 0.2)",
+                              }}
+                            >
+                              <RefreshCw size={18} className="relative z-10" />
+                              <span className="relative z-10">I've Disabled It</span>
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                )}
               </div>
             </div>
           )}
