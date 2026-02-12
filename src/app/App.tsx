@@ -41,6 +41,7 @@ import ContactUs from "../pages/ContactUs";
 import MobileVoiceWrapper from "../pages/MobileVoiceWrapper"; // <--- IMPORT ADDED
 import { fetchAgents } from "../features/agents/agentsSlice";
 import AppDownloadSheet from "../Components/ui/AppDownloadSheet";
+import AdBlockGuard from "../features/subscriptions/components/AdBlockGuard";
 
 // --- 1. GUARD COMPONENTS ---
 
@@ -205,12 +206,12 @@ const App: React.FC = () => {
   }, [dispatch]);
 
   return (
-    <>
+    <AdBlockGuard>
       <div>
         <RouterProvider router={router} />
       </div>
       <AppDownloadSheet />
-    </>
+    </AdBlockGuard>
   );
 }
 
