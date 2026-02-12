@@ -21,7 +21,7 @@ const SignupQRPage: React.FC = () => {
       <div className="flex flex-col items-center space-y-8 w-full max-w-md mx-auto">
         {/* Message */}
         <div className="text-center space-y-3">
-          <div className="text-2xl">🌟 Unlock the Full Potential of Integri! 🌟</div>
+          <div className="text-2xl text-red-500">🌟 Unlock the Full Potential of Integri! 🌟</div>
           <p className={cn(
             "text-sm leading-relaxed",
             isDark ? "text-gray-300" : "text-gray-600"
