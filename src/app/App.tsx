@@ -42,6 +42,7 @@ import MobileVoiceWrapper from "../pages/MobileVoiceWrapper"; // <--- IMPORT ADD
 import { fetchAgents } from "../features/agents/agentsSlice";
 import AppDownloadSheet from "../Components/ui/AppDownloadSheet";
 import AdBlockGuard from "../features/subscriptions/components/AdBlockGuard";
+import CookieConsentBanner from "../Components/CookieConsentBanner";
 
 // --- 1. GUARD COMPONENTS ---
 
@@ -211,6 +212,7 @@ const App: React.FC = () => {
         <RouterProvider router={router} />
       </div>
       <AppDownloadSheet />
+      <CookieConsentBanner />
     </AdBlockGuard>
   );
 }
