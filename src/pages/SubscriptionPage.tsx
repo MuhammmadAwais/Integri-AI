@@ -139,7 +139,7 @@ const SubscriptionPage: React.FC = () => {
             >
               Yearly
               <span className="text-[10px] bg-[#00A9A4] text-white px-1.5 py-0.5 rounded-full ml-1">
-                -20%
+                -17%
               </span>
             </button>
           </div>

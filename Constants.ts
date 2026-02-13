@@ -69,7 +69,7 @@ const AVAILABLE_MODELS = [
   },
   {
     id: "gpt-4o-mini-search-preview",
-    label: "GPT-4o Mini Search Preview",
+    label: "GPT Search",
     provider: "openai",
     badge: "Search",
     light_theme_logo: "/light-theme-openai.png",
@@ -80,7 +80,7 @@ const AVAILABLE_MODELS = [
   },
   {
     id: "gpt-4o-mini-deep-research",
-    label: "GPT-4o Mini Deep Research",
+    label: "GPT Deep Research",
     provider: "openai",
     badge: "Research",
     light_theme_logo: "/light-theme-openai.png",
@@ -94,16 +94,6 @@ const AVAILABLE_MODELS = [
     label: "GPT-4.1 Nano",
     provider: "openai",
     badge: "Efficient",
-    light_theme_logo: "/light-theme-openai.png",
-    dark_theme_logo: "/dark-theme-openai.png",
-    isPro: true,
-    isPremium: true,
-    isFree: false,
-  },
-  {
-    id: "gpt-3.5-turbo",
-    label: "GPT-3.5 Turbo",
-    provider: "openai",
     light_theme_logo: "/light-theme-openai.png",
     dark_theme_logo: "/dark-theme-openai.png",
     isPro: true,
@@ -418,7 +408,7 @@ export const SUBSCRIPTION_PLANS = [
     tier: "pro" as SubscriptionTier,
     features: [
       "Everything in Pro Monthly",
-      "Save 20% vs Monthly",
+      "Save 17% vs Monthly",
       "Priority Support",
     ],
     isPopular: true,
@@ -466,7 +456,7 @@ export const SUBSCRIPTION_FAQS = [
   {
     question: "Is there a discount for yearly payment?",
     answer:
-      "Yes! You save roughly 20% compared to monthly billing when you choose the annual plan.",
+      "Yes! You save roughly 17% compared to monthly billing when you choose the annual plan.",
   },
 ];
 
