@@ -547,6 +547,24 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
 
   return (
     <>
+      {/* Custom Scrollbar Styles */}
+      <style>{`
+        /* Thin scrollbar for AdBlockGuard */
+        .adblock-guard-scrollbar::-webkit-scrollbar {
+          width: 3px;
+          height: 3px;
+        }
+        .adblock-guard-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .adblock-guard-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.15);
+          border-radius: 1.5px;
+        }
+        .adblock-guard-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.25);
+        }
+      `}</style>
       {/* Root Container - "True Tease" Backdrop */}
       <div
         ref={containerRef}
@@ -557,16 +575,24 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
         <div
           ref={modalRef}
           className={cn(
-            "max-w-5xl w-full bg-zinc-900/90 border border-white/10 rounded-[2.5rem] shadow-2xl flex overflow-hidden",
+            "max-w-5xl w-full bg-zinc-900/90 border border-white/10 rounded-[2.5rem] shadow-2xl flex overflow-hidden adblock-guard-scrollbar",
             isMobile ? "flex-col max-h-[90vh] overflow-y-auto" : "flex-row",
             !isMobile && "aspect-[16/10]"
           )}
+          style={{
+            scrollbarWidth: "thin",
+            scrollbarColor: "rgba(255, 255, 255, 0.2) transparent",
+          } as React.CSSProperties}
         >
           {/* Desktop: Sidebar (40%) */}
           {!isMobile && (
             <div
               ref={leftPaneRef}
-              className="w-[40%] bg-zinc-950 p-10 border-r border-white/5 overflow-y-auto"
+              className="w-[40%] bg-zinc-950 p-10 border-r border-white/5 overflow-y-auto adblock-guard-scrollbar"
+              style={{
+                scrollbarWidth: "thin",
+                scrollbarColor: "rgba(255, 255, 255, 0.2) transparent",
+              }}
             >
               <h3 className="text-zinc-400 text-sm uppercase tracking-wider font-semibold mb-6">
                 SYSTEM RECOVERY GUIDE
@@ -748,7 +774,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
             >
               <div
                 ref={rightPaneContentRef}
-                className="absolute inset-0 flex flex-col p-12"
+                className="absolute inset-0 flex flex-col p-8"
               >
                 {!activeGuide ? (
                   /* Default View: Shield/Locked */
@@ -841,7 +867,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
                     {/* Back Button */}
                     <button
                       onClick={() => setActiveGuide(null)}
-                      className="flex items-center gap-2 text-zinc-400 hover:text-zinc-300 hover:cursor-pointer transition-colors mb-6 self-start"
+                      className="flex items-center gap-2 text-zinc-400 hover:text-zinc-300 hover:cursor-pointer transition-colors mb-3 self-start"
                     >
                       <ArrowLeft size={18} />
                       <span className="text-sm">Back</span>
@@ -855,29 +881,35 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
                       const GuideIcon = guide.icon;
 
                       return (
-                        <div className="flex flex-col flex-1 overflow-y-auto">
+                        <div 
+                          className="flex flex-col flex-1 overflow-y-auto adblock-guard-scrollbar"
+                          style={{
+                            scrollbarWidth: "thin",
+                            scrollbarColor: "rgba(255, 255, 255, 0.2) transparent",
+                          }}
+                        >
                           {/* Large Browser Icon */}
-                          <div className="flex justify-center mb-8">
+                          <div className="flex justify-center mb-4">
                             <div className="relative">
                               <div
-                                className="absolute rounded-full blur-2xl w-32 h-32"
+                                className="absolute rounded-full blur-2xl w-20 h-20"
                                 style={{ backgroundColor: "rgba(59, 130, 246, 0.3)" }}
                               />
                               <GuideIcon
                                 className="relative z-10"
-                                size={80}
+                                size={50}
                                 style={{ color: "#3b82f6" }}
                               />
                             </div>
                           </div>
 
                           {/* Guide Title */}
-                          <h3 className="text-zinc-100 text-2xl font-bold mb-2 text-center">
+                          <h3 className="text-zinc-100 text-xl font-bold mb-3 text-center">
                             {guide.name} Guide
                           </h3>
 
                           {/* Step-by-Step Instructions */}
-                          <div className="space-y-4 mt-6">
+                          <div className="space-y-2 mt-3">
                             {guide.detailedSteps.map((step, index) => {
                               const StepIcon = step.icon;
                               const isClickAction = step.action === "click";
@@ -886,11 +918,11 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
                               return (
                                 <div
                                   key={index}
-                                  className="flex items-start gap-4 p-4 rounded-lg bg-zinc-800/30 border border-white/5"
+                                  className="flex items-start gap-3 p-3 rounded-lg bg-zinc-800/30 border border-white/5"
                                 >
                                   {/* Step Number */}
                                   <div
-                                    className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
+                                    className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
                                     style={{
                                       backgroundColor: step.color + "20",
                                       color: step.color,
@@ -901,15 +933,15 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
 
                                   {/* Step Content */}
                                   <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-1">
+                                    <div className="flex items-center gap-2">
                                       <StepIcon
-                                        size={18}
+                                        size={16}
                                         style={{
                                           color: step.color,
                                         }}
                                       />
                                       <span
-                                        className="text-zinc-100 text-sm font-medium"
+                                        className="text-zinc-100 text-xs font-medium leading-relaxed"
                                         style={{
                                           color: isClickAction ? "#3b82f6" : isDisableAction ? "#ef4444" : "#e4e4e7",
                                         }}
@@ -924,7 +956,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
                           </div>
 
                           {/* Action Button */}
-                          <div className="mt-8 pt-6 border-t border-white/5">
+                          <div className="mt-4 pt-4 border-t border-white/5">
                             <button
                               ref={buttonRef}
                               onClick={handleRefresh}
