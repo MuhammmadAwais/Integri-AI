@@ -354,7 +354,8 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
   }, [isBlocked]);
 
   const handleRefresh = () => {
-    window.location.reload();
+    // Navigate to home page - this will reload and check adblock status again
+    window.location.href = "/";
   };
 
   const handleUpgrade = () => {
@@ -368,36 +369,15 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
     window.location.href = "/subscriptions";
   };
 
-  // Redirect to subscription page if adblock detected and not already there
-  // But don't redirect if user is already navigating there or already on the page
+  // NO automatic redirect - only navigate when user clicks "Upgrade to Pro"
+  // Reset navigation flag after a delay if user is on subscription page
   useEffect(() => {
-    const currentPath = window.location.pathname;
-    const isCurrentlyOnSubscriptions = currentPath === "/subscriptions";
-    
-    // Don't redirect if:
-    // 1. User is already on subscription page
-    // 2. User is manually navigating there (flag is set)
-    // 3. User is Pro/Premium
-    // 4. Adblock is not detected
-    if (
-      isCurrentlyOnSubscriptions ||
-      isNavigatingToSubscriptionsRef.current ||
-      isPro ||
-      isPremium ||
-      !isBlocked
-    ) {
-      // Reset the flag after a short delay if we're on the page
-      if (isCurrentlyOnSubscriptions) {
-        setTimeout(() => {
-          isNavigatingToSubscriptionsRef.current = false;
-        }, 500);
-      }
-      return;
+    if (isOnSubscriptionPage && isNavigatingToSubscriptionsRef.current) {
+      setTimeout(() => {
+        isNavigatingToSubscriptionsRef.current = false;
+      }, 500);
     }
-
-    // Only redirect if adblock is detected and user is not on subscription page
-    window.location.replace("/subscriptions");
-  }, [isBlocked, isOnSubscriptionPage, isPro, isPremium]);
+  }, [isOnSubscriptionPage]);
 
   // Detect suspicious activity when user tries to navigate away from subscription page
   useEffect(() => {
@@ -469,7 +449,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
 
     // Block browser back/forward navigation
     const handlePopState = (e: PopStateEvent) => {
-      if (isBlocked && !isPro && !isPremium) {
+      if (isBlocked && !isPro && !isPremium && isOnSubscriptionPage) {
         const currentPath = window.location.pathname;
         if (currentPath !== "/subscriptions" && globalSubscriptionPageActive) {
           // User tried to navigate away - suspicious activity
@@ -478,7 +458,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
           setShouldShowModal(true);
           // Push subscription page back to history
           window.history.pushState(null, "", "/subscriptions");
-          window.location.replace("/subscriptions");
+          // Don't auto-redirect - let user stay where they are but show modal
         }
       }
     };
