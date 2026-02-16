@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
 import gsap from "gsap";
 import { useSubscription } from "../hooks/useSubscription";
-import { useAdBlockDetector } from "../hooks/useAdBlockDetector";
+import { useAdBlockLogic } from "../hooks/useAdBlockLogic";
 import { cn } from "../../../lib/utils";
 import { RefreshCw, Chrome, Globe, Shield as ShieldIcon, ChevronDown, ArrowLeft, Power, Settings } from "lucide-react";
 
@@ -15,10 +15,8 @@ let globalModalDisabled = false;
 
 const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
   const { isPro, isPremium } = useSubscription();
-  const { isBlocked } = useAdBlockDetector();
+  const { shouldShowAdBlock, isInitialized } = useAdBlockLogic();
   const [isOnSubscriptionPage, setIsOnSubscriptionPage] = useState(false);
-  const [shouldShowModal, setShouldShowModal] = useState(true);
-  {shouldShowModal && console.log("AdBlockGuard : Disable your ad blocker");}
   const suspiciousActivityDetectedRef = useRef(false);
 
   // Check if we're on subscription page using window.location
@@ -39,13 +37,11 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
       if (isCurrentlyOnSubscriptions) {
         if (!suspiciousActivityDetectedRef.current) {
           globalModalDisabled = true;
-          setShouldShowModal(false);
         }
       } else if (wasOnSubscriptions && !isCurrentlyOnSubscriptions) {
         // User tried to navigate away from subscription page - suspicious activity
         suspiciousActivityDetectedRef.current = true;
         globalModalDisabled = false;
-        setShouldShowModal(true);
       }
       
       previousPath = currentPath;
@@ -93,7 +89,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
 
   // FULL LOCKDOWN: Disable body scroll, hide scrollbar, block keyboard
   useEffect(() => {
-    if (isBlocked) {
+    if (shouldShowAdBlock && isInitialized) {
       const scrollY = window.scrollY;
       const originalOverflow = document.body.style.overflow;
       const originalPosition = document.body.style.position;
@@ -156,11 +152,11 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
         window.removeEventListener("focus", handleFocus, { capture: true });
       };
     }
-  }, [isBlocked]);
+  }, [shouldShowAdBlock, isInitialized]);
 
   // GSAP Animations - Entrance with Elastic.out and shield pulse
   useLayoutEffect(() => {
-    if (!isBlocked || !modalRef.current) return;
+    if (!shouldShowAdBlock || !isInitialized || !modalRef.current) return;
 
     const ctx = gsap.context(() => {
       // Modal entrance: expand from center line (scaleY 0.01 to 1) with Elastic.out
@@ -221,11 +217,11 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
     }, modalRef);
 
     return () => ctx.revert();
-  }, [isBlocked]);
+  }, [shouldShowAdBlock, isInitialized]);
 
   // Sidebar item hover effect - shift 5px to the right
   useEffect(() => {
-    if (!isBlocked || isMobile) return;
+    if (!shouldShowAdBlock || !isInitialized || isMobile) return;
 
     const items = sidebarItemsRef.current.filter(Boolean);
     const cleanupFunctions: (() => void)[] = [];
@@ -261,11 +257,11 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
     return () => {
       cleanupFunctions.forEach((cleanup) => cleanup());
     };
-  }, [isBlocked, isMobile]);
+  }, [shouldShowAdBlock, isInitialized, isMobile]);
 
   // GSAP transition for guide content swap (no scale, only opacity and x translation)
   useEffect(() => {
-    if (!isBlocked || isMobile || !rightPaneContentRef.current) return;
+    if (!shouldShowAdBlock || !isInitialized || isMobile || !rightPaneContentRef.current) return;
 
     const content = rightPaneContentRef.current;
     
@@ -307,11 +303,11 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
         },
       });
     }
-  }, [activeGuide, isBlocked, isMobile]);
+  }, [activeGuide, shouldShowAdBlock, isInitialized, isMobile]);
 
   // Magnetic button effect
   useEffect(() => {
-    if (!buttonRef.current || !isBlocked) return;
+    if (!buttonRef.current || !shouldShowAdBlock || !isInitialized) return;
 
     const button = buttonRef.current;
     let x = 0;
@@ -352,7 +348,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
       window.removeEventListener("mousemove", handleMouseMove);
       gsap.set(button, { x: 0, y: 0 });
     };
-  }, [isBlocked]);
+  }, [shouldShowAdBlock, isInitialized]);
 
   const handleRefresh = () => {
     // Navigate to home page - this will reload and check adblock status again
@@ -364,7 +360,6 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
     isNavigatingToSubscriptionsRef.current = true;
     globalSubscriptionPageActive = true;
     globalModalDisabled = true;
-    setShouldShowModal(false);
     // Reset suspicious activity flag when user clicks upgrade again
     suspiciousActivityDetectedRef.current = false;
     window.location.href = "/subscriptions";
@@ -382,14 +377,13 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
 
   // Detect suspicious activity when user tries to navigate away from subscription page
   useEffect(() => {
-    if (!isBlocked || isPro || isPremium || !isOnSubscriptionPage) return;
+    if (!shouldShowAdBlock || !isInitialized || isPro || isPremium || !isOnSubscriptionPage) return;
 
     // If user tries to navigate away, mark as suspicious and show modal again
     const handleBeforeUnload = () => {
       if (globalSubscriptionPageActive) {
         suspiciousActivityDetectedRef.current = true;
         globalModalDisabled = false;
-        setShouldShowModal(true);
       }
     };
 
@@ -406,7 +400,6 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
         // Suspicious activity detected - user trying to navigate away
         suspiciousActivityDetectedRef.current = true;
         globalModalDisabled = false;
-        setShouldShowModal(true);
         // Block navigation, keep user on subscription page
         return;
       }
@@ -420,7 +413,6 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
         // Suspicious activity detected - user trying to navigate away
         suspiciousActivityDetectedRef.current = true;
         globalModalDisabled = false;
-        setShouldShowModal(true);
         // Block navigation, keep user on subscription page
         return;
       }
@@ -441,7 +433,6 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
           // Mark as suspicious activity and show modal again
           suspiciousActivityDetectedRef.current = true;
           globalModalDisabled = false;
-          setShouldShowModal(true);
           // The modal will remain visible
           return false;
         }
@@ -449,14 +440,13 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
     };
 
     // Block browser back/forward navigation
-    const handlePopState = (e: PopStateEvent) => {
-      if (isBlocked && !isPro && !isPremium && isOnSubscriptionPage) {
+            const handlePopState = (e: PopStateEvent) => {
+              if (shouldShowAdBlock && isInitialized && !isPro && !isPremium && isOnSubscriptionPage) {
         const currentPath = window.location.pathname;
         if (currentPath !== "/subscriptions" && globalSubscriptionPageActive) {
           // User tried to navigate away - suspicious activity
           suspiciousActivityDetectedRef.current = true;
           globalModalDisabled = false;
-          setShouldShowModal(true);
           // Push subscription page back to history
           window.history.pushState(null, "", "/subscriptions");
           // Don't auto-redirect - let user stay where they are but show modal
@@ -477,7 +467,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
       document.removeEventListener("click", handleClick, true);
       window.removeEventListener("popstate", handlePopState);
     };
-  }, [isBlocked, isPro, isPremium, isOnSubscriptionPage]);
+  }, [shouldShowAdBlock, isInitialized, isPro, isPremium, isOnSubscriptionPage]);
 
   // Bypass for Pro/Premium users - return children immediately
   // Only show guard if subscription !== 'pro' (i.e., not pro and not premium)
@@ -485,8 +475,9 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
     return <>{children}</>;
   }
 
-  // Don't show guard if not blocked
-  if (!isBlocked) {
+  // Don't show guard if not initialized, not logged in, or visit count <= 2
+  // Early exit prevents flicker
+  if (!shouldShowAdBlock || !isInitialized) {
     return <>{children}</>;
   }
 
