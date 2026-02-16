@@ -337,8 +337,9 @@ const GenRightPanel: React.FC<Props> = ({
 
         {/* Gallery Items */}
         {gallery.map((item, index) => (
+          
           <div
-            key={item.id}
+            key={index}
             className="gallery-item snap-center shrink-0 pt-2 h-[90%] w-[45vh] lg:w-[50vh] flex flex-col relative group perspective-1000"
           >
             <div

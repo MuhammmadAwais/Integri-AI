@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useAppSelector } from "../hooks/useRedux";
 import GenLeftPanel from "../features/imageGen/components/GenLeftPanel";
 import GenRightPanel from "../features/imageGen/components/GenRightPanel";
