@@ -1,0 +1,15 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.integri.integri",
+      "sha256_cert_fingerprints": [
+        "52:33:57:D6:D0:21:14:48:9F:56:53:17:DD:91:E1:A1:5A:00:35:84:A3:5F:68:DE:2A:AF:78:D0:5B:83:7B:DD"
+      ]
+    }
+  }
+]
