@@ -50,18 +50,19 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
 
         <div className="w-full max-w-md mx-auto">
           <div className="mb-6 auth-content">
-            {/* Logo */}
-            <div className="flex items-center gap-3 mb-3">
-              <img src="/dark-theme-logo.png" alt="Logo" className="w-12 h-12" />
-            </div>
-
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">
-                {title}
-              </h2>
-              <p className="text-gray-400 text-base leading-relaxed">
-                {subtitle}
-              </p>
+            {/* Logo and Title - Bottom Aligned */}
+            <div className="flex items-end gap-3 mb-3">
+              <img src="/dark-theme-logo.png" alt="Logo" className="w-12 h-12 flex-shrink-0" />
+              <div>
+                <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+                  {title}
+                </h2>
+                {subtitle && (
+                  <p className="text-gray-400 text-base leading-relaxed mt-1">
+                    {subtitle}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
