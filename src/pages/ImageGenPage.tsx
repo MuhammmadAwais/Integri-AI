@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { useAppSelector } from "../hooks/useRedux";
 import GenLeftPanel from "../features/imageGen/components/GenLeftPanel";
 import GenRightPanel from "../features/imageGen/components/GenRightPanel";
@@ -6,6 +7,7 @@ import { useImageGen } from "../features/imageGen/hooks/useImageGen";
 
 const ImageGenPage = () => {
   const isDark = useAppSelector((state) => state.theme.isDark);
+  const [promptFromGallery, setPromptFromGallery] = useState<string>("");
 
   // Hook State
   const {
@@ -60,11 +62,13 @@ const ImageGenPage = () => {
       >
         {/* We pass a max-height style for mobile to allow scrolling within the panel if needed */}
         <div className="h-full overflow-hidden">
-          <GenLeftPanel
-            isDark={isDark}
-            isGenerating={isGenerating}
-            onGenerate={handleGenerateRequest}
-          />
+        <GenLeftPanel
+          isDark={isDark}
+          isGenerating={isGenerating}
+          onGenerate={handleGenerateRequest}
+          externalPrompt={promptFromGallery}
+          onPromptSet={() => setPromptFromGallery("")}
+        />
         </div>
 
         {/* Error Toast / Notification Area */}
@@ -98,6 +102,7 @@ const ImageGenPage = () => {
             isDark={isDark}
             generatedImage={generatedImage}
             isGenerating={isGenerating}
+            onUsePrompt={setPromptFromGallery}
           />
         )}
       </div>

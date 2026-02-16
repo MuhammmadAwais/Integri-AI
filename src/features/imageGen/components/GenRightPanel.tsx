@@ -1,29 +1,60 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Share2 } from "lucide-react";
+import gsap from "gsap";
 import ParticleBackground from "../../../Components/ui/ParticleBackground";
- // Assuming this exists or using simple div
 
 interface Props {
   isDark: boolean;
   generatedImage: { url: string; prompt: string; id?: string } | null;
   isGenerating: boolean;
+  onUsePrompt?: (prompt: string) => void;
 }
 
-const DUMMY_GALLERY = [
+const PROMPT_GALLERY = [
   {
-    id: "d1",
-    url: "https://picsum.photos/600/1066",
-    prompt: "Cyberpunk girl portrait",
+    id: "p2",
+    url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=900&fit=crop&q=80",
+    prompt: "Majestic mountain landscape at sunset with dramatic clouds, snow-capped peaks, golden hour lighting, photorealistic, ultra detailed",
   },
   {
-    id: "d2",
-    url: "https://picsum.photos/601/1067",
-    prompt: "Abstract nebula explosion",
+    id: "p3",
+    url: "https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=600&h=900&fit=crop&q=80",
+    prompt: "Abstract cosmic nebula with vibrant colors, swirling galaxies, stars, space art, ethereal atmosphere, 4k resolution",
   },
   {
-    id: "d3",
-    url: "https://picsum.photos/602/1068",
-    prompt: "A cozy cottage in a snowy forest",
+    id: "p4",
+    url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&h=900&fit=crop&q=80",
+    prompt: "Portrait of a beautiful woman with flowing hair, soft natural lighting, professional photography, bokeh background, high quality",
+  },
+  {
+    id: "p5",
+    url: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=900&fit=crop&q=80",
+    prompt: "A cozy modern minimalist living room with plants, natural light, Scandinavian design, warm atmosphere, interior photography",
+  },
+  {
+    id: "p6",
+    url: "https://images.unsplash.com/photo-1518709594023-6eab9bab7b23?w=600&h=900&fit=crop&q=80",
+    prompt: "Fantasy dragon flying over a medieval castle, epic fantasy art, dramatic sky, highly detailed, digital painting style",
+  },
+  {
+    id: "p7",
+    url: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=600&h=900&fit=crop&q=80",
+    prompt: "Serene Japanese garden with cherry blossoms, koi pond, traditional architecture, peaceful atmosphere, soft focus",
+  },
+  {
+    id: "p8",
+    url: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600&h=900&fit=crop&q=80",
+    prompt: "Sci-fi robot in a post-apocalyptic wasteland, cinematic composition, moody lighting, concept art style, detailed textures",
+  },
+  {
+    id: "p9",
+    url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&h=900&fit=crop&q=80",
+    prompt: "Tropical beach paradise with crystal clear water, palm trees, golden sand, sunset colors, travel photography, vibrant",
+  },
+  {
+    id: "p10",
+    url: "https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=600&h=900&fit=crop&q=80",
+    prompt: "Abstract geometric patterns with vibrant gradients, modern art, minimalist design, colorful, high contrast, digital art",
   },
 ];
 
@@ -31,19 +62,204 @@ const GenRightPanel: React.FC<Props> = ({
   isDark,
   generatedImage,
   isGenerating,
+  onUsePrompt,
 }) => {
-  const [gallery, setGallery] = useState(DUMMY_GALLERY);
+  const [gallery, setGallery] = useState(PROMPT_GALLERY);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const isDraggingRef = useRef(false);
+  const startXRef = useRef(0);
+  const scrollLeftRef = useRef(0);
+  const lastXRef = useRef(0);
+  const velocityRef = useRef(0);
+  const animationFrameRef = useRef<number | null>(null);
 
-  // When a new image is generated, prepend it to the gallery
+  // When a new image is generated, prepend it to the gallery with GSAP animation
   useEffect(() => {
     if (generatedImage) {
       setGallery((prev) => [generatedImage as any, ...prev]);
     }
   }, [generatedImage]);
 
+  // GSAP animations for gallery items on mount and when new items are added
+  useEffect(() => {
+    if (!scrollContainerRef.current) return;
+
+    const items = scrollContainerRef.current.querySelectorAll('.gallery-item');
+    if (items.length === 0) return;
+
+    const ctx = gsap.context(() => {
+      // Animate only new items that haven't been animated yet
+      items.forEach((item, index) => {
+        const element = item as HTMLElement;
+        if (!element.dataset.animated) {
+          gsap.fromTo(
+            element,
+            { opacity: 0, y: 30, scale: 0.9 },
+            {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.6,
+              delay: index * 0.08,
+              ease: "power2.out",
+              onComplete: () => {
+                element.dataset.animated = "true";
+              }
+            }
+          );
+        }
+      });
+    }, scrollContainerRef);
+
+    return () => ctx.revert();
+  }, [gallery.length]);
+
+  // Enhanced mouse drag functionality - optimized for performance
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    let rafId: number | null = null;
+
+    const handleMouseDown = (e: MouseEvent) => {
+      // Don't start dragging if clicking on a button or interactive element
+      const target = e.target as HTMLElement;
+      if (target.closest("button") || target.closest("a")) {
+        return;
+      }
+      
+      // Cancel any ongoing momentum scroll
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
+      
+      isDraggingRef.current = true;
+      startXRef.current = e.pageX;
+      lastXRef.current = e.pageX;
+      scrollLeftRef.current = container.scrollLeft;
+      velocityRef.current = 0;
+      
+      container.style.cursor = "grabbing";
+      container.style.userSelect = "none";
+      container.style.scrollBehavior = "auto"; // Disable smooth scroll during drag
+      
+      // Prevent default to avoid text selection
+      e.preventDefault();
+    };
+
+    const handleMouseLeave = () => {
+      if (isDraggingRef.current) {
+        isDraggingRef.current = false;
+        if (container) {
+          container.style.cursor = "grab";
+          container.style.userSelect = "auto";
+          container.style.scrollBehavior = "auto";
+        }
+      }
+    };
+
+    const handleMouseUp = () => {
+      if (isDraggingRef.current) {
+        isDraggingRef.current = false;
+        
+        // Apply momentum scrolling with optimized performance
+        if (Math.abs(velocityRef.current) > 1) {
+          const momentum = () => {
+            if (Math.abs(velocityRef.current) < 0.5) {
+              velocityRef.current = 0;
+              if (container) {
+                container.style.scrollBehavior = "auto";
+              }
+              animationFrameRef.current = null;
+              return;
+            }
+            
+            container.scrollLeft -= velocityRef.current;
+            velocityRef.current *= 0.95; // Friction factor
+            
+            animationFrameRef.current = requestAnimationFrame(momentum);
+          };
+          
+          animationFrameRef.current = requestAnimationFrame(momentum);
+        } else {
+          if (container) {
+            container.style.scrollBehavior = "auto";
+          }
+        }
+        
+        if (container) {
+          container.style.cursor = "grab";
+          container.style.userSelect = "auto";
+        }
+      }
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDraggingRef.current) return;
+      
+      e.preventDefault();
+      
+      const currentX = e.pageX;
+      const deltaX = currentX - lastXRef.current;
+      
+      // Calculate velocity for momentum scrolling
+      velocityRef.current = deltaX;
+      lastXRef.current = currentX;
+      
+      // Cancel any pending RAF
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
+      
+      // Direct scroll manipulation - 1:1 ratio for natural feel
+      const walk = (currentX - startXRef.current);
+      container.scrollLeft = scrollLeftRef.current - walk;
+    };
+
+    // Optimized wheel scrolling - match vertical scroll speed
+    const handleWheel = (e: WheelEvent) => {
+      if (isDraggingRef.current) return;
+      
+      e.preventDefault();
+      
+      // Cancel any pending GSAP animations
+      gsap.killTweensOf(container);
+      
+      // Match vertical scroll speed - use deltaY directly
+      container.scrollLeft += e.deltaY;
+    };
+
+    // Use capture phase for better event handling
+    container.addEventListener("mousedown", handleMouseDown, { passive: false });
+    container.addEventListener("mouseleave", handleMouseLeave);
+    container.addEventListener("wheel", handleWheel, { passive: false });
+    document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove, { passive: false });
+
+    return () => {
+      container.removeEventListener("mousedown", handleMouseDown);
+      container.removeEventListener("mouseleave", handleMouseLeave);
+      container.removeEventListener("wheel", handleWheel);
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
+      
+      // Cleanup animation frame
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, []);
+
+  const handleUsePrompt = (prompt: string) => {
+    if (onUsePrompt) {
+      onUsePrompt(prompt);
+    }
+  };
+
   return (
     <div
-      className={`h-full w-full flex flex-col items-center justify-center relative overflow-hidden ${
+      className={`hidden md:flex h-full w-full flex-col items-center justify-center relative overflow-hidden ${
         isDark ? "bg-zinc-950" : "bg-zinc-50"
       }`}
     >
@@ -66,7 +282,38 @@ const GenRightPanel: React.FC<Props> = ({
         </h1>
       </div>
 
-      <div className="w-full h-full flex items-center overflow-x-auto px-10 gap-2 custom-scrollbar snap-x snap-mandatory pt-10">
+      {/* Custom Scrollbar Styles */}
+      <style>{`
+        .prompt-gallery-scrollbar::-webkit-scrollbar {
+          height: 4px;
+        }
+        .prompt-gallery-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .prompt-gallery-scrollbar::-webkit-scrollbar-thumb {
+          background: ${isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.2)'};
+          border-radius: 2px;
+        }
+        .prompt-gallery-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: ${isDark ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.3)'};
+        }
+        .prompt-gallery-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: ${isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.2)'} transparent;
+        }
+      `}</style>
+      <div
+        ref={scrollContainerRef}
+        className="prompt-gallery-scrollbar w-full h-full flex items-center overflow-x-auto overflow-y-hidden px-10 gap-2 snap-x snap-mandatory pt-10 cursor-grab active:cursor-grabbing select-none"
+        style={{ scrollBehavior: "auto" }}
+        onMouseDown={(e) => {
+          // Prevent text selection during drag
+          const target = e.target as HTMLElement;
+          if (!target.closest("button") && !target.closest("a")) {
+            e.preventDefault();
+          }
+        }}
+      >
         {/* Loading State Skeleton */}
         {isGenerating && (
           <div className="snap-center shrink-0 pt-2 h-[90%] w-[45vh] lg:w-[50vh] flex flex-col relative animate-pulse">
@@ -89,10 +336,10 @@ const GenRightPanel: React.FC<Props> = ({
         )}
 
         {/* Gallery Items */}
-        {gallery.map((item) => (
+        {gallery.map((item, index) => (
           <div
             key={item.id}
-            className="snap-center shrink-0 pt-2 h-[90%] w-[45vh] lg:w-[50vh] flex flex-col relative group perspective-1000"
+            className="gallery-item snap-center shrink-0 pt-2 h-[90%] w-[45vh] lg:w-[50vh] flex flex-col relative group perspective-1000"
           >
             <div
               className={`relative w-full h-full rounded-2xl overflow-hidden shadow-2xl transition-all duration-500 hover:-translate-y-2 ${
@@ -100,21 +347,50 @@ const GenRightPanel: React.FC<Props> = ({
                   ? "bg-zinc-900 shadow-black/50 border border-zinc-800"
                   : "bg-white shadow-zinc-200 border border-zinc-100"
               }`}
+              onMouseEnter={(e) => {
+                gsap.to(e.currentTarget, {
+                  scale: 1.02,
+                  duration: 0.3,
+                  ease: "power2.out",
+                });
+              }}
+              onMouseLeave={(e) => {
+                gsap.to(e.currentTarget, {
+                  scale: 1,
+                  duration: 0.3,
+                  ease: "power2.out",
+                });
+              }}
             >
               <img
                 src={item.url}
                 alt={item.prompt}
                 className="w-full h-full object-cover"
+                loading="lazy"
+                onError={(e) => {
+                  // Fallback if image fails to load
+                  (e.target as HTMLImageElement).src = "https://via.placeholder.com/600x900/1a1a1a/ffffff?text=Image";
+                }}
               />
               <div className="absolute inset-x-0 bottom-0 p-6 bg-linear-to-t from-black/90 via-black/50 to-transparent flex flex-col justify-end gap-4 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                 <p className="text-white/90 font-medium text-sm leading-relaxed line-clamp-3">
                   {item.prompt}
                 </p>
                 <div className="flex items-center gap-3 pt-2">
-                  <button className="hover:cursor-pointer flex-1 py-3 bg-white text-black font-bold text-sm rounded-xl hover:bg-zinc-200 transition flex items-center justify-center gap-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleUsePrompt(item.prompt);
+                    }}
+                    className="hover:cursor-pointer flex-1 py-3 bg-white text-black font-bold text-sm rounded-xl hover:bg-zinc-200 transition flex items-center justify-center gap-2"
+                  >
                     Use Prompt
                   </button>
-                  <button title="share" className="hover:cursor-pointer p-3 rounded-xl bg-white/10 backdrop-blur-md text-white hover:bg-white/20 transition border border-white/10">
+                  <button
+                    title="share"
+                    onClick={(e) => e.stopPropagation()}
+                    className="hover:cursor-pointer p-3 rounded-xl bg-white/10 backdrop-blur-md text-white hover:bg-white/20 transition border border-white/10"
+                  >
                     <Share2 size={18} />
                   </button>
                 </div>

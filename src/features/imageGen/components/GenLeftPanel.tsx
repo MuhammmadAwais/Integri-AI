@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Sparkles, Wand2, Monitor, Box } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ImageUploader from "./ImageUploader";
@@ -17,6 +17,8 @@ interface Props {
     res: any;
     file: File | null;
   }) => void;
+  externalPrompt?: string;
+  onPromptSet?: () => void;
 }
 
 const RATIOS = [
@@ -48,11 +50,23 @@ const GenLeftPanel: React.FC<Props> = ({
   isDark,
   isGenerating,
   onGenerate,
+  externalPrompt,
+  onPromptSet,
 }) => {
   const user = useAppSelector((state: any) => state.auth.user);
   const navigate = useNavigate();
   const { isFree } = useSubscription();
   const [prompt, setPrompt] = useState("");
+
+  // Update prompt when external prompt is set from gallery
+  useEffect(() => {
+    if (externalPrompt) {
+      setPrompt(externalPrompt);
+      if (onPromptSet) {
+        onPromptSet();
+      }
+    }
+  }, [externalPrompt, onPromptSet]);
   const [selectedModel, setSelectedModel] = useState(MODEL_OPTIONS[0]);
   const [selectedRatio, setSelectedRatio] = useState(RATIOS[1]);
   const [selectedRes, setSelectedRes] = useState(RESOLUTIONS[0]);

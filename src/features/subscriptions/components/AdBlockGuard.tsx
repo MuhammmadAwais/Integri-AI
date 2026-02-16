@@ -18,6 +18,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
   const { isBlocked } = useAdBlockDetector();
   const [isOnSubscriptionPage, setIsOnSubscriptionPage] = useState(false);
   const [shouldShowModal, setShouldShowModal] = useState(true);
+  {shouldShowModal && console.log("AdBlockGuard : Disable your ad blocker");}
   const suspiciousActivityDetectedRef = useRef(false);
 
   // Check if we're on subscription page using window.location
@@ -461,6 +462,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
           // Don't auto-redirect - let user stay where they are but show modal
         }
       }
+      {e} //VERCEL FIXES
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);

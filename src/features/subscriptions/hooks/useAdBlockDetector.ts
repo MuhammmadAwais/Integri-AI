@@ -95,6 +95,7 @@ export const useAdBlockDetector = () => {
             blocked: false,
             details: "AdSense script endpoint accessible",
           });
+        {response} //vercel fixes
         } catch (error) {
           // Catch ERR_BLOCKED_BY_CLIENT, TypeError, or "Failed to fetch"
           const errorMessage = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
