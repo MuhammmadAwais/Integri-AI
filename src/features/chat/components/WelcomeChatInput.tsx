@@ -25,6 +25,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import WhiteboardModal from "../../../Components/ui/WhiteboardModal";
 import LoginModal from "../../auth/components/LoginModal";
+import SubscribeModal from "../../subscriptions/components/SubscribeModal";
 import { useSubscription } from "../../subscriptions/hooks/useSubscription";
 
 type SearchMode = null | "search" | "deep-search";
@@ -52,6 +53,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
     const [showAttachMenu, setShowAttachMenu] = useState(false);
     const [showWhiteboard, setShowWhiteboard] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
+    const [showSubscribeModal, setShowSubscribeModal] = useState(false);
     const [searchMode, setSearchMode] = useState<SearchMode>(null);
 
     // State for dynamic menu positioning
@@ -232,8 +234,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
     };
 
     // Check subscription tier for search features
-    const { isPro, isPremium } = useSubscription();
-    const canUseSearch = isPro || isPremium;
+    const { isPro, isPremium, isFree } = useSubscription();
 
     const handleSubmit = () => {
       if (!inputValue.trim() && !selectedFile) return;
@@ -273,6 +274,11 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
         <LoginModal
           isOpen={showLoginModal}
           onClose={() => setShowLoginModal(false)}
+        />
+        <SubscribeModal
+          isOpen={showSubscribeModal}
+          onClose={() => setShowSubscribeModal(false)}
+          featureName="Search Features"
         />
 
         {/* --- TOP SECTION: File Preview & Text Area --- */}
@@ -553,48 +559,62 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
 
           {/* RIGHT: Search Modes / Voice / Send Button */}
           <div className="flex gap-2 items-center">
-            {/* Search Mode Icons - Only show for Pro/Premium users */}
-            {canUseSearch && (
-              <>
-                <button
-                  title={t("chat.searchMode")}
-                  onClick={() => {
-                    setSearchMode(searchMode === "search" ? null : "search");
-                  }}
-                  className={cn(
-                    "w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:cursor-pointer",
-                    searchMode === "search"
-                      ? isDark
-                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                        : "bg-blue-100 text-blue-600 border border-blue-300"
-                      : isDark
-                      ? "text-gray-400 hover:bg-white/10 hover:text-white"
-                      : "text-gray-500 hover:bg-black/5 hover:text-black"
-                  )}
-                >
-                  <Search size={18} />
-                </button>
-                <button
-                  title={t("chat.deepSearchMode")}
-                  onClick={() => {
-                    const newMode = searchMode === "deep-search" ? null : "deep-search";
-                    setSearchMode(newMode);
-                  }}
-                  className={cn(
-                    "w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:cursor-pointer",
-                    searchMode === "deep-search"
-                      ? isDark
-                        ? "bg-purple-500/20 text-purple-400 border border-purple-500/30"
-                        : "bg-purple-100 text-purple-600 border border-purple-300"
-                      : isDark
-                      ? "text-gray-400 hover:bg-white/10 hover:text-white"
-                      : "text-gray-500 hover:bg-black/5 hover:text-black"
-                  )}
-                >
-                  <SearchX size={18} />
-                </button>
-              </>
-            )}
+            {/* Search Mode Icons - Show for all users, but free users see upgrade modal */}
+            <>
+              <button
+                title={t("chat.searchMode")}
+                onClick={() => {
+                  if (!user?.id) {
+                    setShowLoginModal(true);
+                    return;
+                  }
+                  if (isFree) {
+                    setShowSubscribeModal(true);
+                    return;
+                  }
+                  setSearchMode(searchMode === "search" ? null : "search");
+                }}
+                className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:cursor-pointer",
+                  searchMode === "search"
+                    ? isDark
+                      ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                      : "bg-blue-100 text-blue-600 border border-blue-300"
+                    : isDark
+                    ? "text-gray-400 hover:bg-white/10 hover:text-white"
+                    : "text-gray-500 hover:bg-black/5 hover:text-black"
+                )}
+              >
+                <Search size={18} />
+              </button>
+              <button
+                title={t("chat.deepSearchMode")}
+                onClick={() => {
+                  if (!user?.id) {
+                    setShowLoginModal(true);
+                    return;
+                  }
+                  if (isFree) {
+                    setShowSubscribeModal(true);
+                    return;
+                  }
+                  const newMode = searchMode === "deep-search" ? null : "deep-search";
+                  setSearchMode(newMode);
+                }}
+                className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:cursor-pointer",
+                  searchMode === "deep-search"
+                    ? isDark
+                      ? "bg-purple-500/20 text-purple-400 border border-purple-500/30"
+                      : "bg-purple-100 text-purple-600 border border-purple-300"
+                    : isDark
+                    ? "text-gray-400 hover:bg-white/10 hover:text-white"
+                    : "text-gray-500 hover:bg-black/5 hover:text-black"
+                )}
+              >
+                <SearchX size={18} />
+              </button>
+            </>
             {inputValue.trim().length > 0 || selectedFile ? null : (
               <Link to="/voice">
                 <button

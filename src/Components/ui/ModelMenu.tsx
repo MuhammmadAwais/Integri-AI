@@ -142,7 +142,9 @@ const ModelMenu: React.FC<ModelMenuProps> = ({
                 Available Models
               </div>
 
-              {AVAILABLE_MODELS.map((m) => {
+              {AVAILABLE_MODELS.filter(
+                (m) => m.id !== "gpt-4o-mini-search-preview" && m.id !== "gpt-4o-mini-deep-research"
+              ).map((m) => {
                 const isSelected = m.id === selected;
                 const isLocked = !availableModels.some((am) => am.id === m.id);
                 return (

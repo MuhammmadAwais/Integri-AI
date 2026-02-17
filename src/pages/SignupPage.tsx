@@ -80,6 +80,7 @@ const Signup: React.FC = () => {
     <AuthLayout
       title={t("signup.title")}
       subtitle={t("signup.subtitle")}
+      logoTitleHorizontal={true}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <AuthInput

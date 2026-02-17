@@ -176,10 +176,12 @@ const AgentModal: React.FC<AgentModalProps> = ({
           {/* --- NEW: Custom Model Selector --- */}
           <div>
             <ModelSelector
-              models={availableModels.map((m) => ({
-                ...m,
-                name: m.label, // Mapping 'label' to 'name' for the component
-              }))}
+              models={availableModels
+                .filter((m) => m.id !== "gpt-4o-mini-search-preview" && m.id !== "gpt-4o-mini-deep-research")
+                .map((m) => ({
+                  ...m,
+                  name: m.label, // Mapping 'label' to 'name' for the component
+                }))}
               selectedModelId={formData.model}
               onChange={(newModelId) =>
                 setFormData({ ...formData, model: newModelId })

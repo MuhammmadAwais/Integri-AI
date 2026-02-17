@@ -14,7 +14,7 @@ const SignupQRPage: React.FC = () => {
   const isDark = useAppSelector((state: any) => state.theme.isDark);
 
   return (
-    <AuthLayout title="Sign up" subtitle="">
+    <AuthLayout title="Sign up" subtitle="" logoTitleHorizontal={true}>
       <div className="flex flex-col items-center w-full max-w-4xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 pt-5 pb-6 md:pt-4 md:pb-6">
         {/* New Message Section with Zinc Elegance */}
         <div className="text-center w-full max-w-[90%] sm:max-w-2xl mb-6 md:mb-8">
@@ -92,7 +92,7 @@ const SignupQRPage: React.FC = () => {
                 />
               </div>
               <a
-                href="https://apps.apple.com/us/app/integri/id6737592364"
+                href="https://apps.apple.com/de/app/integri/id6737592364"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={cn(
