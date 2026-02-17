@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "68GJW5T4BK.com.nexar.integri",
+        "paths": ["/News/*", "/Login/*"]
+      }
+    ]
+  }
+}
