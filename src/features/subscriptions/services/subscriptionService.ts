@@ -44,7 +44,6 @@ const haveFreeDaysToUseApp = async (userId: string): Promise<boolean> => {
 
     const userDoc = await getDoc(doc(db, "Users", userId));
     if (!userDoc.exists()) {
-      console.log("[FreeDays] No user document found for", userId);
       return false;
     }
 
@@ -288,16 +287,6 @@ export const SubscriptionService = {
     userId: string,
   ): Promise<SubscriptionTier> => {
     try {
-      // Special users with pro access
-      const PRO_ACCESS_USERS = [
-        "HwVvqzlQvvUjAJQtjDQRvTFAKsI2",
-      ];
-      
-      if (PRO_ACCESS_USERS.includes(userId)) {
-        console.log(`Granting pro access to special user: ${userId}`);
-        return "pro";
-      }
-
       const purchases = getPurchasesInstance(userId);
 
       // Ensure user is logged in (equivalent to Purchases.logIn in Flutter)
@@ -305,12 +294,6 @@ export const SubscriptionService = {
       // Since we're configuring with userId, this should already be handled
 
       const customerInfo = await purchases.getCustomerInfo();
-      console.log("Customer Info:", customerInfo);
-      console.log(
-        "Active Subscriptions:",
-        Array.from(customerInfo.activeSubscriptions),
-      );
-      console.log("Entitlements:", customerInfo.entitlements);
 
       // Check active subscriptions first (matching Flutter logic)
       if (customerInfo.activeSubscriptions.size > 0) {

@@ -18,8 +18,6 @@ export const loginUser = createAsyncThunk(
         user.subscriptionTier,
       );
 
-      console.log("Backend auth successful:", backendData);
-
       // 3. Return Both
       return {
         user: user,

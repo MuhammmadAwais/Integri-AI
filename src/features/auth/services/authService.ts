@@ -18,6 +18,7 @@ import {
 import { auth, db } from "../../../app/firebase";
 import { SubscriptionService } from "../../subscriptions/services/subscriptionService";
 import type { SubscriptionTier } from "../../../../Constants";
+import { isUserWhitelistedForPro, isUserWhitelistedForPremium } from "../../../../Constants";
 
 // --- Types ---
 interface FirestoreUserModel {
@@ -78,8 +79,21 @@ export const AuthService = {
     const userDoc = await getDoc(doc(db, "Users", user.uid));
 
     // UPDATED: Sync real status from RevenueCat immediately
-    const tier = await SubscriptionService.syncStatusWithRevenueCat(user.uid);
-    console.log("Tier:", tier);
+    let tier = await SubscriptionService.syncStatusWithRevenueCat(user.uid);
+    
+    // Check if user is whitelisted for Premium (check Premium first as it's higher tier)
+    const isPremiumWhitelisted = isUserWhitelistedForPremium(user.email, user.uid);
+    if (isPremiumWhitelisted) {
+      tier = "premium";
+      console.log("%c✓ You have Premium from Integri", "color: #10b981; font-weight: bold; font-size: 14px;");
+    } else {
+      // Check if user is whitelisted for Pro
+      const isProWhitelisted = isUserWhitelistedForPro(user.email, user.uid);
+      if (isProWhitelisted) {
+        tier = "pro";
+        console.log("%c✓ You have Pro from Integri", "color: #10b981; font-weight: bold; font-size: 14px;");
+      }
+    }
 
     if (userDoc.exists()) {
       const data = userDoc.data() as FirestoreUserModel;
@@ -88,7 +102,7 @@ export const AuthService = {
         email: user.email,
         name: data.userName,
         profile: user.photoURL,
-        subscriptionTier: tier, // Set the fetched tier
+        subscriptionTier: tier, // Set the fetched tier (or "pro" if whitelisted)
         planId: tier === "free" ? "freemium" : tier,
         country: data.country,
         myCode: data.myCode,
@@ -102,7 +116,7 @@ export const AuthService = {
       email: user.email,
       name: user.displayName || "User",
       profile: user.photoURL,
-      subscriptionTier: tier, // Set the fetched tier
+      subscriptionTier: tier, // Set the fetched tier (or "pro" if whitelisted)
       planId: "freemium",
       country: null,
       myCode,
@@ -156,13 +170,27 @@ export const AuthService = {
 
     await setDoc(doc(db, "Users", user.uid), newUser);
 
+    // Check if user is whitelisted for Premium or Pro
+    let tier: SubscriptionTier = "free";
+    const isPremiumWhitelisted = isUserWhitelistedForPremium(user.email, user.uid);
+    if (isPremiumWhitelisted) {
+      tier = "premium";
+      console.log("%c✓ You have Premium from Integri", "color: #10b981; font-weight: bold; font-size: 14px;");
+    } else {
+      const isProWhitelisted = isUserWhitelistedForPro(user.email, user.uid);
+      if (isProWhitelisted) {
+        tier = "pro";
+        console.log("%c✓ You have Pro from Integri", "color: #10b981; font-weight: bold; font-size: 14px;");
+      }
+    }
+
     return {
       id: user.uid,
       email: user.email,
       name: name,
       profile: user.photoURL,
-      subscriptionTier: "free", // New users start with free tier
-      planId: "freemium",
+      subscriptionTier: tier, // "free" or "pro" if whitelisted
+      planId: tier === "free" ? "freemium" : tier,
       country: null,
       myCode,
       isNewUser: true, // Force redirect to GettingStarted

@@ -20,7 +20,6 @@ export const getBackendToken = async (
   subscriptionTier: SubscriptionTier
 ) => {
   try {
-    console.log("Requesting backend token for:", { userId, email, subscriptionTier });
     const response = await backendApi.post("/api/v1/auth/token", {
       user_id: userId,
       email: email,

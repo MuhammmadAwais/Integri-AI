@@ -654,4 +654,82 @@ export const LANGUAGES = [
   }, // Greek (Greece)
 ];
 
+// --- PRO WHITELIST ---
+// Users who automatically get Pro subscription without payment
+// Email is required, uid is optional (can be omitted if not available)
+export interface ProWhitelistUser {
+  email: string; // Required - user's email address
+  uid?: string; // Optional - Firebase UID (can be omitted)
+}
+
+export const PRO_WHITELIST: ProWhitelistUser[] = [
+  // Add whitelisted users here
+  { email: "ningagamerz456@gmail.com" }, // uid is optional
+];
+
+// --- PREMIUM WHITELIST ---
+// Users who automatically get Premium subscription without payment
+// Email is required, uid is optional (can be omitted if not available)
+export interface PremiumWhitelistUser {
+  email: string; // Required - user's email address
+  uid?: string; // Optional - Firebase UID (can be omitted)
+}
+
+export const PREMIUM_WHITELIST: PremiumWhitelistUser[] = [
+  // Add whitelisted users here
+  // Example:
+  // { email: "user@example.com", uid: "optional-uid-here" },
+  // { email: "another@example.com" }, // uid is optional
+];
+
+// Helper function to check if a user is whitelisted for Pro
+export const isUserWhitelistedForPro = (
+  email: string | null | undefined,
+  uid: string | null | undefined
+): boolean => {
+  if (!email) return false;
+  
+  return PRO_WHITELIST.some((whitelistedUser) => {
+    const emailMatch = whitelistedUser.email.toLowerCase() === email.toLowerCase();
+    
+    // If whitelist entry has no uid, match by email only
+    if (!whitelistedUser.uid) {
+      return emailMatch;
+    }
+    
+    // If whitelist entry has uid, both email and uid must match
+    if (whitelistedUser.uid && uid) {
+      return emailMatch && whitelistedUser.uid === uid;
+    }
+    
+    // If whitelist entry has uid but user doesn't, don't match
+    return false;
+  });
+};
+
+// Helper function to check if a user is whitelisted for Premium
+export const isUserWhitelistedForPremium = (
+  email: string | null | undefined,
+  uid: string | null | undefined
+): boolean => {
+  if (!email) return false;
+  
+  return PREMIUM_WHITELIST.some((whitelistedUser: PremiumWhitelistUser) => {
+    const emailMatch = whitelistedUser.email.toLowerCase() === email.toLowerCase();
+    
+    // If whitelist entry has no uid, match by email only
+    if (!whitelistedUser.uid) {
+      return emailMatch;
+    }
+    
+    // If whitelist entry has uid, both email and uid must match
+    if (whitelistedUser.uid && uid) {
+      return emailMatch && whitelistedUser.uid === uid;
+    }
+    
+    // If whitelist entry has uid but user doesn't, don't match
+    return false;
+  });
+};
+
 export default AVAILABLE_MODELS;
