@@ -16,23 +16,31 @@ const SignupQRPage: React.FC = () => {
   return (
     <AuthLayout title="Sign up" subtitle="">
       <div className="flex flex-col items-center w-full max-w-4xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 pt-5 pb-6 md:pt-4 md:pb-6">
-        {/* New Message Section with Color Accent */}
+        {/* New Message Section with Zinc Elegance */}
         <div className="text-center w-full max-w-[90%] sm:max-w-2xl mb-6 md:mb-8">
-          <div className="inline-flex items-center gap-1 md:gap-1.5 px-2.5 md:px-4 py-1 md:py-1.5 rounded-full bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 border-2 border-blue-400/40 mb-2.5 md:mb-3">
-            <span className="text-[9px] md:text-xs font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              ✨ Limited Early Access ✨
+          <div className={cn(
+            "inline-flex items-center gap-1 md:gap-1.5 px-2.5 md:px-4 py-1 md:py-1.5 rounded-full border mb-2.5 md:mb-3",
+            isDark 
+              ? "bg-zinc-900/50 border-zinc-700/50 backdrop-blur-sm" 
+              : "bg-zinc-100/50 border-zinc-300/50 backdrop-blur-sm"
+          )}>
+            <span className={cn(
+              "text-[9px] md:text-xs font-semibold tracking-wide uppercase",
+              isDark ? "text-zinc-300" : "text-zinc-700"
+            )}>
+              Limited Early Access
             </span>
           </div>
           <p
             className={cn(
               "text-[11px] sm:text-xs md:text-sm lg:text-base leading-relaxed font-medium",
-              isDark ? "text-zinc-100" : "text-zinc-900",
+              isDark ? "text-zinc-200" : "text-zinc-800",
             )}
           >
             We're onboarding our next{" "}
-            <span className="font-bold text-blue-400">100,000 users</span> —
+            <span className={cn("font-semibold", isDark ? "text-zinc-100" : "text-zinc-900")}>100,000 users</span> —
             join early and enjoy the{" "}
-            <span className="font-bold text-purple-400">free access</span> to
+            <span className={cn("font-semibold", isDark ? "text-zinc-100" : "text-zinc-900")}>free access</span> to
             all AI models
           </p>
         </div>
@@ -42,18 +50,24 @@ const SignupQRPage: React.FC = () => {
           {/* iOS QR Code */}
           <div className="flex flex-col items-center w-full">
             {/* Decorative accent line */}
-            <div className="w-12 md:w-20 h-0.5 md:h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent rounded-full opacity-60 mb-2.5 md:mb-4"></div>
+            <div className={cn(
+              "w-12 md:w-20 h-px md:h-0.5 rounded-full mb-2.5 md:mb-4",
+              isDark ? "bg-zinc-700/60" : "bg-zinc-300/60"
+            )}></div>
 
             <div
               className={cn(
-                "p-3 md:p-5 lg:p-6 rounded-lg md:rounded-2xl lg:rounded-3xl border-2 w-full max-w-[180px] sm:max-w-[200px] md:max-w-[280px] lg:max-w-[300px] aspect-square flex items-center justify-center bg-white transition-all duration-300 hover:scale-[1.01] relative overflow-hidden mb-3 md:mb-5 lg:mb-6",
+                "p-3 md:p-5 lg:p-6 rounded-lg md:rounded-2xl lg:rounded-3xl border w-full max-w-[180px] sm:max-w-[200px] md:max-w-[280px] lg:max-w-[300px] aspect-square flex items-center justify-center bg-white transition-all duration-300 hover:scale-[1.01] relative overflow-hidden mb-3 md:mb-5 lg:mb-6",
                 isDark
-                  ? "border-blue-400/50 hover:border-blue-400/70"
-                  : "border-blue-300 hover:border-blue-400",
+                  ? "border-zinc-700/50 hover:border-zinc-600/70 shadow-lg shadow-zinc-900/20"
+                  : "border-zinc-300/50 hover:border-zinc-400/70 shadow-lg shadow-zinc-200/20",
               )}
             >
-              {/* Colorful gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-100/15 via-purple-50/8 to-pink-50/8 pointer-events-none"></div>
+              {/* Subtle zinc overlay */}
+              <div className={cn(
+                "absolute inset-0 pointer-events-none",
+                isDark ? "bg-zinc-900/5" : "bg-zinc-50/30"
+              )}></div>
               <img
                 src={qrCodeApple}
                 alt="App Store QR Code"
@@ -65,10 +79,10 @@ const SignupQRPage: React.FC = () => {
             <div className="flex items-center gap-2 md:gap-3 w-full max-w-[180px] sm:max-w-[200px] md:max-w-[280px] lg:max-w-[300px]">
               <div
                 className={cn(
-                  "p-1 md:p-1.5 lg:p-2 rounded-md md:rounded-lg flex-shrink-0 transition-all duration-200",
+                  "p-1 md:p-1.5 lg:p-2 rounded-md md:rounded-lg flex-shrink-0 transition-all duration-200 border",
                   isDark
-                    ? "bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-400/40"
-                    : "bg-gradient-to-br from-blue-100 to-blue-200 border border-blue-300/60",
+                    ? "bg-zinc-800/50 border-zinc-700/50 hover:bg-zinc-700/50"
+                    : "bg-zinc-100/50 border-zinc-300/50 hover:bg-zinc-200/50",
                 )}
               >
                 <img
@@ -82,10 +96,10 @@ const SignupQRPage: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className={cn(
-                  "flex-1 inline-flex items-center justify-center px-2.5 md:px-4 lg:px-5 py-1.5 md:py-2.5 lg:py-3 rounded-md md:rounded-lg lg:rounded-xl text-[10px] sm:text-[11px] md:text-xs lg:text-sm font-semibold transition-all duration-200 hover:scale-105 active:scale-95 hover:cursor-pointer",
+                  "flex-1 inline-flex items-center justify-center px-2.5 md:px-4 lg:px-5 py-1.5 md:py-2.5 lg:py-3 rounded-md md:rounded-lg lg:rounded-xl text-[10px] sm:text-[11px] md:text-xs lg:text-sm font-semibold transition-all duration-200 hover:scale-105 active:scale-95 hover:cursor-pointer border",
                   isDark
-                    ? "bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 text-white border-2 border-blue-400/70 hover:from-blue-400 hover:via-blue-500 hover:to-blue-600 hover:border-blue-300/90"
-                    : "bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 text-white border-2 border-blue-400/70 hover:from-blue-600 hover:via-blue-700 hover:to-blue-800 hover:border-blue-500",
+                    ? "bg-zinc-800 text-zinc-100 border-zinc-700 hover:bg-zinc-700 hover:border-zinc-600"
+                    : "bg-zinc-900 text-zinc-50 border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700",
                 )}
               >
                 App Store
@@ -96,18 +110,24 @@ const SignupQRPage: React.FC = () => {
           {/* Android QR Code */}
           <div className="flex flex-col items-center w-full">
             {/* Decorative accent line */}
-            <div className="w-12 md:w-20 h-0.5 md:h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent rounded-full opacity-60 mb-2.5 md:mb-4"></div>
+            <div className={cn(
+              "w-12 md:w-20 h-px md:h-0.5 rounded-full mb-2.5 md:mb-4",
+              isDark ? "bg-zinc-700/60" : "bg-zinc-300/60"
+            )}></div>
 
             <div
               className={cn(
-                "p-3 md:p-5 lg:p-6 rounded-lg md:rounded-2xl lg:rounded-3xl border-2 w-full max-w-[180px] sm:max-w-[200px] md:max-w-[280px] lg:max-w-[300px] aspect-square flex items-center justify-center bg-white transition-all duration-300 hover:scale-[1.01] relative overflow-hidden mb-3 md:mb-5 lg:mb-6",
+                "p-3 md:p-5 lg:p-6 rounded-lg md:rounded-2xl lg:rounded-3xl border w-full max-w-[180px] sm:max-w-[200px] md:max-w-[280px] lg:max-w-[300px] aspect-square flex items-center justify-center bg-white transition-all duration-300 hover:scale-[1.01] relative overflow-hidden mb-3 md:mb-5 lg:mb-6",
                 isDark
-                  ? "border-emerald-400/50 hover:border-emerald-400/70"
-                  : "border-emerald-300 hover:border-emerald-400",
+                  ? "border-zinc-700/50 hover:border-zinc-600/70 shadow-lg shadow-zinc-900/20"
+                  : "border-zinc-300/50 hover:border-zinc-400/70 shadow-lg shadow-zinc-200/20",
               )}
             >
-              {/* Colorful gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-100/15 via-teal-50/8 to-cyan-50/8 pointer-events-none"></div>
+              {/* Subtle zinc overlay */}
+              <div className={cn(
+                "absolute inset-0 pointer-events-none",
+                isDark ? "bg-zinc-900/5" : "bg-zinc-50/30"
+              )}></div>
               <img
                 src={qrCodeAndroid}
                 alt="Play Store QR Code"
@@ -119,10 +139,10 @@ const SignupQRPage: React.FC = () => {
             <div className="flex items-center gap-2 md:gap-3 w-full max-w-[180px] sm:max-w-[200px] md:max-w-[280px] lg:max-w-[300px]">
               <div
                 className={cn(
-                  "p-1 md:p-1.5 lg:p-2 rounded-md md:rounded-lg flex-shrink-0 transition-all duration-200",
+                  "p-1 md:p-1.5 lg:p-2 rounded-md md:rounded-lg flex-shrink-0 transition-all duration-200 border",
                   isDark
-                    ? "bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 border border-emerald-400/40"
-                    : "bg-gradient-to-br from-emerald-100 to-emerald-200 border border-emerald-300/60",
+                    ? "bg-zinc-800/50 border-zinc-700/50 hover:bg-zinc-700/50"
+                    : "bg-zinc-100/50 border-zinc-300/50 hover:bg-zinc-200/50",
                 )}
               >
                 <img
@@ -136,10 +156,10 @@ const SignupQRPage: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className={cn(
-                  "flex-1 inline-flex items-center justify-center px-2.5 md:px-4 lg:px-5 py-1.5 md:py-2.5 lg:py-3 rounded-md md:rounded-lg lg:rounded-xl text-[10px] sm:text-[11px] md:text-xs lg:text-sm font-semibold transition-all duration-200 hover:scale-105 active:scale-95 hover:cursor-pointer",
+                  "flex-1 inline-flex items-center justify-center px-2.5 md:px-4 lg:px-5 py-1.5 md:py-2.5 lg:py-3 rounded-md md:rounded-lg lg:rounded-xl text-[10px] sm:text-[11px] md:text-xs lg:text-sm font-semibold transition-all duration-200 hover:scale-105 active:scale-95 hover:cursor-pointer border",
                   isDark
-                    ? "bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-700 text-white border-2 border-emerald-400/70 hover:from-emerald-400 hover:via-emerald-500 hover:to-emerald-600 hover:border-emerald-300/90"
-                    : "bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-700 text-white border-2 border-emerald-400/70 hover:from-emerald-600 hover:via-emerald-700 hover:to-emerald-800 hover:border-emerald-500",
+                    ? "bg-zinc-800 text-zinc-100 border-zinc-700 hover:bg-zinc-700 hover:border-zinc-600"
+                    : "bg-zinc-900 text-zinc-50 border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700",
                 )}
               >
                 Play Store
@@ -148,15 +168,15 @@ const SignupQRPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Ready to Log In Button with Enhanced Styling */}
+        {/* Ready to Log In Button with Zinc Elegance */}
         <div className="w-full max-w-[90%] sm:max-w-md mt-2 md:mt-4 lg:mt-6 px-1 md:px-0">
           <Link
             to="/login"
             className={cn(
-              "w-full py-2.5 md:py-3.5 lg:py-4 px-3 md:px-5 lg:px-6 rounded-lg md:rounded-xl font-semibold text-[11px] sm:text-xs md:text-sm lg:text-base text-center transition-all duration-200 transform active:scale-[0.98] flex items-center justify-center gap-1.5 md:gap-2",
+              "w-full py-2.5 md:py-3.5 lg:py-4 px-3 md:px-5 lg:px-6 rounded-lg md:rounded-xl font-semibold text-[11px] sm:text-xs md:text-sm lg:text-base text-center transition-all duration-200 transform active:scale-[0.98] flex items-center justify-center gap-1.5 md:gap-2 border",
               isDark
-                ? "bg-gradient-to-r from-purple-600 via-purple-700 to-pink-600 text-white border-2 border-purple-400/60 hover:from-purple-500 hover:via-purple-600 hover:to-pink-500 hover:border-purple-300/80"
-                : "bg-gradient-to-r from-purple-600 via-purple-700 to-pink-600 text-white border-2 border-purple-400/60 hover:from-purple-700 hover:via-purple-800 hover:to-pink-700 hover:border-purple-500",
+                ? "bg-zinc-800 text-zinc-100 border-zinc-700 hover:bg-zinc-700 hover:border-zinc-600"
+                : "bg-zinc-900 text-zinc-50 border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700",
             )}
           >
             Ready to Log In? Click Here!
