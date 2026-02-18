@@ -9,11 +9,13 @@ import ParticleBackground from "../Components/ui/ParticleBackground";
 import SubscriptionOfferingCard from "../features/subscriptions/components/SubscriptionOfferingCard";
 import WelcomeChatInput from "../features/chat/components/WelcomeChatInput";
 import AdSense from "../Components/ui/AdSense";
+import { useSubscription } from "../features/subscriptions/hooks/useSubscription";
 
 const WelcomePage: React.FC = () => {
   const { t } = useTranslation();
   const isDark = useAppSelector((state: any) => state.theme?.isDark);
   const { user, accessToken } = useAppSelector((state: any) => state.auth);
+  const { isFree } = useSubscription();
 
   // Model and Agent state from Redux
   const { newChatModel, selectedAgentId } = useAppSelector(
@@ -114,18 +116,20 @@ const WelcomePage: React.FC = () => {
 
      {user && ( <SubscriptionOfferingCard />)}
 
-      {/* LEFT AD - Positioned absolutely to not disturb layout */}
+      {/* LEFT AD - Positioned absolutely to not disturb layout - Shows for unauthenticated users and free tier users */}
       {/* Account for sidebar width (240px) + margin */}
-      <div className="hidden lg:block fixed left-[256px] top-1/2 -translate-y-1/2 w-[160px] xl:w-[200px] z-[5]">
-        <AdSense
-          key="ad-left-9138262333"
-          adSlot="9138262333"
-          adClient="ca-pub-2692304161225754"
-          adFormat="auto"
-          fullWidthResponsive={true}
-          className="w-full min-h-[250px]"
-        />
-      </div>
+      {isFree && (
+        <div className="hidden lg:block fixed left-[256px] top-1/2 -translate-y-1/2 w-[160px] xl:w-[200px] z-[5]">
+          <AdSense
+            key="ad-left-9138262333"
+            adSlot="9138262333"
+            adClient="ca-pub-2692304161225754"
+            adFormat="auto"
+            fullWidthResponsive={true}
+            className="w-full min-h-[250px]"
+          />
+        </div>
+      )}
 
       {/* CENTER CONTENT - Original centered layout preserved */}
       <div className="w-full max-w-[720px] px-6 flex flex-col items-center -mt-12 z-10 relative">
@@ -166,17 +170,19 @@ const WelcomePage: React.FC = () => {
         </div>
       </div>
 
-      {/* RIGHT AD - Positioned absolutely to not disturb layout */}
-      <div className="hidden lg:block fixed right-4 top-1/2 -translate-y-1/2 w-[160px] xl:w-[200px] z-[5]">
-        <AdSense
-          key="ad-right-4237289443"
-          adSlot="4237289443"
-          adClient="ca-pub-2692304161225754"
-          adFormat="auto"
-          fullWidthResponsive={true}
-          className="w-full min-h-[250px]"
-        />
-      </div>
+      {/* RIGHT AD - Positioned absolutely to not disturb layout - Shows for unauthenticated users and free tier users */}
+      {isFree && (
+        <div className="hidden lg:block fixed right-4 top-1/2 -translate-y-1/2 w-[160px] xl:w-[200px] z-[5]">
+          <AdSense
+            key="ad-right-4237289443"
+            adSlot="4237289443"
+            adClient="ca-pub-2692304161225754"
+            adFormat="auto"
+            fullWidthResponsive={true}
+            className="w-full min-h-[250px]"
+          />
+        </div>
+      )}
     </div>
   );
 };

@@ -1,4 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSubscription } from "../../features/subscriptions/hooks/useSubscription";
+import { useAppSelector } from "../../hooks/useRedux";
 
 interface AdSenseProps {
   adSlot: string;
@@ -14,9 +16,17 @@ declare global {
   }
 }
 
-// Global tracker to prevent duplicate pushes for the same ad slot
-const processedAdSlots = new Set<string>();
-
+/**
+ * AdSense Component - Simplified and robust implementation
+ * 
+ * Features:
+ * - Displays ads for unauthenticated users (not logged in)
+ * - Displays ads for authenticated free tier users
+ * - Hides ads for Pro/Premium users
+ * - Patient initialization - waits for script to load
+ * - No premature error messages - lets AdSense handle loading
+ * - No UI/UX glitches - seamlessly integrates
+ */
 const AdSense: React.FC<AdSenseProps> = ({
   adSlot,
   adClient,
@@ -24,99 +34,135 @@ const AdSense: React.FC<AdSenseProps> = ({
   fullWidthResponsive = true,
   className = "",
 }) => {
-  const insRef = useRef<HTMLModElement>(null);
-  const pushedRef = useRef(false);
+  const user = useAppSelector((state: any) => state.auth.user);
+  const { isFree } = useSubscription();
+  const insRef = useRef<HTMLElement>(null);
+  const initializedRef = useRef(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Show ads if:
+  // 1. User is not logged in (user is null) OR
+  // 2. User is logged in and has free tier
+  // Hide ads if user is logged in and has Pro/Premium
+  const shouldShowAds = !user || isFree;
 
   useEffect(() => {
-    // Only push once per component instance
-    if (pushedRef.current) return;
-
-    // Check if this ad slot has already been processed globally
-    if (processedAdSlots.has(adSlot)) {
-      pushedRef.current = true;
+    // Don't render ads for Pro/Premium users
+    if (!shouldShowAds) {
       return;
     }
 
-    const pushAd = () => {
-      if (pushedRef.current || !insRef.current) return;
-      
-      const insElement = insRef.current;
-      
-      // Check if this specific ins element already has ads loaded
-      const status = insElement.getAttribute("data-adsbygoogle-status");
+    // Prevent double initialization
+    if (initializedRef.current) {
+      return;
+    }
+
+    let attempts = 0;
+    const maxAttempts = 150; // 15 seconds max (150 * 100ms)
+
+    const tryInitialize = () => {
+      attempts++;
+
+      // Check if element exists and is connected to DOM
+      if (!insRef.current || !insRef.current.isConnected) {
+        if (attempts < maxAttempts) {
+          timeoutRef.current = setTimeout(tryInitialize, 100);
+        }
+        return;
+      }
+
+      // Check if script tag exists
+      const scriptTag = document.querySelector('script[src*="adsbygoogle.js"]');
+      if (!scriptTag) {
+        if (attempts < maxAttempts) {
+          timeoutRef.current = setTimeout(tryInitialize, 200);
+        }
+        return;
+      }
+
+      // Check if window and adsbygoogle are available
+      if (typeof window === "undefined" || !window.adsbygoogle) {
+        if (attempts < maxAttempts) {
+          timeoutRef.current = setTimeout(tryInitialize, 150);
+        }
+        return;
+      }
+
+      // Ensure adsbygoogle is an array
+      if (!Array.isArray(window.adsbygoogle)) {
+        window.adsbygoogle = [];
+      }
+
+      // Check if already processed
+      const status = insRef.current.getAttribute("data-adsbygoogle-status");
       if (status === "done" || status === "filled") {
-        pushedRef.current = true;
-        processedAdSlots.add(adSlot);
-        return; // Already processed
+        initializedRef.current = true;
+        if (import.meta.env.DEV) {
+          console.log(`✅ AdSense: Already initialized for slot ${adSlot}`);
+        }
+        return;
       }
 
-      // Check if it's already in the process of loading
       if (status === "loading") {
-        return; // Already being processed
-      }
-
-      // Double-check global tracker
-      if (processedAdSlots.has(adSlot)) {
-        pushedRef.current = true;
+        // Wait for current loading to complete
+        if (attempts < maxAttempts) {
+          timeoutRef.current = setTimeout(tryInitialize, 300);
+        }
         return;
       }
 
+      // Push ad configuration - AdSense will read attributes from ins element
       try {
-        // Initialize adsbygoogle array if it doesn't exist
-        window.adsbygoogle = window.adsbygoogle || [];
-        
-        // Mark as processed before pushing
-        processedAdSlots.add(adSlot);
-        
-        // Push the ad configuration - AdSense will handle the rest
         window.adsbygoogle.push({});
-        pushedRef.current = true;
+        initializedRef.current = true;
         
-        // Debug log
-        console.log(`AdSense: Pushed ad for slot ${adSlot}`);
-      } catch (err) {
-        // Log errors for debugging
-        console.error(`AdSense push error for slot ${adSlot}:`, err);
-        pushedRef.current = true; // Mark as attempted even if it failed
+        if (import.meta.env.DEV) {
+          console.log(`✅ AdSense: Pushed ad request for slot ${adSlot}`);
+        }
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          console.error(`❌ AdSense: Failed to push ad for slot ${adSlot}:`, error);
+        }
+        initializedRef.current = true; // Mark as attempted to prevent infinite retries
       }
     };
 
-    // Wait for the element to be in the DOM and AdSense script to be loaded
-    const checkAndPush = () => {
-      if (!insRef.current) {
-        setTimeout(checkAndPush, 50);
-        return;
-      }
+    // Start initialization after a delay to ensure DOM is ready
+    timeoutRef.current = setTimeout(() => {
+      tryInitialize();
+    }, 1000);
 
-      if (typeof window === "undefined") {
-        setTimeout(checkAndPush, 50);
-        return;
-      }
-
-      // Check if AdSense script is loaded
-      if (!window.adsbygoogle) {
-        // Wait a bit more for the script to load
-        setTimeout(checkAndPush, 100);
-        return;
-      }
-
-      pushAd();
-    };
-
-    // Start checking after a brief delay to ensure DOM is ready
-    const timer = setTimeout(checkAndPush, 300);
-    
     return () => {
-      clearTimeout(timer);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
     };
-  }, []); // Empty dependency array - only run once on mount
+  }, [shouldShowAds, adSlot, adClient]);
+
+  // Don't render anything for Pro/Premium users
+  if (!shouldShowAds) {
+    return null;
+  }
 
   return (
-    <div className={className} style={{ minHeight: "250px" }}>
+    <div 
+      className={className}
+      style={{ 
+        minHeight: "250px", 
+        width: "100%",
+        position: "relative",
+        overflow: "hidden"
+      }}
+    >
       <ins
         ref={insRef}
         className="adsbygoogle"
-        style={{ display: "block", minHeight: "250px" }}
+        style={{ 
+          display: "block", 
+          minHeight: "250px", 
+          width: "100%",
+          height: "100%"
+        }}
         data-ad-client={adClient}
         data-ad-slot={adSlot}
         data-ad-format={adFormat}

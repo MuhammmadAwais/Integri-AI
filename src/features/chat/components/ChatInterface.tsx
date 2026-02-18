@@ -10,6 +10,7 @@ import { cn } from "../../../lib/utils";
 import { ChatService } from "../services/chatService";
 import { SessionService } from "../../../api/backendApi";
 import AdSense from "../../../Components/ui/AdSense";
+import { useSubscription } from "../../subscriptions/hooks/useSubscription";
 
 interface ChatInterfaceProps {
   features?: boolean;
@@ -28,6 +29,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
   const selectedAgentId = useAppSelector(
     (state: any) => state.chat.selectedAgentId
   );
+  const { isFree } = useSubscription();
 
   const [isCreatingSession, setIsCreatingSession] = useState(false);
 
@@ -131,18 +133,20 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
   console.log(messages)
   return (
     <div className="flex flex-col h-full w-full bg-transparent overflow-hidden relative">
-      {/* LEFT AD - Positioned absolutely to not disturb layout */}
+      {/* LEFT AD - Positioned absolutely to not disturb layout - Shows for unauthenticated users and free tier users */}
       {/* Account for sidebar width (240px) + margin */}
-      <div className="hidden lg:block fixed left-[256px] top-1/2 -translate-y-1/2 w-[160px] xl:w-[200px] z-[5]">
-        <AdSense
-          key="ad-left-chat-9138262333"
-          adSlot="9138262333"
-          adClient="ca-pub-2692304161225754"
-          adFormat="auto"
-          fullWidthResponsive={true}
-          className="w-full min-h-[250px]"
-        />
-      </div>
+      {isFree && (
+        <div className="hidden lg:block fixed left-[256px] top-1/2 -translate-y-1/2 w-[160px] xl:w-[200px] z-[5]">
+          <AdSense
+            key="ad-left-chat-9138262333"
+            adSlot="9138262333"
+            adClient="ca-pub-2692304161225754"
+            adFormat="auto"
+            fullWidthResponsive={true}
+            className="w-full min-h-[250px]"
+          />
+        </div>
+      )}
 
       {/* Messages Area */}
       <div
@@ -174,17 +178,19 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
         </div>
       </div>
 
-      {/* RIGHT AD - Positioned absolutely to not disturb layout */}
-      <div className="hidden lg:block fixed right-4 top-1/2 -translate-y-1/2 w-[160px] xl:w-[200px] z-[5]">
-        <AdSense
-          key="ad-right-chat-4237289443"
-          adSlot="4237289443"
-          adClient="ca-pub-2692304161225754"
-          adFormat="auto"
-          fullWidthResponsive={true}
-          className="w-full min-h-[250px]"
-        />
-      </div>
+      {/* RIGHT AD - Positioned absolutely to not disturb layout - Shows for unauthenticated users and free tier users */}
+      {isFree && (
+        <div className="hidden lg:block fixed right-4 top-1/2 -translate-y-1/2 w-[160px] xl:w-[200px] z-[5]">
+          <AdSense
+            key="ad-right-chat-4237289443"
+            adSlot="4237289443"
+            adClient="ca-pub-2692304161225754"
+            adFormat="auto"
+            fullWidthResponsive={true}
+            className="w-full min-h-[250px]"
+          />
+        </div>
+      )}
 
       {/* Input Area */}
       <div
