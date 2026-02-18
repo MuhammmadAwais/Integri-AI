@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef} from "react";
 import { useSubscription } from "../../features/subscriptions/hooks/useSubscription";
 import { useAppSelector } from "../../hooks/useRedux";
 
@@ -155,7 +155,7 @@ const AdSense: React.FC<AdSenseProps> = ({
       }}
     >
       <ins
-        ref={insRef}
+        ref={insRef as React.RefObject<HTMLModElement>}
         className="adsbygoogle"
         style={{ 
           display: "block", 

@@ -234,7 +234,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
     };
 
     // Check subscription tier for search features
-    const { isPro, isPremium, isFree } = useSubscription();
+    const {  isFree } = useSubscription();
 
     const handleSubmit = () => {
       if (!inputValue.trim() && !selectedFile) return;

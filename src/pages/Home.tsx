@@ -13,8 +13,6 @@ const ThemeController = ({ children }: { children: React.ReactNode }) => {
 };
 
 const Home: React.FC = () => {
-  const isDark = useAppSelector((state) => state.theme.isDark);
-
   return (
     <ThemeController>
       <Layout>
