@@ -21,8 +21,8 @@ const AVAILABLE_MODELS = [
     light_theme_logo: "/light-theme-openai.png",
     dark_theme_logo: "/dark-theme-openai.png",
     isPro: true,
-    isPremium: false,
-    isFree: false,
+    isPremium: true,
+    isFree: true,
   },
   {
     id: "gpt-5.1",
@@ -32,8 +32,8 @@ const AVAILABLE_MODELS = [
     light_theme_logo: "/light-theme-openai.png",
     dark_theme_logo: "/dark-theme-openai.png",
     isPro: true,
-    isPremium: false,
-    isFree: false,
+    isPremium: true,
+    isFree: true,
   },
   // {
   //   id: "gpt-5-mini",
@@ -76,7 +76,7 @@ const AVAILABLE_MODELS = [
     dark_theme_logo: "/dark-theme-openai.png",
     isPro: true,
     isPremium: true,
-    isFree: false,
+    isFree: true,
   },
   {
     id: "gpt-4o-mini-deep-research",
@@ -87,7 +87,7 @@ const AVAILABLE_MODELS = [
     dark_theme_logo: "/dark-theme-openai.png",
     isPro: true,
     isPremium: true,
-    isFree: false,
+    isFree: true,
   },
   {
     id: "gpt-4.1-nano",
@@ -98,7 +98,7 @@ const AVAILABLE_MODELS = [
     dark_theme_logo: "/dark-theme-openai.png",
     isPro: true,
     isPremium: true,
-    isFree: false,
+    isFree: true,
   },
 
   // --- Google ---
@@ -110,7 +110,7 @@ const AVAILABLE_MODELS = [
     dark_theme_logo: "/gemini.png",
     isPro: true,
     isPremium: true,
-    isFree: false,
+    isFree: true,
   },
 
   {
@@ -121,7 +121,7 @@ const AVAILABLE_MODELS = [
     dark_theme_logo: "/gemini.png",
     isPro: true,
     isPremium: true,
-    isFree: false,
+    isFree: true,
   },
   {
     id: "gemini-3-flash-preview",
@@ -130,8 +130,8 @@ const AVAILABLE_MODELS = [
     light_theme_logo: "/gemini.png",
     dark_theme_logo: "/gemini.png",
     isPro: true,
-    isPremium: false,
-    isFree: false,
+    isPremium: true,
+    isFree: true,
   },
 
   // --- Grok ---
@@ -144,7 +144,7 @@ const AVAILABLE_MODELS = [
     dark_theme_logo: "/dark-theme-grok.png",
     isPro: true,
     isPremium: true,
-    isFree: false,
+    isFree: true,
   },
   {
     id: "grok-4-1-fast-reasoning",
@@ -155,7 +155,7 @@ const AVAILABLE_MODELS = [
     dark_theme_logo: "/dark-theme-grok.png",
     isPro: true,
     isPremium: true,
-    isFree: false,
+    isFree: true,
   },
   {
     id: "grok-4-1-fast-non-reasoning",
@@ -166,7 +166,7 @@ const AVAILABLE_MODELS = [
     dark_theme_logo: "/dark-theme-grok.png",
     isPro: true,
     isPremium: true,
-    isFree: false,
+    isFree: true,
   },
   {
     id: "grok-4-fast-reasoning",
@@ -177,7 +177,7 @@ const AVAILABLE_MODELS = [
     dark_theme_logo: "/dark-theme-grok.png",
     isPro: true,
     isPremium: true,
-    isFree: false,
+    isFree: true,
   },
   {
     id: "grok-4-fast-non-reasoning",
@@ -188,7 +188,7 @@ const AVAILABLE_MODELS = [
     dark_theme_logo: "/dark-theme-grok.png",
     isPro: true,
     isPremium: true,
-    isFree: false,
+    isFree: true,
   },
 
   // --- Claude ---
@@ -201,7 +201,7 @@ const AVAILABLE_MODELS = [
     dark_theme_logo: "/claude.png",
     isPro: true,
     isPremium: true,
-    isFree: false,
+    isFree: true,
   },
   {
     id: "claude-haiku-4.5",
@@ -211,8 +211,8 @@ const AVAILABLE_MODELS = [
     light_theme_logo: "/claude.png",
     dark_theme_logo: "/claude.png",
     isPro: true,
-    isPremium: false,
-    isFree: false,
+    isPremium: true,
+    isFree: true,
   },
   // --- DeepSeek ---
   {
@@ -224,7 +224,7 @@ const AVAILABLE_MODELS = [
     dark_theme_logo: "/deepseek.png",
     isPro: true,
     isPremium: true,
-    isFree: false,
+    isFree: true,
   },
   {
     id: "deepseek-chat",
@@ -234,7 +234,7 @@ const AVAILABLE_MODELS = [
     dark_theme_logo: "/deepseek.png",
     isPro: true,
     isPremium: true,
-    isFree: false,
+    isFree: true,
   },
 
   // --- Perplexity ---
@@ -247,7 +247,7 @@ const AVAILABLE_MODELS = [
     dark_theme_logo: "/perplexity.png",
     isPro: true,
     isPremium: true,
-    isFree: false,
+    isFree: true,
   },
   {
     id: "sonar-reasoning",
@@ -258,7 +258,7 @@ const AVAILABLE_MODELS = [
     dark_theme_logo: "/perplexity.png",
     isPro: true,
     isPremium: true,
-    isFree: false,
+    isFree: true,
   },
 
   // --- Mistral ---
@@ -270,7 +270,7 @@ const AVAILABLE_MODELS = [
     dark_theme_logo: "/mistral.png",
     isPro: true,
     isPremium: true,
-    isFree: false,
+    isFree: true,
   },
 
   // --- GLM ---
@@ -282,7 +282,7 @@ const AVAILABLE_MODELS = [
     dark_theme_logo: "/zai.png",
     isPro: true,
     isPremium: true,
-    isFree: false,
+    isFree: true,
   },
   {
     id: "glm-4.7",
@@ -292,7 +292,7 @@ const AVAILABLE_MODELS = [
     dark_theme_logo: "/zai.png",
     isPro: true,
     isPremium: true,
-    isFree: false,
+    isFree: true,
   },
 ];
 // models available for voice mode ( NOTE : WE ARE STILL USING DYNAMIC MODELS BUT RIGHT NOW MODEL SELECTION IS DISABLED FOR VOICE MODE SO ONLY ONE MODEL IS HERE AND THE VOICE MODELS LIST IS HIDDEN IN THE UI BUT IT IS KEPT FOR FUTURE USE )
@@ -311,7 +311,32 @@ export type SubscriptionTier = "free" | "pro" | "premium";
  * Based on backend API allowed_models configuration
  */
 export const ALLOWED_MODELS_BY_TIER: Record<SubscriptionTier, string[]> = {
-  free: ["integri", "gpt-4o-mini", "gpt-5-nano"],
+  free: [ "integri",
+    "gpt-4o-mini",
+    "gpt-5-nano",
+    "gpt-4o-mini-search-preview",
+    "gpt-4o-mini-deep-research",
+    "gpt-4.1-nano",
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
+    "grok-3-mini",
+    "grok-4-1-fast-reasoning",
+    "grok-4-1-fast-non-reasoning",
+    "grok-4-fast-reasoning",
+    "grok-4-fast-non-reasoning",
+    "claude-haiku-3",
+    "deepseek-reasoner",
+    "deepseek-chat",
+    "mistral-medium-2505",
+    "glm-4.6",
+    "glm-4.7",
+    "gpt-3.5-turbo",
+    "perplexity-sonar",
+    "sonar-reasoning",
+    "gpt-5.2",
+    "gpt-5.1",
+    "claude-haiku-4.5",
+    "gemini-3-flash-preview"],
   premium: [
     "integri",
     "gpt-4o-mini",
@@ -335,6 +360,10 @@ export const ALLOWED_MODELS_BY_TIER: Record<SubscriptionTier, string[]> = {
     "gpt-3.5-turbo",
     "perplexity-sonar",
     "sonar-reasoning",
+    "gpt-5.2",
+    "gpt-5.1",
+    "claude-haiku-4.5",
+    "gemini-3-flash-preview",
   ],
   pro: [
     "integri",
