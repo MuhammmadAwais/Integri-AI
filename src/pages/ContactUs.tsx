@@ -12,10 +12,6 @@ import {
   Paperclip,
   Loader2,
   CheckCircle,
-  Github,
-  Twitter,
-  Linkedin,
-  MapPin,
   ArrowUpRight,
 } from "lucide-react";
 import gsap from "gsap";
