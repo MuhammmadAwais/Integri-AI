@@ -332,24 +332,21 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                 </Link>
 
                 {/* About Us */}
-                <button
+
+                <a
+                  href="https://enterprise.integri.app/"
+                  target="_blank"
                   className={cn(
-                    "w-full text-left px-4 py-2 text-sm flex items-center gap-2 cursor-pointer transition-colors ",
+                    "w-full px-4 py-2 text-sm flex items-center gap-2 cursor-pointer transition-colors ",
                     isDark
                       ? "hover:bg-white/5 text-white"
                       : "hover:bg-gray-200 text-black",
                   )}
+                  rel="noopener noreferrer"
                 >
-                  <a
-                    href="https://enterprise.integri.app/"
-                    target="_blank"
-                    className="flex items-center justify-between gap-2"
-                    rel="noopener noreferrer"
-                  >
-                    <Info size={16} />
-                    About Us
-                  </a>
-                </button>
+                  <Info size={16} />
+                  About Us
+                </a>
 
                 <Link to="/privacy-policy">
                   <button
@@ -402,8 +399,10 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                     {t("userProfile.contactUs")}
                   </button>
                 </Link>
-
-                <button
+                <a
+                  href="https://enterprise.integri.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className={cn(
                     "w-full text-left px-4 py-2 text-sm flex items-center gap-2 cursor-pointer transition-colors",
                     isDark
@@ -411,15 +410,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                       : "hover:bg-gray-200 text-black",
                   )}
                 >
-                  <a
-                    href="https://enterprise.integri.app/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between gap-2"
-                  >
-                    About Us
-                  </a>
-                </button>
+                  About Us
+                </a>
 
                 <Link to="/subscriptions">
                   <button
@@ -455,7 +447,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                         : "hover:bg-gray-200 text-black",
                     )}
                   >
-                    
                     Privacy Policy
                   </button>
                 </Link>
