@@ -237,7 +237,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
             e.stopPropagation();
             onToggle();
           }}
-          title={isExpanded ? t("common.collapseSidebar") : t("common.expandSidebar")}
+          title={
+            isExpanded ? t("common.collapseSidebar") : t("common.expandSidebar")
+          }
           className={cn(
             "absolute flex items-center justify-center rounded-full shadow-md border transition-all duration-200 z-50 mb-4",
             isDark
@@ -331,19 +333,37 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
 
                 {/* About Us */}
                 <button
+                  className={cn(
+                    "w-full text-left px-4 py-2 text-sm flex items-center gap-2 cursor-pointer transition-colors ",
+                    isDark
+                      ? "hover:bg-white/5 text-white"
+                      : "hover:bg-gray-200 text-black",
+                  )}
+                >
+                  <a
+                    href="https://enterprise.integri.app/"
+                    target="_blank"
+                    className="flex items-center justify-between gap-2"
+                    rel="noopener noreferrer"
+                  >
+                    <Info size={16} />
+                    About Us
+                  </a>
+                </button>
+
+                <Link to="/privacy-policy">
+                  <button
                     className={cn(
-                      "w-full text-left px-4 py-2 text-sm flex items-center gap-2 cursor-pointer transition-colors ",
+                      "w-full text-left px-4 py-2 text-sm flex items-center gap-2 cursor-pointer transition-colors",
                       isDark
                         ? "hover:bg-white/5 text-white"
                         : "hover:bg-gray-200 text-black",
                     )}
                   >
-                    <a href="https://enterprise.integri.app/" target="_blank" className="flex items-center justify-between gap-2" rel="noopener noreferrer">
-                      <Info size={16} />
-                      About Us
-                    </a>
+                    <Info size={16} />
+                    Privacy Policy
                   </button>
-
+                </Link>
               </>
             ) : (
               <>
@@ -382,19 +402,24 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                     {t("userProfile.contactUs")}
                   </button>
                 </Link>
-                    
-                    <button
-                    className={cn(
-                      "w-full text-left px-4 py-2 text-sm flex items-center gap-2 cursor-pointer transition-colors",
-                      isDark
-                        ? "hover:bg-white/5 text-white"
-                        : "hover:bg-gray-200 text-black",
-                    )}
+
+                <button
+                  className={cn(
+                    "w-full text-left px-4 py-2 text-sm flex items-center gap-2 cursor-pointer transition-colors",
+                    isDark
+                      ? "hover:bg-white/5 text-white"
+                      : "hover:bg-gray-200 text-black",
+                  )}
+                >
+                  <a
+                    href="https://enterprise.integri.app/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between gap-2"
                   >
-                    <a href="https://enterprise.integri.app/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between gap-2" >
-                      
-                      About Us</a>
-                  </button>
+                    About Us
+                  </a>
+                </button>
 
                 <Link to="/subscriptions">
                   <button
@@ -419,6 +444,19 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                     )}
                   >
                     {t("userProfile.settings")}
+                  </button>
+                </Link>
+                <Link to="/privacy-policy">
+                  <button
+                    className={cn(
+                      "w-full text-left px-4 py-2 text-sm flex items-center gap-2 cursor-pointer transition-colors",
+                      isDark
+                        ? "hover:bg-white/5 text-white"
+                        : "hover:bg-gray-200 text-black",
+                    )}
+                  >
+                    <Info size={16} />
+                    Privacy Policy
                   </button>
                 </Link>
               </>
