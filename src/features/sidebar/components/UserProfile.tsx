@@ -455,7 +455,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                         : "hover:bg-gray-200 text-black",
                     )}
                   >
-                    <Info size={16} />
+                    
                     Privacy Policy
                   </button>
                 </Link>
