@@ -1,5 +1,5 @@
 import React from "react";
-import { HelpCircle, MessageSquare, Info, ChevronRight } from "lucide-react";
+import { HelpCircle, MessageSquare, Info, ChevronRight, Shield } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "../../../lib/utils";
 import { useAppSelector } from "../../../hooks/useRedux";
@@ -58,6 +58,11 @@ const HelpAndAbout: React.FC = () => {
         icon={MessageSquare}
         label="Send Feedback"
         onClick={() => navigate("/feedback")}
+      />
+      <LinkItem
+        icon={Shield}
+        label="Privacy Policy"
+        onClick={() => navigate("/privacy-policy")}
       />
       <div className="p-3">
         <div className="flex items-center gap-3 mb-2">

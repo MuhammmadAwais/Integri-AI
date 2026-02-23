@@ -6,6 +6,8 @@ import {
   LogIn,
   LogOut,
   User as UserIcon,
+  Mail,
+  Info,
 } from "lucide-react";
 import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux";
 import { logoutUser } from "../../auth/thunks/authThunk";
@@ -313,6 +315,35 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                 >
                   <UserIcon size={16} /> {t("auth.signUp")}
                 </button>
+                <Link to="/contactUs">
+                  <button
+                    className={cn(
+                      "w-full text-left px-4 py-2 text-sm flex items-center gap-2 cursor-pointer transition-colors",
+                      isDark
+                        ? "hover:bg-white/5 text-white"
+                        : "hover:bg-gray-200 text-black",
+                    )}
+                  >
+                    <Mail size={16} />
+                    {t("userProfile.contactUs")}
+                  </button>
+                </Link>
+
+                {/* About Us */}
+                <button
+                    className={cn(
+                      "w-full text-left px-4 py-2 text-sm flex items-center gap-2 cursor-pointer transition-colors ",
+                      isDark
+                        ? "hover:bg-white/5 text-white"
+                        : "hover:bg-gray-200 text-black",
+                    )}
+                  >
+                    <a href="https://enterprise.integri.app/" target="_blank" className="flex items-center justify-between gap-2" rel="noopener noreferrer">
+                      <Info size={16} />
+                      About Us
+                    </a>
+                  </button>
+
               </>
             ) : (
               <>
@@ -351,6 +382,19 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                     {t("userProfile.contactUs")}
                   </button>
                 </Link>
+                    
+                    <button
+                    className={cn(
+                      "w-full text-left px-4 py-2 text-sm flex items-center gap-2 cursor-pointer transition-colors",
+                      isDark
+                        ? "hover:bg-white/5 text-white"
+                        : "hover:bg-gray-200 text-black",
+                    )}
+                  >
+                    <a href="https://enterprise.integri.app/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between gap-2" >
+                      
+                      About Us</a>
+                  </button>
 
                 <Link to="/subscriptions">
                   <button

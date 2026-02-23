@@ -39,6 +39,7 @@ import SubscriptionPage from "../pages/SubscriptionPage";
 import ImageGenPage from "../pages/ImageGenPage";
 import ContactUs from "../pages/ContactUs";
 import MobileVoiceWrapper from "../pages/MobileVoiceWrapper"; // <--- IMPORT ADDED
+import PrivacyPolicy from "../pages/PrivacyPolicy";
 import { fetchAgents } from "../features/agents/agentsSlice";
 import AppDownloadSheet from "../Components/ui/AppDownloadSheet";
 import AdBlockGuard from "../features/subscriptions/components/AdBlockGuard";
@@ -144,6 +145,7 @@ const router = createBrowserRouter([
               { path: "subscriptions", element: <SubscriptionPage /> },
               { path: "imageGen", element: <ImageGenPage /> },
               { path: "contactUs", element: <ContactUs /> },
+              { path: "privacy-policy", element: <PrivacyPolicy /> },
               { path: "*", element: <Navigate to="/" replace /> },
             ],
           },

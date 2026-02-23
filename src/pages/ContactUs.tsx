@@ -544,18 +544,7 @@ const ContactUs: React.FC = () => {
                       </p>
                     </motion.div>
 
-                    <div className="flex gap-3 justify-end">
-                      {[Twitter, Github, Linkedin].map((Icon, i) => (
-                        <motion.a
-                          key={i}
-                          href="#"
-                          whileHover={{ scale: 1.1, y: -2 }}
-                          className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 transition-all"
-                        >
-                          <Icon size={16} />
-                        </motion.a>
-                      ))}
-                    </div>
+                    
                   </div>
                 </div>
               </div>
@@ -563,48 +552,6 @@ const ContactUs: React.FC = () => {
           </TiltCard>
         </div>
 
-        {/* Bottom Contacts */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-4xl text-center pb-10">
-          {[
-            { icon: Mail, label: "Email", val: "info@integri.app" },
-            { icon: MapPin, label: "Office", val: "San Francisco, CA" },
-            { icon: User, label: "Support", val: "+1 (555) 012-3456" },
-          ].map((item, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 + idx * 0.1 }}
-              viewport={{ once: true }}
-              className={cn(
-                "p-6 rounded-2xl border transition-all hover:-translate-y-1 hover:shadow-lg",
-                isDark
-                  ? "bg-zinc-900/50 border-zinc-800"
-                  : "bg-white border-zinc-200"
-              )}
-            >
-              <div className="w-10 h-10 mx-auto rounded-full bg-zinc-500/10 text-zinc-500 flex items-center justify-center mb-3">
-                <item.icon size={20} />
-              </div>
-              <h3
-                className={cn(
-                  "font-bold text-sm",
-                  isDark ? "text-zinc-200" : "text-zinc-800"
-                )}
-              >
-                {item.label}
-              </h3>
-              <p
-                className={cn(
-                  "text-xs mt-1",
-                  isDark ? "text-zinc-500" : "text-zinc-500"
-                )}
-              >
-                {item.val}
-              </p>
-            </motion.div>
-          ))}
-        </div>
       </div>
     </div>
   );
