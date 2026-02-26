@@ -12,6 +12,7 @@ import {
   FileText,
   CheckCircle,
   MessageCircle,
+  Newspaper,
 } from "lucide-react";
 import { useAppSelector } from "../../../hooks/useRedux";
 import { useChatList } from "../../chat/hooks/useChat";
@@ -27,6 +28,7 @@ const NAV_ITEMS = [
   { id: "agents", labelKey: "nav.agents", icon: CheckCircle, path: "/agents" },
   { id: "imageGen", labelKey: "nav.imageGen", icon: ImageIcon, path: "/imageGen" },
   { id: "pdf", labelKey: "nav.pdfChat", icon: FileText, path: "/pdf" },
+  { id: "news", labelKey: "nav.news", icon: Newspaper, path: "/news" },
 ];
 
 const Sidebar: React.FC = () => {
@@ -282,7 +284,7 @@ const Sidebar: React.FC = () => {
                                   ? "text-[#E7E9EA] hover:bg-[#1A1A1A]"
                                   : "text-gray-700 hover:bg-gray-100",
                                 location.pathname.includes(sessionId) &&
-                                  (isDark ? "bg-[#1A1A1A]" : "bg-gray-100"),
+                                (isDark ? "bg-[#1A1A1A]" : "bg-gray-100"),
                               )}
                             >
                               {chat.title || t("common.newConversation")}
