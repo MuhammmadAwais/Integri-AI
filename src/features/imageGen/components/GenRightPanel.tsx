@@ -16,47 +16,47 @@ const PROMPT_GALLERY = [
   {
     id: "p2",
     url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=900&fit=crop&q=80",
-    prompt: "Majestic mountain landscape at sunset with dramatic clouds, snow-capped peaks, golden hour lighting, photorealistic, ultra detailed",
+    prompt: "Generate a picture of a majestic mountain landscape at sunset with dramatic clouds, snow-capped peaks, golden hour lighting, photorealistic, ultra detailed",
   },
   {
     id: "p3",
     url: "https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=600&h=900&fit=crop&q=80",
-    prompt: "Abstract cosmic nebula with vibrant colors, swirling galaxies, stars, space art, ethereal atmosphere, 4k resolution",
+    prompt: "Generate a picture of an abstract cosmic nebula with vibrant colors, swirling galaxies, stars, space art, ethereal atmosphere, 4k resolution",
   },
   {
     id: "p4",
     url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&h=900&fit=crop&q=80",
-    prompt: "Portrait of a beautiful woman with flowing hair, soft natural lighting, professional photography, bokeh background, high quality",
+    prompt: "Generate a picture of a portrait of a beautiful woman with flowing hair, soft natural lighting, professional photography, bokeh background, high quality",
   },
   {
     id: "p5",
     url: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=900&fit=crop&q=80",
-    prompt: "A cozy modern minimalist living room with plants, natural light, Scandinavian design, warm atmosphere, interior photography",
+    prompt: "Generate a picture of a cozy modern minimalist living room with plants, natural light, Scandinavian design, warm atmosphere, interior photography",
   },
   {
     id: "p6",
     url: "https://images.unsplash.com/photo-1518709594023-6eab9bab7b23?w=600&h=900&fit=crop&q=80",
-    prompt: "Fantasy dragon flying over a medieval castle, epic fantasy art, dramatic sky, highly detailed, digital painting style",
+    prompt: "Generate a picture of a fantasy dragon flying over a medieval castle, epic fantasy art, dramatic sky, highly detailed, digital painting style",
   },
   {
     id: "p7",
     url: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=600&h=900&fit=crop&q=80",
-    prompt: "Serene Japanese garden with cherry blossoms, koi pond, traditional architecture, peaceful atmosphere, soft focus",
+    prompt: "Generate a picture of a serene Japanese garden with cherry blossoms, koi pond, traditional architecture, peaceful atmosphere, soft focus",
   },
   {
     id: "p8",
     url: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600&h=900&fit=crop&q=80",
-    prompt: "Sci-fi robot in a post-apocalyptic wasteland, cinematic composition, moody lighting, concept art style, detailed textures",
+    prompt: "Generate a picture of a sci-fi robot in a post-apocalyptic wasteland, cinematic composition, moody lighting, concept art style, detailed textures",
   },
   {
     id: "p9",
     url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&h=900&fit=crop&q=80",
-    prompt: "Tropical beach paradise with crystal clear water, palm trees, golden sand, sunset colors, travel photography, vibrant",
+    prompt: "Generate a picture of a tropical beach paradise with crystal clear water, palm trees, golden sand, sunset colors, travel photography, vibrant",
   },
   {
     id: "p10",
     url: "https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=600&h=900&fit=crop&q=80",
-    prompt: "Abstract geometric patterns with vibrant gradients, modern art, minimalist design, colorful, high contrast, digital art",
+    prompt: "Generate a picture of abstract geometric patterns with vibrant gradients, modern art, minimalist design, colorful, high contrast, digital art",
   },
 ];
 
