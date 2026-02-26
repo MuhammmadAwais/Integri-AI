@@ -528,5 +528,63 @@ export const MemoryService = {
   },
 };
 
-export default backendApi;
+// --- USER LIMITS ---
 
+export interface UserLimits {
+  tier: string;
+  is_ads_enabled: boolean;
+  daily_messages_used: number;
+  daily_message_limit: number;
+  daily_messages_remaining: number;
+  daily_limit_resets_at: string;
+  is_daily_limit_reached: boolean;
+  voice_minutes_used: number;
+  voice_limit_minutes: number;
+  images_generated_this_month: number;
+  image_generation_limit: number;
+  can_use_pdf_chat: boolean;
+  can_use_google_ocr: boolean;
+  max_agents: number;
+  current_agents_count: number;
+  allowed_models: string[];
+}
+
+export const LimitsService = {
+  getLimits: async (token: string): Promise<UserLimits> => {
+    const url = "/api/v1/me/limits";
+    console.log(`🔒 [LimitsService] GET ${url}`);
+    try {
+      const response = await backendApi.get<UserLimits>(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log(`✅ [LimitsService] GET ${url} succeeded`, response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error(
+        `❌ [LimitsService] GET ${url} failed — status: ${error?.response?.status}`,
+        error?.response?.data ?? error
+      );
+      throw error;
+    }
+  },
+
+  getApiStats: async (token: string): Promise<string> => {
+    const url = "/api/v1/me/api-stats";
+    console.log(`🔒 [LimitsService] GET ${url}`);
+    try {
+      const response = await backendApi.get<string>(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log(`✅ [LimitsService] GET ${url} succeeded`);
+      return response.data;
+    } catch (error: any) {
+      console.error(
+        `❌ [LimitsService] GET ${url} failed — status: ${error?.response?.status}`,
+        error?.response?.data ?? error
+      );
+      throw error;
+    }
+  },
+};
+
+export default backendApi;

@@ -4,13 +4,16 @@ import { useTranslation } from "react-i18next";
 import ChatInput from "./ChatInput";
 import MessageBubble from "../../../Components/ui/MessageBubble";
 import SkeletonLoader from "../../../Components/ui/SkeletonLoader";
-import { useAppSelector } from "../../../hooks/useRedux";
+import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux";
 import { useChat } from "../hooks/useChat";
 import { cn } from "../../../lib/utils";
 import { ChatService } from "../services/chatService";
 import { SessionService } from "../../../api/backendApi";
 import AdSense from "../../../Components/ui/AdSense";
 import { useSubscription } from "../../subscriptions/hooks/useSubscription";
+import { useLimits } from "../../limits/hooks/useLimits";
+import { decrementMessages } from "../../limits/slices/limitsSlice";
+import { showLimitReachedToast } from "../../limits/components/LimitToast";
 
 interface ChatInterfaceProps {
   features?: boolean;
@@ -30,6 +33,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
     (state: any) => state.chat.selectedAgentId
   );
   const { isFree } = useSubscription();
+  const { hasRemainingMessages, limits, resetTimeFormatted } = useLimits();
+  const dispatch = useAppDispatch();
+  const limitReached = !hasRemainingMessages;
 
   const [isCreatingSession, setIsCreatingSession] = useState(false);
 
@@ -88,6 +94,19 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
   const handleSend = async (text: string, file?: File | null, searchMode?: "search" | "deep-search" | null) => {
     if (!text.trim() && !file) return;
 
+    // ── Limit check BEFORE send ───────────────────────────────────────────────
+    if (limitReached) {
+      showLimitReachedToast({
+        feature: "messages",
+        limit: limits?.daily_message_limit ?? 0,
+        resetTime: resetTimeFormatted,
+      });
+      return;
+    }
+
+    // Optimistic decrement so the UI reacts immediately
+    dispatch(decrementMessages());
+
     // Override model if search mode is active
     let modelId = newChatModel.id;
     if (searchMode === "search") {
@@ -97,8 +116,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
     }
 
     if (id) {
-      // For existing chats, we need to update the model in useChat
-      // For now, send with the search model override
       sendMessage(text, file, modelId);
       setTimeout(scrollToBottom, 100);
       return;
@@ -130,6 +147,22 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
       setIsCreatingSession(false);
     }
   };
+
+  // ── Check limit AFTER AI reply ─────────────────────────────────────────────
+  const prevStreaming = useRef(false);
+  useEffect(() => {
+    const wasStreaming = prevStreaming.current;
+    prevStreaming.current = isStreaming;
+    // Transition: was streaming → stopped
+    if (wasStreaming && !isStreaming && limitReached) {
+      showLimitReachedToast({
+        feature: "messages",
+        limit: limits?.daily_message_limit ?? 0,
+        resetTime: resetTimeFormatted,
+      });
+    }
+  }, [isStreaming, limitReached, limits, resetTimeFormatted]);
+
   console.log(messages)
   return (
     <div className="flex flex-col h-full w-full bg-transparent overflow-hidden relative">
@@ -202,7 +235,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
         <div className="w-full max-w-3xl mx-auto">
           <ChatInput
             features={features}
-            disabled={isThinking || isStreaming || isCreatingSession}
+            disabled={isThinking || isStreaming || isCreatingSession || limitReached}
             onSend={handleSend}
           />
           {features && (

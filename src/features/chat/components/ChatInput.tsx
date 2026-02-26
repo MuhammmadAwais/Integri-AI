@@ -7,17 +7,19 @@ import {
   FileText,
   Image as ImageIcon,
   HardDrive,
-  PenTool, // Imported Pen Icon
+  PenTool,
   Search,
   SearchX,
+  Ban,
 } from "lucide-react";
 import { useAppSelector } from "../../../hooks/useRedux";
 import { cn } from "../../../lib/utils";
 import { useCloudStorage } from "../../../hooks/useCloudStorage";
 import { AnimatePresence, motion } from "framer-motion";
-import WhiteboardModal from "../../../Components/ui/WhiteboardModal"; // Make sure path is correct
+import WhiteboardModal from "../../../Components/ui/WhiteboardModal";
 import LoginModal from "../../auth/components/LoginModal";
 import { useSubscription } from "../../subscriptions/hooks/useSubscription";
+import { useLimits } from "../../limits/hooks/useLimits";
 
 type SearchMode = null | "search" | "deep-search";
 
@@ -47,6 +49,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
   // Check subscription tier for search features
   const { isPro, isPremium } = useSubscription();
   const canUseSearch = isPro || isPremium;
+  const { limits, resetTimeFormatted } = useLimits();
+  const limitReached = limits?.is_daily_limit_reached ?? false;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -147,6 +151,31 @@ const ChatInput: React.FC<ChatInputProps> = ({
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
       />
+
+      {/* Limit-reached banner */}
+      <AnimatePresence>
+        {limitReached && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 6 }}
+            transition={{ duration: 0.2 }}
+            className={cn(
+              "mb-2 flex items-center gap-2.5 px-4 py-2.5 rounded-xl border text-xs",
+              isDark
+                ? "bg-zinc-900 border-zinc-700 text-zinc-400"
+                : "bg-zinc-50 border-zinc-200 text-zinc-500"
+            )}
+          >
+            <Ban className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+            <span>
+              Daily message limit reached.
+              {resetTimeFormatted ? ` Resets at ${resetTimeFormatted}.` : " Upgrade to continue."}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* File Preview Bubble */}
       {file && (
         <div className="mb-2 flex w-fit items-center gap-2 rounded-xl bg-blue-500/10 px-3 py-1.5 text-xs font-medium text-blue-500 animate-in fade-in slide-in-from-bottom-2">

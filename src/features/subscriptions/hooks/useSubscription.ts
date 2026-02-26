@@ -1,9 +1,10 @@
-import { useMemo } from "react";
-import { useAppSelector } from "../../../hooks/useRedux";
+import { useMemo, useEffect } from "react";
+import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux";
 import {
   getAvailableModelsByTier,
   type SubscriptionTier,
 } from "../../../../Constants";
+import { fetchLimits } from "../../limits/slices/limitsSlice";
 
 const TIER_LEVELS: Record<SubscriptionTier, number> = {
   free: 0,
@@ -12,30 +13,37 @@ const TIER_LEVELS: Record<SubscriptionTier, number> = {
 };
 
 export const useSubscription = () => {
-  const user = useAppSelector((state) => state.auth.user);
+  const user  = useAppSelector((state) => state.auth.user);
+  const token = useAppSelector((state: any) => state.auth.accessToken);
   const tier: SubscriptionTier = user?.subscriptionTier || "free";
+  const dispatch = useAppDispatch();
+
+  // Fetch limits whenever the token becomes available or changes
+  useEffect(() => {
+    if (token) {
+      dispatch(fetchLimits(token));
+    }
+  }, [token, dispatch]);
 
   return useMemo(() => {
     const currentLevel = TIER_LEVELS[tier] ?? 0;
 
     const features = {
       // Pro Features (Pro + Premium)
-      advancedModels: currentLevel >= TIER_LEVELS.pro, // GPT-4o, Claude 3.5 Sonnet
+      advancedModels: currentLevel >= TIER_LEVELS.pro,
       unlimitedHistory: currentLevel >= TIER_LEVELS.pro,
       standardVoice: currentLevel >= TIER_LEVELS.pro,
       standardImageGen: currentLevel >= TIER_LEVELS.pro,
       prioritySupport: currentLevel >= TIER_LEVELS.pro,
 
       // Premium Features (Premium Only)
-      nextGenModels: currentLevel >= TIER_LEVELS.premium, // GPT-5, o1
-      realTimeVoice: currentLevel >= TIER_LEVELS.premium, // Ultra-low latency streaming
+      nextGenModels: currentLevel >= TIER_LEVELS.premium,
+      realTimeVoice: currentLevel >= TIER_LEVELS.premium,
       hdImageGen: currentLevel >= TIER_LEVELS.premium,
-      highLimits: currentLevel >= TIER_LEVELS.premium, // 10x higher limits for knowledge base/files
-      betaAccess: currentLevel >= TIER_LEVELS.premium, // Early access to experimental features
+      highLimits: currentLevel >= TIER_LEVELS.premium,
+      betaAccess: currentLevel >= TIER_LEVELS.premium,
     };
 
-    // Use the exact allowed models list based on subscription tier
-    // This matches the backend API allowed_models configuration
     const availableModels = getAvailableModelsByTier(tier);
 
     return {

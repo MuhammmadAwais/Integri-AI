@@ -3,24 +3,27 @@ import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { toast } from 'react-toastify';
 import { Brain, RefreshCw, ArrowLeft } from 'lucide-react';
-import { useAppSelector } from '../hooks/useRedux';
+import { useAppSelector, useAppDispatch } from '../hooks/useRedux';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '../lib/utils';
 import { MemoryService } from '../api/backendApi';
 import type { MemoryStats, MemoryDataPayload, UserPreferencesPayload } from '../api/backendApi';
 import ErrorModal from '../Components/ui/ErrorModal';
+import { fetchLimits } from '../features/limits/slices/limitsSlice';
 
 import MemoryStatsCard from '../features/memory/components/MemoryStatsCard';
 import PreferencesToggle from '../features/memory/components/PreferencesToggle';
 import MemoryBrowser from '../features/memory/components/MemoryBrowser';
 import DangerZone from '../features/memory/components/DangerZone';
+import LimitsOverviewCard from '../features/limits/components/LimitsOverviewCard';
 
 const PersonalizationPage: React.FC = () => {
-  const isDark = useAppSelector((state: any) => state.theme.isDark);
+  const isDark  = useAppSelector((state: any) => state.theme.isDark);
   const token   = useAppSelector((state: any) => state.auth.accessToken);
   const user    = useAppSelector((state: any) => state.auth.user);
   const userId: string | undefined = user?.id;
-  const navigate = useNavigate();
+  const navigate  = useNavigate();
+  const dispatch  = useAppDispatch();
 
   const [stats,       setStats]       = useState<MemoryStats | null>(null);
   const [preferences, setPreferences] = useState<UserPreferencesPayload | null>(null);
@@ -49,7 +52,7 @@ const PersonalizationPage: React.FC = () => {
     gsap.to(els, { y: 0, opacity: 1, duration: 0.5, stagger: 0.1, ease: 'power3.out', delay: 0.05 });
   }, []);
 
-  // Fetch all endpoints independently
+  // Fetch all endpoints independently + refresh limits
   const fetchData = useCallback(async (silent = false) => {
     if (!token || !userId) {
       console.warn('🧠 [PersonalizationPage] Missing token or userId', { token: !!token, userId });
@@ -57,6 +60,9 @@ const PersonalizationPage: React.FC = () => {
     }
     console.log('🧠 [PersonalizationPage] Fetching for userId:', userId);
     if (silent) setIsRefreshing(true);
+
+    // Always re-fetch limits when this page loads / refreshes
+    dispatch(fetchLimits(token));
 
     setIsLoadingStats(true);
     MemoryService.getMemoryStats(token, userId)
@@ -75,7 +81,7 @@ const PersonalizationPage: React.FC = () => {
       .then(res => setMemoryData(res))
       .catch(err => console.error('Memory:', err?.response?.status, err?.response?.data))
       .finally(() => { setIsLoadingMemory(false); if (silent) setIsRefreshing(false); });
-  }, [token, userId]);
+  }, [token, userId, dispatch]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
@@ -174,6 +180,7 @@ const PersonalizationPage: React.FC = () => {
         {/* ── Dashboard sections ── */}
         <div ref={containerRef} className="space-y-4">
           <MemoryStatsCard stats={stats} isLoading={isLoadingStats} isDark={isDark} />
+          <LimitsOverviewCard isDark={isDark} />
           <PreferencesToggle preferences={preferences} onToggleMemory={handleToggleMemory} isLoading={isLoadingPrefs || isUpdating} isDark={isDark} />
           <MemoryBrowser memoryData={memoryData} isLoading={isLoadingMemory} isDark={isDark} />
           <DangerZone onDeleteMemory={handleDeleteMemory} isLoading={isDeleting} isDark={isDark} />

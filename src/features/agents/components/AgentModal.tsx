@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { X, Loader2, Bot, Plus } from "lucide-react";
+import { X, Loader2, Bot, Plus, AlertTriangle } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { AgentService } from "../../../api/backendApi";
 import AVAILABLE_MODELS from "../../../../Constants";
 import { useSubscription } from "../../subscriptions/hooks/useSubscription";
+import { useLimits } from "../../limits/hooks/useLimits";
+import { showLimitReachedToast } from "../../limits/components/LimitToast";
 import { ModelSelector } from "./ModelSelector"; // Check this path
 
 interface AgentModalProps {
@@ -26,6 +28,10 @@ const AgentModal: React.FC<AgentModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { availableModels } = useSubscription();
+  const { canCreateAgent, limits } = useLimits();
+
+  // Block new agent creation (edit is always allowed)
+  const isAtLimit = !agent && !canCreateAgent;
 
   const [formData, setFormData] = useState({
     name: "",
@@ -68,6 +74,17 @@ const AgentModal: React.FC<AgentModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    // Guard: new agents only
+    if (isAtLimit) {
+      showLimitReachedToast({
+        feature: 'agents',
+        limit: limits?.max_agents ?? 0,
+        resetTime: null,
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const selectedModelObj = AVAILABLE_MODELS.find(
@@ -117,6 +134,22 @@ const AgentModal: React.FC<AgentModalProps> = ({
           isDark ? "bg-black border-zinc-800" : "bg-white border-zinc-200"
         )}
       >
+        {/* Limit banner (new agent only, when at cap) */}
+        {isAtLimit && (
+          <div className={cn(
+            "flex items-center gap-2.5 px-4 py-3 mb-6 border text-sm",
+            isDark
+              ? "bg-amber-950/20 border-amber-500/20 text-amber-400"
+              : "bg-amber-50 border-amber-200 text-amber-700"
+          )}>
+            <AlertTriangle size={14} className="shrink-0" />
+            <span>
+              Agent limit of <strong>{limits?.max_agents}</strong> reached.
+              Upgrade your plan to create more agents.
+            </span>
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
@@ -284,9 +317,9 @@ const AgentModal: React.FC<AgentModalProps> = ({
             </button>
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isAtLimit}
               className={cn(
-                "px-8 py-3 text-sm font-bold uppercase tracking-widest transition-all hover:cursor-pointer",
+                "px-8 py-3 text-sm font-bold uppercase tracking-widest transition-all hover:cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed",
                 isDark
                   ? "bg-white text-black hover:bg-zinc-200"
                   : "bg-black text-white hover:bg-zinc-800"

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Sparkles, Wand2, Monitor, Box } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import ImageUploader from "./ImageUploader";
 import GenDropdown from "./GenDropdown";
 import { useAppSelector } from "../../../hooks/useRedux";
+import { useAppDispatch } from "../../../hooks/useRedux";
 import LoginModal from "../../auth/components/LoginModal";
-import { useSubscription } from "../../subscriptions/hooks/useSubscription";
+import { useLimits } from "../../limits/hooks/useLimits";
+import { incrementImageCount } from "../../limits/slices/limitsSlice";
+import { showLimitReachedToast, showRemainingToast } from "../../limits/components/LimitToast";
 
 interface Props {
   isDark: boolean;
@@ -46,6 +48,7 @@ const MODEL_OPTIONS = [
     isPremium: true,
   },
 ];
+
 const GenLeftPanel: React.FC<Props> = ({
   isDark,
   isGenerating,
@@ -54,24 +57,28 @@ const GenLeftPanel: React.FC<Props> = ({
   onPromptSet,
 }) => {
   const user = useAppSelector((state: any) => state.auth.user);
-  const navigate = useNavigate();
-  const { isFree } = useSubscription();
+  const dispatch = useAppDispatch();
+  const { hasRemainingImages, limits } = useLimits();
+
   const [prompt, setPrompt] = useState("");
 
-  // Update prompt when external prompt is set from gallery
   useEffect(() => {
     if (externalPrompt) {
       setPrompt(externalPrompt);
-      if (onPromptSet) {
-        onPromptSet();
-      }
+      if (onPromptSet) onPromptSet();
     }
   }, [externalPrompt, onPromptSet]);
+
   const [selectedModel, setSelectedModel] = useState(MODEL_OPTIONS[0]);
   const [selectedRatio, setSelectedRatio] = useState(RATIOS[1]);
   const [selectedRes, setSelectedRes] = useState(RESOLUTIONS[0]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
+
+  const imagesLeft = limits
+    ? Math.max(0, limits.image_generation_limit - limits.images_generated_this_month)
+    : null;
+
   const handleGenerate = () => {
     if (!user) {
       setShowLoginModal(true);
@@ -79,12 +86,20 @@ const GenLeftPanel: React.FC<Props> = ({
     }
     if (!prompt.trim()) return;
 
-    // Check if user has free subscription - redirect to subscription page
-    if (isFree) {
-      navigate("/subscriptions");
+    // Block if limit reached (backend-driven, applies to all tiers)
+    if (!hasRemainingImages) {
+      showLimitReachedToast({
+        feature: "images",
+        limit: limits?.image_generation_limit ?? 0,
+        resetTime: null,
+      });
       return;
     }
 
+    // Optimistically update the count in Redux
+    dispatch(incrementImageCount());
+
+    // Fire generation
     onGenerate({
       model: selectedModel,
       prompt,
@@ -92,10 +107,14 @@ const GenLeftPanel: React.FC<Props> = ({
       res: selectedRes,
       file: selectedFile,
     });
+
+    // Show remaining count toast (after decrement)
+    if (imagesLeft !== null && imagesLeft - 1 > 0) {
+      showRemainingToast({ feature: "image generations", remaining: imagesLeft - 1 });
+    }
   };
-  {
-    setSelectedModel;
-  } //FOR VERCEL UNUSED VARIABLE WARNING (SUPPRESS)
+
+  { setSelectedModel; } // suppress unused warning
   return (
     <div className="flex flex-col h-full font-sans">
       <LoginModal
