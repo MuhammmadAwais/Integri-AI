@@ -5,6 +5,8 @@ import {
   updateProfile,
   GoogleAuthProvider,
   signInWithPopup,
+  getAdditionalUserInfo,
+  deleteUser,
   type User,
 } from "firebase/auth";
 import {
@@ -19,6 +21,17 @@ import { auth, db } from "../../../app/firebase";
 import { SubscriptionService } from "../../subscriptions/services/subscriptionService";
 import type { SubscriptionTier } from "../../../../Constants";
 import { isUserWhitelistedForPro, isUserWhitelistedForPremium } from "../../../../Constants";
+
+// ─── Custom error for blocked new-user registrations ─────────────────────────
+export class NewUserBlockedError extends Error {
+  readonly code = "NEW_USER_BLOCKED" as const;
+  constructor() {
+    super(
+      "Account not found. Registration is exclusively available via the Integri Mobile App. Please register there before logging in on the web."
+    );
+    this.name = "NewUserBlockedError";
+  }
+}
 
 // --- Types ---
 interface FirestoreUserModel {
@@ -208,7 +221,34 @@ export const AuthService = {
 
   loginWithGoogle: async (): Promise<UserData> => {
     const provider = new GoogleAuthProvider();
+    // Always show the account picker — prevents silent reuse of cached session
+    provider.setCustomParameters({ prompt: "select_account" });
     const userCredential = await signInWithPopup(auth, provider);
+
+    // ── New-user guard ─────────────────────────────────────────────────────────
+    // Check #1: Firebase additionalUserInfo (fast, no Firestore round-trip)
+    const additionalInfo = getAdditionalUserInfo(userCredential);
+    const isFirebaseNew = additionalInfo?.isNewUser ?? false;
+
+    // Check #2: No document in our Firestore Users collection (belt-and-suspenders)
+    let isFirestoreNew = false;
+    if (!isFirebaseNew) {
+      const userDoc = await getDoc(doc(db, "Users", userCredential.user.uid));
+      isFirestoreNew = !userDoc.exists();
+    }
+
+    if (isFirebaseNew || isFirestoreNew) {
+      // Immediately delete the freshly-created Firebase Auth account
+      // so no orphan record remains in the Auth console
+      try {
+        await deleteUser(userCredential.user);
+        console.log("🚫 New user blocked and Firebase account deleted.");
+      } catch (deleteErr) {
+        console.error("⚠️ Could not delete new Firebase user:", deleteErr);
+      }
+      throw new NewUserBlockedError();
+    }
+
     return await AuthService.fetchUserProfile(userCredential.user);
   },
 

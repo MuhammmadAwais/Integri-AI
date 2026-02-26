@@ -3,14 +3,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Mail, Lock, LogIn, Chrome } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
-import { loginUser, loginWithGoogle } from "../features/auth/thunks/authThunk"; //
+import { loginUser, loginWithGoogle } from "../features/auth/thunks/authThunk";
 import AuthLayout from "../Components/layout/AuthLayout";
 import AuthInput from "../features/auth/components/AuthInput";
 import AuthButton from "../features/auth/components/AuthButton";
+import NewUserBlockedModal from "../features/auth/components/NewUserBlockedModal";
 
 const Login: React.FC = () => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState({ email: "", password: "" });
+  const [showBlockedModal, setShowBlockedModal] = useState(false);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { isLoading, error } = useAppSelector((state) => state.auth);
@@ -23,11 +25,15 @@ const Login: React.FC = () => {
     }
   };
 
-  // 2. Add Google Login Handler
   const handleGoogleLogin = async () => {
     const result = await dispatch(loginWithGoogle());
     if (loginWithGoogle.fulfilled.match(result)) {
       navigate("/");
+    } else if (loginWithGoogle.rejected.match(result)) {
+      const payload = result.payload as any;
+      if (payload === "NEW_USER_BLOCKED") {
+        setShowBlockedModal(true);
+      }
     }
   };
 
@@ -36,6 +42,11 @@ const Login: React.FC = () => {
       title={t("auth.welcomeBack")}
       subtitle={t("auth.enterCredentials")}
     >
+      <NewUserBlockedModal
+        isOpen={showBlockedModal}
+        onClose={() => setShowBlockedModal(false)}
+      />
+
       <form onSubmit={handleSubmit} className="space-y-5 mt-6">
         <AuthInput
           label={t("auth.email")}
@@ -69,7 +80,7 @@ const Login: React.FC = () => {
           </div>
         </div>
 
-        {error && (
+        {error && error !== "NEW_USER_BLOCKED" && (
           <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-sm p-3 rounded-xl text-center">
             {error}
           </div>
@@ -90,7 +101,6 @@ const Login: React.FC = () => {
           </div>
         </div>
 
-        {/* 3. Attach onClick Handler Here */}
         <AuthButton
           type="button"
           variant="google"

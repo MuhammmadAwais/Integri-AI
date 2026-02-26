@@ -67,11 +67,10 @@ export const loginWithGoogle = createAsyncThunk(
   "auth/loginWithGoogle",
   async (_, { rejectWithValue }) => {
     try {
-      // 1. Google Login (Returns isNewUser: true if Doc missing)
+      // 1. Google Login — throws NewUserBlockedError if no Firestore doc
       const user = await AuthService.loginWithGoogle();
 
-      // 2. Get Token from Backend
-      // UPDATED: Pass subscriptionTier
+      // 2. Get Token from Backend (only reached for existing users)
       const backendData = await getBackendToken(
         user.id,
         user.email,
@@ -83,6 +82,10 @@ export const loginWithGoogle = createAsyncThunk(
         accessToken: backendData.access_token,
       };
     } catch (error: any) {
+      // Distinguish new-user-blocked from generic errors
+      if (error?.code === "NEW_USER_BLOCKED" || error?.name === "NewUserBlockedError") {
+        return rejectWithValue("NEW_USER_BLOCKED");
+      }
       return rejectWithValue(error.message || "Google login failed");
     }
   },

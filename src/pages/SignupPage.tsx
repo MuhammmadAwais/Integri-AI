@@ -10,6 +10,7 @@ import {
 import AuthLayout from "../Components/layout/AuthLayout";
 import AuthInput from "../features/auth/components/AuthInput";
 import AuthButton from "../features/auth/components/AuthButton";
+import NewUserBlockedModal from "../features/auth/components/NewUserBlockedModal";
 
 // Device detection function
 function isMobileDevice(): boolean {
@@ -37,6 +38,7 @@ const Signup: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isLoading, error } = useAppSelector((state) => state.auth);
+  const [showBlockedModal, setShowBlockedModal] = useState(false);
 
   // Redirect desktop users to QR code signup page
   useEffect(() => {
@@ -73,6 +75,11 @@ const Signup: React.FC = () => {
     const result = await dispatch(loginWithGoogle());
     if (loginWithGoogle.fulfilled.match(result)) {
       navigate("/getting-started");
+    } else if (loginWithGoogle.rejected.match(result)) {
+      const payload = result.payload as any;
+      if (payload === "NEW_USER_BLOCKED") {
+        setShowBlockedModal(true);
+      }
     }
   };
 
@@ -82,6 +89,10 @@ const Signup: React.FC = () => {
       subtitle={t("signup.subtitle")}
       logoTitleHorizontal={true}
     >
+      <NewUserBlockedModal
+        isOpen={showBlockedModal}
+        onClose={() => setShowBlockedModal(false)}
+      />
       <form onSubmit={handleSubmit} className="space-y-4">
         <AuthInput
           label={t("signup.fullName")}
