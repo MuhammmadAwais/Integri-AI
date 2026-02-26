@@ -67,9 +67,9 @@ const SubscriptionPage: React.FC = () => {
   // Sort plans: Premium first, then Pro, then Free
   const displayedPlans = filteredPlans.sort((a, b) => {
     const tierOrder: Record<string, number> = {
-      premium: 0,
-      pro: 1,
-      free: 2,
+      premium: 1,
+      pro: 2,
+      free: 3,
     };
     return (tierOrder[a.tier] || 99) - (tierOrder[b.tier] || 99);
   });
@@ -167,8 +167,8 @@ const SubscriptionPage: React.FC = () => {
           ) : (
             <AnimatePresence mode="wait">
               <motion.div
-                key={billingInterval} // Re-render grid when interval changes
-                className="grid grid-cols-1 md:grid-cols-2 gap-8"
+                key={billingInterval}
+                className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start max-w-3xl mx-auto"
                 initial="hidden"
                 animate="visible"
                 exit="exit"
@@ -176,11 +176,12 @@ const SubscriptionPage: React.FC = () => {
                   visible: { transition: { staggerChildren: 0.1 } },
                 }}
               >
-                {displayedPlans.map((plan) => (
+                {displayedPlans.map((plan, index) => (
                   <motion.div
                     key={plan.id}
                     variants={itemVariants}
                     layout="position"
+                    className={index === 1 ? "md:mt-16" : ""}
                   >
                     <PricingCard
                       plan={plan}

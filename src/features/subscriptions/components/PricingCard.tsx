@@ -44,7 +44,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
       layout // Helps animate position changes smoothly
       whileHover={{ y: -8, transition: { type: "spring", stiffness: 300 } }}
       className={cn(
-        "relative flex flex-col p-6 rounded-2xl border transition-all duration-300 h-full",
+        "relative flex flex-col p-8 rounded-2xl border transition-all duration-300",
         isDark ? "bg-white/5 border-white/10" : "bg-white border-gray-200",
         plan.isPopular &&
           (isDark

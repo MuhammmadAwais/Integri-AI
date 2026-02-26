@@ -213,24 +213,18 @@ export const SubscriptionService = {
           // Generate features based on tier (per product differentiation)
           const featuresByTier: Record<SubscriptionTier, string[]> = {
             free: ["Basic AI features", "Limited usage"],
-            pro: [
-              "Everything in PREMIUM",
-              "GPT 5.2, GPT 5.1, Claude Haiku 4.5, and Gemini 3 Flash",
-              "Advanced Real-time Voice",
-              "10x Higher File Limits",
-              "HD Image Generation",
-              "PDF chats with higher LLMs and OCR",
-              "Multi chats with all LLMs",
-              "Priority Email Support",
-            ],
             premium: [
-              "Almost all LLMs",
-              "No ads",
+              "(Minimum ads)",
               "Unlimited Agents creation",
-              "Standard Voice Mode",
-              "Standard Image Generation",
               "PDF chats",
               "Multi chats",
+            ],
+            pro: [
+              "Everything in PREMIUM",
+              "10x Higher File Limits",
+              "HD Image Generation",
+              "PDF chats with higher OCR",
+              "Priority Email Support",
             ],
           };
 
