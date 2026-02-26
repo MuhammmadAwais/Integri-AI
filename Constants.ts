@@ -628,7 +628,7 @@ export const LANGUAGES = [
   }, // Portuguese (Portugal)
   {
     name: "Português (Brasil)",
-    code: "pt", // Usually same code, handled by region if needed, or 'pt-BR'
+    code: "pt-BR", // Usually same code, handled by region if needed, or 'pt-BR'
     flag: "🇧🇷",
   }, // Portuguese (Brazil)
   {
@@ -638,7 +638,7 @@ export const LANGUAGES = [
   }, // Chinese Simplified (China)
   {
     name: "中文 (繁體)",
-    code: "zh", // Often 'zh-TW'
+    code: "zh-TW", // Often 'zh-TW'
     flag: "🇹🇼",
   }, // Chinese Traditional (Taiwan)
   {

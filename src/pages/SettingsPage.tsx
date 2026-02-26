@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import { User, CreditCard, Download, HelpCircle } from "lucide-react";
+import { User, CreditCard, Download, HelpCircle, Brain } from "lucide-react";
 import { cn } from "../lib/utils";
 import { useAppSelector } from "../hooks/useRedux";
 import SettingsSection from "../features/settings/components/SettingsSection";
@@ -9,6 +9,7 @@ import AccountSettings from "../features/settings/components/AccountSettings";
 import SubscriptionSettings from "../features/settings/components/SubscriptionSettings";
 import DownloadSettings from "../features/settings/components/DownloadSettings";
 import HelpAndAbout from "../features/settings/components/HelpAndAbout";
+import PersonalizationSettings from "../features/settings/components/PersonalizationSettings";
 import ParticleBackground from "../Components/ui/ParticleBackground";
 
 const containerVariants = {
@@ -73,6 +74,15 @@ const SettingsPage: React.FC = () => {
             isDark={isDark}
           >
             <SubscriptionSettings />
+          </SettingsSection>
+
+          <SettingsSection
+            icon={Brain}
+            title="Personalization"
+            description="Manage your AI interactions and memory."
+            isDark={isDark}
+          >
+            <PersonalizationSettings isDark={isDark} />
           </SettingsSection>
 
           <SettingsSection

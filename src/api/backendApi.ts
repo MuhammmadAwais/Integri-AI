@@ -385,4 +385,148 @@ export const AgentService = {
   },
 };
 
+// --- MEMORY AND PREFERENCES ---
+export interface MemoryStats {
+  user_id: string;
+  has_memory: boolean;
+  version: number;
+  created_at: string;
+  last_updated: string;
+  memory_size_bytes: number;
+  notable_facts_count: number;
+  topics_count: number;
+  domains_count: number;
+  has_preferences: boolean;
+  has_context: boolean;
+  llm_usage: Record<string, unknown>;
+}
+
+export interface MemoryDataPayload {
+  user_id: string;
+  memory_data: Record<string, unknown>;
+  updated_at: string;
+  version: number;
+}
+
+export interface UserPreferencesPayload {
+  disable_memory_extraction?: boolean;
+  theme?: string;
+  language?: string;
+}
+
+export const MemoryService = {
+  /**
+   * GET /api/v1/users/memory
+   * Retrieves the global memory for the authenticated user (no user_id required).
+   */
+  getMemory: async (token: string): Promise<MemoryDataPayload> => {
+    const url = "/api/v1/users/memory";
+    console.log(`🧠 [MemoryService] GET ${url}`);
+    try {
+      const response = await backendApi.get<MemoryDataPayload>(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log(`✅ [MemoryService] GET ${url} succeeded`, response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error(
+        `❌ [MemoryService] GET ${url} failed — status: ${error?.response?.status}`,
+        error?.response?.data ?? error
+      );
+      throw error;
+    }
+  },
+
+  /**
+   * GET /api/v1/users/{user_id}/memory/stats
+   * Retrieves memory stats for a specific user. Requires userId path param.
+   */
+  getMemoryStats: async (token: string, userId: string): Promise<MemoryStats> => {
+    const url = `/api/v1/users/${userId}/memory/stats`;
+    console.log(`🧠 [MemoryService] GET ${url}`);
+    try {
+      const response = await backendApi.get<MemoryStats>(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log(`✅ [MemoryService] GET ${url} succeeded`, response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error(
+        `❌ [MemoryService] GET ${url} failed — status: ${error?.response?.status}`,
+        error?.response?.data ?? error
+      );
+      throw error;
+    }
+  },
+
+  /**
+   * DELETE /api/v1/users/{user_id}/memory
+   * Deletes all memory for a specific user. Requires userId path param.
+   */
+  deleteMemory: async (token: string, userId: string): Promise<void> => {
+    const url = `/api/v1/users/${userId}/memory`;
+    console.log(`🧠 [MemoryService] DELETE ${url}`);
+    try {
+      const response = await backendApi.delete(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log(`✅ [MemoryService] DELETE ${url} succeeded`, response.data);
+    } catch (error: any) {
+      console.error(
+        `❌ [MemoryService] DELETE ${url} failed — status: ${error?.response?.status}`,
+        error?.response?.data ?? error
+      );
+      throw error;
+    }
+  },
+
+  /**
+   * GET /api/v1/users/me/preferences
+   * Retrieves preferences for the currently authenticated user.
+   */
+  getPreferences: async (token: string): Promise<UserPreferencesPayload> => {
+    const url = "/api/v1/users/me/preferences";
+    console.log(`🧠 [MemoryService] GET ${url}`);
+    try {
+      const response = await backendApi.get<UserPreferencesPayload>(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log(`✅ [MemoryService] GET ${url} succeeded`, response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error(
+        `❌ [MemoryService] GET ${url} failed — status: ${error?.response?.status}`,
+        error?.response?.data ?? error
+      );
+      throw error;
+    }
+  },
+
+  /**
+   * PATCH /api/v1/users/me/preferences
+   * Updates preferences for the currently authenticated user.
+   */
+  updatePreferences: async (
+    token: string,
+    preferences: UserPreferencesPayload
+  ): Promise<UserPreferencesPayload> => {
+    const url = "/api/v1/users/me/preferences";
+    console.log(`🧠 [MemoryService] PATCH ${url}`, preferences);
+    try {
+      const response = await backendApi.patch<UserPreferencesPayload>(url, preferences, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log(`✅ [MemoryService] PATCH ${url} succeeded`, response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error(
+        `❌ [MemoryService] PATCH ${url} failed — status: ${error?.response?.status}`,
+        error?.response?.data ?? error
+      );
+      throw error;
+    }
+  },
+};
+
 export default backendApi;
+

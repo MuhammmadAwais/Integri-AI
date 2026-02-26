@@ -40,6 +40,7 @@ import ImageGenPage from "../pages/ImageGenPage";
 import ContactUs from "../pages/ContactUs";
 import MobileVoiceWrapper from "../pages/MobileVoiceWrapper"; // <--- IMPORT ADDED
 import PrivacyPolicy from "../pages/PrivacyPolicy";
+import PersonalizationPage from "../pages/PersonalizationPage";
 import { fetchAgents } from "../features/agents/agentsSlice";
 import AppDownloadSheet from "../Components/ui/AppDownloadSheet";
 import AdBlockGuard from "../features/subscriptions/components/AdBlockGuard";
@@ -138,6 +139,7 @@ const router = createBrowserRouter([
               { path: "pdf", element: <PdfChatPage /> },
               { path: "pdf/:id", element: <PdfChatPage /> },
               { path: "settings", element: <SettingsPage /> },
+              { path: "settings/personalization", element: <PersonalizationPage /> },
               { path: "feedback", element: <SendFeedbackPage /> },
               { path: "help", element: <HelpPage /> },
               { path: "agents", element: <Agents /> },
