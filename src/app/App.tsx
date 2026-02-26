@@ -30,6 +30,8 @@ import HistoryPage from "../pages/HistoryPage";
 import Playground from "../pages/Playground";
 import Voice from "../pages/Voice";
 import PdfChatPage from "../pages/PdfChat";
+import NewsPage from "../pages/NewsPage";
+import NewsDetailPage from "../pages/NewsDetailPage";
 import SettingsPage from "../pages/SettingsPage";
 import SendFeedbackPage from "../pages/SendFeedbackPage";
 import HelpPage from "../pages/HelpPage";
@@ -137,6 +139,8 @@ const router = createBrowserRouter([
               { path: "voice", element: <Voice /> },
               { path: "pdf", element: <PdfChatPage /> },
               { path: "pdf/:id", element: <PdfChatPage /> },
+              { path: "news", element: <NewsPage /> },
+              { path: "news/:id", element: <NewsDetailPage /> },
               { path: "settings", element: <SettingsPage /> },
               { path: "feedback", element: <SendFeedbackPage /> },
               { path: "help", element: <HelpPage /> },
