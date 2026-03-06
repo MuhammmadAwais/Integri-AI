@@ -134,6 +134,13 @@ const PAGE_SEO: Record<string, PageSEOConfig> = {
     canonicalPath: "/contactUs",
     breadcrumbLabel: "Contact",
   },
+  "/news": {
+    title: `AI News & Articles | ${SITE_NAME}`,
+    description: "Stay updated with the latest AI news, technology breakthroughs, in-depth articles, tutorials, and industry insights. Covering GPT, Claude, Gemini, and more.",
+    canonicalPath: "/news",
+    keywords: "AI news, artificial intelligence news, GPT news, Claude update, Gemini news, AI articles, technology news, Integri AI",
+    breadcrumbLabel: "News & Articles",
+  },
 };
 
 /** Match /agents/abc123 -> agents config; use agents config for breadcrumb parent. */
@@ -193,6 +200,26 @@ const DYNAMIC_PATTERNS: { pattern: RegExp; config: PageSEOConfig; basePath: stri
     },
     basePath: "/voice",
   },
+  {
+    pattern: /^\/news\/[^/]+$/,
+    config: {
+      title: `News | ${SITE_NAME}`,
+      description: "Read the latest AI news and technology updates on Integri AI.",
+      canonicalPath: "/news",
+      breadcrumbLabel: "News Detail",
+    },
+    basePath: "/news",
+  },
+  {
+    pattern: /^\/articles\/[^/]+$/,
+    config: {
+      title: `Article | ${SITE_NAME}`,
+      description: "Read in-depth AI articles, tutorials, and guides on Integri AI.",
+      canonicalPath: "/news",
+      breadcrumbLabel: "Article Detail",
+    },
+    basePath: "/news",
+  },
 ];
 
 function getConfigForPath(pathname: string): PageSEOConfig & { canonicalPath: string; basePath?: string } {
@@ -247,6 +274,7 @@ export const SITEMAP_PATHS: { path: string; changefreq?: "always" | "hourly" | "
   { path: "/subscriptions", changefreq: "weekly", priority: 0.9 },
   { path: "/imageGen", changefreq: "weekly", priority: 0.9 },
   { path: "/contactUs", changefreq: "monthly", priority: 0.7 },
+  { path: "/news", changefreq: "daily", priority: 0.9 },
 ];
 
 export { BASE_URL };

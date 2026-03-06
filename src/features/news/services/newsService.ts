@@ -6,7 +6,9 @@ import {
     query,
     orderBy,
     limit,
+    startAfter,
     Timestamp,
+    QueryDocumentSnapshot,
 } from "firebase/firestore";
 import { db } from "../../../app/firebase";
 import type {
@@ -17,7 +19,8 @@ import type {
     Keywords,
 } from "../models/newsArticle";
 
-const COLLECTION = "News";
+const NEWS_COLLECTION = "News";
+const ARTICLES_COLLECTION = "Articles";
 
 // ── Map a single Firestore document → NewsArticle ───────────────────
 function mapDoc(docSnap: any): NewsArticle {
@@ -98,24 +101,77 @@ function mapNewsSource(src: any): NewsSource {
     };
 }
 
-// ── Public API ──────────────────────────────────────────────────────
-
-/** Fetch the latest news articles (default 20). */
-export async function fetchNews(count = 20): Promise<NewsArticle[]> {
-    const q = query(
-        collection(db, COLLECTION),
-        orderBy("date", "desc"),
-        limit(count),
-    );
-    const snap = await getDocs(q);
-    return snap.docs.map(mapDoc);
+// ── Paginated result type ───────────────────────────────────────────
+export interface PaginatedResult {
+    articles: NewsArticle[];
+    lastDoc: QueryDocumentSnapshot | null;
+    hasMore: boolean;
 }
 
-/** Fetch a single article by document ID. */
+// ── Generic paginated fetch (works for both News and Articles) ──────
+async function fetchPaginated(
+    collectionName: string,
+    pageSize: number,
+    afterDoc?: QueryDocumentSnapshot | null,
+): Promise<PaginatedResult> {
+    const constraints: any[] = [
+        orderBy("date", "desc"),
+        limit(pageSize + 1), // Fetch 1 extra to check if there are more
+    ];
+
+    if (afterDoc) {
+        constraints.splice(1, 0, startAfter(afterDoc));
+    }
+
+    const q = query(collection(db, collectionName), ...constraints);
+    const snap = await getDocs(q);
+    const docs = snap.docs;
+
+    const hasMore = docs.length > pageSize;
+    const resultDocs = hasMore ? docs.slice(0, pageSize) : docs;
+
+    return {
+        articles: resultDocs.map(mapDoc),
+        lastDoc: resultDocs.length > 0 ? resultDocs[resultDocs.length - 1] : null,
+        hasMore,
+    };
+}
+
+// ── Public API: News ────────────────────────────────────────────────
+
+/** Fetch paginated news articles. */
+export async function fetchNews(
+    pageSize = 12,
+    afterDoc?: QueryDocumentSnapshot | null,
+): Promise<PaginatedResult> {
+    return fetchPaginated(NEWS_COLLECTION, pageSize, afterDoc);
+}
+
+/** Fetch a single news article by document ID. */
 export async function fetchNewsById(
     id: string,
 ): Promise<NewsArticle | null> {
-    const docRef = doc(db, COLLECTION, id);
+    const docRef = doc(db, NEWS_COLLECTION, id);
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) return null;
+    return mapDoc(docSnap);
+}
+
+// ── Public API: Articles ────────────────────────────────────────────
+
+/** Fetch paginated articles. */
+export async function fetchArticles(
+    pageSize = 12,
+    afterDoc?: QueryDocumentSnapshot | null,
+): Promise<PaginatedResult> {
+    return fetchPaginated(ARTICLES_COLLECTION, pageSize, afterDoc);
+}
+
+/** Fetch a single article by document ID. */
+export async function fetchArticleById(
+    id: string,
+): Promise<NewsArticle | null> {
+    const docRef = doc(db, ARTICLES_COLLECTION, id);
     const docSnap = await getDoc(docRef);
     if (!docSnap.exists()) return null;
     return mapDoc(docSnap);
