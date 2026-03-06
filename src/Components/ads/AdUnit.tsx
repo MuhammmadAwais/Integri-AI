@@ -176,11 +176,62 @@ const AdUnit: React.FC<AdUnitProps> = ({
         if (pushed.current) return;
         try {
             if (typeof window !== "undefined" && adRef.current) {
+                console.log(
+                    `%c[AdSense] 📡 Loading ad slot: ${slot}%c\n` +
+                    `  Format: ${format}${layout ? ` | Layout: ${layout}` : ""}\n` +
+                    `  Test ID: ${testId || "(none)"}`,
+                    "color: #4285f4; font-weight: bold",
+                    "color: inherit"
+                );
+
                 (window.adsbygoogle = window.adsbygoogle || []).push({});
                 pushed.current = true;
+
+                // Check fill status after a delay
+                setTimeout(() => {
+                    if (!adRef.current) return;
+
+                    const insEl = adRef.current;
+                    const hasContent = insEl.childElementCount > 0;
+                    const dataStatus = insEl.getAttribute("data-ad-status");
+                    const isEmpty =
+                        dataStatus === "unfilled" ||
+                        insEl.innerHTML.trim() === "" ||
+                        insEl.offsetHeight === 0;
+
+                    if (hasContent && !isEmpty) {
+                        console.log(
+                            `%c[AdSense] ✅ Ad loaded successfully: ${slot}`,
+                            "color: #34a853; font-weight: bold"
+                        );
+                    } else {
+                        console.warn(
+                            `%c[AdSense] ⚠️ Ad slot "${slot}" did not fill.%c\n` +
+                            `  Status: ${dataStatus || "unknown"}\n` +
+                            `  Has content: ${hasContent}\n\n` +
+                            `  Possible reasons:\n` +
+                            `  1. 🕐 Ad units were JUST created — wait 15-30 min for Google to activate them\n` +
+                            `  2. 🔒 403 error = AdSense account is still PENDING APPROVAL\n` +
+                            `  3. 🌐 Domain "${window.location.hostname}" may not be verified in AdSense → Sites\n` +
+                            `  4. 📄 Check ads.txt is accessible at: ${window.location.origin}/ads.txt\n` +
+                            `  5. 🚫 Ad blocker may be active in this browser`,
+                            "color: #ea4335; font-weight: bold",
+                            "color: inherit"
+                        );
+                    }
+                }, 3000);
             }
-        } catch (e) {
-            console.error("AdSense push error:", e);
+        } catch (e: any) {
+            console.error(
+                `%c[AdSense] ❌ Failed to push ad slot: ${slot}%c\n` +
+                `  Error: ${e?.message || e}\n\n` +
+                `  This usually means:\n` +
+                `  • The adsbygoogle script in index.html failed to load\n` +
+                `  • An ad blocker is blocking the AdSense script\n` +
+                `  • The publisher ID (ca-pub-...) is incorrect`,
+                "color: #ea4335; font-weight: bold",
+                "color: inherit"
+            );
             setAdFailed(true);
         }
     }, []);
