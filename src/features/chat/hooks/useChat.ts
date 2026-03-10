@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { socketService } from "../../../services/WebSocketsService";
-import { SessionService, FileService } from "../../../api/backendApi";
+import { SessionService } from "../../../api/backendApi";
 import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux";
+import { uploadFilesSequentially } from "../../../utils/uploadFilesPipeline";
 import {
   setActiveSessionConfig,
   setSessions,
@@ -427,44 +428,12 @@ export const useChat = (sessionId: string | undefined, initialMessage?: string, 
 
         let fileIds: string[] = [];
 
-        // --- S3 File Upload Pipeline ---
+        // --- S3 File Upload Pipeline (shared utility) ---
         if (files && files.length > 0 && token && sessionId) {
           setIsUploading(true);
+          setFileUploadStage("uploading");
           try {
-            for (const file of files) {
-              // Step 1: Get presigned S3 URL
-              setFileUploadStage("uploading");
-              console.log(`📤 [useChat] Step 1: Getting upload URL for ${file.name}...`);
-              const { url: s3UploadUrl, s3_key } = await FileService.getUploadUrl(
-                token,
-                file.name,
-                file.type || "application/octet-stream"
-              );
-
-              // Step 2: Upload directly to S3 (no auth headers)
-              console.log(`📤 [useChat] Step 2: Uploading ${file.name} to S3...`);
-              await FileService.uploadToS3(s3UploadUrl, file);
-
-              // Step 3: Trigger background OCR processing
-              setFileUploadStage("processing");
-              console.log(`📤 [useChat] Step 3: Triggering file processing for ${file.name}...`);
-              const fileExtension =
-                file.name.split(".").pop()?.toLowerCase() || file.type.split("/")[1] || "bin";
-              const fileId = await FileService.processFile(
-                token,
-                s3_key,
-                file.name,
-                fileExtension,
-                sessionId
-              );
-
-              // Step 4: Poll until ready
-              console.log(`📤 [useChat] Step 4: Polling file status for ${file.name}...`);
-              const readyFileId = await FileService.pollFileStatus(token, fileId);
-              fileIds.push(readyFileId);
-
-              console.log(`✅ [useChat] File pipeline complete for ${file.name}. file_id:`, readyFileId);
-            }
+            fileIds = await uploadFilesSequentially(token, files, sessionId);
             setFileUploadStage("idle");
           } catch (uploadError) {
             console.error("❌ [useChat] File pipeline failed:", uploadError);

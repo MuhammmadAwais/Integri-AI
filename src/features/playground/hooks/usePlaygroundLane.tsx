@@ -2,6 +2,8 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { WebSocketService } from "../../../services/WebSocketsService";
 import { SessionService } from "../../../api/backendApi";
 import { useAppSelector } from "../../../hooks/useRedux";
+import { toast } from "react-toastify";
+import { uploadFilesSequentially } from "../../../utils/uploadFilesPipeline";
 
 const triggerGlobalUpdate = () => {
   if (typeof window !== "undefined") {
@@ -180,21 +182,20 @@ export const usePlaygroundLane = (modelConfig: {
         try {
           let fileIds: string[] = [];
 
-          // Upload if files exist
-          if (files && files.length > 0 && token) {
+          // --- SESSION-SCOPED UPLOAD PIPELINE ---
+          // Files are uploaded AFTER session is confirmed, binding them to this specific lane.
+          // This matches the exact logic used in useChat.ts.
+          // Uses shared uploadFilesSequentially: one file at a time, strict fail-fast.
+          if (files && files.length > 0 && token && currentSessionId) {
             setIsUploading(true);
             try {
-              for (const file of files) {
-                console.log("Playground: Uploading file...", file.name);
-                const uploadedId = await SessionService.uploadFile(token, file);
-                if (uploadedId) {
-                  fileIds.push(uploadedId);
-                  console.log("Playground: File uploaded, ID:", uploadedId);
-                }
-              }
-            } catch (err) {
-              console.error("Playground: File upload failed", err);
-              // We continue sending text even if upload fails, or you could return here
+              fileIds = await uploadFilesSequentially(token, files, currentSessionId);
+            } catch (err: any) {
+              console.error("Playground: File upload pipeline failed", err);
+              toast.error(err.message || "File upload failed. Message not sent.");
+              // Roll back optimistic message
+              setMessages((prev) => prev.slice(0, -1));
+              return; // 🛑 Hard stop — do NOT send WebSocket message
             } finally {
               setIsUploading(false);
             }
@@ -207,7 +208,7 @@ export const usePlaygroundLane = (modelConfig: {
                 text,
                 modelConfig.id,
                 modelConfig.provider,
-                fileIds // Pass the file IDs here
+                fileIds
               );
             },
             currentSessionId === sessionId ? 0 : 1000
