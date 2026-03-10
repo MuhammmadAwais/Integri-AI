@@ -30,11 +30,14 @@ import { useSubscription } from "../../subscriptions/hooks/useSubscription";
 
 type SearchMode = null | "search" | "deep-search";
 
+type FileUploadStage = "idle" | "uploading" | "processing" | "error";
+
 interface WelcomeChatInputProps {
   onStartChat: (text: string, file: File | null, searchMode?: SearchMode) => void;
   user: any;
   isDark: boolean;
   isLoading?: boolean;
+  fileUploadStage?: FileUploadStage;
 }
 
 // Define the shape of our saved draft
@@ -46,7 +49,7 @@ interface SavedDraft {
 }
 
 const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
-  ({ onStartChat, user, isDark, isLoading }, ref) => {
+  ({ onStartChat, user, isDark, isLoading, fileUploadStage = "idle" }, ref) => {
     const { t } = useTranslation();
     const [inputValue, setInputValue] = useState("");
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -236,6 +239,9 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
     // Check subscription tier for search features
     const {  isFree } = useSubscription();
 
+    const isFileProcessing =
+      fileUploadStage === "uploading" || fileUploadStage === "processing";
+
     const handleSubmit = () => {
       if (!inputValue.trim() && !selectedFile) return;
 
@@ -243,6 +249,8 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
         saveDraftAndLogin();
         return;
       }
+
+      if (isFileProcessing) return;
 
       onStartChat(inputValue, selectedFile, searchMode);
       setInputValue("");
@@ -283,32 +291,48 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
 
         {/* --- TOP SECTION: File Preview & Text Area --- */}
         <div className="flex flex-col w-full flex-1">
-          {/* File Preview Bubble */}
+          {/* File Preview Bubble — Gemini-style with upload/processing states */}
           {selectedFile && (
             <div className="px-4 pt-3 pb-0 animate-in slide-in-from-bottom-2 fade-in">
               <div
                 className={cn(
-                  "flex items-center gap-2 p-2 rounded-lg w-fit text-sm font-medium border",
-                  isDark
+                  "flex items-center gap-2 p-2 rounded-lg w-fit text-sm font-medium border transition-colors duration-300",
+                  fileUploadStage === "error"
+                    ? isDark
+                      ? "bg-red-900/30 border-red-700/40 text-red-400"
+                      : "bg-red-50 border-red-200 text-red-600"
+                    : isDark
                     ? "bg-[#2A2B32] border-[#3A3B42] text-gray-200"
                     : "bg-white border-gray-200 text-gray-800"
                 )}
               >
-                {selectedFile.type.startsWith("image/") ? (
+                {isFileProcessing ? (
+                  <div className="animate-spin h-4 w-4 border-2 border-blue-300/40 border-t-blue-400 rounded-full shrink-0" />
+                ) : fileUploadStage === "error" ? (
+                  <span className="text-red-400 shrink-0 text-xs">✕</span>
+                ) : selectedFile.type.startsWith("image/") ? (
                   <ImageIcon size={16} className="text-blue-500" />
                 ) : (
                   <FileText size={16} className="text-blue-500" />
                 )}
-                <span className="max-w-[150px] truncate">
-                  {selectedFile.name}
+                <span className="max-w-[200px] truncate">
+                  {fileUploadStage === "uploading"
+                    ? `Uploading ${selectedFile.name}...`
+                    : fileUploadStage === "processing"
+                    ? `Processing ${selectedFile.name}...`
+                    : fileUploadStage === "error"
+                    ? `Failed to process ${selectedFile.name}`
+                    : selectedFile.name}
                 </span>
-                <button
-                  title={t("common.removeFile")}
-                  onClick={() => setSelectedFile(null)}
-                  className="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded-full ml-1"
-                >
-                  <XIcon size={14} />
-                </button>
+                {!isFileProcessing && (
+                  <button
+                    title={t("common.removeFile")}
+                    onClick={() => setSelectedFile(null)}
+                    className="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded-full ml-1"
+                  >
+                    <XIcon size={14} />
+                  </button>
+                )}
               </div>
             </div>
           )}
@@ -633,18 +657,23 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
             <button
               title={t("chat.sendMessage")}
               onClick={
-                inputValue.trim().length > 0 || selectedFile
+                (inputValue.trim().length > 0 || selectedFile) && !isFileProcessing
                   ? handleSubmit
                   : undefined
               }
+              disabled={isFileProcessing}
               className={cn(
                 "w-8 h-8 rounded-full flex items-center justify-center transition-transform active:scale-95 animate-in zoom-in duration-200 hover:cursor-pointer",
-                isDark
+                isFileProcessing
+                  ? isDark
+                    ? "bg-white/40 text-black/50 cursor-not-allowed"
+                    : "bg-black/40 text-white/50 cursor-not-allowed"
+                  : isDark
                   ? "bg-white text-black hover:bg-gray-200"
                   : "bg-black text-white hover:bg-gray-800"
               )}
             >
-              {isLoading || isCloudLoading ? (
+              {isLoading || isCloudLoading || isFileProcessing ? (
                 <div className="animate-spin h-4 w-4 border-2 border-black/30 border-t-black rounded-full dark:border-white/30 dark:border-t-white" />
               ) : (
                 <ArrowUp size={18} strokeWidth={3} />

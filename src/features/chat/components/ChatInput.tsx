@@ -23,18 +23,22 @@ import { useLimits } from "../../limits/hooks/useLimits";
 
 type SearchMode = null | "search" | "deep-search";
 
+type FileUploadStage = "idle" | "uploading" | "processing" | "error";
+
 interface ChatInputProps {
   onSend?: (text: string, file?: File | null, searchMode?: SearchMode) => void;
   placeholder?: string;
   isDark?: boolean;
   disabled?: boolean;
   features?: boolean;
+  fileUploadStage?: FileUploadStage;
 }
 
 const ChatInput: React.FC<ChatInputProps> = ({
   onSend,
   disabled,
   features = true,
+  fileUploadStage = "idle",
 }) => {
   const { t } = useTranslation();
   const user = useAppSelector((state: any) => state.auth.user);
@@ -88,12 +92,15 @@ const ChatInput: React.FC<ChatInputProps> = ({
     }
   }, [input, features]);
 
+  const isFileProcessing =
+    fileUploadStage === "uploading" || fileUploadStage === "processing";
+
   const handleSend = () => {
     if (!user?.id) {
       setShowLoginModal(true);
       return;
     }
-    if (disabled || isCloudLoading) return;
+    if (disabled || isCloudLoading || isFileProcessing) return;
     if ((input.trim() || file) && onSend) {
       onSend(input, file, searchMode);
       setInput("");
@@ -176,25 +183,48 @@ const ChatInput: React.FC<ChatInputProps> = ({
         )}
       </AnimatePresence>
 
-      {/* File Preview Bubble */}
+      {/* File Preview Bubble — with Gemini-style upload/processing states */}
       {file && (
-        <div className="mb-2 flex w-fit items-center gap-2 rounded-xl bg-blue-500/10 px-3 py-1.5 text-xs font-medium text-blue-500 animate-in fade-in slide-in-from-bottom-2">
-          {file.type.startsWith("image/") ? (
+        <div
+          className={cn(
+            "mb-2 flex w-fit items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-medium animate-in fade-in slide-in-from-bottom-2 transition-colors duration-300",
+            fileUploadStage === "error"
+              ? "bg-red-500/10 text-red-500"
+              : isFileProcessing
+              ? "bg-blue-500/10 text-blue-400"
+              : "bg-blue-500/10 text-blue-500"
+          )}
+        >
+          {isFileProcessing ? (
+            <div className="animate-spin h-3.5 w-3.5 border-2 border-blue-300/40 border-t-blue-400 rounded-full shrink-0" />
+          ) : fileUploadStage === "error" ? (
+            <X size={14} className="text-red-400 shrink-0" />
+          ) : file.type.startsWith("image/") ? (
             <ImageIcon size={14} />
           ) : (
             <FileText size={14} />
           )}
-          <span className="max-w-[150px] truncate">{file.name}</span>
-          <button
-            title="button"
-            onClick={() => {
-              setFile(null);
-              if (fileInputRef.current) fileInputRef.current.value = "";
-            }}
-            className="ml-1 hover:text-blue-700"
-          >
-            <X size={14} />
-          </button>
+          <span className="max-w-[200px] truncate">
+            {fileUploadStage === "uploading"
+              ? `Uploading ${file.name}...`
+              : fileUploadStage === "processing"
+              ? `Processing ${file.name}...`
+              : fileUploadStage === "error"
+              ? `Failed to process ${file.name}`
+              : file.name}
+          </span>
+          {!isFileProcessing && (
+            <button
+              title="Remove file"
+              onClick={() => {
+                setFile(null);
+                if (fileInputRef.current) fileInputRef.current.value = "";
+              }}
+              className="ml-1 hover:text-blue-700"
+            >
+              <X size={14} />
+            </button>
+          )}
         </div>
       )}
 
@@ -472,18 +502,18 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 title="button"
                 onClick={handleSend}
                 disabled={
-                  (!input.trim() && !file) || disabled || isCloudLoading
+                  (!input.trim() && !file) || disabled || isCloudLoading || isFileProcessing
                 }
                 className={cn(
                   "p-2 rounded-full transition-all duration-200 flex items-center justify-center",
-                  (input.trim() || file) && !disabled && !isCloudLoading
+                  (input.trim() || file) && !disabled && !isCloudLoading && !isFileProcessing
                     ? "bg-blue-600 text-white hover:bg-blue-700 shadow-md"
                     : isDark
                     ? "bg-gray-800 text-gray-500"
                     : "bg-gray-200 text-gray-400 cursor-not-allowed"
                 )}
               >
-                {isCloudLoading ? (
+                {isCloudLoading || isFileProcessing ? (
                   <div className="animate-spin h-4 w-4 border-2 border-white/30 border-t-white rounded-full" />
                 ) : (
                   <ArrowUp size={18} strokeWidth={2.5} />

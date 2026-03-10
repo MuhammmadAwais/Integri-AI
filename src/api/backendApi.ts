@@ -156,44 +156,183 @@ export const SessionService = {
     }
   },
 
+  /** @deprecated Use FileService pipeline instead */
   uploadFile: async (token: string, file: File) => {
     try {
       const formData = new FormData();
-      // FIX 1: Documentation image shows param name is 'files' (plural/array)
       formData.append("files", file);
-
-      // FIX 2: Endpoint is /api/v1/files/upload (not /api/v1/files)
       const response = await backendApi.post("/api/v1/files/upload", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });
-
       const data = response.data;
-      console.log("File upload response data:", data);
-      // FIX 3: Parse Array Response [{ "file_id": "...", ... }]
-      // Logic mirrors Dart: e["file_id"] ?? e["id"]
       let uploadedItem;
       if (Array.isArray(data) && data.length > 0) {
         uploadedItem = data[0];
       } else if (!Array.isArray(data)) {
-        // Fallback for single object response just in case
         uploadedItem = data;
       }
-
       const fileId =
         uploadedItem?.file_id || uploadedItem?.id || uploadedItem?.data?.id;
-
-      if (!fileId) {
-        throw new Error("No file ID returned from upload");
-      }
-
+      if (!fileId) throw new Error("No file ID returned from upload");
       return fileId.toString();
     } catch (error) {
       console.error("❌ [API] File Upload Failed:", error);
       throw error;
     }
+  },
+};
+
+// --- FILE SERVICE (S3 High-Scale Pipeline) ---
+
+export interface UploadUrlResponse {
+  /** The presigned S3 PUT URL */
+  url: string;
+  s3_key: string;
+  /** Pre-generated file_id from backend (may be returned alongside the URL) */
+  file_id?: string;
+}
+
+export interface ProcessFileResponse {
+  file_id: string;
+}
+
+export interface FileStatusResponse {
+  file_id: string;
+  filename: string;
+  file_type: string;
+  file_size: number;
+  s3_key: string;
+  /** "pending" | "processing" | "ready" | "error" */
+  processing_status: string;
+  uploaded_at: string;
+}
+
+export const FileService = {
+  /**
+   * Step 1: GET /api/v1/files/upload-url
+   * Returns a presigned S3 upload URL and the s3_key.
+   */
+  getUploadUrl: async (
+    token: string,
+    filename: string,
+    contentType: string
+  ): Promise<UploadUrlResponse> => {
+    try {
+      const response = await backendApi.get<UploadUrlResponse>(
+        "/api/v1/files/upload-url",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { filename, content_type: contentType },
+        }
+      );
+      console.log("✅ [FileService] Got upload URL", response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error("❌ [FileService] getUploadUrl failed", error?.response?.data ?? error);
+      throw error;
+    }
+  },
+
+  /**
+   * Step 2: PUT file bytes directly to S3 presigned URL.
+   * IMPORTANT: No Authorization header — this goes straight to AWS.
+   */
+  uploadToS3: async (uploadUrl: string, file: File): Promise<void> => {
+    try {
+      const response = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+      if (!response.ok) {
+        throw new Error(`S3 upload failed with status ${response.status}`);
+      }
+      console.log("✅ [FileService] File uploaded to S3");
+    } catch (error) {
+      console.error("❌ [FileService] uploadToS3 failed", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Step 3: POST /api/v1/files/process
+   * Triggers background OCR. Returns file_id.
+   */
+  processFile: async (
+    token: string,
+    s3Key: string,
+    filename: string,
+    fileType: string,
+    sessionId: string
+  ): Promise<string> => {
+    try {
+      const response = await backendApi.post<string>(
+        "/api/v1/files/process",
+        { s3_key: s3Key, filename, file_type: fileType, session_id: sessionId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      console.log("✅ [FileService] processFile response", response.data);
+      // Response is the file_id string directly per Swagger
+      const fileId =
+        typeof response.data === "string"
+          ? response.data
+          : (response.data as any)?.file_id ?? (response.data as any)?.id;
+      if (!fileId) throw new Error("No file_id returned from processFile");
+      return fileId.toString();
+    } catch (error: any) {
+      console.error("❌ [FileService] processFile failed", error?.response?.data ?? error);
+      throw error;
+    }
+  },
+
+  /**
+   * Step 4: GET /api/v1/files/{file_id} — poll until processing_status === "ready".
+   * Throws if status becomes "error" or max attempts exceeded.
+   */
+  pollFileStatus: async (
+    token: string,
+    fileId: string,
+    intervalMs = 2000,
+    maxAttempts = 45
+  ): Promise<string> => {
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        const response = await backendApi.get<{
+          file_id: string;
+          processing_status: string;
+        }>(`/api/v1/files/${fileId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const { processing_status } = response.data;
+        console.log(
+          `🔄 [FileService] Poll attempt ${attempt + 1}: status = ${processing_status}`
+        );
+
+        if (processing_status === "ready") {
+          console.log("✅ [FileService] File is ready:", fileId);
+          return fileId;
+        }
+
+        if (processing_status === "error") {
+          throw new Error(`File processing failed for file_id: ${fileId}`);
+        }
+
+        // Still pending/processing — wait before next poll
+        await new Promise((resolve) => setTimeout(resolve, intervalMs));
+      } catch (error: any) {
+        // Re-throw processing errors; only retry on network errors
+        if (error.message?.startsWith("File processing failed")) throw error;
+        console.error(`❌ [FileService] Poll attempt ${attempt + 1} error`, error);
+        await new Promise((resolve) => setTimeout(resolve, intervalMs));
+      }
+    }
+    throw new Error(
+      `File processing timed out after ${maxAttempts} attempts for file_id: ${fileId}`
+    );
   },
 };
 

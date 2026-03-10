@@ -46,7 +46,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
     isLoading,
     isStreaming,
     isThinking,
-    messagesLoaded, // <--- Now available
+    messagesLoaded,
+    fileUploadStage,
   } = useChat(id, location.state?.initialMessage, location.state?.initialFile);
 
   const hasAutoSent = useRef(false);
@@ -237,6 +238,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
             features={features}
             disabled={isThinking || isStreaming || isCreatingSession || limitReached}
             onSend={handleSend}
+            fileUploadStage={fileUploadStage}
           />
           {features && (
             <div className="text-center mt-2">

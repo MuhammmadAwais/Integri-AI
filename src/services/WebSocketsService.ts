@@ -85,10 +85,21 @@ export class WebSocketService {
   }
 
   disconnect() {
-    if (this.socket) {
-      this.socket.close();
-      this.socket = null;
+    if (!this.socket) return;
+
+    const socket = this.socket;
+    this.socket = null; // Detach immediately so no new messages are sent/queued
+
+    if (socket.readyState === WebSocket.OPEN) {
+      // Already open — close cleanly
+      socket.close();
+    } else if (socket.readyState === WebSocket.CONNECTING) {
+      // Still connecting (React 18 Strict Mode double-mount scenario).
+      // Wait for it to open, then close it immediately.
+      console.log("🔌 [WS] Deferred close: socket still CONNECTING");
+      socket.onopen = () => socket.close();
     }
+    // CLOSING (2) or CLOSED (3) — nothing to do
   }
 
   private send(data: WebSocketMessage) {

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { socketService } from "../../../services/WebSocketsService";
-import { SessionService } from "../../../api/backendApi";
+import { SessionService, FileService } from "../../../api/backendApi";
 import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux";
 import {
   setActiveSessionConfig,
@@ -98,6 +98,9 @@ export const useChat = (sessionId: string | undefined, initialMessage?: string, 
   const [messagesLoaded, setMessagesLoaded] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [fileUploadStage, setFileUploadStage] = useState<
+    "idle" | "uploading" | "processing" | "error"
+  >("idle");
 
   // Ref to track if we need to fetch title (prevents duplicate fetches)
   const hasFetchedTitleRef = useRef(false);
@@ -378,7 +381,7 @@ export const useChat = (sessionId: string | undefined, initialMessage?: string, 
     });
   }, [dispatch, sessionId]); // Added dispatch and sessionId dependencies
 
-  // 4. Send Message
+  // 4. Send Message — S3 4-Step Pipeline
   const sendMessage = useCallback(
     async (content: string, file?: File | null, modelOverride?: string) => {
       if (!content.trim() && !file) return;
@@ -396,38 +399,72 @@ export const useChat = (sessionId: string | undefined, initialMessage?: string, 
       // Check if message already exists (from optimistic add)
       setMessages((prev) => {
         const messageExists = prev.some(
-          (msg) => msg.role === "user" && msg.content === content && 
-          (!file || msg.attachment?.name === file.name)
+          (msg) =>
+            msg.role === "user" &&
+            msg.content === content &&
+            (!file || msg.attachment?.name === file.name)
         );
-        if (messageExists) {
-          // Message already exists, don't add it again
-          return prev;
-        }
-        // Add new message
+        if (messageExists) return prev;
         return [...prev, { role: "user", content: content, attachment }];
       });
       setIsThinking(true);
 
       try {
         // Use model override if provided (for search modes), otherwise use session config or default
-        const model = modelOverride || 
+        const model =
+          modelOverride ||
           (sessionId && activeConfig ? activeConfig.modelId : newChatPref.id);
-        
+
         // Find provider for the model
         const modelData = AVAILABLE_MODELS.find((m) => m.id === model);
-        const provider = modelData?.provider || 
+        const provider =
+          modelData?.provider ||
           (sessionId && activeConfig
             ? activeConfig.provider
             : newChatPref.provider);
 
         let fileIds: string[] = [];
 
-        if (file && token) {
+        // --- S3 File Upload Pipeline ---
+        if (file && token && sessionId) {
           try {
-            const uploadedId = await SessionService.uploadFile(token, file);
-            if (uploadedId) fileIds.push(uploadedId);
+            // Step 1: Get presigned S3 URL
+            setFileUploadStage("uploading");
+            console.log("📤 [useChat] Step 1: Getting upload URL...");
+            const { url: s3UploadUrl, s3_key } = await FileService.getUploadUrl(
+              token,
+              file.name,
+              file.type || "application/octet-stream"
+            );
+
+            // Step 2: Upload directly to S3 (no auth headers)
+            console.log("📤 [useChat] Step 2: Uploading to S3...");
+            await FileService.uploadToS3(s3UploadUrl, file);
+
+            // Step 3: Trigger background OCR processing
+            setFileUploadStage("processing");
+            console.log("📤 [useChat] Step 3: Triggering file processing...");
+            const fileExtension =
+              file.name.split(".").pop()?.toLowerCase() || file.type.split("/")[1] || "bin";
+            const fileId = await FileService.processFile(
+              token,
+              s3_key,
+              file.name,
+              fileExtension,
+              sessionId
+            );
+
+            // Step 4: Poll until ready
+            console.log("📤 [useChat] Step 4: Polling file status...");
+            const readyFileId = await FileService.pollFileStatus(token, fileId);
+            fileIds.push(readyFileId);
+
+            setFileUploadStage("idle");
+            console.log("✅ [useChat] File pipeline complete. file_id:", readyFileId);
           } catch (uploadError) {
-            console.error("File upload failed:", uploadError);
+            console.error("❌ [useChat] File pipeline failed:", uploadError);
+            setFileUploadStage("error");
+            setTimeout(() => setFileUploadStage("idle"), 3000);
             setIsThinking(false);
             return;
           }
@@ -462,5 +499,6 @@ export const useChat = (sessionId: string | undefined, initialMessage?: string, 
     isStreaming,
     isThinking,
     messagesLoaded,
+    fileUploadStage,
   };
 };
