@@ -142,5 +142,48 @@
   },
   "welcome": {
     "greeting": "Olá {{name}}, como posso ajudá-lo hoje?"
+  },
+  "adBlockGuard": {
+    "systemRecoveryGuide": "GUIA DE RECUPERAÇÃO",
+    "systemIntegrity": "INTEGRIDADE:",
+    "locked": "BLOQUEADO",
+    "upgradeToPro": "Mudar para Pro",
+    "iveDisabledIt": "Eu desativei",
+    "howToFix": "Como corrigir",
+    "back": "Voltar",
+    "guide": "Guia",
+    "description": "Para proteger os modelos de IA da Integri, desative seu bloqueador de anúncios.",
+    "browsers": {
+      "chromeEdge": {
+        "name": "Chrome/Edge",
+        "instruction": "Clique no ícone de Quebra-cabeça/Escudo → desligue seu AdBlocker.",
+        "step1": "Procure o ícone de quebra-cabeça ou escudo",
+        "step2": "Encontre a extensão do seu AdBlocker",
+        "step3": "Desligue para este site",
+        "step4": "Atualize a página"
+      },
+      "brave": {
+        "name": "Brave",
+        "instruction": "Clique no Leão → Desative os Escudos.",
+        "step1": "Localize o ícone do Leão",
+        "step2": "Desative os escudos",
+        "step3": "Atualize a página"
+      },
+      "safari": {
+        "name": "Safari",
+        "instruction": "Vá para Definições → Safari → Bloqueadores de Conteúdo → Desativar.",
+        "step1": "Abra as Definições do Safari",
+        "step2": "Vá para Bloqueadores de Conteúdo",
+        "step3": "Desative o bloqueio",
+        "step4": "Atualize a página"
+      },
+      "ublock": {
+        "name": "uBlock Origin",
+        "instruction": "Clique no ícone uBlock → Clique no botão de energia.",
+        "step1": "Clique no ícone uBlock",
+        "step2": "Clique no botão de energia",
+        "step3": "Atualize a página"
+      }
+    }
   }
 }

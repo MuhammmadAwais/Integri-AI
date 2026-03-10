@@ -1,9 +1,12 @@
 import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
 import gsap from "gsap";
+import { useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useSubscription } from "../hooks/useSubscription";
 import { useAdBlockLogic } from "../hooks/useAdBlockLogic";
 import { cn } from "../../../lib/utils";
 import { RefreshCw, Chrome, Globe, Shield as ShieldIcon, ChevronDown, ArrowLeft, Power, Settings } from "lucide-react";
+import { languageMetadata, supportedLngs } from "../../../i18n";
 
 interface AdBlockGuardProps {
   children?: React.ReactNode;
@@ -16,6 +19,8 @@ let globalModalDisabled = false;
 const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
   const { isPro, isPremium } = useSubscription();
   const { shouldShowAdBlock, isInitialized } = useAdBlockLogic();
+  const location = useLocation();
+  const { t, i18n } = useTranslation();
   const [isOnSubscriptionPage, setIsOnSubscriptionPage] = useState(false);
   const suspiciousActivityDetectedRef = useRef(false);
 
@@ -486,54 +491,59 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
     return <>{children}</>;
   }
 
+  // Bypass for Auth Routes
+  if (location.pathname === "/login" || location.pathname === "/signup") {
+    return <>{children}</>;
+  }
+
   // Show guard modal - user must be on subscription page when adblock is detected
 
   // Browser instructions data
   const browserInstructions = [
     {
       id: "chrome",
-      name: "Chrome/Edge",
+      name: t("adBlockGuard.browsers.chromeEdge.name", "Chrome/Edge"),
       icon: Chrome,
-      instruction: "Click the Puzzle/Shield icon in your toolbar → find your AdBlocker → Toggle 'OFF' for this site.",
+      instruction: t("adBlockGuard.browsers.chromeEdge.instruction", "Click the Puzzle/Shield icon in your toolbar → find your AdBlocker → Toggle 'OFF' for this site."),
       detailedSteps: [
-        { icon: ShieldIcon, text: "Look for the Puzzle piece icon or Shield icon in your browser toolbar", action: "click", color: "#3b82f6" },
-        { icon: Settings, text: "Find your AdBlocker extension in the dropdown menu", action: "click", color: "#3b82f6" },
-        { icon: Power, text: "Toggle the switch to 'OFF' for this site", action: "disable", color: "#ef4444" },
-        { icon: RefreshCw, text: "Refresh the page to continue", action: "click", color: "#3b82f6" },
+        { icon: ShieldIcon, text: t("adBlockGuard.browsers.chromeEdge.step1", "Look for the Puzzle piece icon or Shield icon in your browser toolbar"), action: "click", color: "#3b82f6" },
+        { icon: Settings, text: t("adBlockGuard.browsers.chromeEdge.step2", "Find your AdBlocker extension in the dropdown menu"), action: "click", color: "#3b82f6" },
+        { icon: Power, text: t("adBlockGuard.browsers.chromeEdge.step3", "Toggle the switch to 'OFF' for this site"), action: "disable", color: "#ef4444" },
+        { icon: RefreshCw, text: t("adBlockGuard.browsers.chromeEdge.step4", "Refresh the page to continue"), action: "click", color: "#3b82f6" },
       ],
     },
     {
       id: "brave",
-      name: "Brave",
+      name: t("adBlockGuard.browsers.brave.name", "Brave"),
       icon: ShieldIcon,
-      instruction: "Click the Lion icon next to the URL bar → Toggle Shields to 'Down'.",
+      instruction: t("adBlockGuard.browsers.brave.instruction", "Click the Lion icon next to the URL bar → Toggle Shields to 'Down'."),
       detailedSteps: [
-        { icon: ShieldIcon, text: "Locate the Brave Lion icon next to the address bar", action: "click", color: "#3b82f6" },
-        { icon: Power, text: "Click 'Shields' and toggle it to 'Down' for this site", action: "disable", color: "#ef4444" },
-        { icon: RefreshCw, text: "Refresh the page to continue", action: "click", color: "#3b82f6" },
+        { icon: ShieldIcon, text: t("adBlockGuard.browsers.brave.step1", "Locate the Brave Lion icon next to the address bar"), action: "click", color: "#3b82f6" },
+        { icon: Power, text: t("adBlockGuard.browsers.brave.step2", "Click 'Shields' and toggle it to 'Down' for this site"), action: "disable", color: "#ef4444" },
+        { icon: RefreshCw, text: t("adBlockGuard.browsers.brave.step3", "Refresh the page to continue"), action: "click", color: "#3b82f6" },
       ],
     },
     {
       id: "safari",
-      name: "Safari",
+      name: t("adBlockGuard.browsers.safari.name", "Safari"),
       icon: Globe,
-      instruction: "Go to Settings → Safari → Content Blockers → Disable for Integri AI.",
+      instruction: t("adBlockGuard.browsers.safari.instruction", "Go to Settings → Safari → Content Blockers → Disable for Integri AI."),
       detailedSteps: [
-        { icon: Settings, text: "Open Safari Settings (Safari menu → Preferences)", action: "click", color: "#3b82f6" },
-        { icon: ShieldIcon, text: "Navigate to the 'Websites' tab → 'Content Blockers'", action: "click", color: "#3b82f6" },
-        { icon: Power, text: "Find 'Integri AI' and disable content blocking", action: "disable", color: "#ef4444" },
-        { icon: RefreshCw, text: "Refresh the page to continue", action: "click", color: "#3b82f6" },
+        { icon: Settings, text: t("adBlockGuard.browsers.safari.step1", "Open Safari Settings (Safari menu → Preferences)"), action: "click", color: "#3b82f6" },
+        { icon: ShieldIcon, text: t("adBlockGuard.browsers.safari.step2", "Navigate to the 'Websites' tab → 'Content Blockers'"), action: "click", color: "#3b82f6" },
+        { icon: Power, text: t("adBlockGuard.browsers.safari.step3", "Find 'Integri AI' and disable content blocking"), action: "disable", color: "#ef4444" },
+        { icon: RefreshCw, text: t("adBlockGuard.browsers.safari.step4", "Refresh the page to continue"), action: "click", color: "#3b82f6" },
       ],
     },
     {
       id: "ublock",
-      name: "uBlock Origin",
+      name: t("adBlockGuard.browsers.ublock.name", "uBlock Origin"),
       icon: ShieldIcon,
-      instruction: "Click the uBlock icon → Click the large Power Button → Refresh.",
+      instruction: t("adBlockGuard.browsers.ublock.instruction", "Click the uBlock icon → Click the large Power Button → Refresh."),
       detailedSteps: [
-        { icon: ShieldIcon, text: "Click the uBlock Origin icon in your toolbar", action: "click", color: "#3b82f6" },
-        { icon: Power, text: "Click the large Power Button to disable uBlock for this site", action: "disable", color: "#ef4444" },
-        { icon: RefreshCw, text: "Refresh the page to continue", action: "click", color: "#3b82f6" },
+        { icon: ShieldIcon, text: t("adBlockGuard.browsers.ublock.step1", "Click the uBlock Origin icon in your toolbar"), action: "click", color: "#3b82f6" },
+        { icon: Power, text: t("adBlockGuard.browsers.ublock.step2", "Click the large Power Button to disable uBlock for this site"), action: "disable", color: "#ef4444" },
+        { icon: RefreshCw, text: t("adBlockGuard.browsers.ublock.step3", "Refresh the page to continue"), action: "click", color: "#3b82f6" },
       ],
     },
   ];
@@ -568,7 +578,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
         <div
           ref={modalRef}
           className={cn(
-            "max-w-5xl w-full bg-zinc-900/90 border border-white/10 rounded-[2.5rem] shadow-2xl flex overflow-hidden adblock-guard-scrollbar",
+            "max-w-5xl w-full bg-zinc-900/90 border border-white/10 rounded-[2.5rem] shadow-2xl flex overflow-hidden adblock-guard-scrollbar relative",
             isMobile ? "flex-col max-h-[90vh] overflow-y-auto" : "flex-row",
             !isMobile && "aspect-[16/10]"
           )}
@@ -577,6 +587,40 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
             scrollbarColor: "rgba(255, 255, 255, 0.2) transparent",
           } as React.CSSProperties}
         >
+          {/* Language Selector Dropdown */}
+          <div className={cn(
+            "absolute z-[9999]",
+            isMobile ? "top-3" : "top-4 md:top-6",
+            i18n.dir() === 'rtl' 
+              ? (isMobile ? "left-3" : "left-4 md:left-6") 
+              : (isMobile ? "right-3" : "right-4 md:right-6")
+          )}>
+            <select
+              value={i18n.language}
+              onChange={(e) => i18n.changeLanguage(e.target.value)}
+              className={cn(
+                "bg-zinc-800/80 border border-white/10 text-zinc-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#3b82f6] hover:bg-zinc-700/80 cursor-pointer appearance-none transition-colors",
+                isMobile ? "text-[10px] py-1" : "text-xs py-1.5"
+              )}
+              style={{
+                paddingRight: i18n.dir() === 'rtl' ? (isMobile ? "8px" : "12px") : (isMobile ? "22px" : "28px"),
+                paddingLeft: i18n.dir() === 'rtl' ? (isMobile ? "22px" : "28px") : (isMobile ? "8px" : "12px"),
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='${isMobile ? 12 : 14}' height='${isMobile ? 12 : 14}' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: i18n.dir() === 'rtl' ? `left ${isMobile ? 4 : 8}px center` : `right ${isMobile ? 4 : 8}px center`,
+              }}
+            >
+              {supportedLngs.map((code) => {
+                const meta = languageMetadata[code];
+                return (
+                  <option key={code} value={code} className="bg-zinc-900 text-white">
+                    {meta.flag} {meta.name}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+
           {/* Desktop: Sidebar (40%) */}
           {!isMobile && (
             <div
@@ -588,7 +632,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
               }}
             >
               <h3 className="text-zinc-400 text-sm uppercase tracking-wider font-semibold mb-6">
-                SYSTEM RECOVERY GUIDE
+                {t("adBlockGuard.systemRecoveryGuide", "SYSTEM RECOVERY GUIDE")}
               </h3>
 
               {/* Browser Instructions List */}
@@ -681,7 +725,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
 
               {/* Header with Signal Red LOCKED */}
               <h2 className="text-zinc-100 text-xl font-bold tracking-[0.15em] uppercase">
-                SYSTEM INTEGRITY: <span className="text-[#ef4444]" style={{ textShadow: "0 0 20px rgba(239, 68, 68, 0.5)" }}>LOCKED</span>
+                {t("adBlockGuard.systemIntegrity", "SYSTEM INTEGRITY:")} <span className="text-[#ef4444]" style={{ textShadow: "0 0 20px rgba(239, 68, 68, 0.5)" }}>{t("adBlockGuard.locked", "LOCKED")}</span>
               </h2>
             </div>
           )}
@@ -703,7 +747,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
                     width: "40%",
                   }}
                 />
-                <span className="relative z-10">Upgrade to Pro</span>
+                <span className="relative z-10">{t("adBlockGuard.upgradeToPro", "Upgrade to Pro")}</span>
               </button>
 
               {/* Secondary Ghost Button with Red/Blue Border Glow */}
@@ -718,7 +762,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
                 }}
               >
                 <RefreshCw size={18} className="relative z-10" />
-                <span className="relative z-10">I've Disabled It</span>
+                <span className="relative z-10">{t("adBlockGuard.iveDisabledIt", "I've Disabled It")}</span>
               </button>
             </div>
           )}
@@ -730,7 +774,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
                 onClick={() => setIsAccordionOpen(!isAccordionOpen)}
                 className="w-full flex items-center justify-between p-4 text-zinc-400 hover:text-zinc-300 hover:cursor-pointer transition-colors"
               >
-                <span className="text-sm pl-6 uppercase tracking-wider font-semibold">How to Fix</span>
+                <span className="text-sm pl-6 uppercase tracking-wider font-semibold">{t("adBlockGuard.howToFix", "How to Fix")}</span>
                 <ChevronDown 
                   size={18} 
                   className={cn(
@@ -811,12 +855,12 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
 
                     {/* Header with Signal Red LOCKED */}
                     <h2 className="text-zinc-100 text-3xl font-bold mb-4 tracking-[0.2em] uppercase">
-                      SYSTEM INTEGRITY: <span className="text-[#ef4444]" style={{ textShadow: "0 0 20px rgba(239, 68, 68, 0.5)" }}>LOCKED</span>
+                      {t("adBlockGuard.systemIntegrity", "SYSTEM INTEGRITY:")} <span className="text-[#ef4444]" style={{ textShadow: "0 0 20px rgba(239, 68, 68, 0.5)" }}>{t("adBlockGuard.locked", "LOCKED")}</span>
                     </h2>
 
                     {/* Subtext */}
                     <p className="text-zinc-400 text-base mb-8 leading-relaxed max-w-md">
-                      To protect Integri's high-performance AI models, please disable your blocker to continue.
+                      {t("adBlockGuard.description", "To protect Integri's high-performance AI models, please disable your blocker to continue.")}
                     </p>
 
                     {/* Action Buttons */}
@@ -835,7 +879,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
                             width: "40%",
                           }}
                         />
-                        <span className="relative z-10">Upgrade to Pro</span>
+                        <span className="relative z-10">{t("adBlockGuard.upgradeToPro", "Upgrade to Pro")}</span>
                       </button>
 
                       {/* Secondary Ghost Button with Red/Blue Border Glow */}
@@ -850,7 +894,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
                         }}
                       >
                         <RefreshCw size={18} className="relative z-10" />
-                        <span className="relative z-10">I've Disabled It</span>
+                        <span className="relative z-10">{t("adBlockGuard.iveDisabledIt", "I've Disabled It")}</span>
                       </button>
                     </div>
                   </div>
@@ -863,7 +907,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
                       className="flex items-center gap-2 text-zinc-400 hover:text-zinc-300 hover:cursor-pointer transition-colors mb-3 self-start"
                     >
                       <ArrowLeft size={18} />
-                      <span className="text-sm">Back</span>
+                      <span className="text-sm">{t("adBlockGuard.back", "Back")}</span>
                     </button>
 
                     {/* Guide Content */}
@@ -898,7 +942,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
 
                           {/* Guide Title */}
                           <h3 className="text-zinc-100 text-xl font-bold mb-3 text-center">
-                            {guide.name} Guide
+                            {guide.name} {t("adBlockGuard.guide", "Guide")}
                           </h3>
 
                           {/* Step-by-Step Instructions */}
@@ -961,7 +1005,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
                               }}
                             >
                               <RefreshCw size={18} className="relative z-10" />
-                              <span className="relative z-10">I've Disabled It</span>
+                              <span className="relative z-10">{t("adBlockGuard.iveDisabledIt", "I've Disabled It")}</span>
                             </button>
                           </div>
                         </div>

@@ -142,5 +142,48 @@
   },
   "welcome": {
     "greeting": "Szia {{name}}, hogyan segíthetek ma?"
+  },
+  "adBlockGuard": {
+    "systemRecoveryGuide": "RENDSZER HELYREÁLLÍTÁSI ÚTMUTATÓ",
+    "systemIntegrity": "RENDSZER INTEGRITÁS:",
+    "locked": "ZÁROLVA",
+    "upgradeToPro": "Frissítés Pro-ra",
+    "iveDisabledIt": "Kikapcsoltam",
+    "howToFix": "Hogyan javítsam ki",
+    "back": "Vissza",
+    "guide": "Útmutató",
+    "description": "Az Integri AI modellek védelme érdekében kérjük, kapcsolja ki a hirdetésblokkolóját.",
+    "browsers": {
+      "chromeEdge": {
+        "name": "Chrome/Edge",
+        "instruction": "Kattintson a puzzle/pajzs ikonra → találja meg az AdBlockert → Kapcsolja 'KI'.",
+        "step1": "Keresse a puzzle darab vagy pajzs ikont",
+        "step2": "Keresse meg az AdBlocker bővítményét",
+        "step3": "Kapcsolja ki az oldalon",
+        "step4": "Frissítse az oldalt"
+      },
+      "brave": {
+        "name": "Brave",
+        "instruction": "Kattintson az Oroszlán ikonra az URL sáv mellett → Kapcsolja ki a Pajzsokat.",
+        "step1": "Keresse meg a Brave Oroszlán ikont",
+        "step2": "Kapcsolja le a pajzsokat",
+        "step3": "Frissítse az oldalt"
+      },
+      "safari": {
+        "name": "Safari",
+        "instruction": "Menjen a Beállítások → Safari → Tartalomblokkolók → Tiltsa le az Integri AI-t.",
+        "step1": "Nyissa meg a Safari beállításait",
+        "step2": "Navigáljon a 'Tartalomblokkolókhoz'",
+        "step3": "Tiltsa le a tartalomblokkolást",
+        "step4": "Frissítse az oldalt"
+      },
+      "ublock": {
+        "name": "uBlock Origin",
+        "instruction": "Kattintson az uBlock ikonra → Kattintson a nagy bekapcsológombra.",
+        "step1": "Kattintson az uBlock ikonra",
+        "step2": "Kattintson a nagy bekapcsológombra",
+        "step3": "Frissítse az oldalt"
+      }
+    }
   }
 }

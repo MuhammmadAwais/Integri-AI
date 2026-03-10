@@ -142,5 +142,48 @@
   },
   "welcome": {
     "greeting": "Hola {{name}}, ¿cómo puedo ayudarte hoy?"
+  },
+  "adBlockGuard": {
+    "systemRecoveryGuide": "GUÍA DE RECUPERACIÓN",
+    "systemIntegrity": "INTEGRIDAD:",
+    "locked": "BLOQUEADO",
+    "upgradeToPro": "Actualizar a Pro",
+    "iveDisabledIt": "Lo he desactivado",
+    "howToFix": "Cómo solucionarlo",
+    "back": "Volver",
+    "guide": "Guía",
+    "description": "Para proteger los modelos de IA de Integri, desactive su bloqueador para continuar.",
+    "browsers": {
+      "chromeEdge": {
+        "name": "Chrome/Edge",
+        "instruction": "Haga clic en el icono del Rompecabezas/Escudo → busque su AdBlocker → Apáguelo para este sitio.",
+        "step1": "Busque el icono de pieza de rompecabezas o escudo",
+        "step2": "Encuentre su extensión AdBlocker",
+        "step3": "Apague el interruptor para este sitio",
+        "step4": "Actualice la página"
+      },
+      "brave": {
+        "name": "Brave",
+        "instruction": "Haga clic en el León junto a la URL → Baje los Escudos.",
+        "step1": "Localice el icono del León",
+        "step2": "Haga clic en 'Escudos' y bájelo para este sitio",
+        "step3": "Actualice la página"
+      },
+      "safari": {
+        "name": "Safari",
+        "instruction": "Vaya a Ajustes → Safari → Bloqueadores de Contenido → Desactivar para Integri AI.",
+        "step1": "Abra los Ajustes de Safari",
+        "step2": "Navegue a 'Bloqueadores de contenido'",
+        "step3": "Busque 'Integri AI' y desactive el bloqueo",
+        "step4": "Actualice la página"
+      },
+      "ublock": {
+        "name": "uBlock Origin",
+        "instruction": "Haga clic en el icono de uBlock → Haga clic en el Botón de Encendido grande.",
+        "step1": "Haga clic en el icono de uBlock",
+        "step2": "Haga clic en el botón grande para desactivar uBlock",
+        "step3": "Actualice la página"
+      }
+    }
   }
 }

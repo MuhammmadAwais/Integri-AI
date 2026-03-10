@@ -142,5 +142,48 @@
   },
   "welcome": {
     "greeting": "Salut {{name}}, comment puis-je vous aider aujourd'hui ?"
+  },
+  "adBlockGuard": {
+    "systemRecoveryGuide": "GUIDE DE RESTAURATION",
+    "systemIntegrity": "INTÉGRITÉ DU SYSTÈME :",
+    "locked": "VERROUILLÉ",
+    "upgradeToPro": "Passer à Pro",
+    "iveDisabledIt": "Je l'ai désactivé",
+    "howToFix": "Comment corriger",
+    "back": "Retour",
+    "guide": "Guide",
+    "description": "Pour protéger les modèles d'IA d'Integri, veuillez désactiver votre bloqueur pour continuer.",
+    "browsers": {
+      "chromeEdge": {
+        "name": "Chrome/Edge",
+        "instruction": "Cliquez sur l'icône de puzzle/bouclier → désactivez AdBlocker.",
+        "step1": "Cherchez l'icône de puzzle ou de bouclier",
+        "step2": "Trouvez votre extension AdBlocker",
+        "step3": "Désactivez-la pour ce site",
+        "step4": "Actualisez la page"
+      },
+      "brave": {
+        "name": "Brave",
+        "instruction": "Cliquez sur le Lion près de l'URL → Désactivez les Boucliers.",
+        "step1": "Localisez l'icône du Lion",
+        "step2": "Désactivez les Boucliers pour ce site",
+        "step3": "Actualisez la page"
+      },
+      "safari": {
+        "name": "Safari",
+        "instruction": "Réglages → Safari → Bloqueurs de contenu → Désactiver pour Integri AI.",
+        "step1": "Ouvrez les réglages Safari",
+        "step2": "Allez dans 'Bloqueurs de contenu'",
+        "step3": "Désactivez le blocage",
+        "step4": "Actualisez la page"
+      },
+      "ublock": {
+        "name": "uBlock Origin",
+        "instruction": "Cliquez sur uBlock → Cliquez sur le gros Bouton d'alimentation.",
+        "step1": "Cliquez sur l'icône uBlock",
+        "step2": "Désactivez pour ce site",
+        "step3": "Actualisez la page"
+      }
+    }
   }
 }

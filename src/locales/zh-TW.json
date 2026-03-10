@@ -142,5 +142,48 @@
   },
   "welcome": {
     "greeting": "你好 {{name}}，今天我能為你做些什麼？"
+  },
+  "adBlockGuard": {
+    "systemRecoveryGuide": "系統恢復指南",
+    "systemIntegrity": "系統完整性:",
+    "locked": "已鎖定",
+    "upgradeToPro": "升級到 Pro",
+    "iveDisabledIt": "我已停用",
+    "howToFix": "修復方法",
+    "back": "返回",
+    "guide": "指南",
+    "description": "為了保護 Integri 的 AI 模型，請停用您的廣告攔截器。",
+    "browsers": {
+      "chromeEdge": {
+        "name": "Chrome/Edge",
+        "instruction": "按一下工具列中的「拼圖/盾牌」圖示 → 找到攔截器 → 關閉此網站的攔截。",
+        "step1": "尋找拼圖塊圖示或盾牌圖示",
+        "step2": "找到廣告攔截器",
+        "step3": "將此網站的開關切換為「關」",
+        "step4": "重新整理頁面以繼續"
+      },
+      "brave": {
+        "name": "Brave",
+        "instruction": "按一下獅子圖示 → 將 Shields 切換為「關閉」。",
+        "step1": "找到 Brave 獅子圖示",
+        "step2": "按一下「Shields」並關閉",
+        "step3": "重新整理頁面以繼續"
+      },
+      "safari": {
+        "name": "Safari",
+        "instruction": "前往設定 → Safari → 內容攔截器 → 停用。",
+        "step1": "開啟 Safari 設定",
+        "step2": "導覽至「內容攔截器」",
+        "step3": "停用內容攔截",
+        "step4": "重新整理頁面以繼續"
+      },
+      "ublock": {
+        "name": "uBlock Origin",
+        "instruction": "按一下 uBlock 圖示 → 按一下大電源按鈕。",
+        "step1": "按一下 uBlock Origin 圖示",
+        "step2": "按一下大電源按鈕停用",
+        "step3": "重新整理頁面"
+      }
+    }
   }
 }

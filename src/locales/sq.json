@@ -142,5 +142,48 @@
   },
   "welcome": {
     "greeting": "Përshëndetje {{name}}, si mund t'ju ndihmoj sot?"
+  },
+  "adBlockGuard": {
+    "systemRecoveryGuide": "UDHËZUES",
+    "systemIntegrity": "INTEGRITETI:",
+    "locked": "I BLLOKUAR",
+    "upgradeToPro": "Pro",
+    "iveDisabledIt": "E çaktivizova",
+    "howToFix": "Si ta rregulloni",
+    "back": "Kthehu",
+    "guide": "Udhëzues",
+    "description": "Për të mbrojtur modelet AI të Integri, ju lutemi çaktivizoni bllokuesin tuaj.",
+    "browsers": {
+      "chromeEdge": {
+        "name": "Chrome/Edge",
+        "instruction": "Klikoni ikonën puzzle/mburojë → Fikni AdBlocker.",
+        "step1": "Gjeni ikonën",
+        "step2": "Gjeni AdBlocker",
+        "step3": "Fikeni",
+        "step4": "Rifreskoni pamjen"
+      },
+      "brave": {
+        "name": "Brave",
+        "instruction": "Klikoni ikonën Luan → Fikni Mburojat.",
+        "step1": "Gjeni ikonën",
+        "step2": "Fikni mburojat",
+        "step3": "Rifreskoni pamjen"
+      },
+      "safari": {
+        "name": "Safari",
+        "instruction": "Shkoni tek Settings → Safari → Bllokuesit → Fikeni.",
+        "step1": "Hapni Safari Settings",
+        "step2": "Gjeni Bllokuesit",
+        "step3": "Fikeni bllokimin",
+        "step4": "Rifreskoni pamjen"
+      },
+      "ublock": {
+        "name": "uBlock",
+        "instruction": "Klikoni uBlock → Klikoni butonin madh fikës.",
+        "step1": "Klikoni uBlock",
+        "step2": "Fikeni",
+        "step3": "Rifreskoni"
+      }
+    }
   }
 }

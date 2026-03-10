@@ -142,5 +142,48 @@
   },
   "welcome": {
     "greeting": "你好 {{name}}，今天我能为你做些什么？"
+  },
+  "adBlockGuard": {
+    "systemRecoveryGuide": "系统恢复指南",
+    "systemIntegrity": "系统完整性:",
+    "locked": "已锁定",
+    "upgradeToPro": "升级到 Pro",
+    "iveDisabledIt": "我已禁用",
+    "howToFix": "修复方法",
+    "back": "返回",
+    "guide": "指南",
+    "description": "为了保护 Integri 的 AI 模型，请禁用您的广告拦截器。",
+    "browsers": {
+      "chromeEdge": {
+        "name": "Chrome/Edge",
+        "instruction": "单击工具栏中的“拼图/盾牌”图标 → 找到拦截器 → 关闭此站点的拦截。",
+        "step1": "查找拼图块图标或盾牌图标",
+        "step2": "找到广告拦截器",
+        "step3": "将此站点的开关切换为“关”",
+        "step4": "刷新页面以继续"
+      },
+      "brave": {
+        "name": "Brave",
+        "instruction": "单击狮子图标 → 将 Shields 切换为“关闭”。",
+        "step1": "找到 Brave 狮子图标",
+        "step2": "单击“Shields”并关闭",
+        "step3": "刷新页面以继续"
+      },
+      "safari": {
+        "name": "Safari",
+        "instruction": "前往设置 → Safari → 内容拦截器 → 禁用。",
+        "step1": "打开 Safari 设置",
+        "step2": "导航到“内容拦截器”",
+        "step3": "禁用内容拦截",
+        "step4": "刷新页面以继续"
+      },
+      "ublock": {
+        "name": "uBlock Origin",
+        "instruction": "单击 uBlock 图标 → 单击大电源按钮。",
+        "step1": "单击 uBlock Origin 图标",
+        "step2": "单击大电源按钮禁用",
+        "step3": "刷新页面"
+      }
+    }
   }
 }

@@ -142,5 +142,48 @@
   },
   "welcome": {
     "greeting": "Salut {{name}}, cum te pot ajuta astăzi?"
+  },
+  "adBlockGuard": {
+    "systemRecoveryGuide": "GHID DE RECUPERARE",
+    "systemIntegrity": "INTEGRITATEA SISTEMULUI:",
+    "locked": "BLOCAT",
+    "upgradeToPro": "Pro",
+    "iveDisabledIt": "L-am dezactivat",
+    "howToFix": "Cum sa rezolvi",
+    "back": "Înapoi",
+    "guide": "Ghid",
+    "description": "Pentru a proteja modelele AI ale Integri, vă rugăm să dezactivați blocatorul.",
+    "browsers": {
+      "chromeEdge": {
+        "name": "Chrome/Edge",
+        "instruction": "Un click pe iconița de puzzle/scut → opriți AdBlocker-ul.",
+        "step1": "Căutați iconița de puzzle sau scut",
+        "step2": "Găsiți extensia",
+        "step3": "Opriți pentru acest site",
+        "step4": "Reîncărcați pagina"
+      },
+      "brave": {
+        "name": "Brave",
+        "instruction": "Un click pe Leul Brave → opriți scuturile.",
+        "step1": "Găsiți Leul Brave",
+        "step2": "Opriți scuturile",
+        "step3": "Reîncărcați pagina"
+      },
+      "safari": {
+        "name": "Safari",
+        "instruction": "Setări → Safari → Blocatori de conținut → Dezactivați.",
+        "step1": "Deschideți Setările Safari",
+        "step2": "Navigați către Blocatori conținut",
+        "step3": "Dezactivați blocatorul",
+        "step4": "Reîncărcați pagina"
+      },
+      "ublock": {
+        "name": "uBlock",
+        "instruction": "Un click pe uBlock → Apăsați butonul de oprire mare.",
+        "step1": "Click pe uBlock",
+        "step2": "Opriți pentru acest site",
+        "step3": "Reîncărcați pagina"
+      }
+    }
   }
 }

@@ -142,5 +142,48 @@
   },
   "welcome": {
     "greeting": "Здраво {{name}}, како могу да ти помогнем данас?"
+  },
+  "adBlockGuard": {
+    "systemRecoveryGuide": "VODIČ ZA OPORAVAK",
+    "systemIntegrity": "INTEGRITET SISTEMA:",
+    "locked": "ZAKLJUČAN",
+    "upgradeToPro": "Pređi na Pro",
+    "iveDisabledIt": "Isključio sam",
+    "howToFix": "Kako rešiti",
+    "back": "Nazad",
+    "guide": "Vodič",
+    "description": "Da biste zaštitili Integri AI modele, molimo isključite vaš bloker reklama.",
+    "browsers": {
+      "chromeEdge": {
+        "name": "Chrome/Edge",
+        "instruction": "Kliknite na slagalicu/štit → isključite AdBlocker.",
+        "step1": "Pronađite ikonu",
+        "step2": "Pronađite ekstenziju",
+        "step3": "Isključite je za ovaj sajt",
+        "step4": "Osvežite stranicu"
+      },
+      "brave": {
+        "name": "Brave",
+        "instruction": "Kliknite na ikonu lava → Onemogućite štitove.",
+        "step1": "Pronađite lava",
+        "step2": "Isključite štitove",
+        "step3": "Osvežite stranicu"
+      },
+      "safari": {
+        "name": "Safari",
+        "instruction": "Idite u Settings → Safari → Content Blockers → Isključite.",
+        "step1": "Otvorite Safari Settings",
+        "step2": "Pronađite Content Blockers",
+        "step3": "Isključite blokiranje",
+        "step4": "Osvežite stranicu"
+      },
+      "ublock": {
+        "name": "uBlock Origin",
+        "instruction": "Kliknite na uBlock → Kliknite veliko dugme za isključivanje.",
+        "step1": "Kliknite uBlock",
+        "step2": "Isključite",
+        "step3": "Osvežite stranicu"
+      }
+    }
   }
 }

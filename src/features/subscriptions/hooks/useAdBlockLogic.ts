@@ -43,9 +43,8 @@ export const useAdBlockLogic = () => {
         sessionStorage.setItem(sessionKey, 'true');
         setVisitCount(newCount);
         
-        // Only show AdBlock modal if visit count > 2 (3rd visit or greater)
-        // AND adblock is detected AND not currently detecting
-        if (newCount > 2 && adBlockDetected && !isDetecting) {
+        // Only show AdBlock modal if adblock is detected AND not currently detecting
+        if (adBlockDetected && !isDetecting) {
           setShouldShowAdBlock(true);
         } else {
           setShouldShowAdBlock(false);
@@ -61,8 +60,8 @@ export const useAdBlockLogic = () => {
         const currentCount = parseInt(localStorage.getItem(visitKey) || '0', 10);
         setVisitCount(currentCount);
         
-        // Only show if visit count > 2 AND adblock is detected AND not currently detecting
-        if (currentCount > 2 && adBlockDetected && !isDetecting) {
+        // Only show if adblock is detected AND not currently detecting
+        if (adBlockDetected && !isDetecting) {
           setShouldShowAdBlock(true);
         } else {
           setShouldShowAdBlock(false);

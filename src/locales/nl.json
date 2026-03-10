@@ -142,5 +142,48 @@
   },
   "welcome": {
     "greeting": "Hallo {{name}}, hoe kan ik je vandaag helpen?"
+  },
+  "adBlockGuard": {
+    "systemRecoveryGuide": "SYSTEEM HERSTELGIDS",
+    "systemIntegrity": "SYSTEEM INTEGRITEIT:",
+    "locked": "VERGRENDELD",
+    "upgradeToPro": "Upgrade naar Pro",
+    "iveDisabledIt": "Ik heb het uitgeschakeld",
+    "howToFix": "Hoe te repareren",
+    "back": "Terug",
+    "guide": "Gids",
+    "description": "Schakel uw adblocker uit om de AI-modellen van Integri te beschermen.",
+    "browsers": {
+      "chromeEdge": {
+        "name": "Chrome/Edge",
+        "instruction": "Klik op het puzzel-/schildpictogram → schakel uw adblocker uit.",
+        "step1": "Zoek het puzzel- of schildpictogram",
+        "step2": "Zoek uw AdBlocker-extensie",
+        "step3": "Schakel het uit voor deze site",
+        "step4": "Vernieuw de pagina"
+      },
+      "brave": {
+        "name": "Brave",
+        "instruction": "Klik op het leeuwpictogram naast de URL → Schakel schilden uit.",
+        "step1": "Zoek het leeuwpictogram",
+        "step2": "Schakel schilden uit",
+        "step3": "Vernieuw de pagina"
+      },
+      "safari": {
+        "name": "Safari",
+        "instruction": "Ga naar Instellingen → Safari → Inhoudsblokkers → Uitschakelen.",
+        "step1": "Open Safari-instellingen",
+        "step2": "Navigeer naar Inhoudsblokkers",
+        "step3": "Schakel inhoudsblokkering uit",
+        "step4": "Vernieuw de pagina"
+      },
+      "ublock": {
+        "name": "uBlock Origin",
+        "instruction": "Klik op het uBlock-pictogram → Klik op de grote aan/uit-knop.",
+        "step1": "Klik op uBlock",
+        "step2": "Schakel uit op deze site",
+        "step3": "Vernieuw de pagina"
+      }
+    }
   }
 }

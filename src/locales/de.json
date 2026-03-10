@@ -142,5 +142,48 @@
   },
   "welcome": {
     "greeting": "Hallo {{name}}, wie kann ich Ihnen heute helfen?"
+  },
+  "adBlockGuard": {
+    "systemRecoveryGuide": "SYSTEMWIEDERHERSTELLUNG",
+    "systemIntegrity": "SYSTEMINTEGRITÄT:",
+    "locked": "GESPERRT",
+    "upgradeToPro": "Auf Pro upgraden",
+    "iveDisabledIt": "Ich habe es deaktiviert",
+    "howToFix": "So beheben Sie das Problem",
+    "back": "Zurück",
+    "guide": "Anleitung",
+    "description": "Um die leistungsstarken KI-Modelle von Integri zu schützen, deaktivieren Sie bitte Ihren Blocker.",
+    "browsers": {
+      "chromeEdge": {
+        "name": "Chrome/Edge",
+        "instruction": "Klicken Sie auf das Puzzle/Schild-Symbol → finden Sie Ihren AdBlocker → Schalten Sie für diese Website 'AUS'.",
+        "step1": "Suchen Sie das Puzzleteil- oder Schild-Symbol",
+        "step2": "Finden Sie Ihre AdBlocker-Erweiterung",
+        "step3": "Schalten Sie den Schalter auf 'AUS'",
+        "step4": "Aktualisieren Sie die Seite"
+      },
+      "brave": {
+        "name": "Brave",
+        "instruction": "Klicken Sie auf das Löwensymbol → Schalten Sie die Schilder auf 'Unten'.",
+        "step1": "Suchen Sie das Löwensymbol",
+        "step2": "Schalten Sie Schilder für diese Seite aus",
+        "step3": "Aktualisieren Sie die Seite"
+      },
+      "safari": {
+        "name": "Safari",
+        "instruction": "Gehen Sie zu Einstellungen → Safari → Inhaltsblocker → Für Integri AI deaktivieren.",
+        "step1": "Öffnen Sie Safari-Einstellungen",
+        "step2": "Navigieren Sie zu 'Inhaltsblocker'",
+        "step3": "Deaktivieren Sie Inhaltsblockierung",
+        "step4": "Aktualisieren Sie die Seite"
+      },
+      "ublock": {
+        "name": "uBlock Origin",
+        "instruction": "Klicken Sie auf uBlock → Klicken Sie auf den großen Netzschalter → Aktualisieren.",
+        "step1": "Klicken Sie auf das uBlock-Symbol",
+        "step2": "Deaktivieren Sie uBlock",
+        "step3": "Aktualisieren Sie die Seite"
+      }
+    }
   }
 }

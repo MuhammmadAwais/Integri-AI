@@ -142,5 +142,48 @@
   },
   "welcome": {
     "greeting": "Ciao {{name}}, come posso aiutarti oggi?"
+  },
+  "adBlockGuard": {
+    "systemRecoveryGuide": "GUIDA RIPRISTINO",
+    "systemIntegrity": "INTEGRITÀ DEL SISTEMA:",
+    "locked": "BLOCCATO",
+    "upgradeToPro": "Passa a Pro",
+    "iveDisabledIt": "L'ho disattivato",
+    "howToFix": "Come risolvere",
+    "back": "Indietro",
+    "guide": "Guida",
+    "description": "Per proteggere i modelli AI di Integri, disabilita il blocco annunci.",
+    "browsers": {
+      "chromeEdge": {
+        "name": "Chrome/Edge",
+        "instruction": "Fai clic sull'icona del puzzle/scudo → trova AdBlocker → Spegni per questo sito.",
+        "step1": "Cerca l'icona del puzzle o dello scudo",
+        "step2": "Trova la tua estensione AdBlocker",
+        "step3": "Spegni per questo sito",
+        "step4": "Ricarica la pagina"
+      },
+      "brave": {
+        "name": "Brave",
+        "instruction": "Fai clic sull'icona del leone vicino all'URL → Abbassa gli scudi.",
+        "step1": "Individua l'icona del Leone",
+        "step2": "Clicca 'Scudi' e abbassali",
+        "step3": "Ricarica la pagina"
+      },
+      "safari": {
+        "name": "Safari",
+        "instruction": "Vai su Impostazioni → Safari → Blocchi dei contenuti → Disabilita per Integri AI.",
+        "step1": "Apri le impostazioni di Safari",
+        "step2": "Naviga a 'Blocchi dei contenuti'",
+        "step3": "Disabilita il blocco contenuti",
+        "step4": "Ricarica la pagina"
+      },
+      "ublock": {
+        "name": "uBlock Origin",
+        "instruction": "Fai clic sull'icona uBlock → Fai clic sul grande pulsante di accensione.",
+        "step1": "Fai clic sull'icona uBlock",
+        "step2": "Clicca il grande pulsante di accensione per disabilitare",
+        "step3": "Ricarica la pagina"
+      }
+    }
   }
 }

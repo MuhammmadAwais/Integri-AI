@@ -96,10 +96,10 @@ const PublicRoute = () => {
 
 // --- SEO root layout: PageSEO + Outlet for all routes ---
 const SEOLayout = () => (
-  <>
+  <AdBlockGuard>
     <PageSEO />
     <Outlet />
-  </>
+  </AdBlockGuard>
 );
 
 // --- 2. ROUTER CONFIGURATION ---
@@ -217,13 +217,13 @@ const App: React.FC = () => {
   }, [dispatch]);
 
   return (
-    <AdBlockGuard>
+    <>
       <div>
         <RouterProvider router={router} />
       </div>
       <AppDownloadSheet />
       <CookieConsentBanner />
-    </AdBlockGuard>
+    </>
   );
 }
 

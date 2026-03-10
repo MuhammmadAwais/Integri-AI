@@ -143,5 +143,48 @@
   },
   "welcome": {
     "greeting": "Hey {{name}}, how can I help you today?"
+  },
+  "adBlockGuard": {
+    "systemRecoveryGuide": "SYSTEM RECOVERY GUIDE",
+    "systemIntegrity": "SYSTEM INTEGRITY:",
+    "locked": "LOCKED",
+    "upgradeToPro": "Upgrade to Pro",
+    "iveDisabledIt": "I've Disabled It",
+    "howToFix": "How to Fix",
+    "back": "Back",
+    "guide": "Guide",
+    "description": "To protect Integri's high-performance AI models, please disable your blocker to continue.",
+    "browsers": {
+      "chromeEdge": {
+        "name": "Chrome/Edge",
+        "instruction": "Click the Puzzle/Shield icon in your toolbar → find your AdBlocker → Toggle 'OFF' for this site.",
+        "step1": "Look for the Puzzle piece icon or Shield icon in your browser toolbar",
+        "step2": "Find your AdBlocker extension in the dropdown menu",
+        "step3": "Toggle the switch to 'OFF' for this site",
+        "step4": "Refresh the page to continue"
+      },
+      "brave": {
+        "name": "Brave",
+        "instruction": "Click the Lion icon next to the URL bar → Toggle Shields to 'Down'.",
+        "step1": "Locate the Brave Lion icon next to the address bar",
+        "step2": "Click 'Shields' and toggle it to 'Down' for this site",
+        "step3": "Refresh the page to continue"
+      },
+      "safari": {
+        "name": "Safari",
+        "instruction": "Go to Settings → Safari → Content Blockers → Disable for Integri AI.",
+        "step1": "Open Safari Settings (Safari menu → Preferences)",
+        "step2": "Navigate to the 'Websites' tab → 'Content Blockers'",
+        "step3": "Find 'Integri AI' and disable content blocking",
+        "step4": "Refresh the page to continue"
+      },
+      "ublock": {
+        "name": "uBlock Origin",
+        "instruction": "Click the uBlock icon → Click the large Power Button → Refresh.",
+        "step1": "Click the uBlock Origin icon in your toolbar",
+        "step2": "Click the large Power Button to disable uBlock for this site",
+        "step3": "Refresh the page to continue"
+      }
+    }
   }
 }

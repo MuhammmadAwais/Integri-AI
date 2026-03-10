@@ -142,5 +142,48 @@
   },
   "welcome": {
     "greeting": "Բարև {{name}}, ինչպե՞ս կարող եմ օգնել ձեզ այսօր:"
+  },
+  "adBlockGuard": {
+    "systemRecoveryGuide": "ՀԱՄԱԿԱՐԳԻ ՎԵՐԱԿԱՆԳՆՄԱՆ ՈՒՂԵՑՈՒՅՑ",
+    "systemIntegrity": "ՀԱՄԱԿԱՐԳԻ ԱՄԲՈՂՋԱԿԱՆՈՒԹՅՈՒՆ՝",
+    "locked": "ԱՐԳԵԼԱՓԱԿՎԱԾ Է",
+    "upgradeToPro": "Թարմացնել Pro",
+    "iveDisabledIt": "Ես անջատել եմ",
+    "howToFix": "Ինչպես շտկել",
+    "back": "Հետ",
+    "guide": "Ուղեցույց",
+    "description": "Integri-ի AI մոդելները պաշտպանելու համար անջատեք ձեր բլոկերը:",
+    "browsers": {
+      "chromeEdge": {
+        "name": "Chrome/Edge",
+        "instruction": "Սեղմեք Փազլ/Վահան պատկերակին → գտեք AdBlocker → Անջատեք (OFF):",
+        "step1": "Գտեք փազլի կամ վահանի պատկերակը",
+        "step2": "Գտեք AdBlocker ընդլայնումը",
+        "step3": "Անջատեք այս կայքի համար",
+        "step4": "Թարմացրեք էջը"
+      },
+      "brave": {
+        "name": "Brave",
+        "instruction": "Սեղմեք Առյուծի պատկերակին → Անջատեք վահանները:",
+        "step1": "Գտեք Brave-ի Առյուծի պատկերակը",
+        "step2": "Անջատեք վահանները այս կայքի համար",
+        "step3": "Թարմացրեք էջը"
+      },
+      "safari": {
+        "name": "Safari",
+        "instruction": "Դեպի Կարգավորումներ → Safari → Content Blockers → Անջատել Integri AI-ի համար:",
+        "step1": "Բացեք Safari-ի կարգավորումները",
+        "step2": "Անցեք Content Blockers",
+        "step3": "Անջատեք բլոկերը",
+        "step4": "Թարմացրեք էջը"
+      },
+      "ublock": {
+        "name": "uBlock Origin",
+        "instruction": "Սեղմեք uBlock պատկերակին → Սեղմեք մեծ կոճակին:",
+        "step1": "Սեղմեք uBlock պատկերակին",
+        "step2": "Անջատելու համար սեղմեք հոսանքի կոճակը",
+        "step3": "Թարմացրեք էջը"
+      }
+    }
   }
 }

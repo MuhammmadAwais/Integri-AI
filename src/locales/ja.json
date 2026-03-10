@@ -142,5 +142,48 @@
   },
   "welcome": {
     "greeting": "こんにちは {{name}}、今日はどのようにお手伝いできますか？"
+  },
+  "adBlockGuard": {
+    "systemRecoveryGuide": "システム復旧ガイド",
+    "systemIntegrity": "システム整合性:",
+    "locked": "ロック",
+    "upgradeToPro": "Proにアップグレード",
+    "iveDisabledIt": "無効にしました",
+    "howToFix": "修正方法",
+    "back": "戻る",
+    "guide": "ガイド",
+    "description": "IntegriのAIモデルを保護するため、広告ブロッカーを無効にしてください。",
+    "browsers": {
+      "chromeEdge": {
+        "name": "Chrome/Edge",
+        "instruction": "ツールバーのパズル/シールドアイコンをクリックし、広告ブロッカーをOFFにしてください。",
+        "step1": "ツールバーのパズルまたはシールドのアイコンを探します",
+        "step2": "広告ブロッカー拡張機能を見つけます",
+        "step3": "このサイトのスイッチをOFFにします",
+        "step4": "ページをリフレッシュして続行"
+      },
+      "brave": {
+        "name": "Brave",
+        "instruction": "URLバーの横にあるライオンアイコンをクリックし、シールドを無効にしてください。",
+        "step1": "ライオンアイコンを見つけます",
+        "step2": "シールドを無効にします",
+        "step3": "ページをリフレッシュして続行"
+      },
+      "safari": {
+        "name": "Safari",
+        "instruction": "設定 → Safari → コンテンツブロッカー → Integri AIを無効にしてください。",
+        "step1": "設定を開きます",
+        "step2": "コンテンツブロッカーでIntegri AIを見つけます",
+        "step3": "無効にします",
+        "step4": "ページをリフレッシュして続行"
+      },
+      "ublock": {
+        "name": "uBlock Origin",
+        "instruction": "uBlockアイコンをクリックし、大きな電源ボタンを押してリフレッシュしてください。",
+        "step1": "uBlock Originアイコンをクリックします",
+        "step2": "大きな電源ボタンを押して無効にします",
+        "step3": "ページをリフレッシュして続行"
+      }
+    }
   }
 }

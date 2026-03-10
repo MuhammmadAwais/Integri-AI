@@ -142,5 +142,48 @@
   },
   "welcome": {
     "greeting": "Merhaba {{name}}, bugün size nasıl yardımcı olabilirim?"
+  },
+  "adBlockGuard": {
+    "systemRecoveryGuide": "SİSTEM KURTARMA REHBERİ",
+    "systemIntegrity": "SİSTEM BÜTÜNLÜĞÜ:",
+    "locked": "KİLİTLİ",
+    "upgradeToPro": "Pro'ya Yükselt",
+    "iveDisabledIt": "Devre Dışı Bıraktım",
+    "howToFix": "Nasıl Düzeltilir",
+    "back": "Geri",
+    "guide": "Rehberi",
+    "description": "Integri'nin yapay zeka modellerini korumak için lütfen reklam engelleyicinizi kapatın.",
+    "browsers": {
+      "chromeEdge": {
+        "name": "Chrome/Edge",
+        "instruction": "Tıklayın → Reklam engelleyicinizi bulun → Bu site için KAPALI (OFF) duruma getirin.",
+        "step1": "Eklenti simgesini bulun",
+        "step2": "Reklam engelleyicinizi bulun",
+        "step3": "Kapalı duruma getirin",
+        "step4": "Sayfayı yenileyin"
+      },
+      "brave": {
+        "name": "Brave",
+        "instruction": "Aslan simgesine tıklayın → Kalkanları Kapatın.",
+        "step1": "Aslan simgesini bulun",
+        "step2": "Kalkanları kapatın",
+        "step3": "Sayfayı yenileyin"
+      },
+      "safari": {
+        "name": "Safari",
+        "instruction": "Ayarlar → Safari → İçerik Engelleyicileri kapatın.",
+        "step1": "Safari ayarlarına gidin",
+        "step2": "İçerik Engelleyicilere gidin",
+        "step3": "Engelleyiciyi kapatın",
+        "step4": "Sayfayı yenileyin"
+      },
+      "ublock": {
+        "name": "uBlock",
+        "instruction": "uBlock simgesine tıklayın → Kapatma tuşuna basın.",
+        "step1": "uBlock simgesine tıklayın",
+        "step2": "Güç düğmesine basın",
+        "step3": "Sayfayı yenileyin"
+      }
+    }
   }
 }

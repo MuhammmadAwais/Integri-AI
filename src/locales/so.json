@@ -142,5 +142,48 @@
   },
   "welcome": {
     "greeting": "Salaan {{name}}, sidee ku caawin karaa maanta?"
+  },
+  "adBlockGuard": {
+    "systemRecoveryGuide": "HAGAHA SOO CELINTA SYSTEMKA",
+    "systemIntegrity": "NIDAAMKA SYSTEMKA:",
+    "locked": "WAA QUFULAN YAHAY",
+    "upgradeToPro": "U dalac Pro",
+    "iveDisabledIt": "Waan Xidhay",
+    "howToFix": "Sida Loo Hagaajiyo",
+    "back": "Dib",
+    "guide": "Tilmaame",
+    "description": "Si loo ilaaliyo moodooyinka Integri AI, fadlan dami xirahaaga (adblocker).",
+    "browsers": {
+      "chromeEdge": {
+        "name": "Chrome/Edge",
+        "instruction": "Guji calaamadda Puzzle/Shield → soo hel AdBlocker → Dami (OFF).",
+        "step1": "Raadi calaamadda Puzzle/Shield",
+        "step2": "Soo hel AdBlocker",
+        "step3": "Ka dami boggan",
+        "step4": "Dib u cusboonaysii bogga"
+      },
+      "brave": {
+        "name": "Brave",
+        "instruction": "Guji calaamadda Libaaxa → Dami Shields.",
+        "step1": "Hel calaamadda Libaaxa",
+        "step2": "Dami Shields",
+        "step3": "Dib u cusboonaysii bogga"
+      },
+      "safari": {
+        "name": "Safari",
+        "instruction": "Aad Settings → Safari → Content Blockers → Dami.",
+        "step1": "Fur Safari Settings",
+        "step2": "Aad Content Blockers",
+        "step3": "Dami",
+        "step4": "Dib u cusboonaysii bogga"
+      },
+      "ublock": {
+        "name": "uBlock",
+        "instruction": "Guji calaamadda uBlock → Guji badhanka korontada.",
+        "step1": "Guji uBlock",
+        "step2": "Dami",
+        "step3": "Dib u cusboonaysii"
+      }
+    }
   }
 }

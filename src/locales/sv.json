@@ -142,5 +142,48 @@
   },
   "welcome": {
     "greeting": "Hej {{name}}, hur kan jag hjälpa dig idag?"
+  },
+  "adBlockGuard": {
+    "systemRecoveryGuide": "SYSTEMÅTERSTÄLLNING",
+    "systemIntegrity": "SYSTEMINTEGRITET:",
+    "locked": "LÅST",
+    "upgradeToPro": "Uppgradera till Pro",
+    "iveDisabledIt": "Jag har inaktiverat det",
+    "howToFix": "Hur man åtgärdar det",
+    "back": "Tillbaka",
+    "guide": "Guide",
+    "description": "För att skydda Integris kraftfulla AI-modeller, inaktivera din annonsblockerare.",
+    "browsers": {
+      "chromeEdge": {
+        "name": "Chrome/Edge",
+        "instruction": "Klicka på Pussel/Sköldikonen → hitta AdBlocker → Stäng AV för den här sidan.",
+        "step1": "Leta efter pussel/sköldikon",
+        "step2": "Hitta ditt AdBlock-tillägg",
+        "step3": "Stäng AV på den här sidan",
+        "step4": "Uppdatera sidan"
+      },
+      "brave": {
+        "name": "Brave",
+        "instruction": "Klicka på Lejonet bredvid URL → Stäng av Sköldar.",
+        "step1": "Hitta Lejonet",
+        "step2": "Stäng av sköldarna",
+        "step3": "Uppdatera sidan"
+      },
+      "safari": {
+        "name": "Safari",
+        "instruction": "Gå till Inställningar → Safari → Innehållsblockerare → Inaktivera.",
+        "step1": "Öppna Safari-inställningar",
+        "step2": "Gå till innehållsblockerare",
+        "step3": "Inaktivera blockeringen",
+        "step4": "Uppdatera sidan"
+      },
+      "ublock": {
+        "name": "uBlock Origin",
+        "instruction": "Klicka på uBlock-ikonen → Stäng av stora strömknappen → Uppdatera.",
+        "step1": "Klicka på uBlock-ikonen",
+        "step2": "Klicka på stora strömknappen för att inaktivera",
+        "step3": "Uppdatera sidan"
+      }
+    }
   }
 }

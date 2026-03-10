@@ -142,5 +142,48 @@
   },
   "welcome": {
     "greeting": "안녕하세요 {{name}}, 오늘 어떻게 도와드릴까요?"
+  },
+  "adBlockGuard": {
+    "systemRecoveryGuide": "시스템 복구 가이드",
+    "systemIntegrity": "시스템 무결성:",
+    "locked": "잠김",
+    "upgradeToPro": "Pro로 업그레이드",
+    "iveDisabledIt": "비활성화했습니다",
+    "howToFix": "해결 방법",
+    "back": "뒤로",
+    "guide": "가이드",
+    "description": "Integri의 AI 모델을 보호하려면 계속 진행하기 위해 광고 차단기를 비활성화하십시오.",
+    "browsers": {
+      "chromeEdge": {
+        "name": "Chrome/Edge",
+        "instruction": "도구 모음에서 퍼즐/방패 아이콘을 클릭하여 AdBlocker를 끄세요.",
+        "step1": "퍼즐 조각 또는 방패 아이콘을 찾습니다",
+        "step2": "AdBlocker 확장 프로그램을 찾습니다",
+        "step3": "이 사이트에 대해 'OFF'로 전환합니다",
+        "step4": "계속하려면 페이지를 새로고침하세요"
+      },
+      "brave": {
+        "name": "Brave",
+        "instruction": "URL 표시줄 옆의 사자 아이콘을 클릭하여 Shields를 내리세요.",
+        "step1": "사자 아이콘을 찾습니다",
+        "step2": "이 사이트에 대해 Shields를 내립니다",
+        "step3": "계속하려면 페이지를 새로고침하세요"
+      },
+      "safari": {
+        "name": "Safari",
+        "instruction": "설정 → Safari → 콘텐츠 차단기로 이동하여 Integri AI를 비활성화하세요.",
+        "step1": "Safari 설정을 엽니다",
+        "step2": "콘텐츠 차단기로 이동합니다",
+        "step3": "콘텐츠 차단을 비활성화합니다",
+        "step4": "계속하려면 페이지를 새로고침하세요"
+      },
+      "ublock": {
+        "name": "uBlock Origin",
+        "instruction": "uBlock 아이콘을 클릭하여 전원 버튼을 클릭하세요.",
+        "step1": "uBlock 아이콘을 클릭합니다",
+        "step2": "큰 전원 버튼을 클릭하여 비활성화합니다",
+        "step3": "계속하려면 페이지를 새로고침하세요"
+      }
+    }
   }
 }
