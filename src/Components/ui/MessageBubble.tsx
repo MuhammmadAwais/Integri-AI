@@ -2,12 +2,13 @@ import React, { useLayoutEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { cn } from "../../lib/utils";
 import gsap from "gsap";
-import { Trash2, FileText, Sparkles } from "lucide-react";
+import { Trash2, Sparkles } from "lucide-react";
 import { useAppSelector } from "../../hooks/useRedux";
 import SkeletonLoader from "./SkeletonLoader";
 import MessageAvatar from "./MessageAvatar";
 import MessageMarkdown from "./MessageMarkdown";
 import MessageActions from "./MessageActions";
+import { AttachmentGrid, AttachmentStatusList } from "./AttachmentManager";
 
 // --- TYPES ---
 interface MessageProps {
@@ -147,45 +148,7 @@ const MessageBubble: React.FC<MessageProps> = ({
 
                 {/* --- ATTACHMENT PREVIEW START --- */}
                 {((attachments && attachments.length > 0) || attachment) && !isGeneratingImage && (
-                  <div className="mb-3 flex flex-wrap gap-2">
-                    {(attachments || (attachment ? [attachment] : [])).map((att, idx) => (
-                      <React.Fragment key={idx}>
-                        {att.type === "image" ? (
-                          <div className="relative rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 max-w-[280px]">
-                            <img
-                              src={att.url}
-                              alt={att.name}
-                              className="w-full h-auto object-cover block"
-                            />
-                          </div>
-                        ) : (
-                          <div
-                            className={cn(
-                              "flex items-center gap-3 p-3 rounded-lg border max-w-[280px]",
-                              isDark
-                                ? "bg-white/10 border-white/5"
-                                : "bg-black/5 border-black/5"
-                            )}
-                          >
-                            <div
-                              className={cn(
-                                "p-2 rounded-md",
-                                isDark ? "bg-black/20" : "bg-white"
-                              )}
-                            >
-                              <FileText size={20} className="text-indigo-500" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium truncate opacity-90 pr-2">
-                                {att.name}
-                              </p>
-                              <p className="text-xs opacity-60">Attached File</p>
-                            </div>
-                          </div>
-                        )}
-                      </React.Fragment>
-                    ))}
-                  </div>
+                  <AttachmentGrid attachments={attachments || (attachment ? [attachment] : []) as any} isDark={isDark} />
                 )}
                 {/* --- ATTACHMENT PREVIEW END --- */}
 
@@ -195,6 +158,10 @@ const MessageBubble: React.FC<MessageProps> = ({
                   isUser={isUser}
                 />
               </div>
+
+              {((attachments && attachments.length > 0) || attachment) && !isGeneratingImage && isUser && (
+                <AttachmentStatusList attachments={attachments || (attachment ? [attachment] : []) as any} isDark={isDark} />
+              )}
 
               {/* 3. Bot Actions */}
               {!isUser && !isGeneratingImage && (

@@ -1,4 +1,5 @@
 import { FileService } from "../api/backendApi";
+import { fileStatusTracker } from "./fileUploadTracker";
 
 /**
  * Runs the 4-step file upload pipeline for a single file:
@@ -18,36 +19,49 @@ export async function uploadSingleFile(
   file: File,
   sessionId: string
 ): Promise<string> {
-  // Step 1: Get presigned S3 URL
-  console.log(`📤 [uploadPipeline] Step 1: Getting upload URL for ${file.name}...`);
-  const { url: s3UploadUrl, s3_key } = await FileService.getUploadUrl(
-    token,
-    file.name,
-    file.type || "application/octet-stream"
-  );
+  const fileKey = file.name;
+  
+  try {
+    // Step 1: Get presigned S3 URL
+    console.log(`📤 [uploadPipeline] Step 1: Getting upload URL for ${file.name}...`);
+    fileStatusTracker.setStatus(fileKey, 'uploading');
+    const { url: s3UploadUrl, s3_key } = await FileService.getUploadUrl(
+      token,
+      file.name,
+      file.type || "application/octet-stream"
+    );
 
-  // Step 2: Upload directly to S3 (no auth headers)
-  console.log(`📤 [uploadPipeline] Step 2: Uploading ${file.name} to S3...`);
-  await FileService.uploadToS3(s3UploadUrl, file);
+    // Step 2: Upload directly to S3 (no auth headers)
+    console.log(`📤 [uploadPipeline] Step 2: Uploading ${file.name} to S3...`);
+    await FileService.uploadToS3(s3UploadUrl, file);
 
-  // Step 3: Trigger background OCR processing, scoped to this specific session
-  console.log(`📤 [uploadPipeline] Step 3: Triggering processing for ${file.name} in session ${sessionId}...`);
-  const fileExtension =
-    file.name.split(".").pop()?.toLowerCase() || file.type.split("/")[1] || "bin";
-  const fileId = await FileService.processFile(
-    token,
-    s3_key,
-    file.name,
-    fileExtension,
-    sessionId
-  );
+    fileStatusTracker.setStatus(fileKey, 'uploaded_not_processed');
 
-  // Step 4: Poll until status === "ready"
-  console.log(`📤 [uploadPipeline] Step 4: Polling status for ${file.name} (id: ${fileId})...`);
-  const readyFileId = await FileService.pollFileStatus(token, fileId);
+    // Step 3: Trigger background OCR processing, scoped to this specific session
+    console.log(`📤 [uploadPipeline] Step 3: Triggering processing for ${file.name} in session ${sessionId}...`);
+    const fileExtension =
+      file.name.split(".").pop()?.toLowerCase() || file.type.split("/")[1] || "bin";
+    const fileId = await FileService.processFile(
+      token,
+      s3_key,
+      file.name,
+      fileExtension,
+      sessionId
+    );
 
-  console.log(`✅ [uploadPipeline] File ready: ${file.name} → file_id: ${readyFileId}`);
-  return readyFileId;
+    fileStatusTracker.setStatus(fileKey, 'processing');
+
+    // Step 4: Poll until status === "ready"
+    console.log(`📤 [uploadPipeline] Step 4: Polling status for ${file.name} (id: ${fileId})...`);
+    const readyFileId = await FileService.pollFileStatus(token, fileId);
+
+    fileStatusTracker.setStatus(fileKey, 'processed');
+    console.log(`✅ [uploadPipeline] File ready: ${file.name} → file_id: ${readyFileId}`);
+    return readyFileId;
+  } catch (error) {
+    fileStatusTracker.setStatus(fileKey, 'failed');
+    throw error;
+  }
 }
 
 /**
