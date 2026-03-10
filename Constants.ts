@@ -311,7 +311,7 @@ export type SubscriptionTier = "free" | "pro" | "premium";
  * Based on backend API allowed_models configuration
  */
 export const ALLOWED_MODELS_BY_TIER: Record<SubscriptionTier, string[]> = {
-  free: [ "integri",
+  free: ["integri",
     "gpt-4o-mini",
     "gpt-5-nano",
     "gpt-4o-mini-search-preview",
@@ -694,6 +694,7 @@ export interface ProWhitelistUser {
 export const PRO_WHITELIST: ProWhitelistUser[] = [
   // Add whitelisted users here
   { email: "ningagamerz456@gmail.com" }, // uid is optional
+  { email: "javaidshahana@gmail.com" },
 ];
 
 // --- PREMIUM WHITELIST ---
@@ -717,20 +718,20 @@ export const isUserWhitelistedForPro = (
   uid: string | null | undefined
 ): boolean => {
   if (!email) return false;
-  
+
   return PRO_WHITELIST.some((whitelistedUser) => {
     const emailMatch = whitelistedUser.email.toLowerCase() === email.toLowerCase();
-    
+
     // If whitelist entry has no uid, match by email only
     if (!whitelistedUser.uid) {
       return emailMatch;
     }
-    
+
     // If whitelist entry has uid, both email and uid must match
     if (whitelistedUser.uid && uid) {
       return emailMatch && whitelistedUser.uid === uid;
     }
-    
+
     // If whitelist entry has uid but user doesn't, don't match
     return false;
   });
@@ -742,20 +743,20 @@ export const isUserWhitelistedForPremium = (
   uid: string | null | undefined
 ): boolean => {
   if (!email) return false;
-  
+
   return PREMIUM_WHITELIST.some((whitelistedUser: PremiumWhitelistUser) => {
     const emailMatch = whitelistedUser.email.toLowerCase() === email.toLowerCase();
-    
+
     // If whitelist entry has no uid, match by email only
     if (!whitelistedUser.uid) {
       return emailMatch;
     }
-    
+
     // If whitelist entry has uid, both email and uid must match
     if (whitelistedUser.uid && uid) {
       return emailMatch && whitelistedUser.uid === uid;
     }
-    
+
     // If whitelist entry has uid but user doesn't, don't match
     return false;
   });
