@@ -21,31 +21,28 @@ export const usePlaygroundLane = (modelConfig: {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     return () => socketRef.current?.disconnect();
   }, []);
 
   const sendMessage = useCallback(
-    async (text: string, file?: File | null) => {
+    async (text: string, files?: File[]) => {
       // 1. Strict Guard: No empty sends (unless file exists)
-      if ((!text || !text.trim()) && !file) return;
+      if ((!text || !text.trim()) && (!files || files.length === 0)) return;
 
       // 2. Create Attachment Object for Optimistic Preview
-      const attachment = file
-        ? {
-            name: file.name,
-            type: file.type.startsWith("image/")
-              ? ("image" as const)
-              : ("file" as const),
-            url: URL.createObjectURL(file), // Creates a local preview URL
-          }
-        : undefined;
+      const attachments = files?.map((f) => ({
+        name: f.name,
+        type: f.type.startsWith("image/") ? ("image" as const) : ("file" as const),
+        url: URL.createObjectURL(f), // Creates a local preview URL
+      }));
 
       // 3. Optimistic Update (Immediate Preview)
       setMessages((prev) => [
         ...prev,
-        { role: "user", content: text, attachment },
+        { role: "user", content: text, attachments, attachment: attachments?.[0] },
       ]);
 
       let currentSessionId = sessionId;
@@ -183,18 +180,23 @@ export const usePlaygroundLane = (modelConfig: {
         try {
           let fileIds: string[] = [];
 
-          // Upload if file exists
-          if (file && token) {
-            console.log("Playground: Uploading file...", file.name);
+          // Upload if files exist
+          if (files && files.length > 0 && token) {
+            setIsUploading(true);
             try {
-              const uploadedId = await SessionService.uploadFile(token, file);
-              if (uploadedId) {
-                fileIds.push(uploadedId);
-                console.log("Playground: File uploaded, ID:", uploadedId);
+              for (const file of files) {
+                console.log("Playground: Uploading file...", file.name);
+                const uploadedId = await SessionService.uploadFile(token, file);
+                if (uploadedId) {
+                  fileIds.push(uploadedId);
+                  console.log("Playground: File uploaded, ID:", uploadedId);
+                }
               }
             } catch (err) {
               console.error("Playground: File upload failed", err);
               // We continue sending text even if upload fails, or you could return here
+            } finally {
+              setIsUploading(false);
             }
           }
 
@@ -218,5 +220,5 @@ export const usePlaygroundLane = (modelConfig: {
     [sessionId, token, modelConfig]
   );
 
-  return { messages, sendMessage, isStreaming, isLoading, sessionId };
+  return { messages, sendMessage, isStreaming, isLoading, isUploading, sessionId };
 };

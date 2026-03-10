@@ -9,7 +9,7 @@ interface PlaygroundLaneProps {
   onRemove: () => void;
   isDark: boolean;
   globalPrompt: string;
-  globalFile?: File | null; // Added prop
+  globalFiles?: File[];
   triggerId: number;
 }
 
@@ -18,7 +18,7 @@ const PlaygroundLane: React.FC<PlaygroundLaneProps> = ({
   onRemove,
   isDark,
   globalPrompt,
-  globalFile,
+  globalFiles,
   triggerId,
 }) => {
   // FIX: Passed gpt_id to the hook so it can be sent to createSession
@@ -43,9 +43,9 @@ const PlaygroundLane: React.FC<PlaygroundLaneProps> = ({
     if (triggerId > 0 && triggerId !== lastTriggerRef.current) {
       lastTriggerRef.current = triggerId;
       // Pass both prompt and file to the hook
-      sendMessage(globalPrompt, globalFile);
+      sendMessage(globalPrompt, globalFiles);
     }
-  }, [triggerId, globalPrompt, globalFile, sendMessage]);
+  }, [triggerId, globalPrompt, globalFiles, sendMessage]);
 
   return (
     <div

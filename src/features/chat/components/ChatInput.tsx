@@ -26,12 +26,13 @@ type SearchMode = null | "search" | "deep-search";
 type FileUploadStage = "idle" | "uploading" | "processing" | "error";
 
 interface ChatInputProps {
-  onSend?: (text: string, file?: File | null, searchMode?: SearchMode) => void;
+  onSend?: (text: string, files?: File[], searchMode?: SearchMode) => void;
   placeholder?: string;
   isDark?: boolean;
   disabled?: boolean;
   features?: boolean;
   fileUploadStage?: FileUploadStage;
+  isUploading?: boolean;
 }
 
 const ChatInput: React.FC<ChatInputProps> = ({
@@ -39,12 +40,13 @@ const ChatInput: React.FC<ChatInputProps> = ({
   disabled,
   features = true,
   fileUploadStage = "idle",
+  isUploading = false,
 }) => {
   const { t } = useTranslation();
   const user = useAppSelector((state: any) => state.auth.user);
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   const [input, setInput] = useState("");
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [showAttachMenu, setShowAttachMenu] = useState(false);
   const [showWhiteboard, setShowWhiteboard] = useState(false); // State for whiteboard
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -65,7 +67,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
     handleOneDrivePick,
     isLoading: isCloudLoading,
   } = useCloudStorage((pickedFile) => {
-    setFile(pickedFile);
+    setFiles((prev) => [...prev, pickedFile]);
     setShowAttachMenu(false);
   });
 
@@ -93,7 +95,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   }, [input, features]);
 
   const isFileProcessing =
-    fileUploadStage === "uploading" || fileUploadStage === "processing";
+    isUploading || fileUploadStage === "uploading" || fileUploadStage === "processing";
 
   const handleSend = () => {
     if (!user?.id) {
@@ -101,10 +103,10 @@ const ChatInput: React.FC<ChatInputProps> = ({
       return;
     }
     if (disabled || isCloudLoading || isFileProcessing) return;
-    if ((input.trim() || file) && onSend) {
-      onSend(input, file, searchMode);
+    if ((input.trim() || files.length > 0) && onSend) {
+      onSend(input, files, searchMode);
       setInput("");
-      setFile(null);
+      setFiles([]);
       setSearchMode(null); // Reset search mode after sending
       if (textareaRef.current) textareaRef.current.style.height = "auto";
     }
@@ -118,8 +120,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
+    if (e.target.files && e.target.files.length > 0) {
+      setFiles((prev) => [...prev, ...Array.from(e.target.files!)]);
       setShowAttachMenu(false);
     }
   };
@@ -127,21 +129,22 @@ const ChatInput: React.FC<ChatInputProps> = ({
   // --- NEW: Paste Handler Implementation ---
   const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
     const items = e.clipboardData.items;
+    const pastedFiles: File[] = [];
 
     // Iterate through clipboard items to find a file
     for (let i = 0; i < items.length; i++) {
       if (items[i].kind === "file") {
         const pastedFile = items[i].getAsFile();
         if (pastedFile) {
-          // Check for supported types if strictly necessary,
-          // or allow generally as we do with the file input.
-          // Prevents the file name from being pasted into the text area
-          e.preventDefault();
-          setFile(pastedFile);
-          setShowAttachMenu(false);
-          return; // Only attach the first valid file found
+          pastedFiles.push(pastedFile);
         }
       }
+    }
+    
+    if (pastedFiles.length > 0) {
+      e.preventDefault();
+      setFiles((prev) => [...prev, ...pastedFiles]);
+      setShowAttachMenu(false);
     }
     // If no file is found, the event bubbles up normally
     // and text is pasted into the textarea via default browser behavior.
@@ -183,48 +186,47 @@ const ChatInput: React.FC<ChatInputProps> = ({
         )}
       </AnimatePresence>
 
-      {/* File Preview Bubble — with Gemini-style upload/processing states */}
-      {file && (
-        <div
-          className={cn(
-            "mb-2 flex w-fit items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-medium animate-in fade-in slide-in-from-bottom-2 transition-colors duration-300",
-            fileUploadStage === "error"
-              ? "bg-red-500/10 text-red-500"
-              : isFileProcessing
-              ? "bg-blue-500/10 text-blue-400"
-              : "bg-blue-500/10 text-blue-500"
-          )}
-        >
-          {isFileProcessing ? (
-            <div className="animate-spin h-3.5 w-3.5 border-2 border-blue-300/40 border-t-blue-400 rounded-full shrink-0" />
-          ) : fileUploadStage === "error" ? (
-            <X size={14} className="text-red-400 shrink-0" />
-          ) : file.type.startsWith("image/") ? (
-            <ImageIcon size={14} />
-          ) : (
-            <FileText size={14} />
-          )}
-          <span className="max-w-[200px] truncate">
-            {fileUploadStage === "uploading"
-              ? `Uploading ${file.name}...`
-              : fileUploadStage === "processing"
-              ? `Processing ${file.name}...`
-              : fileUploadStage === "error"
-              ? `Failed to process ${file.name}`
-              : file.name}
-          </span>
-          {!isFileProcessing && (
-            <button
-              title="Remove file"
-              onClick={() => {
-                setFile(null);
-                if (fileInputRef.current) fileInputRef.current.value = "";
-              }}
-              className="ml-1 hover:text-blue-700"
+      {/* File Previews — mapped to multiple files */}
+      {files.length > 0 && (
+        <div className="mb-2 flex flex-wrap gap-2 animate-in fade-in slide-in-from-bottom-2">
+          {files.map((fileObj, idx) => (
+            <div
+              key={idx}
+              className={cn(
+                "flex w-fit items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-medium transition-colors duration-300",
+                fileUploadStage === "error"
+                  ? "bg-red-500/10 text-red-500"
+                  : isFileProcessing
+                  ? "bg-blue-500/10 text-blue-400"
+                  : "bg-blue-500/10 text-blue-500"
+              )}
             >
-              <X size={14} />
-            </button>
-          )}
+              {isFileProcessing ? (
+                <div className="animate-spin h-3.5 w-3.5 border-2 border-blue-300/40 border-t-blue-400 rounded-full shrink-0" />
+              ) : fileUploadStage === "error" ? (
+                <X size={14} className="text-red-400 shrink-0" />
+              ) : fileObj.type.startsWith("image/") ? (
+                <ImageIcon size={14} />
+              ) : (
+                <FileText size={14} />
+              )}
+              <span className="max-w-[150px] truncate">
+                {isFileProcessing ? `Processing ${fileObj.name}...` : fileObj.name}
+              </span>
+              {!isFileProcessing && (
+                <button
+                  title="Remove file"
+                  onClick={() => {
+                    setFiles(files.filter((_, i) => i !== idx));
+                    if (fileInputRef.current) fileInputRef.current.value = "";
+                  }}
+                  className="ml-1 hover:text-blue-700"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+          ))}
         </div>
       )}
 
@@ -267,6 +269,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 onChange={handleFileChange}
                 className="hidden"
                 accept=".jpg, .jpeg, .png, .gif, .pdf"
+                multiple
               />
 
               {/* Toggle Attach Menu */}
@@ -454,7 +457,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
             {/* Right Tools (Search Modes / Send) */}
             <div className="flex items-center gap-2">
               {/* Search Mode Icons - Only show for Pro/Premium users when input has content */}
-              {canUseSearch && (input.trim() || file) && (
+              {canUseSearch && (input.trim() || files.length > 0) && (
                 <>
                   <button
                     title={t("chat.searchMode")}
@@ -502,11 +505,11 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 title="button"
                 onClick={handleSend}
                 disabled={
-                  (!input.trim() && !file) || disabled || isCloudLoading || isFileProcessing
+                  (!input.trim() && files.length === 0) || disabled || isCloudLoading || isFileProcessing
                 }
                 className={cn(
                   "p-2 rounded-full transition-all duration-200 flex items-center justify-center",
-                  (input.trim() || file) && !disabled && !isCloudLoading && !isFileProcessing
+                  (input.trim() || files.length > 0) && !disabled && !isCloudLoading && !isFileProcessing
                     ? "bg-blue-600 text-white hover:bg-blue-700 shadow-md"
                     : isDark
                     ? "bg-gray-800 text-gray-500"
@@ -529,10 +532,10 @@ const ChatInput: React.FC<ChatInputProps> = ({
             <button
               title="button"
               onClick={handleSend}
-              disabled={(!input.trim() && !file) || disabled}
+              disabled={(!input.trim() && files.length === 0) || disabled}
               className={cn(
                 "p-2 rounded-xl transition-all duration-200 flex items-center justify-center",
-                (input.trim() || file) && !disabled
+                (input.trim() || files.length > 0) && !disabled
                   ? "bg-blue-600 text-white hover:bg-blue-700 shadow-sm"
                   : "text-gray-400 cursor-not-allowed"
               )}
@@ -548,7 +551,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
         isOpen={showWhiteboard}
         onClose={() => setShowWhiteboard(false)}
         onDone={(file) => {
-          setFile(file);
+          setFiles((prev) => [...prev, file]);
           setShowWhiteboard(false);
         }}
         isDark={isDark}

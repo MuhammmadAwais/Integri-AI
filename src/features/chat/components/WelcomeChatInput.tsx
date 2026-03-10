@@ -33,26 +33,29 @@ type SearchMode = null | "search" | "deep-search";
 type FileUploadStage = "idle" | "uploading" | "processing" | "error";
 
 interface WelcomeChatInputProps {
-  onStartChat: (text: string, file: File | null, searchMode?: SearchMode) => void;
+  onStartChat: (text: string, files?: File[], searchMode?: SearchMode) => void;
   user: any;
   isDark: boolean;
   isLoading?: boolean;
   fileUploadStage?: FileUploadStage;
+  isUploading?: boolean;
 }
 
 // Define the shape of our saved draft
 interface SavedDraft {
   text: string;
-  fileBase64?: string | null;
-  fileName?: string;
-  fileType?: string;
+  files?: Array<{
+    fileName: string;
+    fileType: string;
+    fileBase64: string;
+  }>;
 }
 
 const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
-  ({ onStartChat, user, isDark, isLoading, fileUploadStage = "idle" }, ref) => {
+  ({ onStartChat, user, isDark, isLoading, fileUploadStage = "idle", isUploading = false }, ref) => {
     const { t } = useTranslation();
     const [inputValue, setInputValue] = useState("");
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [showAttachMenu, setShowAttachMenu] = useState(false);
     const [showWhiteboard, setShowWhiteboard] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
@@ -78,15 +81,14 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
           const parsed: SavedDraft = JSON.parse(savedDraft);
           if (parsed.text) setInputValue(parsed.text);
 
-          if (parsed.fileBase64 && parsed.fileName && parsed.fileType) {
-            fetch(parsed.fileBase64)
-              .then((res) => res.blob())
-              .then((blob) => {
-                const recoveredFile = new File([blob], parsed.fileName!, {
-                  type: parsed.fileType,
-                });
-                setSelectedFile(recoveredFile);
-              });
+          if (parsed.files && parsed.files.length > 0) {
+            Promise.all(
+              parsed.files.map((pf) =>
+                fetch(pf.fileBase64)
+                  .then((res) => res.blob())
+                  .then((blob) => new File([blob], pf.fileName, { type: pf.fileType }))
+              )
+            ).then((recoveredFiles) => setSelectedFiles(recoveredFiles));
           }
           localStorage.removeItem("integri_guest_draft");
         } catch (e) {
@@ -96,24 +98,25 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
     }, []);
 
     const saveDraftAndLogin = async () => {
-      let fileBase64: string | null = null;
-      if (selectedFile && selectedFile.size < 3 * 1024 * 1024) {
-        try {
-          fileBase64 = await new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result as string);
-            reader.readAsDataURL(selectedFile);
-          });
-        } catch (e) {
-          console.warn("Could not save file to draft", e);
+      const draftFiles: any[] = [];
+      for (const file of selectedFiles) {
+        if (file.size < 3 * 1024 * 1024) {
+          try {
+            const fileBase64 = await new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result as string);
+              reader.readAsDataURL(file);
+            });
+            draftFiles.push({ fileName: file.name, fileType: file.type, fileBase64 });
+          } catch (e) {
+            console.warn("Could not save file to draft", e);
+          }
         }
       }
 
       const draft: SavedDraft = {
         text: inputValue,
-        fileName: selectedFile?.name,
-        fileType: selectedFile?.type,
-        fileBase64,
+        files: draftFiles,
       };
 
       localStorage.setItem("integri_guest_draft", JSON.stringify(draft));
@@ -156,7 +159,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
       handleOneDrivePick,
       isLoading: isCloudLoading,
     } = useCloudStorage((file) => {
-      setSelectedFile(file);
+      setSelectedFiles((prev) => [...prev, file]);
       setShowAttachMenu(false);
     });
 
@@ -215,24 +218,27 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
 
     // --- 6. HANDLERS ---
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (e.target.files && e.target.files[0]) {
-        setSelectedFile(e.target.files[0]);
+      if (e.target.files && e.target.files.length > 0) {
+        setSelectedFiles((prev) => [...prev, ...Array.from(e.target.files!)]);
         setShowAttachMenu(false);
       }
     };
 
     const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
       const items = e.clipboardData.items;
+      const pastedFiles: File[] = [];
       for (let i = 0; i < items.length; i++) {
         if (items[i].kind === "file") {
           const pastedFile = items[i].getAsFile();
           if (pastedFile) {
             e.preventDefault();
-            setSelectedFile(pastedFile);
-            setShowAttachMenu(false);
-            return;
+            pastedFiles.push(pastedFile);
           }
         }
+      }
+      if (pastedFiles.length > 0) {
+        setSelectedFiles(prev => [...prev, ...pastedFiles]);
+        setShowAttachMenu(false);
       }
     };
 
@@ -240,10 +246,10 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
     const {  isFree } = useSubscription();
 
     const isFileProcessing =
-      fileUploadStage === "uploading" || fileUploadStage === "processing";
+      isUploading || fileUploadStage === "uploading" || fileUploadStage === "processing";
 
     const handleSubmit = () => {
-      if (!inputValue.trim() && !selectedFile) return;
+      if (!inputValue.trim() && selectedFiles.length === 0) return;
 
       if (!user?.id) {
         saveDraftAndLogin();
@@ -252,9 +258,9 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
 
       if (isFileProcessing) return;
 
-      onStartChat(inputValue, selectedFile, searchMode);
+      onStartChat(inputValue, selectedFiles, searchMode);
       setInputValue("");
-      setSelectedFile(null);
+      setSelectedFiles([]);
       setSearchMode(null); // Reset search mode after sending
     };
 
@@ -291,48 +297,47 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
 
         {/* --- TOP SECTION: File Preview & Text Area --- */}
         <div className="flex flex-col w-full flex-1">
-          {/* File Preview Bubble — Gemini-style with upload/processing states */}
-          {selectedFile && (
+          {/* File Previews */}
+          {selectedFiles.length > 0 && (
             <div className="px-4 pt-3 pb-0 animate-in slide-in-from-bottom-2 fade-in">
-              <div
-                className={cn(
-                  "flex items-center gap-2 p-2 rounded-lg w-fit text-sm font-medium border transition-colors duration-300",
-                  fileUploadStage === "error"
-                    ? isDark
-                      ? "bg-red-900/30 border-red-700/40 text-red-400"
-                      : "bg-red-50 border-red-200 text-red-600"
-                    : isDark
-                    ? "bg-[#2A2B32] border-[#3A3B42] text-gray-200"
-                    : "bg-white border-gray-200 text-gray-800"
-                )}
-              >
-                {isFileProcessing ? (
-                  <div className="animate-spin h-4 w-4 border-2 border-blue-300/40 border-t-blue-400 rounded-full shrink-0" />
-                ) : fileUploadStage === "error" ? (
-                  <span className="text-red-400 shrink-0 text-xs">✕</span>
-                ) : selectedFile.type.startsWith("image/") ? (
-                  <ImageIcon size={16} className="text-blue-500" />
-                ) : (
-                  <FileText size={16} className="text-blue-500" />
-                )}
-                <span className="max-w-[200px] truncate">
-                  {fileUploadStage === "uploading"
-                    ? `Uploading ${selectedFile.name}...`
-                    : fileUploadStage === "processing"
-                    ? `Processing ${selectedFile.name}...`
-                    : fileUploadStage === "error"
-                    ? `Failed to process ${selectedFile.name}`
-                    : selectedFile.name}
-                </span>
-                {!isFileProcessing && (
-                  <button
-                    title={t("common.removeFile")}
-                    onClick={() => setSelectedFile(null)}
-                    className="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded-full ml-1"
+              <div className="flex flex-wrap gap-2">
+                {selectedFiles.map((file, idx) => (
+                  <div
+                    key={idx}
+                    className={cn(
+                      "flex items-center gap-2 p-2 rounded-lg w-fit text-sm font-medium border transition-colors duration-300",
+                      fileUploadStage === "error"
+                        ? isDark
+                          ? "bg-red-900/30 border-red-700/40 text-red-400"
+                          : "bg-red-50 border-red-200 text-red-600"
+                        : isDark
+                        ? "bg-[#2A2B32] border-[#3A3B42] text-gray-200"
+                        : "bg-white border-gray-200 text-gray-800"
+                    )}
                   >
-                    <XIcon size={14} />
-                  </button>
-                )}
+                    {isFileProcessing ? (
+                      <div className="animate-spin h-4 w-4 border-2 border-blue-300/40 border-t-blue-400 rounded-full shrink-0" />
+                    ) : fileUploadStage === "error" ? (
+                      <span className="text-red-400 shrink-0 text-xs">✕</span>
+                    ) : file.type.startsWith("image/") ? (
+                      <ImageIcon size={16} className="text-blue-500" />
+                    ) : (
+                      <FileText size={16} className="text-blue-500" />
+                    )}
+                    <span className="max-w-[150px] truncate">
+                      {isFileProcessing ? `Processing ${file.name}...` : file.name}
+                    </span>
+                    {!isFileProcessing && (
+                      <button
+                        title={t("common.removeFile")}
+                        onClick={() => setSelectedFiles(selectedFiles.filter((_, i) => i !== idx))}
+                        className="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded-full ml-1"
+                      >
+                        <XIcon size={14} />
+                      </button>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
           )}
@@ -388,6 +393,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
               className="hidden"
               onChange={handleFileSelect}
               accept=".jpg, .jpeg, .png, .gif, .pdf"
+              multiple
             />
             <button
               ref={buttonRef}
@@ -402,7 +408,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
                   : isDark
                   ? "text-gray-400 hover:text-white hover:bg-white/10"
                   : "text-gray-500 hover:text-black hover:bg-black/5",
-                selectedFile && "text-blue-500"
+                selectedFiles.length > 0 && "text-blue-500"
               )}
             >
               <Paperclip size={20} strokeWidth={2.5} />
@@ -639,7 +645,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
                 <SearchX size={18} />
               </button>
             </>
-            {inputValue.trim().length > 0 || selectedFile ? null : (
+            {inputValue.trim().length > 0 || selectedFiles.length > 0 ? null : (
               <Link to="/voice">
                 <button
                   title={t("chat.voiceInput")}
@@ -657,7 +663,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
             <button
               title={t("chat.sendMessage")}
               onClick={
-                (inputValue.trim().length > 0 || selectedFile) && !isFileProcessing
+                (inputValue.trim().length > 0 || selectedFiles.length > 0) && !isFileProcessing
                   ? handleSubmit
                   : undefined
               }
@@ -682,12 +688,11 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
           </div>
         </div>
 
-        {/* WHITEBOARD MODAL */}
         <WhiteboardModal
           isOpen={showWhiteboard}
           onClose={() => setShowWhiteboard(false)}
           onDone={(file) => {
-            setSelectedFile(file);
+            setSelectedFiles((prev) => [...prev, file]);
             setShowWhiteboard(false);
           }}
           isDark={isDark}

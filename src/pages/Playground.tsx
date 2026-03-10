@@ -12,7 +12,7 @@ const Playground: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const [globalPrompt, setGlobalPrompt] = useState("");
-  const [globalFile, setGlobalFile] = useState<File | null>(null);
+  const [globalFiles, setGlobalFiles] = useState<File[]>([]);
   const [triggerId, setTriggerId] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -34,9 +34,9 @@ const Playground: React.FC = () => {
     return () => ctx.revert();
   }, [playgroundModels.length]);
 
-  const handleSendMessage = (text: string, file: File | null | undefined) => {
+  const handleSendMessage = (text: string, files?: File[]) => {
     setGlobalPrompt(text);
-    setGlobalFile(file || null);
+    setGlobalFiles(files || []);
     setTriggerId((prev) => prev + 1);
   };
 
@@ -66,7 +66,7 @@ const Playground: React.FC = () => {
               onRemove={() => dispatch(removePlaygroundModel(idx))}
               isDark={isDark}
               globalPrompt={globalPrompt}
-              globalFile={globalFile}
+              globalFiles={globalFiles}
               triggerId={triggerId}
             />
           </div>
