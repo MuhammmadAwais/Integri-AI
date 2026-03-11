@@ -610,6 +610,7 @@ export const MemoryService = {
         headers: { Authorization: `Bearer ${token}` },
       });
       // console.log(`✅ [MemoryService] DELETE ${url} succeeded`, response.data);
+      {response}
     } catch (error: any) {
       console.error(
         `❌ [MemoryService] DELETE ${url} failed — status: ${error?.response?.status}`,
