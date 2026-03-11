@@ -14,6 +14,8 @@ import { useSubscription } from "../../subscriptions/hooks/useSubscription";
 import { useLimits } from "../../limits/hooks/useLimits";
 import { decrementMessages } from "../../limits/slices/limitsSlice";
 import { showLimitReachedToast } from "../../limits/components/LimitToast";
+import { toast } from "react-toastify";
+import SkeletonLoader from "../../../Components/ui/SkeletonLoader";
 
 interface ChatInterfaceProps {
   features?: boolean;
@@ -66,8 +68,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
       const { initialMessage, initialFile } = location.state;
 
       // Always call sendMessage - it will check if message exists and avoid duplicates
-      // but will still send via socket if needed
-      sendMessage(initialMessage, initialFile);
+      // but will still send via socket if needed.
+      // If there's an `initialFile`, the `useChat`'s `sendMessage` handles the
+      // Promise-Gate `uploadFilesSequentially` blocking transparently before
+      // the websocket message fires.
+      sendMessage(initialMessage, initialFile ? [initialFile] : undefined);
 
       // Clear state to prevent re-sending on refresh
       window.history.replaceState({}, document.title);
@@ -146,6 +151,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
       });
     } catch (error) {
       console.error("Failed to create session:", error);
+      toast.error("Failed to create new chat session.");
       setIsCreatingSession(false);
     }
   };
@@ -206,7 +212,34 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
 
           {/* Loading Indicators */}
           {(isThinking || isLoading || isCreatingSession) && (
-            <ThinkingSkeleton isDark={isDark} />
+             location.pathname.startsWith("/pdf") ? (
+                // Pulse Skeleton specifically for PDF Chat
+                <div className="flex flex-col gap-3 mt-4 w-full px-4 text-left">
+                   <div className="flex gap-4">
+                     <SkeletonLoader count={1} className="w-8 h-8 rounded-full shrink-0" />
+                     <div className="flex flex-col gap-2 w-full max-w-[85%]">
+                        <SkeletonLoader count={1} className="h-4 w-11/12" />
+                        <SkeletonLoader count={1} className="h-4 w-5/6" />
+                        <SkeletonLoader count={1} className="h-4 w-4/6" />
+                        <SkeletonLoader count={1} className="h-4 w-full" />
+                        <SkeletonLoader count={1} className="h-4 w-3/4" />
+                     </div>
+                   </div>
+                   {/* If uploading files (part of the pipeline), state it clearly */}
+                   {fileUploadStage === "uploading" && (
+                       <span className="text-xs text-blue-500 font-medium px-12 animate-pulse mt-2">
+                           Uploading document securely...
+                       </span>
+                   )}
+                   {fileUploadStage === "processing" && (
+                       <span className="text-xs text-blue-500 font-medium px-12 animate-pulse mt-2">
+                           Extracting text and generating summary...
+                       </span>
+                   )}
+                </div>
+             ) : (
+                <ThinkingSkeleton isDark={isDark} />
+             )
           )}
 
           <div className="h-4" />

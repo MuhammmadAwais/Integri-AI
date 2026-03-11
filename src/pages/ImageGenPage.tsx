@@ -14,6 +14,7 @@ const ImageGenPage = () => {
     generateImage,
     generatedImage,
     isGenerating,
+    isUploading,
     error,
     downloadImage,
     resetGen,
@@ -68,6 +69,7 @@ const ImageGenPage = () => {
           onGenerate={handleGenerateRequest}
           externalPrompt={promptFromGallery}
           onPromptSet={() => setPromptFromGallery("")}
+          isUploading={isUploading}
         />
         </div>
 

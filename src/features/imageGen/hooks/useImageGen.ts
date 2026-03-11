@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { socketService } from "../../../services/WebSocketsService";
 import { SessionService } from "../../../api/backendApi";
+import { uploadFilesSequentially } from "../../../utils/uploadFilesPipeline";
 import { useAppSelector } from "../../../hooks/useRedux";
 
 export interface GeneratedImage {
@@ -24,6 +25,8 @@ export const useImageGen = () => {
     null,
   );
   const [error, setError] = useState<string | null>(null);
+
+  const [isUploading, setIsUploading] = useState(false);
 
   // Store the current session ID to manage socket connections
   const sessionIdRef = useRef<string | null>(null);
@@ -72,9 +75,17 @@ export const useImageGen = () => {
         // 2. Upload File if exists
         let fileIds: string[] = [];
         if (imageFile) {
-          const uploadedId = await SessionService.uploadFile(token, imageFile);
-          if (uploadedId) {
-            fileIds.push(uploadedId);
+          setIsUploading(true);
+          try {
+            fileIds = await uploadFilesSequentially(token, [imageFile], newSessionId);
+          } catch (uploadError) {
+            console.error("Image upload failed:", uploadError);
+            setError("Failed to upload reference image.");
+            setIsGenerating(false);
+            setIsUploading(false);
+            return;
+          } finally {
+            setIsUploading(false);
           }
         }
 
@@ -165,6 +176,7 @@ export const useImageGen = () => {
     generateImage,
     generatedImage,
     isGenerating,
+    isUploading, // export isUploading
     error,
     downloadImage,
     resetGen,

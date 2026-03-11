@@ -21,6 +21,7 @@ import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import LoginModal from "../features/auth/components/LoginModal";
 import SubscribeModal from "../features/subscriptions/components/SubscribeModal";
 import { useSubscription } from "../features/subscriptions/hooks/useSubscription";
+import { toast } from "react-toastify";
 
 interface Note {
   id: string;
@@ -60,19 +61,26 @@ const PdfChatPage: React.FC = () => {
   }, [location.state]);
 
   const handleFileUpload = async (file: File) => {
-      if (!user) {
-        setShowLoginModal(true);
-        return
-      }
+    if (!user) {
+      setShowLoginModal(true);
+      return;
+    }
     if (!token) return;
     if (!isAtLeastPro) {
       setShowSubscriptionModal(true);
       return;
     }
+
     if (!file || file.type !== "application/pdf") {
-      alert("Please upload a PDF file.");
+      toast.error("Invalid file format. Please upload a PDF file.");
       return;
     }
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("PDF is too large. Maximum size is 10MB.");
+      return;
+    }
+
     setIsUploading(true);
     try {
       const sessionId = await ChatService.createChat(token, "gpt-4o");
@@ -86,7 +94,7 @@ const PdfChatPage: React.FC = () => {
       setActiveTab("pdf");
     } catch (error) {
       console.error("Failed to start PDF chat", error);
-      alert("Failed to initialize chat session.");
+      toast.error("Failed to initialize chat session.");
     } finally {
       setIsUploading(false);
     }

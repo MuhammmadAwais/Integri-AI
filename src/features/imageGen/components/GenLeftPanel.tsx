@@ -21,6 +21,7 @@ interface Props {
   }) => void;
   externalPrompt?: string;
   onPromptSet?: () => void;
+  isUploading?: boolean;
 }
 
 const RATIOS = [
@@ -55,6 +56,7 @@ const GenLeftPanel: React.FC<Props> = ({
   onGenerate,
   externalPrompt,
   onPromptSet,
+  isUploading,
 }) => {
   const user = useAppSelector((state: any) => state.auth.user);
   const dispatch = useAppDispatch();
@@ -193,7 +195,7 @@ const GenLeftPanel: React.FC<Props> = ({
           />
         </div>
 
-        <ImageUploader isDark={isDark} onFileChange={setSelectedFile} />
+        <ImageUploader isDark={isDark} onFileChange={setSelectedFile} isUploading={isUploading} />
       </div>
 
       <div

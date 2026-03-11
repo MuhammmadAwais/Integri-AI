@@ -1,14 +1,18 @@
 import React, { useState, useRef } from "react";
 import { Upload, X, Image as ImageIcon } from "lucide-react";
 
+import { toast } from "react-toastify";
+
 interface ImageUploaderProps {
   isDark: boolean;
   onFileChange: (file: File | null) => void;
+  isUploading?: boolean;
 }
 
 const ImageUploader: React.FC<ImageUploaderProps> = ({
   isDark,
   onFileChange,
+  isUploading = false,
 }) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -16,6 +20,10 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (!file.type.startsWith("image/")) {
+        toast.error("Invalid image format. Please upload a valid image file.");
+        return;
+      }
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
       onFileChange(file); // Lift state up
@@ -79,21 +87,31 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
           />
 
           <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button
-              onClick={triggerUpload}
-              className="px-3 py-1.5 bg-black/60 backdrop-blur text-white text-xs font-bold rounded-lg border border-white/20 hover:bg-black/80"
-            >
-              Change
-            </button>
+            {!isUploading && (
+               <button
+                 onClick={triggerUpload}
+                 className="px-3 py-1.5 bg-black/60 backdrop-blur text-white text-xs font-bold rounded-lg border border-white/20 hover:bg-black/80"
+               >
+                 Change
+               </button>
+            )}
           </div>
 
-          <button
-            title="remove"
-            onClick={clearImage}
-            className="absolute top-2 right-2 p-1 rounded-full bg-black/50 text-white/70 hover:text-white hover:bg-black/80 backdrop-blur-md transition"
-          >
-            <X size={14} />
-          </button>
+          {!isUploading && (
+             <button
+               title="remove"
+               onClick={clearImage}
+               className="absolute top-2 right-2 p-1 rounded-full bg-black/50 text-white/70 hover:text-white hover:bg-black/80 backdrop-blur-md transition"
+             >
+               <X size={14} />
+             </button>
+          )}
+
+          {isUploading && (
+             <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
+                 <div className="animate-spin h-6 w-6 border-2 border-white/40 border-t-white rounded-full" />
+             </div>
+          )}
 
           <div className="absolute bottom-2 left-2 px-2 py-1 rounded-md bg-black/60 backdrop-blur-md flex items-center gap-1.5 border border-white/10">
             <ImageIcon size={10} className="text-zinc-300" />
