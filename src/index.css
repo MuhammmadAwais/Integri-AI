@@ -1,5 +1,5 @@
-
 @import "tailwindcss";
+@import "katex/dist/katex.min.css";
 .markdown-body {
   width: 100%;
   word-break: break-word;
@@ -88,4 +88,8 @@
 /* Ensure smooth background transition for the whole app */
 body {
     @apply transition-colors duration-300;
+}
+
+.whitespace-pre-wrap {
+    unicode-bidi: plaintext;
 }

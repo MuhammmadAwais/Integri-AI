@@ -1,6 +1,8 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 import { cn } from "../../lib/utils";
 import { Copy } from "lucide-react";
 
@@ -11,16 +13,18 @@ const MessageMarkdown: React.FC<{
 }> = ({ content, isDark, isUser }) => {
   if (isUser) {
     return (
-      <p className="whitespace-pre-wrap wrap-break-words font-medium">
+      <p dir="auto" className="whitespace-pre-wrap wrap-break-words font-medium">
         {content}
       </p>
     );
   }
 
   return (
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
-      components={{
+    <div dir="auto" className="w-full">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm, remarkMath]}
+        rehypePlugins={[rehypeKatex]}
+        components={{
         // 1. HEADINGS
         h1: ({ children }) => (
           <h1
@@ -227,7 +231,8 @@ const MessageMarkdown: React.FC<{
       }}
     >
       {content || "..."}
-    </ReactMarkdown>
+      </ReactMarkdown>
+    </div>
   );
 };
 

@@ -239,7 +239,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
                    )}
                 </div>
              ) : (
-                <ThinkingSkeleton isDark={isDark} />
+                <ThinkingSkeleton 
+                  isDark={isDark} 
+                  provider={newChatModel.provider}
+                  is_custom_gpt={selectedAgentId ? true : false}
+                />
              )
           )}
 

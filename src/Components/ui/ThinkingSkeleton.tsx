@@ -4,18 +4,63 @@ import { Sparkles } from "lucide-react";
 
 interface ThinkingSkeletonProps {
   isDark: boolean;
+  provider: string;
+  is_custom_gpt: boolean;
 }
 
-const ThinkingSkeleton: React.FC<ThinkingSkeletonProps> = ({ isDark }) => {
+const ThinkingSkeleton: React.FC<ThinkingSkeletonProps> = ({ isDark, provider, is_custom_gpt }) => {
+  const provider_src = is_custom_gpt ? isDark ? "/dark-theme-custom-gpt.png" : "/light-theme-custom-gpt.png" : 
+  isDark
+    ? provider === "openai"
+      ? "/dark-theme-openai.png"
+      : provider === "gemini"
+      ? "/gemini.png"
+      : provider === "grok"
+      ? "/dark-theme-grok.png"
+      : provider === "claude"
+      ? "/claude.png"
+      : provider === "deepseek"
+      ? "/deepseek.png"
+      : provider === "perplexity"
+      ? "/perplexity.png"
+      : provider === "mistral"
+      ? "/mistral.png"
+      : ""
+    : provider === "openai"
+    ? "/light-theme-openai.png"
+    : provider === "gemini"
+    ? "/gemini.png"
+    : provider === "grok"
+    ? "/light-theme-grok.png"
+    : provider === "claude"
+    ? "/claude.png"
+    : provider === "deepseek"
+    ? "/deepseek.png"
+    : provider === "perplexity"
+    ? "/perplexity.png"
+    : provider === "mistral"
+    ? "/mistral.png"
+    : "";
+
   return (
     <div className="flex w-full mt-4 space-x-3 max-w-3xl mx-auto px-4">
       <div
         className={cn(
-          "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
-          "bg-linear-to-b from-indigo-500 to-purple-500"
+          "w-9 h-9 rounded-full flex items-center justify-center shrink-0 border select-none",
+          isDark
+            ? "bg-[#2F3336] border-transparent"
+            : "bg-white border-transparent shadow-sm"
         )}
       >
-        <Sparkles size={16} className="text-white" />
+        {provider_src ? (
+          <img
+            src={provider_src}
+            alt={`${provider} logo`}
+            className="w-5 h-5"
+          />
+        ) : (
+          <Sparkles size={16} className="text-white" />
+        )}
       </div>
       <div 
         className={cn(
