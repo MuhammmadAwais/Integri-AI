@@ -197,6 +197,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
               role={msg.role}
               content={msg.content}
               attachment={msg.attachment}
+              attachments={msg.attachments}
+              file_ids={msg.file_ids}
               isGeneratingImage={msg.isGeneratingImage} // Pass the skeleton state
               onDelete={msg.id ? () => deleteMessage(msg.id!) : undefined}
             />

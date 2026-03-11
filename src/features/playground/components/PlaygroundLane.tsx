@@ -135,6 +135,8 @@ const PlaygroundLane: React.FC<PlaygroundLaneProps> = ({
               role={msg.role}
               content={msg.content}
               attachment={msg.attachment} // This triggers the preview
+              attachments={msg.attachments}
+              file_ids={msg.file_ids}
               isGeneratingImage={msg.isGeneratingImage} // Triggers the skeleton
             />
           ))

@@ -183,8 +183,20 @@ export const useChat = (sessionId: string | undefined, initialMessage?: string, 
               ? { name: "Generated Image", type: "image", url: msg.image_url }
               : undefined,
           }));
-          // Replace with fetched history (which should include the message we just sent)
-          setMessages(mappedMessages);
+          
+          // Replace with fetched history, ensuring we preserve optimistic attachments
+          setMessages((prev) => {
+            const merged = mappedMessages.map((msg: any) => {
+              // Match by role and content length to retrieve optimistic local attachment arrays
+              // The backend doesn't store our local blob URLs, so this is critical
+              const existing = prev.find(p => p.role === msg.role && p.content === msg.content && p.attachments?.length);
+              if (existing && existing.attachments) {
+                return { ...msg, attachments: existing.attachments, attachment: existing.attachment };
+              }
+              return msg;
+            });
+            return merged;
+          });
         } else if (!message) {
           // Only clear if we don't have an initial message to show
           setMessages([]);
