@@ -8,7 +8,8 @@ import SkeletonLoader from "./SkeletonLoader";
 import MessageAvatar from "./MessageAvatar";
 import MessageMarkdown from "./MessageMarkdown";
 import MessageActions from "./MessageActions";
-import { AttachmentGrid, AttachmentStatusList } from "./AttachmentManager";
+import { AttachmentStatusList } from "./AttachmentManager";
+import { FileGallery } from "./FileGallery";
 
 // --- TYPES ---
 interface MessageProps {
@@ -26,6 +27,7 @@ interface MessageProps {
     type: "image" | "file";
     url: string;
   }[];
+  file_ids?: string[];
   isLoading?: boolean;
   isGeneratingImage?: boolean; // New prop for image generation skeleton
   onDelete?: (id: string) => void;
@@ -41,6 +43,7 @@ const MessageBubble: React.FC<MessageProps> = ({
   content,
   attachment,
   attachments,
+  file_ids,
   isLoading,
   isGeneratingImage,
   onDelete,
@@ -98,24 +101,14 @@ const MessageBubble: React.FC<MessageProps> = ({
             </div>
           ) : (
             <>
-              {/* 2. Content Bubble */}
+              {/* --- 2. MESSAGE CONTAINER (FLEX COL) --- */}
               <div
                 className={cn(
-                  "text-[15px] leading-7 w-full overflow-hidden relative",
-                  isUser
-                    ? cn(
-                        "px-5 py-3 rounded-2xl rounded-tr-sm shadow-sm",
-                        isDark
-                          ? "bg-[#2F3336] text-[#E7E9EA]"
-                          : "bg-[#F3F4F6] text-[#111827]"
-                      )
-                    : cn(
-                        "px-1 py-0 bg-transparent",
-                        isDark ? "text-[#E7E9EA]" : "text-[#0F1419]"
-                      )
+                  "flex flex-col gap-2 max-w-full",
+                  isUser ? "items-end" : "items-start"
                 )}
               >
-                {/* User Delete Button (Absolute Position) */}
+                {/* User Delete Button (Absolute Position near top of container) */}
                 {isUser && onDelete && id && (
                   <button
                     onClick={() => onDelete(id)}
@@ -146,17 +139,39 @@ const MessageBubble: React.FC<MessageProps> = ({
                 )}
                 {/* --- IMAGE GENERATION SKELETON END --- */}
 
-                {/* --- ATTACHMENT PREVIEW START --- */}
-                {((attachments && attachments.length > 0) || attachment) && !isGeneratingImage && (
-                  <AttachmentGrid attachments={attachments || (attachment ? [attachment] : []) as any} isDark={isDark} />
+                {/* --- FILE GALLERY (PERSISTENT & DECOUPLED) --- */}
+                {((attachments && attachments.length > 0) || attachment || (file_ids && file_ids.length > 0)) && (
+                  <FileGallery 
+                    file_ids={file_ids}
+                    attachments={attachments || (attachment ? [attachment] : []) as any}
+                  />
                 )}
-                {/* --- ATTACHMENT PREVIEW END --- */}
 
-                <MessageMarkdown
-                  content={content}
-                  isDark={isDark}
-                  isUser={isUser}
-                />
+                {/* --- TEXT BUBBLE --- */}
+                {content && content.replace(/\[File:\s*[^\]]+\]/g, "").trim() !== "" && !isGeneratingImage && (
+                  <div
+                    className={cn(
+                      "text-[15px] leading-7 w-full overflow-hidden relative",
+                      isUser
+                        ? cn(
+                            "px-5 py-3 rounded-2xl rounded-tr-sm shadow-sm",
+                            isDark
+                              ? "bg-[#2F3336] text-[#E7E9EA]"
+                              : "bg-[#F3F4F6] text-[#111827]"
+                          )
+                        : cn(
+                            "px-1 py-0 bg-transparent",
+                            isDark ? "text-[#E7E9EA]" : "text-[#0F1419]"
+                          )
+                    )}
+                  >
+                    <MessageMarkdown
+                      content={content.replace(/\[File:\s*[^\]]+\]/g, "").trim()}
+                      isDark={isDark}
+                      isUser={isUser}
+                    />
+                  </div>
+                )}
               </div>
 
               {((attachments && attachments.length > 0) || attachment) && !isGeneratingImage && isUser && (

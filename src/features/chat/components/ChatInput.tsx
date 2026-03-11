@@ -5,7 +5,6 @@ import {
   ArrowUp,
   X,
   FileText,
-  Image as ImageIcon,
   HardDrive,
   PenTool,
   Search,
@@ -20,6 +19,7 @@ import WhiteboardModal from "../../../Components/ui/WhiteboardModal";
 import LoginModal from "../../auth/components/LoginModal";
 import { useSubscription } from "../../subscriptions/hooks/useSubscription";
 import { useLimits } from "../../limits/hooks/useLimits";
+import { useFilePreviews } from "../../../hooks/useFilePreviews";
 
 type SearchMode = null | "search" | "deep-search";
 
@@ -60,6 +60,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const filePreviews = useFilePreviews(files);
 
   // Hook for Cloud Storage
   const {
@@ -188,45 +190,79 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
       {/* File Previews — mapped to multiple files */}
       {files.length > 0 && (
-        <div className="mb-2 flex flex-wrap gap-2 animate-in fade-in slide-in-from-bottom-2">
-          {files.map((fileObj, idx) => (
-            <div
-              key={idx}
-              className={cn(
-                "flex w-fit items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-medium transition-colors duration-300",
-                fileUploadStage === "error"
-                  ? "bg-red-500/10 text-red-500"
-                  : isFileProcessing
-                  ? "bg-blue-500/10 text-blue-400"
-                  : "bg-blue-500/10 text-blue-500"
-              )}
-            >
-              {isFileProcessing ? (
-                <div className="animate-spin h-3.5 w-3.5 border-2 border-blue-300/40 border-t-blue-400 rounded-full shrink-0" />
-              ) : fileUploadStage === "error" ? (
-                <X size={14} className="text-red-400 shrink-0" />
-              ) : fileObj.type.startsWith("image/") ? (
-                <ImageIcon size={14} />
-              ) : (
-                <FileText size={14} />
-              )}
-              <span className="max-w-[150px] truncate">
-                {isFileProcessing ? `Processing ${fileObj.name}...` : fileObj.name}
-              </span>
-              {!isFileProcessing && (
-                <button
-                  title="Remove file"
-                  onClick={() => {
-                    setFiles(files.filter((_, i) => i !== idx));
-                    if (fileInputRef.current) fileInputRef.current.value = "";
-                  }}
-                  className="ml-1 hover:text-blue-700"
-                >
-                  <X size={14} />
-                </button>
-              )}
-            </div>
-          ))}
+        <div className="mb-3 flex flex-wrap gap-3 animate-in fade-in slide-in-from-bottom-2 px-1">
+          {files.map((fileObj, idx) => {
+            const isImage = fileObj.type.startsWith("image/");
+            const fileKey = `${fileObj.name}-${fileObj.size}-${fileObj.lastModified}`;
+            const previewUrl = filePreviews[fileKey];
+
+            return (
+              <div
+                key={idx}
+                className={cn(
+                  "group relative flex items-center shrink-0 border transition-colors duration-200",
+                  isImage ? "w-12 h-12 rounded-xl overflow-hidden" : "h-12 px-3 gap-3 rounded-xl min-w-[140px] max-w-[200px]",
+                  fileUploadStage === "error"
+                    ? isDark ? "bg-red-900/20 border-red-900/40" : "bg-red-50 border-red-200"
+                    : isDark ? "bg-[#2A2B32] border-[#3A3B42]" : "bg-white border-gray-200 shadow-sm"
+                )}
+              >
+                {/* Remove Button (Floating for images, absolute right otherwise) */}
+                {!isFileProcessing && (
+                  <button
+                    title="Remove file"
+                    onClick={() => {
+                      setFiles(files.filter((_, i) => i !== idx));
+                      if (fileInputRef.current) fileInputRef.current.value = "";
+                    }}
+                    className={cn(
+                      "absolute z-10 flex items-center justify-center rounded-full bg-gray-500/80 text-white hover:bg-gray-600 transition-colors",
+                      isImage ? "top-1 right-1 w-4 h-4 backdrop-blur-md opacity-0 group-hover:opacity-100" : "top-1.5 right-1.5 w-4 h-4 opacity-50 hover:opacity-100"
+                    )}
+                  >
+                    <X size={10} />
+                  </button>
+                )}
+
+                {/* Processing Overlay for Images */}
+                {isImage && isFileProcessing && (
+                  <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
+                    <div className="animate-spin h-4 w-4 border-2 border-white/40 border-t-white rounded-full" />
+                  </div>
+                )}
+
+                {isImage && previewUrl ? (
+                  <img src={previewUrl} alt={fileObj.name} className="w-full h-full object-cover" />
+                ) : (
+                  <>
+                    {/* Non-Image Content */}
+                    <div className={cn("shrink-0 p-1.5 rounded-md", isDark ? "bg-black/20" : "bg-gray-100")}>
+                      {isFileProcessing ? (
+                        <div className="animate-spin h-3.5 w-3.5 border-2 border-indigo-400/40 border-t-indigo-500 rounded-full" />
+                      ) : fileUploadStage === "error" ? (
+                        <X size={14} className="text-red-400" />
+                      ) : (
+                        <FileText size={14} className="text-indigo-500" />
+                      )}
+                    </div>
+                    <div className="flex flex-col min-w-0 flex-1 justify-center">
+                      <span className={cn(
+                        "text-[11px] font-semibold tracking-tight truncate",
+                        isDark ? "text-gray-200" : "text-gray-700"
+                      )}>
+                        {fileObj.name}
+                      </span>
+                      {isFileProcessing ? (
+                         <span className="text-[9px] text-gray-500 font-medium">Processing...</span>
+                      ) : (
+                         <span className="text-[9px] text-gray-400 font-medium">{fileObj.name.split('.').pop()?.toUpperCase() || 'FILE'}</span>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
 

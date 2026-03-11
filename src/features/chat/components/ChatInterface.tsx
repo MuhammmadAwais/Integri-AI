@@ -3,7 +3,7 @@ import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ChatInput from "./ChatInput";
 import MessageBubble from "../../../Components/ui/MessageBubble";
-import SkeletonLoader from "../../../Components/ui/SkeletonLoader";
+import ThinkingSkeleton from "../../../Components/ui/ThinkingSkeleton";
 import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux";
 import { useChat } from "../hooks/useChat";
 import { cn } from "../../../lib/utils";
@@ -92,7 +92,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
   };
 
   // 3. MAIN SEND HANDLER
-  const handleSend = async (text: string, file?: File | null, searchMode?: "search" | "deep-search" | null) => {
+  const handleSend = async (text: string, files?: File[], searchMode?: "search" | "deep-search" | null) => {
+    const file = files && files.length > 0 ? files[0] : null;
     if (!text.trim() && !file) return;
 
     // ── Limit check BEFORE send ───────────────────────────────────────────────
@@ -117,7 +118,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
     }
 
     if (id) {
-      sendMessage(text, file, modelId);
+      sendMessage(text, files || (file ? [file] : []), modelId);
       setTimeout(scrollToBottom, 100);
       return;
     }
@@ -203,9 +204,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
 
           {/* Loading Indicators */}
           {(isThinking || isLoading || isCreatingSession) && (
-            <div className="flex justify-start">
-              <SkeletonLoader />
-            </div>
+            <ThinkingSkeleton isDark={isDark} />
           )}
 
           <div className="h-4" />

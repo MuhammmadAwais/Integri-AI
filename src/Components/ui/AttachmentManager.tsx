@@ -14,90 +14,121 @@ export const AttachmentGrid: React.FC<AttachmentProps> = ({ attachments, isDark 
 
   if (!attachments || attachments.length === 0) return null;
 
-  const showMoreToken = !expanded && attachments.length > 4;
-  const visibleAttachments = showMoreToken ? attachments.slice(0, 3) : attachments;
+  // Separate images and files to apply different layouts
+  const images = attachments.filter(a => a.type === 'image');
+  const files = attachments.filter(a => a.type !== 'image');
+
+  // Handle image overflow
+  const showMoreImages = !expanded && images.length > 4;
+  const visibleImages = showMoreImages ? images.slice(0, 3) : images;
 
   return (
-    <div className="mb-3 grid gap-2 grid-cols-[repeat(auto-fill,minmax(120px,1fr))] max-w-[300px] sm:max-w-[440px]">
-      {visibleAttachments.map((att, idx) => {
-        const isProcessed = statuses[att.name] === 'processed';
-        const isThinking = thinkingFiles[att.name];
-        const isProcessingOrThinking = !isProcessed || isThinking;
+    <div className="mb-3 flex flex-col gap-3">
+      {/* --- IMAGE GALLERY --- */}
+      {images.length > 0 && (
+        <div className={cn(
+          "w-full max-w-[300px] sm:max-w-[440px]",
+          images.length === 1 ? "" : "grid grid-cols-2 gap-2"
+        )}>
+          {visibleImages.map((att, idx) => {
+            const isProcessed = statuses[att.name] === 'processed';
+            const isThinking = thinkingFiles[att.name];
+            const isProcessingOrThinking = !isProcessed || isThinking;
 
-        return (
-          <button 
-             key={idx}
-             className={cn(
-               "relative aspect-square rounded-xl overflow-hidden shadow-sm group/att focus:outline-none focus:ring-2 focus:ring-indigo-500",
-               isDark ? "border-white/10" : "border-black/10",
-               att.type !== 'image' && 'border',
-               isProcessingOrThinking && 'animate-pulse opacity-70 cursor-wait'
-             )}
-             aria-label={`${att.name} - ${isProcessingOrThinking ? 'Processing' : 'Ready'}`}
-             disabled={isProcessingOrThinking}
-          >
-            {att.type === 'image' ? (
-              <>
-                 {isProcessingOrThinking ? (
-                    <div className={cn("w-full h-full flex items-center justify-center", isDark ? "bg-white/5" : "bg-black/5")}>
-                       <FileText size={24} className="opacity-20" />
-                    </div>
-                 ) : (
-                    <img 
-                       src={att.url} 
-                       alt={att.name} 
-                       className="w-full h-full object-cover transition-transform duration-300 group-hover/att:scale-105 block" 
-                    />
-                 )}
-              </>
-            ) : (
-              <div
+            return (
+              <div 
+                key={idx}
                 className={cn(
-                  "flex flex-col w-full h-full items-center justify-center text-center p-3 transition-colors",
+                  "relative overflow-hidden group/att",
+                  images.length === 1 ? "rounded-2xl max-h-[300px]" : "aspect-square rounded-xl shadow-sm",
+                  isDark ? "border-white/10" : "border-black/5 border",
+                  isProcessingOrThinking && 'animate-pulse opacity-70 cursor-wait'
+                )}
+                aria-label={`${att.name} - ${isProcessingOrThinking ? 'Processing' : 'Ready'}`}
+              >
+                {isProcessingOrThinking ? (
+                  <div className={cn("w-full h-full min-h-[120px] flex items-center justify-center", isDark ? "bg-white/5" : "bg-black/5")}>
+                    <FileText size={24} className="opacity-20" />
+                  </div>
+                ) : (
+                  <img 
+                    src={att.url} 
+                    alt={att.name} 
+                    className={cn(
+                      "w-full h-full object-cover block transition-transform duration-300 group-hover/att:scale-105",
+                      images.length === 1 ? "" : "aspect-square"
+                    )}
+                  />
+                )}
+                
+                {/* Overlay for filename for images on hover (only if active) */}
+                {!isProcessingOrThinking && (
+                  <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/80 to-transparent p-3 opacity-0 group-hover/att:opacity-100 transition-opacity duration-200">
+                    <p className="text-xs text-white font-medium truncate">{att.name}</p>
+                  </div>
+                )}
+              </div>
+            )
+          })}
+
+          {showMoreImages && (
+            <button 
+              onClick={() => setExpanded(true)}
+              className={cn(
+                "relative aspect-square rounded-xl border flex flex-col items-center justify-center shadow-sm hover:scale-[1.02] transition-transform focus:outline-none focus:ring-2 focus:ring-indigo-500",
+                isDark ? "border-white/10 bg-white/5" : "border-black/10 bg-gray-50"
+              )}
+              aria-label={`Show ${images.length - 3} more images`}
+            >
+              <span className="text-xl font-bold text-indigo-500">+{images.length - 3}</span>
+              <span className="text-[10px] font-medium opacity-70 mt-1 uppercase tracking-wider">More</span>
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* --- FILE CARDS --- */}
+      {files.length > 0 && (
+        <div className="flex flex-col gap-2 max-w-[280px] sm:max-w-[340px]">
+          {files.map((att, idx) => {
+            const isProcessed = statuses[att.name] === 'processed';
+            const isThinking = thinkingFiles[att.name];
+            const isProcessingOrThinking = !isProcessed || isThinking;
+
+            return (
+              <div
+                key={`file-${idx}`}
+                className={cn(
+                  "flex items-center gap-3 p-3 rounded-xl border shadow-sm transition-colors",
                   isDark
-                    ? "bg-white/5 hover:bg-white/10"
-                    : "bg-white hover:bg-gray-50",
-                  isProcessingOrThinking && (isDark ? 'bg-white/10' : 'bg-gray-100')
+                    ? "bg-[#2A2B32]/80 border-white/5 backdrop-blur-md"
+                    : "bg-white border-gray-200/60 backdrop-blur-md",
+                  isProcessingOrThinking && 'animate-pulse opacity-70 cursor-wait'
                 )}
               >
                 <div
                   className={cn(
-                    "p-2.5 rounded-lg mb-2 shadow-sm shrink-0",
+                    "p-2.5 rounded-lg shrink-0 flex items-center justify-center",
                     isDark ? "bg-black/30" : "bg-gray-100"
                   )}
                 >
                   <FileText size={20} className="text-indigo-500" />
                 </div>
-                <div className="flex-1 w-full flex flex-col justify-center items-center overflow-hidden">
-                  <p className="text-[11px] font-semibold leading-tight line-clamp-2 w-full px-1 pt-1">
+                <div className="flex-1 min-w-0 pr-2">
+                  <p className={cn(
+                    "text-sm font-semibold truncate leading-tight",
+                    isDark ? "text-gray-200" : "text-gray-800"
+                  )}>
                     {att.name}
+                  </p>
+                  <p className="text-[11px] font-medium opacity-60 mt-0.5 uppercase tracking-wider">
+                    {att.name.split('.').pop() || 'FILE'}
                   </p>
                 </div>
               </div>
-            )}
-            
-            {/* Overlay for filename for images on hover (only if active) */}
-            {att.type === 'image' && !isProcessingOrThinking && (
-               <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/80 to-transparent p-2 opacity-0 group-hover/att:opacity-100 transition-opacity duration-200">
-                  <p className="text-[10px] text-white font-medium truncate">{att.name}</p>
-               </div>
-            )}
-          </button>
-        )
-      })}
-
-      {showMoreToken && (
-        <button 
-           onClick={() => setExpanded(true)}
-           className={cn(
-              "relative aspect-square rounded-xl border flex flex-col items-center justify-center shadow-sm hover:scale-[1.02] transition-transform focus:outline-none focus:ring-2 focus:ring-indigo-500",
-              isDark ? "border-white/10 bg-white/5" : "border-black/10 bg-gray-50"
-           )}
-           aria-label={`Show ${attachments.length - 3} more files`}
-        >
-           <span className="text-xl font-bold text-indigo-500">+{attachments.length - 3}</span>
-           <span className="text-[10px] font-medium opacity-70 mt-1 uppercase tracking-wider">More</span>
-        </button>
+            );
+          })}
+        </div>
       )}
     </div>
   );

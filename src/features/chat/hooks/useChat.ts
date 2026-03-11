@@ -26,6 +26,7 @@ export interface Message {
     type: "image" | "file";
     url: string;
   }[];
+  file_ids?: string[];
   isGeneratingImage?: boolean;
 }
 
@@ -177,6 +178,7 @@ export const useChat = (sessionId: string | undefined, initialMessage?: string, 
         if (Array.isArray(history) && history.length > 0) {
           const mappedMessages = history.map((msg: any) => ({
             ...msg,
+            file_ids: msg.file_ids || msg.files || [],
             attachment: msg.image_url
               ? { name: "Generated Image", type: "image", url: msg.image_url }
               : undefined,
@@ -434,6 +436,14 @@ export const useChat = (sessionId: string | undefined, initialMessage?: string, 
           setFileUploadStage("uploading");
           try {
             fileIds = await uploadFilesSequentially(token, files, sessionId);
+            
+            // Add fileIds to the optimistic user message to prevent streaming overwrite
+            setMessages((prev) => prev.map((msg, idx) => 
+               idx === prev.length - 1 && msg.role === "user" 
+                 ? { ...msg, file_ids: fileIds }
+                 : msg
+            ));
+            
             setFileUploadStage("idle");
           } catch (uploadError) {
             console.error("❌ [useChat] File pipeline failed:", uploadError);
