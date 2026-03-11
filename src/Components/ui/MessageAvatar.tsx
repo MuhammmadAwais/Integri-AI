@@ -42,7 +42,7 @@ const MessageAvatar: React.FC<{
     : "";
 
   return (
-    <div className="shrink-0 mt-1">
+    <div className="shrink-0">
       <div
         className={cn(
           "w-9 h-9 rounded-full flex items-center justify-center shadow-sm border transition-transform hover:scale-105 select-none",

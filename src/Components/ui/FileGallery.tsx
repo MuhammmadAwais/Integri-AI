@@ -36,10 +36,13 @@ export const FileGallery: React.FC<FileGalleryProps> = ({ file_ids, attachments 
   if (displayItems.length === 0) return null;
 
   return (
-    <div className="mb-3 w-full max-w-[300px] sm:max-w-[440px] min-h-[140px]">
+    <div className={cn(
+      "max-w-[300px] sm:max-w-[440px] h-fit",
+      displayItems.length > 1 ? "w-full" : "w-fit"
+    )}>
       <div className={cn(
         "w-full",
-        displayItems.length > 1 ? "grid grid-cols-2 gap-2" : "flex flex-col"
+        displayItems.length > 1 ? "grid grid-cols-2 gap-2 items-start" : "flex flex-col"
       )}>
         {displayItems.map((item) => (
           <FileCard key={item.id} id={item.id} attachment={item.attachment} />

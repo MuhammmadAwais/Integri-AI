@@ -76,7 +76,7 @@ const MessageBubble: React.FC<MessageProps> = ({
     >
       <div
         className={cn(
-          "flex max-w-[95%] md:max-w-[85%] gap-4",
+          "flex max-w-[95%] md:max-w-[85%] gap-2",
           isUser ? "flex-row-reverse" : "flex-row"
         )}
       >
@@ -104,7 +104,7 @@ const MessageBubble: React.FC<MessageProps> = ({
               {/* --- 2. MESSAGE CONTAINER (FLEX COL) --- */}
               <div
                 className={cn(
-                  "flex flex-col gap-2 max-w-full",
+                  "flex flex-col gap-1 max-w-full",
                   isUser ? "items-end" : "items-start"
                 )}
               >
