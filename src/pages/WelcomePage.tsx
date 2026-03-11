@@ -47,8 +47,8 @@ const WelcomePage: React.FC = () => {
     return () => ctx.revert();
   }, []);
 
-  const handleStartChat = async (text: string, file: File | null, searchMode?: "search" | "deep-search" | null) => {
-    if ((!text.trim() && !file) || !accessToken) return;
+  const handleStartChat = async (text: string, files?: File[], searchMode?: "search" | "deep-search" | null) => {
+    if ((!text.trim() && (!files || files.length === 0)) || !accessToken) return;
 
     // Override model if search mode is active
     let currentModelId = newChatModel.id;
@@ -58,8 +58,10 @@ const WelcomePage: React.FC = () => {
       currentModelId = "gpt-4o-mini-deep-research";
     }
 
+    const firstFile = files && files.length > 0 ? files[0] : null;
+
     // Check if we should route to PDF Chat
-    if (file?.type === "application/pdf") {
+    if (firstFile?.type === "application/pdf") {
       try {
         const newChatId = await ChatService.createChat(
           accessToken,
@@ -69,8 +71,8 @@ const WelcomePage: React.FC = () => {
         navigate(`/chat/${newChatId}`, {
           state: {
             initialMessage: text || t("chat.explainThis"),
-            initialFile: file,
-            file: file,
+            initialFile: firstFile,
+            file: firstFile,
           },
         });
       } catch (error) {
@@ -81,7 +83,7 @@ const WelcomePage: React.FC = () => {
 
     // Standard/Agent Chat Logic
     let content = text;
-    if (file) content = `[File: ${file.name}] ${text}`;
+    if (firstFile) content = `[File: ${files?.map(f => f.name).join(', ')}] ${text}`;
     try {
       const newChatId = await ChatService.createChat(
         accessToken,
@@ -91,7 +93,7 @@ const WelcomePage: React.FC = () => {
       navigate(`/chat/${newChatId}`, {
         state: {
           initialMessage: content,
-          initialFile: file,
+          initialFiles: files,
           model: currentModelId,
         },
       });

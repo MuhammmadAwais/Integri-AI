@@ -50,7 +50,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
     isThinking,
     messagesLoaded,
     fileUploadStage,
-  } = useChat(id, location.state?.initialMessage, location.state?.initialFile);
+  } = useChat(id, location.state?.initialMessage, location.state?.initialFiles || (location.state?.initialFile ? [location.state?.initialFile] : undefined));
 
   const hasAutoSent = useRef(false);
 
@@ -65,14 +65,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
       !hasAutoSent.current
     ) {
       hasAutoSent.current = true;
-      const { initialMessage, initialFile } = location.state;
+      const { initialMessage, initialFiles, initialFile } = location.state;
+      const filesToPass = initialFiles || (initialFile ? [initialFile] : undefined);
 
       // Always call sendMessage - it will check if message exists and avoid duplicates
       // but will still send via socket if needed.
-      // If there's an `initialFile`, the `useChat`'s `sendMessage` handles the
+      // If there's files, the `useChat`'s `sendMessage` handles the
       // Promise-Gate `uploadFilesSequentially` blocking transparently before
       // the websocket message fires.
-      sendMessage(initialMessage, initialFile ? [initialFile] : undefined);
+      sendMessage(initialMessage, filesToPass);
 
       // Clear state to prevent re-sending on refresh
       window.history.replaceState({}, document.title);
@@ -145,7 +146,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
       navigate(`/chat/${newSessionId}`, {
         state: {
           initialMessage: text,
-          initialFile: file,
+          initialFiles: files || (file ? [file] : undefined),
           model: modelId,
         },
       });

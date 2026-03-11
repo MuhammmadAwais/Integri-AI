@@ -565,7 +565,7 @@ export const MemoryService = {
       const response = await backendApi.get<MemoryDataPayload>(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log(`✅ [MemoryService] GET ${url} succeeded`, response.data);
+      // console.log(`✅ [MemoryService] GET ${url} succeeded`, response.data);
       return response.data;
     } catch (error: any) {
       console.error(
@@ -587,7 +587,7 @@ export const MemoryService = {
       const response = await backendApi.get<MemoryStats>(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log(`✅ [MemoryService] GET ${url} succeeded`, response.data);
+      // console.log(`✅ [MemoryService] GET ${url} succeeded`, response.data);
       return response.data;
     } catch (error: any) {
       console.error(
@@ -609,7 +609,7 @@ export const MemoryService = {
       const response = await backendApi.delete(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log(`✅ [MemoryService] DELETE ${url} succeeded`, response.data);
+      // console.log(`✅ [MemoryService] DELETE ${url} succeeded`, response.data);
     } catch (error: any) {
       console.error(
         `❌ [MemoryService] DELETE ${url} failed — status: ${error?.response?.status}`,
@@ -630,7 +630,7 @@ export const MemoryService = {
       const response = await backendApi.get<UserPreferencesPayload>(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log(`✅ [MemoryService] GET ${url} succeeded`, response.data);
+      // console.log(`✅ [MemoryService] GET ${url} succeeded`, response.data);
       return response.data;
     } catch (error: any) {
       console.error(
@@ -655,7 +655,7 @@ export const MemoryService = {
       const response = await backendApi.patch<UserPreferencesPayload>(url, preferences, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log(`✅ [MemoryService] PATCH ${url} succeeded`, response.data);
+      // console.log(`✅ [MemoryService] PATCH ${url} succeeded`, response.data);
       return response.data;
     } catch (error: any) {
       console.error(
@@ -696,7 +696,7 @@ export const LimitsService = {
       const response = await backendApi.get<UserLimits>(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log(`✅ [LimitsService] GET ${url} succeeded`, response.data);
+      // console.log(`✅ [LimitsService] GET ${url} succeeded`, response.data);
       return response.data;
     } catch (error: any) {
       console.error(
@@ -714,7 +714,7 @@ export const LimitsService = {
       const response = await backendApi.get<string>(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log(`✅ [LimitsService] GET ${url} succeeded`);
+      // console.log(`✅ [LimitsService] GET ${url} succeeded`);
       return response.data;
     } catch (error: any) {
       console.error(

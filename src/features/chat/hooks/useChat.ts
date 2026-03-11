@@ -403,11 +403,12 @@ export const useChat = (sessionId: string | undefined, initialMessage?: string, 
   // 4. Send Message — S3 4-Step Pipeline
   const sendMessage = useCallback(
     async (content: string, files?: File[], modelOverride?: string) => {
-      if (!content.trim() && (!files || files.length === 0)) return;
+      const validFiles = files?.filter((f) => f != null) || [];
+      if (!content.trim() && validFiles.length === 0) return;
 
-      const attachments = files?.map(file => ({
+      const attachments = validFiles.map((file) => ({
         name: file.name,
-        type: file.type.startsWith("image/")
+        type: file.type?.startsWith("image/")
           ? ("image" as const)
           : ("file" as const),
         url: URL.createObjectURL(file),
@@ -419,7 +420,7 @@ export const useChat = (sessionId: string | undefined, initialMessage?: string, 
           (msg) =>
             msg.role === "user" &&
             msg.content === content &&
-            (!files || files.length === 0 || msg.attachments?.length === files.length)
+            (validFiles.length === 0 || msg.attachments?.length === validFiles.length)
         );
         if (messageExists) return prev;
         return [...prev, { role: "user", content: content, attachments, attachment: attachments?.[0] }];
@@ -443,11 +444,11 @@ export const useChat = (sessionId: string | undefined, initialMessage?: string, 
         let fileIds: string[] = [];
 
         // --- S3 File Upload Pipeline (shared utility) ---
-        if (files && files.length > 0 && token && sessionId) {
+        if (validFiles.length > 0 && token && sessionId) {
           setIsUploading(true);
           setFileUploadStage("uploading");
           try {
-            fileIds = await uploadFilesSequentially(token, files, sessionId);
+            fileIds = await uploadFilesSequentially(token, validFiles, sessionId);
             
             // Add fileIds to the optimistic user message to prevent streaming overwrite
             setMessages((prev) => prev.map((msg, idx) => 
