@@ -6,6 +6,15 @@ import rehypeKatex from "rehype-katex";
 import { cn } from "../../lib/utils";
 import { Copy } from "lucide-react";
 
+const preprocessLaTeX = (content: string) => {
+  if (!content) return "";
+  return content
+    .replace(/\\\(/g, '$')
+    .replace(/\\\)/g, '$')
+    .replace(/\\\[/g, '$$')
+    .replace(/\\\]/g, '$$');
+};
+
 const MessageMarkdown: React.FC<{
   content: string;
   isDark: boolean;
@@ -13,16 +22,28 @@ const MessageMarkdown: React.FC<{
 }> = ({ content, isDark, isUser }) => {
   if (isUser) {
     return (
-      <p dir="auto" className="whitespace-pre-wrap wrap-break-words font-medium">
-        {content}
-      </p>
+      <div dir="auto" className="w-full">
+        <ReactMarkdown
+          remarkPlugins={[remarkMath]}
+          rehypePlugins={[rehypeKatex]}
+          components={{
+            p: ({ children }) => (
+              <p className="whitespace-pre-wrap wrap-break-words font-medium m-0">
+                {children}
+              </p>
+            ),
+          }}
+        >
+          {preprocessLaTeX(content)}
+        </ReactMarkdown>
+      </div>
     );
   }
 
   return (
     <div dir="auto" className="w-full">
       <ReactMarkdown
-        remarkPlugins={[remarkGfm, remarkMath]}
+        remarkPlugins={[remarkMath, remarkGfm]}
         rehypePlugins={[rehypeKatex]}
         components={{
         // 1. HEADINGS
@@ -230,7 +251,7 @@ const MessageMarkdown: React.FC<{
         ),
       }}
     >
-      {content || "..."}
+      {preprocessLaTeX(content) || "..."}
       </ReactMarkdown>
     </div>
   );

@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./i18n";
 import App from "./app/App";
 import "./index.css"; 
+import "katex/dist/katex.min.css";
 import { Provider } from "react-redux";
 import { store } from "./app/store"; 
 

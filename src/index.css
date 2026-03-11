@@ -93,3 +93,8 @@ body {
 .whitespace-pre-wrap {
     unicode-bidi: plaintext;
 }
+
+/* BiDi Math Protection: Ensure math blocks are always LTR globally */
+.katex, .katex-display {
+    direction: ltr !important;
+}
