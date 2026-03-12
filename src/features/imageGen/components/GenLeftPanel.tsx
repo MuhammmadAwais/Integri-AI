@@ -40,13 +40,14 @@ const RESOLUTIONS = [
 
 const MODEL_OPTIONS = [
   {
-    id: "gpt-5.1",
-    label: "GPT-5.1",
+    id: "gpt-4o-mini",
+    label: "GPT-4o Mini",
     provider: "openai",
-    badge: "New",
     light_theme_logo: "/light-theme-openai.png",
     dark_theme_logo: "/dark-theme-openai.png",
+    isPro: true,
     isPremium: true,
+    isFree: true,
   },
 ];
 
