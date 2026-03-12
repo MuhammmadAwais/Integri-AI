@@ -49,7 +49,7 @@ const initialState: ChatState = {
   selectedAgentId: null,
   activeChatId: null,
   activeSessionConfig: null,
-  playgroundModels: [AVAILABLE_MODELS[0], AVAILABLE_MODELS[5]], //INTEGRI AND GPT-4O-mini AS DEFAULT
+  playgroundModels: [AVAILABLE_MODELS[0], AVAILABLE_MODELS[17]], //INTEGRI AND CLAUDE-HAIKU-4.5 AS DEFAULT
 };
 
 export const chatSlice = createSlice({
