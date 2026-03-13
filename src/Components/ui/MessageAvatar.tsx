@@ -7,9 +7,12 @@ const MessageAvatar: React.FC<{
   isDark: boolean;
   provider: string;
   is_custom_gpt: boolean;
-}> = ({ isUser, isDark, provider, is_custom_gpt }) => {
+  modelId?: string;
+}> = ({ isUser, isDark, provider, is_custom_gpt, modelId }) => {
   const provider_src = is_custom_gpt ? isDark ? "/dark-theme-custom-gpt.png" : "/light-theme-custom-gpt.png" : 
-  isDark
+  modelId === "integri"
+    ? isDark ? "/dark-theme-logo.png" : "/light-theme-logo.png"
+    : isDark
     ? provider === "openai"
       ? "/dark-theme-openai.png"
       : provider === "gemini"

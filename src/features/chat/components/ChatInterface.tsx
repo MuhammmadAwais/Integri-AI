@@ -200,6 +200,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
             <MessageBubble
               is_custom_gpt={selectedAgentId ? true : false}
               provider={newChatModel.provider}
+              modelId={newChatModel.id}
               key={msg.id || index}
               role={msg.role}
               content={msg.content}
@@ -242,6 +243,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
                 <ThinkingSkeleton 
                   isDark={isDark} 
                   provider={newChatModel.provider}
+                  modelId={newChatModel.id}
                   is_custom_gpt={selectedAgentId ? true : false}
                 />
              )

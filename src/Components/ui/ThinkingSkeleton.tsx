@@ -6,11 +6,14 @@ interface ThinkingSkeletonProps {
   isDark: boolean;
   provider: string;
   is_custom_gpt: boolean;
+  modelId?: string;
 }
 
-const ThinkingSkeleton: React.FC<ThinkingSkeletonProps> = ({ isDark, provider, is_custom_gpt }) => {
+const ThinkingSkeleton: React.FC<ThinkingSkeletonProps> = ({ isDark, provider, is_custom_gpt, modelId }) => {
   const provider_src = is_custom_gpt ? isDark ? "/dark-theme-custom-gpt.png" : "/light-theme-custom-gpt.png" : 
-  isDark
+  modelId === "integri"
+    ? isDark ? "/dark-theme-logo.png" : "/light-theme-logo.png"
+    : isDark
     ? provider === "openai"
       ? "/dark-theme-openai.png"
       : provider === "gemini"

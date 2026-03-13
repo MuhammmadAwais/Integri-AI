@@ -34,6 +34,7 @@ interface MessageProps {
   onRegenerate?: () => void;
   provider: string;
   is_custom_gpt: boolean;
+  modelId?: string;
 }
 
 // --- MAIN COMPONENT ---
@@ -50,6 +51,7 @@ const MessageBubble: React.FC<MessageProps> = ({
   onRegenerate,
   provider,
   is_custom_gpt,
+  modelId,
 }) => {
   const { t } = useTranslation();
   const bubbleRef = useRef<HTMLDivElement>(null);
@@ -84,6 +86,7 @@ const MessageBubble: React.FC<MessageProps> = ({
         <MessageAvatar
           is_custom_gpt={is_custom_gpt}
           provider={provider}
+          modelId={modelId}
           isUser={isUser}
           isDark={isDark}
         />
