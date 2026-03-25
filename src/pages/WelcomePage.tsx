@@ -8,7 +8,8 @@ import gsap from "gsap";
 import ParticleBackground from "../Components/ui/ParticleBackground";
 import SubscriptionOfferingCard from "../features/subscriptions/components/SubscriptionOfferingCard";
 import WelcomeChatInput from "../features/chat/components/WelcomeChatInput";
-import AdSense from "../Components/ui/AdSense";
+import AdUnit from "../Components/ads/AdUnit";
+import { AD_SLOTS } from "../config/ads";
 import { useSubscription } from "../features/subscriptions/hooks/useSubscription";
 import TrustpilotToast from "../Components/ui/TrustpilotToast";
 
@@ -119,17 +120,15 @@ const WelcomePage: React.FC = () => {
 
      {user && ( <SubscriptionOfferingCard />)}
 
-      {/* LEFT AD - Positioned absolutely to not disturb layout - Shows for unauthenticated users and free tier users */}
-      {/* Account for sidebar width (240px) + margin */}
+      {/* LEFT SKYSCRAPER AD — fixed to left margin, freemium only */}
       {isFree && (
         <div className="hidden lg:block fixed left-[256px] top-1/2 -translate-y-1/2 w-[160px] xl:w-[200px] z-[5]">
-          <AdSense
-            key="ad-left-9138262333"
-            adSlot="9138262333"
-            adClient="ca-pub-2692304161225754"
-            adFormat="auto"
-            fullWidthResponsive={true}
-            className="w-full min-h-[250px]"
+          <AdUnit
+            slot={AD_SLOTS.WELCOME_LEFT_SKYSCRAPER}
+            format="vertical"
+            responsive
+            isDark={isDark}
+            testId="ad-welcome-left"
           />
         </div>
       )}
@@ -173,16 +172,15 @@ const WelcomePage: React.FC = () => {
         </div>
       </div>
 
-      {/* RIGHT AD - Positioned absolutely to not disturb layout - Shows for unauthenticated users and free tier users */}
+      {/* RIGHT SKYSCRAPER AD — fixed to right margin, freemium only */}
       {isFree && (
         <div className="hidden lg:block fixed right-4 top-1/2 -translate-y-1/2 w-[160px] xl:w-[200px] z-[5]">
-          <AdSense
-            key="ad-right-4237289443"
-            adSlot="4237289443"
-            adClient="ca-pub-2692304161225754"
-            adFormat="auto"
-            fullWidthResponsive={true}
-            className="w-full min-h-[250px]"
+          <AdUnit
+            slot={AD_SLOTS.WELCOME_RIGHT_SKYSCRAPER}
+            format="vertical"
+            responsive
+            isDark={isDark}
+            testId="ad-welcome-right"
           />
         </div>
       )}

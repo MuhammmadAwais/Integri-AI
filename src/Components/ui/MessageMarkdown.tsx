@@ -5,6 +5,10 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import { cn } from "../../lib/utils";
 import { Copy } from "lucide-react";
+import AdUnit from "../ads/AdUnit";
+import { AD_SLOTS } from "../../config/ads";
+import { useAppSelector } from "../../hooks/useRedux";
+import { useSubscription } from "../../features/subscriptions/hooks/useSubscription";
 
 const preprocessLaTeX = (content: string) => {
   if (!content) return "";
@@ -15,11 +19,40 @@ const preprocessLaTeX = (content: string) => {
     .replace(/\\\]/g, '$$');
 };
 
+// Rehype plugin: inserts an <hr class="ad-injection-marker"> after paragraphs 1 and 4
+// This avoids breaking code blocks, math, and tables since it operates at the AST level.
+const rehypeInjectAdMarkers = () => {
+  return (tree: any) => {
+    if (!tree?.children) return;
+    let pCount = 0;
+    const out: any[] = [];
+    for (const node of tree.children) {
+      out.push(node);
+      if (node.type === 'element' && node.tagName === 'p') {
+        pCount++;
+        if (pCount === 1 || pCount === 4) {
+          out.push({
+            type: 'element',
+            tagName: 'hr',
+            properties: { 'data-ad': 'chat-inline' },
+            children: [],
+          });
+        }
+      }
+    }
+    tree.children = out;
+  };
+};
+
 const MessageMarkdown: React.FC<{
   content: string;
   isDark: boolean;
   isUser: boolean;
 }> = ({ content, isDark, isUser }) => {
+  const user = useAppSelector((state: any) => state.auth.user);
+  const { isFree } = useSubscription();
+  // Gate: show inline ads only for freemium / guest users
+  const showAds = !user || isFree;
   if (isUser) {
     return (
       <div dir="auto" className="w-full">
@@ -44,8 +77,26 @@ const MessageMarkdown: React.FC<{
     <div dir="auto" className="w-full">
       <ReactMarkdown
         remarkPlugins={[remarkMath, remarkGfm]}
-        rehypePlugins={[rehypeKatex]}
+        rehypePlugins={[rehypeKatex, ...(showAds ? [rehypeInjectAdMarkers] : [])]}
         components={{
+        // Intercept <hr data-ad="chat-inline"> markers and render AdUnit instead
+        hr: ({ node, ...props }: any) => {
+          if (node?.properties?.['data-ad'] === 'chat-inline') {
+            return (
+              <div className="my-5 w-full">
+                <AdUnit
+                  slot={AD_SLOTS.CHAT_INLINE}
+                  format="fluid"
+                  layout="in-article"
+                  isDark={isDark}
+                  testId="ad-chat-inline"
+                />
+              </div>
+            );
+          }
+          return <hr className={cn("my-6 border-t", isDark ? "border-[#333]" : "border-gray-200")} {...props} />;
+        },
+
         // 1. HEADINGS
         h1: ({ children }) => (
           <h1

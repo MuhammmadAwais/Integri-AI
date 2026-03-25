@@ -2,7 +2,8 @@ import React, { useEffect, useState, useRef } from "react";
 import { Share2 } from "lucide-react";
 import gsap from "gsap";
 import ParticleBackground from "../../../Components/ui/ParticleBackground";
-import AdSense from "../../../Components/ui/AdSense";
+import AdUnit from "../../../Components/ads/AdUnit";
+import { AD_SLOTS } from "../../../config/ads";
 import { useSubscription } from "../../../features/subscriptions/hooks/useSubscription";
 
 interface Props {
@@ -357,12 +358,12 @@ const GenRightPanel: React.FC<Props> = ({
                         : "bg-white shadow-zinc-200 border border-zinc-100"
                     }`}
                   >
-                    <AdSense
-                      key={`carousel-ad-${index}-9138262333`}
-                      adSlot="9138262333"
-                      adClient="ca-pub-2692304161225754"
-                      adFormat="rectangle"
-                      fullWidthResponsive={true}
+                    <AdUnit
+                      slot={AD_SLOTS.IMAGE_GEN_GALLERY}
+                      format="rectangle"
+                      responsive
+                      isDark={isDark}
+                      testId="ad-imagegen-gallery"
                       className="w-full h-full"
                     />
                   </div>

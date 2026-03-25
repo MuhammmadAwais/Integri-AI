@@ -44,6 +44,20 @@ export const AD_SLOTS = {
 
     /** Ad shown in the sidebar of the article detail page (Square Display) */
     ARTICLE_DETAIL_SIDEBAR: "8381519757",
+
+    // ── Playground / App Ads ────────────────────────────────────────────
+
+    /** Vertical skyscraper — left margin of the Welcome Page */
+    WELCOME_LEFT_SKYSCRAPER: "9138262333",
+
+    /** Vertical skyscraper — right margin of the Welcome Page */
+    WELCOME_RIGHT_SKYSCRAPER: "4237289443",
+
+    /** Display ad replacing the carousel slot in the Image Gen Prompt Gallery */
+    IMAGE_GEN_GALLERY: "9138262333",
+
+    /** Inline horizontal ad injected into AI chat responses */
+    CHAT_INLINE: "1358110126",
 } as const;
 
 // ── Ad display configuration ────────────────────────────────────────
