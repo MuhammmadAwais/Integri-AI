@@ -7,6 +7,7 @@ import { ChevronDown, Plus, Sparkles, Mic, Captions } from "lucide-react"; // Ad
 import ModelMenu from "../../Components/ui/ModelMenu";
 import AgentMenu from "../../Components/ui/AgentMenu";
 import VoiceModelMenu from "../voice/components/VoiceModelMenu";
+import { useSubscription } from "../subscriptions/hooks/useSubscription";
 import AVAILABLE_MODELS, { VOICE_MODELS } from "../../../Constants";
 import {
   setNewChatModel,
@@ -15,12 +16,15 @@ import {
   setVoiceChatModel,
   setVoiceShowCaptions, // Import action
 } from "../chat/chatSlice";
+import SubscribeModal from "../subscriptions/components/SubscribeModal";
 
 const NavbarLeft: React.FC = () => {
   const location = useLocation();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const isDark = useAppSelector((state) => state.theme.isDark);
+  const { playgroundModels } = useAppSelector((state: any) => state.chat);
+  const { multiChatLimit } = useSubscription();
   const { token } = useAppSelector((state: any) => state.auth);
 
   const { newChatModel, selectedAgentId, voiceChatModel, voiceShowCaptions } =
@@ -32,6 +36,7 @@ const NavbarLeft: React.FC = () => {
   const [showAddMenu, setShowAddMenu] = useState(false);
   const [showAddAgentMenu, setShowAddAgentMenu] = useState(false);
   const [showVoiceMenu, setShowVoiceMenu] = useState(false);
+  const [showLimitModal, setShowLimitModal] = useState(false);
 
   // --- Voice Page Logic ---
   if (location.pathname === "/voice") {
@@ -195,74 +200,94 @@ const NavbarLeft: React.FC = () => {
   if (location.pathname === "/playground") {
     // Existing Playground code...
     return (
-      <div className="flex items-center gap-2">
-        <div className="relative">
-          <button
-            onClick={() => setShowAddMenu(!showAddMenu)}
-            className={cn(
-              "p-2 px-3 rounded-lg transition-all flex items-center gap-2 hover:cursor-pointer",
-              isDark
-                ? "bg-zinc-800/50 text-zinc-400 hover:text-white"
-                : "bg-zinc-100 text-zinc-600 hover:text-zinc-900"
-            )}
-          >
-            <Plus size={16} />
-            <span className="text-xs font-bold uppercase">{t("nav.addModel")}</span>
-          </button>
-          <ModelMenu
-            isOpen={showAddMenu}
-            onClose={() => setShowAddMenu(false)}
-            selected=""
-            isDark={isDark}
-            position="top"
-            align="left"
-            onSelect={(id) => {
-              const model = AVAILABLE_MODELS.find((m) => m.id === id);
-              if (model) dispatch(addPlaygroundModel(model));
-              setShowAddMenu(false);
-            }}
-          />
+      <>
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <button
+              onClick={() => setShowAddMenu(!showAddMenu)}
+              className={cn(
+                "p-2 px-3 rounded-lg transition-all flex items-center gap-2 hover:cursor-pointer",
+                isDark
+                  ? "bg-zinc-800/50 text-zinc-400 hover:text-white"
+                  : "bg-zinc-100 text-zinc-600 hover:text-zinc-900"
+              )}
+            >
+              <Plus size={16} />
+              <span className="text-xs font-bold uppercase">
+                {t("nav.addModel")}
+              </span>
+            </button>
+            <ModelMenu
+              isOpen={showAddMenu}
+              onClose={() => setShowAddMenu(false)}
+              selected=""
+              isDark={isDark}
+              position="top"
+              align="left"
+              onSelect={(id) => {
+                if (playgroundModels.length >= multiChatLimit) {
+                  setShowLimitModal(true);
+                  return;
+                }
+                const model = AVAILABLE_MODELS.find((m) => m.id === id);
+                if (model) dispatch(addPlaygroundModel(model));
+                setShowAddMenu(false);
+              }}
+            />
+          </div>
+
+          <div className="relative">
+            <button
+              onClick={() => setShowAddAgentMenu(!showAddAgentMenu)}
+              className={cn(
+                "p-2 px-3 rounded-lg transition-all flex items-center gap-2 hover:cursor-pointer border border-dashed border-indigo-500/30",
+                isDark
+                  ? "bg-indigo-500/5 text-indigo-400 hover:bg-indigo-500/10"
+                  : "bg-indigo-50/50 text-indigo-600 hover:bg-indigo-50"
+              )}
+            >
+              <Sparkles size={16} />
+              <span className="text-xs font-bold uppercase">
+                {t("nav.addAgent")}
+              </span>
+            </button>
+
+            <AgentMenu
+              isOpen={showAddAgentMenu}
+              onClose={() => setShowAddAgentMenu(false)}
+              selectedId={null}
+              isDark={isDark}
+              token={token}
+              position="top"
+              align="left"
+              onSelect={(agent) => {
+                if (agent) {
+                  if (playgroundModels.length >= multiChatLimit) {
+                    setShowLimitModal(true);
+                    return;
+                  }
+                  dispatch(
+                    addPlaygroundModel({
+                      id: agent.model,
+                      label: agent.name,
+                      provider: agent.recommended_provider || "openai",
+                      gpt_id: agent.gpt_id,
+                      instructions: agent.instructions,
+                    })
+                  );
+                }
+                setShowAddAgentMenu(false);
+              }}
+            />
+          </div>
         </div>
 
-        <div className="relative">
-          <button
-            onClick={() => setShowAddAgentMenu(!showAddAgentMenu)}
-            className={cn(
-              "p-2 px-3 rounded-lg transition-all flex items-center gap-2 hover:cursor-pointer border border-dashed border-indigo-500/30",
-              isDark
-                ? "bg-indigo-500/5 text-indigo-400 hover:bg-indigo-500/10"
-                : "bg-indigo-50/50 text-indigo-600 hover:bg-indigo-50"
-            )}
-          >
-            <Sparkles size={16} />
-            <span className="text-xs font-bold uppercase">{t("nav.addAgent")}</span>
-          </button>
-
-          <AgentMenu
-            isOpen={showAddAgentMenu}
-            onClose={() => setShowAddAgentMenu(false)}
-            selectedId={null}
-            isDark={isDark}
-            token={token}
-            position="top"
-            align="left"
-            onSelect={(agent) => {
-              if (agent) {
-                dispatch(
-                  addPlaygroundModel({
-                    id: agent.model,
-                    label: agent.name,
-                    provider: agent.recommended_provider || "openai",
-                    gpt_id: agent.gpt_id,
-                    instructions: agent.instructions,
-                  })
-                );
-              }
-              setShowAddAgentMenu(false);
-            }}
-          />
-        </div>
-      </div>
+        <SubscribeModal
+          isOpen={showLimitModal}
+          onClose={() => setShowLimitModal(false)}
+          featureName="Multi-Chat"
+        />
+      </>
     );
   }
 

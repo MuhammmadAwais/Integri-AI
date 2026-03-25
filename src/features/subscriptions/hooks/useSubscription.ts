@@ -2,6 +2,7 @@ import { useMemo, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux";
 import {
   getAvailableModelsByTier,
+  MULTI_CHAT_LIMITS,
   type SubscriptionTier,
 } from "../../../../Constants";
 import { fetchLimits } from "../../limits/slices/limitsSlice";
@@ -45,6 +46,7 @@ export const useSubscription = () => {
     };
 
     const availableModels = getAvailableModelsByTier(tier);
+    const multiChatLimit = (tier && MULTI_CHAT_LIMITS[tier]) || MULTI_CHAT_LIMITS.free;
 
     return {
       tier,
@@ -54,6 +56,7 @@ export const useSubscription = () => {
       isAtLeastPro: currentLevel >= TIER_LEVELS.pro,
       canAccess: (feature: keyof typeof features) => features[feature],
       availableModels,
+      multiChatLimit,
     };
   }, [tier]);
 };

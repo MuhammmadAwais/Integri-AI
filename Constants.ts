@@ -403,6 +403,15 @@ export const getAllowedModelIds = (tier: SubscriptionTier): string[] => {
 };
 
 /**
+ * Window/Lane limits for Multi-Chat (Playground)
+ */
+export const MULTI_CHAT_LIMITS: Record<SubscriptionTier, number> = {
+  free: 2,
+  premium: 4,
+  pro: 6,
+};
+
+/**
  * Get available models filtered by subscription tier
  */
 export const getAvailableModelsByTier = (tier: SubscriptionTier) => {
