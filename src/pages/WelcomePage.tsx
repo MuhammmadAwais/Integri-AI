@@ -122,7 +122,7 @@ const WelcomePage: React.FC = () => {
 
       {/* LEFT SKYSCRAPER AD — fixed to left margin, freemium only */}
       {isFree && (
-        <div className="hidden lg:block fixed left-[256px] top-1/2 -translate-y-1/2 w-[160px] xl:w-[200px] z-[5]">
+        <div className="hidden lg:block fixed left-[256px] top-1/2 -translate-y-1/2 w-[160px] xl:w-[200px] max-h-[350px] mb-8 z-[5]">
           <AdUnit
             slot={AD_SLOTS.WELCOME_LEFT_SKYSCRAPER}
             format="vertical"
@@ -174,7 +174,7 @@ const WelcomePage: React.FC = () => {
 
       {/* RIGHT SKYSCRAPER AD — fixed to right margin, freemium only */}
       {isFree && (
-        <div className="hidden lg:block fixed right-4 top-1/2 -translate-y-1/2 w-[160px] xl:w-[200px] z-[5]">
+        <div className="hidden lg:block fixed right-4 top-1/2 -translate-y-1/2 w-[160px] xl:w-[200px] max-h-[350px] mb-8 z-[5]">
           <AdUnit
             slot={AD_SLOTS.WELCOME_RIGHT_SKYSCRAPER}
             format="vertical"
