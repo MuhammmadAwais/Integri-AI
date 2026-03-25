@@ -10,6 +10,7 @@ import SubscriptionOfferingCard from "../features/subscriptions/components/Subsc
 import WelcomeChatInput from "../features/chat/components/WelcomeChatInput";
 import AdSense from "../Components/ui/AdSense";
 import { useSubscription } from "../features/subscriptions/hooks/useSubscription";
+import TrustpilotToast from "../Components/ui/TrustpilotToast";
 
 const WelcomePage: React.FC = () => {
   const { t } = useTranslation();
@@ -185,6 +186,8 @@ const WelcomePage: React.FC = () => {
           />
         </div>
       )}
+      
+      <TrustpilotToast />
     </div>
   );
 };
