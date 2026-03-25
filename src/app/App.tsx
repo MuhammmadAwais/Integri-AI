@@ -22,6 +22,7 @@ import PageSEO from "../Components/seo/PageSEO";
 import Home from "../pages/Home";
 import Login from "../pages/LoginPage";
 import Signup from "../pages/SignupPage";
+import ForgotPasswordPage from "../pages/ForgotPasswordPage";
 import SignupQRPage from "../pages/SignupQRPage";
 import Welcome from "../pages/WelcomePage";
 import ChatInterface from "../features/chat/components/ChatInterface";
@@ -118,6 +119,7 @@ const router = createBrowserRouter([
           { path: "/login", element: <Login /> },
           { path: "/signup", element: <Signup /> },
           { path: "/signup-qr", element: <SignupQRPage /> },
+          { path: "/forgot-password", element: <ForgotPasswordPage /> },
         ],
       },
       { path: "/getting-started", element: <GettingStarted /> },
