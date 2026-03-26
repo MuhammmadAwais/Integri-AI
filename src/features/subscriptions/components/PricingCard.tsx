@@ -63,20 +63,12 @@ const PricingCard: React.FC<PricingCardProps> = ({
       <div className="mb-6">
         <h3
           className={cn(
-            "text-xl font-bold mb-2",
+            "text-xl font-bold",
             isDark ? "text-white" : "text-gray-900",
           )}
         >
           {plan.name}
         </h3>
-        <p
-          className={cn(
-            "text-sm min-h-[40px]",
-            isDark ? "text-gray-400" : "text-gray-500",
-          )}
-        >
-          {plan.description}
-        </p>
       </div>
 
       <div className="mb-6">
