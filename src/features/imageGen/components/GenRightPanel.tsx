@@ -4,7 +4,7 @@ import gsap from "gsap";
 import ParticleBackground from "../../../Components/ui/ParticleBackground";
 import AdUnit from "../../../Components/ads/AdUnit";
 import { AD_SLOTS } from "../../../config/ads";
-import { useSubscription } from "../../../features/subscriptions/hooks/useSubscription";
+// import { useSubscription } from "../../../features/subscriptions/hooks/useSubscription";
 
 interface Props {
   isDark: boolean;
@@ -67,7 +67,7 @@ const GenRightPanel: React.FC<Props> = ({
   isGenerating,
   onUsePrompt,
 }) => {
-  const { isFree } = useSubscription();
+  // const { isFree } = useSubscription();
   const [gallery, setGallery] = useState(PROMPT_GALLERY);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
@@ -344,7 +344,7 @@ const GenRightPanel: React.FC<Props> = ({
           // Show ad only as the second item (index 1) - replace the second image with ad
           // Shows for unauthenticated users and free tier users
           if (index === 1) {
-            if (isFree) {
+            if (false /* temporarily disabled: isFree */) {
               // Show ad instead of image for free users
               return (
                 <div

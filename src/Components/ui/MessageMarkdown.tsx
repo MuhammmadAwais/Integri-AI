@@ -7,8 +7,8 @@ import { cn } from "../../lib/utils";
 import { Copy } from "lucide-react";
 import AdUnit from "../ads/AdUnit";
 import { AD_SLOTS } from "../../config/ads";
-import { useAppSelector } from "../../hooks/useRedux";
-import { useSubscription } from "../../features/subscriptions/hooks/useSubscription";
+// import { useAppSelector } from "../../hooks/useRedux";
+// import { useSubscription } from "../../features/subscriptions/hooks/useSubscription";
 
 const preprocessLaTeX = (content: string) => {
   if (!content) return "";
@@ -49,10 +49,10 @@ const MessageMarkdown: React.FC<{
   isDark: boolean;
   isUser: boolean;
 }> = ({ content, isDark, isUser }) => {
-  const user = useAppSelector((state: any) => state.auth.user);
-  const { isFree } = useSubscription();
+  // const user = useAppSelector((state: any) => state.auth.user);
+  // const { isFree } = useSubscription();
   // Gate: show inline ads only for freemium / guest users
-  const showAds = !user || isFree;
+  const showAds = false; // temporarily disabled: !user || isFree;
   if (isUser) {
     return (
       <div dir="auto" className="w-full">
