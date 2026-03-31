@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Clock, Share2, Loader2, BookOpen } from "lucide-react";
@@ -10,6 +10,7 @@ import { localised } from "../features/news/models/newsArticle";
 import type { NewContent, NewsArticle } from "../features/news/models/newsArticle";
 import AdUnit from "../Components/ads/AdUnit";
 import { AD_SLOTS, IN_ARTICLE_AD_INTERVAL } from "../config/ads";
+import ShareModal from "../Components/ui/ShareModal";
 
 // ── Helpers ───────────────────────────────────────────────────────────
 
@@ -116,7 +117,7 @@ const RelatedCard: React.FC<{
                 src={article.coverImage}
                 alt={localised(article.headline, lang)}
                 loading="lazy"
-                className="w-20 h-14 rounded-lg object-cover flex-shrink-0"
+                className="w-20 h-14 rounded-lg object-cover shrink-0"
             />
             <div className="flex flex-col justify-center gap-1 min-w-0">
                 <h4 className={cn(
@@ -149,13 +150,15 @@ const ArticleDetailPage: React.FC = () => {
     // Fetch related news to show in sidebar
     const { articles: relatedNews, loading: relatedLoading } = useNewsList(6);
 
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
     // ── Loading ──
     if (loading) {
         return (
             <div
                 className={cn(
                     "h-full w-full flex flex-col items-center justify-center gap-3",
-                    isDark ? "bg-[#000]" : "bg-gray-50",
+                    isDark ? "bg-black" : "bg-gray-50",
                 )}
             >
                 <Loader2
@@ -183,7 +186,7 @@ const ArticleDetailPage: React.FC = () => {
             <div
                 className={cn(
                     "h-full w-full flex flex-col items-center justify-center gap-4",
-                    isDark ? "bg-[#000] text-white" : "bg-gray-50 text-gray-900",
+                    isDark ? "bg-black text-white" : "bg-gray-50 text-gray-900",
                 )}
             >
                 <h2 className="text-2xl font-bold">
@@ -211,7 +214,7 @@ const ArticleDetailPage: React.FC = () => {
         <div
             className={cn(
                 "h-full w-full overflow-y-auto",
-                isDark ? "bg-[#000]" : "bg-gray-50",
+                isDark ? "bg-black" : "bg-gray-50",
             )}
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
@@ -227,7 +230,7 @@ const ArticleDetailPage: React.FC = () => {
                         <button
                             onClick={() => navigate("/news")}
                             className={cn(
-                                "flex items-center gap-2 text-sm font-medium transition-colors rounded-lg px-3 py-2 -ml-3",
+                                "flex items-center gap-2 text-sm font-medium transition-colors rounded-lg px-3 py-2 -ml-3 cursor-pointer",
                                 isDark
                                     ? "text-gray-400 hover:text-white hover:bg-[#1a1a1a]"
                                     : "text-gray-600 hover:text-gray-900 hover:bg-gray-100",
@@ -327,8 +330,9 @@ const ArticleDetailPage: React.FC = () => {
                                 {readTime(article.content, lang)}
                             </span>
                             <button
+                                onClick={() => setIsShareModalOpen(true)}
                                 className={cn(
-                                    "ml-auto flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full transition-colors",
+                                    "ml-auto flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full transition-colors cursor-pointer",
                                     isDark
                                         ? "bg-[#1a1a1a] text-gray-300 hover:bg-[#252525]"
                                         : "bg-gray-100 text-gray-600 hover:bg-gray-200",
@@ -349,7 +353,7 @@ const ArticleDetailPage: React.FC = () => {
                             <img
                                 src={article.coverImage}
                                 alt={headline}
-                                className="w-full aspect-[16/9] object-cover"
+                                className="w-full aspect-video object-cover"
                             />
                         </motion.div>
 
@@ -400,7 +404,7 @@ const ArticleDetailPage: React.FC = () => {
                     </motion.article>
 
                     {/* Sidebar - Related News */}
-                    <aside className="lg:w-72 xl:w-80 flex-shrink-0 space-y-4">
+                    <aside className="lg:w-72 xl:w-80 shrink-0 space-y-4">
                         <div className={cn(
                             "rounded-2xl overflow-hidden sticky top-6",
                             isDark ? "bg-[#0a0a0a] border border-white/5" : "bg-white shadow-sm",
@@ -430,7 +434,7 @@ const ArticleDetailPage: React.FC = () => {
                                     {[0, 1, 2, 3].map((i) => (
                                         <div key={i} className="flex gap-3 animate-pulse">
                                             <div className={cn(
-                                                "w-20 h-14 rounded-lg flex-shrink-0",
+                                                "w-20 h-14 rounded-lg shrink-0",
                                                 isDark ? "bg-[#1a1a1a]" : "bg-gray-200",
                                             )} />
                                             <div className="flex flex-col justify-center gap-2 flex-1">
@@ -471,6 +475,13 @@ const ArticleDetailPage: React.FC = () => {
                     </aside>
                 </div>
             </div>
+
+            <ShareModal 
+                isOpen={isShareModalOpen} 
+                onClose={() => setIsShareModalOpen(false)} 
+                isDark={isDark}
+                shareData={{ title: headline }}
+            />
         </div>
     );
 };
