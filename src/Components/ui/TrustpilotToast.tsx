@@ -54,7 +54,7 @@ const TrustpilotToast: React.FC = () => {
   return (
     <a
       ref={toastRef}
-      href="https://www.trustpilot.com/review/integri.app?utm_medium=trustbox&utm_source=TrustBoxReviewCollector"
+      href="https://www.trustpilot.com/review/integri.app?utm_medium=trustbox&utm_source=TrustBoxReviewCollector/"
       target="_blank"
       rel="noopener noreferrer"
       className={`
