@@ -25,6 +25,7 @@ import { setAttachedRepo } from "../chatSlice";
 import { useGitHubOAuth } from "./useGitHubOAuth";
 import { getEncoding } from "js-tiktoken";
 import { repoBlobStore } from "../services/repoBlobStore";
+import { jsPDF } from "jspdf";
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
@@ -354,19 +355,57 @@ export function useRepoPacker() {
         packedChunks.push("</repository>");
         const fullPack = packedChunks.join("");
 
-        // Create a File blob named repo_context.txt
-        const blob = new Blob([fullPack], { type: "text/plain" });
-        const packFile = new File([blob], "repo_context.txt", {
-          type: "text/plain",
+        // ── Step 5b: Render XML content into a multi-page PDF ─────────
+        // Backend requires application/pdf — we use jsPDF with Courier monospace
+        // and tight margins so the AI receives dense, readable code context.
+        setProgress({
+          indexed: indexedCount,
+          total: allFiles.length,
+          phase: "Rendering PDF...",
+        });
+
+        const doc = new jsPDF({
+          orientation: "portrait",
+          unit: "pt",
+          format: "a4",
+        });
+
+        const PAGE_WIDTH  = doc.internal.pageSize.getWidth();
+        const PAGE_HEIGHT = doc.internal.pageSize.getHeight();
+        const MARGIN_X    = 20;   // pt — minimal left/right margin
+        const MARGIN_TOP  = 20;   // pt
+        const MARGIN_BOT  = 20;   // pt
+        const FONT_SIZE   = 7;    // pt — dense but legible for AI parsing
+        const LINE_HEIGHT = FONT_SIZE * 1.25; // 8.75pt
+        const MAX_WIDTH   = PAGE_WIDTH - MARGIN_X * 2;
+
+        doc.setFont("Courier");
+        doc.setFontSize(FONT_SIZE);
+
+        // splitTextToSize handles long lines by wrapping at MAX_WIDTH
+        const lines = doc.splitTextToSize(fullPack, MAX_WIDTH);
+
+        let y = MARGIN_TOP + FONT_SIZE; // baseline of the first line
+        for (const line of lines) {
+          if (y + LINE_HEIGHT > PAGE_HEIGHT - MARGIN_BOT) {
+            doc.addPage();
+            doc.setFont("Courier");
+            doc.setFontSize(FONT_SIZE);
+            y = MARGIN_TOP + FONT_SIZE;
+          }
+          doc.text(line, MARGIN_X, y);
+          y += LINE_HEIGHT;
+        }
+
+        const pdfBlob = doc.output("blob");
+        const packFile = new File([pdfBlob], "repo_context.pdf", {
+          type: "application/pdf",
         });
 
         const fileCount = packedChunks.length - 2; // minus opening + closing tags
         const isOverLimit = totalTokens > TOKEN_WARN_LIMIT;
 
         // ── Step 6: Store blob out-of-band, dispatch only serializable metadata ─
-        // File objects are non-serializable and MUST NOT go into Redux state.
-        // We stash the blob in a module-level store and read it back in
-        // ChatInterface's Prompt Bridge right before upload.
         repoBlobStore.set(packFile);
 
         dispatch(
@@ -379,7 +418,6 @@ export function useRepoPacker() {
             isOverLimit,
           })
         );
-
 
         setStatus("done");
       } catch (err: any) {

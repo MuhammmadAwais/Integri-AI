@@ -5,7 +5,7 @@
  * Supports public repos (no auth) and private repos (OAuth PAT via popup flow).
  *
  * Token storage: localStorage under "integri_github_token" / "integri_github_user".
- * OAuth exchange: Routes through GitHub OAuth App (VITE_GITHUB_CLIENT_ID).
+ * OAuth exchange: Routes through GitHub OAuth App (GITHUB_CLIENT_ID).
  * The client secret MUST NOT be VITE_ prefixed — it stays server-side only.
  */
 
@@ -97,7 +97,7 @@ export function useGitHubOAuth() {
   const connect = useCallback(() => {
     const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
     if (!clientId) {
-      console.error("[GitHubOAuth] VITE_GITHUB_CLIENT_ID not set in .env");
+      console.error("[GitHubOAuth] GITHUB_CLIENT_ID not set in .env");
       return;
     }
 
