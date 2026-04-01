@@ -15,8 +15,13 @@ import { Octokit } from "octokit";
 const STORAGE_KEY_TOKEN = "integri_github_token";
 const STORAGE_KEY_USER = "integri_github_user";
 
-// OAuth redirect URI — must match what's registered in GitHub OAuth App settings
-const REDIRECT_URI = `${window.location.origin}/github/callback`;
+// OAuth redirect URI — must match EXACTLY what is registered in the GitHub App settings.
+// DEV:  http://localhost:5173/api/auth/callback/github
+// PROD: https://<your-domain>/api/auth/callback/github
+const CALLBACK_PATH = "/api/auth/callback/github";
+const REDIRECT_URI = import.meta.env.DEV
+  ? `http://localhost:5173${CALLBACK_PATH}`
+  : `${window.location.origin}${CALLBACK_PATH}`;
 const OAUTH_AUTHORIZE_URL = "https://github.com/login/oauth/authorize";
 
 export interface GitHubUser {
@@ -65,49 +70,50 @@ export function useGitHubOAuth() {
   }, [token]);
 
   // ── 2. Handle OAuth callback (code in URL query params) ────────────────────
-  // NOTE: Full server-side token exchange requires a backend /api/github/callback.
-  // For public repo support (MVP), users can paste a PAT instead.
-  // The callback detection below handles a future server-side exchange flow.
+  // GitHub redirects back with ?code=...&state=... (standard OAuth params).
+  // We validate CSRF state, clean the URL, then exchange the code.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const code = params.get("github_code");
-    const state = params.get("github_state");
+    const code  = params.get("code");   // standard GitHub OAuth param
+    const state = params.get("state");  // standard GitHub OAuth param
 
     if (!code) return;
 
     const savedState = sessionStorage.getItem("github_oauth_state");
-    if (state !== savedState) {
-      console.warn("[GitHubOAuth] State mismatch — possible CSRF.");
+    if (!savedState || state !== savedState) {
+      console.warn("[GitHubOAuth] State mismatch — possible CSRF. Aborting.");
       return;
     }
 
-    // Clean URL
+    // Clean URL — remove OAuth params so a refresh doesn't re-trigger
     const cleanUrl = new URL(window.location.href);
-    cleanUrl.searchParams.delete("github_code");
-    cleanUrl.searchParams.delete("github_state");
+    cleanUrl.searchParams.delete("code");
+    cleanUrl.searchParams.delete("state");
     window.history.replaceState({}, "", cleanUrl.toString());
     sessionStorage.removeItem("github_oauth_state");
 
-    // In a production setup, exchange `code` → `access_token` via your backend.
-    // For now we surface the code for manual PAT linking:
-    console.info("[GitHubOAuth] OAuth code received. Exchange via backend:", code);
+    // Exchange `code` for an access_token via your backend.
+    // The client secret MUST stay server-side — never expose it in the browser.
+    console.info("[GitHubOAuth] OAuth code received. Forward to backend for exchange:", code);
   }, []);
 
   // ── 3. connect() — Opens GitHub's OAuth authorize page ────────────────────
   const connect = useCallback(() => {
     const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
     if (!clientId) {
-      console.error("[GitHubOAuth] GITHUB_CLIENT_ID not set in .env");
+      console.error("[GitHubOAuth] VITE_GITHUB_CLIENT_ID not set in .env");
       return;
     }
 
     const state = crypto.randomUUID();
     sessionStorage.setItem("github_oauth_state", state);
 
+    // URLSearchParams encodes each value with encodeURIComponent automatically,
+    // ensuring the redirect_uri never contains raw colons or slashes in the query string.
     const params = new URLSearchParams({
-      client_id: clientId,
-      redirect_uri: REDIRECT_URI,
-      scope: "repo read:user",
+      client_id:    clientId,
+      redirect_uri: REDIRECT_URI,   // e.g. http://localhost:5173/api/auth/callback/github
+      scope:        "repo read:user",
       state,
     });
 
