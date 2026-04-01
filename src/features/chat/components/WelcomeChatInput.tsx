@@ -16,10 +16,11 @@ import {
   Search,
   SearchX,
   X,
-  HardDrive
+  HardDrive,
+  Github,
 } from "lucide-react";
-import { cn } from "../../../lib/utils"; 
-import { useCloudStorage } from "../../../hooks/useCloudStorage"; 
+import { cn } from "../../../lib/utils";
+import { useCloudStorage } from "../../../hooks/useCloudStorage";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import WhiteboardModal from "../../../Components/ui/WhiteboardModal";
@@ -27,6 +28,10 @@ import LoginModal from "../../auth/components/LoginModal";
 import SubscribeModal from "../../subscriptions/components/SubscribeModal";
 import { useSubscription } from "../../subscriptions/hooks/useSubscription";
 import { useFilePreviews } from "../../../hooks/useFilePreviews";
+import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux";
+import ImportCodeModal from "./ImportCodeModal";
+import { clearAttachedRepo } from "../chatSlice";
+import { repoBlobStore } from "../services/repoBlobStore";
 
 type SearchMode = null | "search" | "deep-search";
 
@@ -54,12 +59,15 @@ interface SavedDraft {
 const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
   ({ onStartChat, user, isDark, isLoading, fileUploadStage = "idle", isUploading = false }, ref) => {
     const { t } = useTranslation();
+    const dispatch = useAppDispatch();
+    const attachedRepo = useAppSelector((state: any) => state.chat.attachedRepo);
     const [inputValue, setInputValue] = useState("");
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [showAttachMenu, setShowAttachMenu] = useState(false);
     const [showWhiteboard, setShowWhiteboard] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [showSubscribeModal, setShowSubscribeModal] = useState(false);
+    const [showImportModal, setShowImportModal] = useState(false);
     const [searchMode, setSearchMode] = useState<SearchMode>(null);
 
     const filePreviews = useFilePreviews(selectedFiles);
@@ -251,7 +259,8 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
       isUploading || fileUploadStage === "uploading" || fileUploadStage === "processing";
 
     const handleSubmit = () => {
-      if (!inputValue.trim() && selectedFiles.length === 0) return;
+      // Allow send if there's text, regular files, OR an attached repo
+      if (!inputValue.trim() && selectedFiles.length === 0 && !attachedRepo) return;
 
       if (!user?.id) {
         saveDraftAndLogin();
@@ -260,10 +269,33 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
 
       if (isFileProcessing) return;
 
-      onStartChat(inputValue, selectedFiles, searchMode);
+      // ══ PROMPT BRIDGE ══
+      // Must run here so ANY parent's onStartChat handler receives the
+      // enriched text + blob — regardless of whether that parent is
+      // ChatInterface, a standalone Welcome page, or anything else.
+      let sendText = inputValue;
+      let sendFiles = [...selectedFiles];
+
+      if (attachedRepo) {
+        const packBlob = repoBlobStore.get();
+        if (packBlob) {
+          sendText = [
+            `[SYSTEM: The following XML contains the full source of GitHub repo "${attachedRepo.owner}/${attachedRepo.repo}" on branch "${attachedRepo.branch}". Each file is in <file path="..."> XML tags. Use this as context to answer accurately.]`,
+            ``,
+            `[USER_QUERY]: ${inputValue}`,
+          ].join("\n");
+          sendFiles = [packBlob, ...sendFiles];
+        }
+        // Clear immediately — single-use per turn
+        repoBlobStore.clear();
+        dispatch(clearAttachedRepo());
+      }
+      // ═════════════════
+
+      onStartChat(sendText, sendFiles, searchMode);
       setInputValue("");
       setSelectedFiles([]);
-      setSearchMode(null); // Reset search mode after sending
+      setSearchMode(null);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -296,6 +328,50 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
           onClose={() => setShowSubscribeModal(false)}
           featureName="Search Features"
         />
+
+        {/* GitHub Source Chip */}
+        <AnimatePresence>
+          {attachedRepo && (
+            <motion.div
+              initial={{ opacity: 0, y: 4, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 4, scale: 0.95 }}
+              transition={{ duration: 0.15 }}
+              className="px-4 pt-3 pb-0"
+            >
+              <div
+                className={cn(
+                  "inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-medium",
+                  isDark
+                    ? "bg-indigo-500/10 border-indigo-500/25 text-indigo-300"
+                    : "bg-indigo-50 border-indigo-200 text-indigo-700"
+                )}
+              >
+                <Github size={13} className="shrink-0" />
+                <span className="max-w-[200px] truncate">
+                  {attachedRepo.owner}/{attachedRepo.repo}
+                </span>
+                <span
+                  className={cn(
+                    "text-[10px] px-1.5 py-0.5 rounded-md font-semibold",
+                    isDark
+                      ? "bg-indigo-500/20 text-indigo-400"
+                      : "bg-indigo-100 text-indigo-600"
+                  )}
+                >
+                  {attachedRepo.fileCount} files
+                </span>
+                <button
+                  onClick={() => dispatch(clearAttachedRepo())}
+                  className="ml-0.5 text-current opacity-50 hover:opacity-100 transition-opacity"
+                  title="Remove repo context"
+                >
+                  <X size={11} />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* --- TOP SECTION: File Preview & Text Area --- */}
         <div className="flex flex-col w-full flex-1">
@@ -600,6 +676,29 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
 
                     <button
                       onClick={() => {
+                        setShowImportModal(true);
+                        setShowAttachMenu(false);
+                      }}
+                      className={cn(
+                        "w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors hover:cursor-pointer",
+                        isDark
+                          ? "hover:bg-white/10 text-gray-200"
+                          : "hover:bg-gray-100 text-gray-700"
+                      )}
+                    >
+                      <Github size={18} className="text-gray-400" />
+                      Import Code
+                    </button>
+
+                    <div
+                      className={cn(
+                        "h-px w-full my-1",
+                        isDark ? "bg-gray-700" : "bg-gray-100"
+                      )}
+                    />
+
+                    <button
+                      onClick={() => {
                         setShowWhiteboard(true);
                         setShowAttachMenu(false);
                       }}
@@ -729,6 +828,12 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
             setShowWhiteboard(false);
           }}
           isDark={isDark}
+        />
+
+        {/* IMPORT CODE MODAL */}
+        <ImportCodeModal
+          isOpen={showImportModal}
+          onClose={() => setShowImportModal(false)}
         />
       </div>
     );

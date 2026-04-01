@@ -98,11 +98,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
   };
 
   // 3. MAIN SEND HANDLER
+  // The Prompt Bridge (repo blob injection + text wrapping) runs upstream in
+  // ChatInput.handleSend / WelcomeChatInput.handleSubmit, so by the time we
+  // receive `text` and `files` here they are already fully enriched.
   const handleSend = async (text: string, files?: File[], searchMode?: "search" | "deep-search" | null) => {
     const file = files && files.length > 0 ? files[0] : null;
     if (!text.trim() && !file) return;
 
-    // ── Limit check BEFORE send ───────────────────────────────────────────────
+    // ── Limit check ────────────────────────────────────────────────────────
     if (limitReached) {
       showLimitReachedToast({
         feature: "messages",
@@ -139,7 +142,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
         selectedAgentId || undefined
       );
 
-      const cleanText = text.trim();
+      // Use the original (unmodified) text for the session title
+      const cleanText = text.replace(/^\[SYSTEM:.*?\[USER_QUERY\]:\s*/s, "").trim();
       const title = cleanText ? cleanText.substring(0, 30) : "New Chat";
       SessionService.updateSession(token, newSessionId, title);
 

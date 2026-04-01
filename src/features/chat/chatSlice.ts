@@ -1,12 +1,25 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import AVAILABLE_MODELS, { VOICE_MODELS } from "../../../Constants";
 
+// --- GitHub Repo Attachment ---
+// NOTE: packBlob (File) is intentionally NOT stored here — File objects are
+// non-serializable and will cause Redux warnings. The blob is stored in
+// src/features/chat/services/repoBlobStore.ts and accessed directly.
+export interface AttachedRepo {
+  owner: string;
+  repo: string;
+  branch: string;
+  tokenCount: number;
+  fileCount: number;
+  isOverLimit: boolean;   // true when tokenCount > 1_000_000
+}
+
 interface ChatState {
   isMobileMenuOpen: boolean;
   isContextSidebarOpen: boolean;
   activeSidebarTab: "home" | "history" | "library" | "settings";
 
-  // --- NEW: Global Sessions State ---
+  // --- Global Sessions State ---
   sessions: any[];
 
   newChatModel: {
@@ -30,6 +43,9 @@ interface ChatState {
   } | null;
 
   playgroundModels: any[];
+
+  // --- GitHub Repo Chat ---
+  attachedRepo: AttachedRepo | null;
 }
 
 const initialState: ChatState = {
@@ -50,6 +66,9 @@ const initialState: ChatState = {
   activeChatId: null,
   activeSessionConfig: null,
   playgroundModels: [AVAILABLE_MODELS[0], AVAILABLE_MODELS[17]], //INTEGRI AND CLAUDE-HAIKU-4.5 AS DEFAULT
+
+  // GitHub Repo Chat
+  attachedRepo: null,
 };
 
 export const chatSlice = createSlice({
@@ -158,6 +177,18 @@ export const chatSlice = createSlice({
     removePlaygroundModel: (state, action: PayloadAction<number>) => {
       state.playgroundModels.splice(action.payload, 1);
     },
+
+    // --- GitHub Repo Chat Reducers ---
+    setAttachedRepo: (state, action: PayloadAction<AttachedRepo>) => {
+      state.attachedRepo = action.payload;
+    },
+    clearAttachedRepo: (state) => {
+      state.attachedRepo = null;
+      // Also wipe the non-serializable blob — dynamic import avoids circular deps
+      import("./services/repoBlobStore").then(({ repoBlobStore }) =>
+        repoBlobStore.clear()
+      );
+    },
   },
 });
 
@@ -165,10 +196,10 @@ export const {
   toggleMobileMenu,
   setContextSidebarOpen,
   setActiveSidebarTab,
-  setSessions, // Exported
-  addSession, // Exported
-  removeSession, // Exported
-  updateSessionTitle, // Exported
+  setSessions,
+  addSession,
+  removeSession,
+  updateSessionTitle,
   setNewChatModel,
   setVoiceChatModel,
   setVoiceShowCaptions,
@@ -177,6 +208,8 @@ export const {
   setActiveSessionConfig,
   addPlaygroundModel,
   removePlaygroundModel,
+  setAttachedRepo,
+  clearAttachedRepo,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

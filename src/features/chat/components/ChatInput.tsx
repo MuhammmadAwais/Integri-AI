@@ -10,8 +10,9 @@ import {
   Search,
   SearchX,
   Ban,
+  Github,
 } from "lucide-react";
-import { useAppSelector } from "../../../hooks/useRedux";
+import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux";
 import { cn } from "../../../lib/utils";
 import { useCloudStorage } from "../../../hooks/useCloudStorage";
 import { AnimatePresence, motion } from "framer-motion";
@@ -20,6 +21,9 @@ import LoginModal from "../../auth/components/LoginModal";
 import { useSubscription } from "../../subscriptions/hooks/useSubscription";
 import { useLimits } from "../../limits/hooks/useLimits";
 import { useFilePreviews } from "../../../hooks/useFilePreviews";
+import ImportCodeModal from "./ImportCodeModal";
+import { clearAttachedRepo } from "../chatSlice";
+import { repoBlobStore } from "../services/repoBlobStore";
 
 type SearchMode = null | "search" | "deep-search";
 
@@ -43,13 +47,16 @@ const ChatInput: React.FC<ChatInputProps> = ({
   isUploading = false,
 }) => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
   const user = useAppSelector((state: any) => state.auth.user);
   const isDark = useAppSelector((state: any) => state.theme.isDark);
+  const attachedRepo = useAppSelector((state: any) => state.chat.attachedRepo);
   const [input, setInput] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [showAttachMenu, setShowAttachMenu] = useState(false);
-  const [showWhiteboard, setShowWhiteboard] = useState(false); // State for whiteboard
+  const [showWhiteboard, setShowWhiteboard] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [searchMode, setSearchMode] = useState<SearchMode>(null);
 
   // Check subscription tier for search features
@@ -105,11 +112,34 @@ const ChatInput: React.FC<ChatInputProps> = ({
       return;
     }
     if (disabled || isCloudLoading || isFileProcessing) return;
-    if ((input.trim() || files.length > 0) && onSend) {
-      onSend(input, files, searchMode);
+
+    // ══ PROMPT BRIDGE ══
+    // Runs here so it fires on EVERY send path regardless of which parent
+    // component handles the message (ChatInterface, App, WelcomePage, etc.)
+    let sendText = input;
+    let sendFiles = [...files];
+
+    if (attachedRepo) {
+      const packBlob = repoBlobStore.get();
+      if (packBlob) {
+        sendText = [
+          `[SYSTEM: The following XML contains the full source of GitHub repo "${attachedRepo.owner}/${attachedRepo.repo}" on branch "${attachedRepo.branch}". Each file is in <file path="..."> XML tags. Use this as context to answer accurately.]`,
+          ``,
+          `[USER_QUERY]: ${input}`,
+        ].join("\n");
+        sendFiles = [packBlob, ...sendFiles];
+      }
+      // Clear immediately — single-use per turn
+      repoBlobStore.clear();
+      dispatch(clearAttachedRepo());
+    }
+    // ═════════════════
+
+    if ((sendText.trim() || sendFiles.length > 0) && onSend) {
+      onSend(sendText, sendFiles, searchMode);
       setInput("");
       setFiles([]);
-      setSearchMode(null); // Reset search mode after sending
+      setSearchMode(null);
       if (textareaRef.current) textareaRef.current.style.height = "auto";
     }
   };
@@ -184,6 +214,48 @@ const ChatInput: React.FC<ChatInputProps> = ({
               Daily message limit reached.
               {resetTimeFormatted ? ` Resets at ${resetTimeFormatted}.` : " Upgrade to continue."}
             </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* GitHub Source Chip — replaces the default file preview for attached repos */}
+      <AnimatePresence>
+        {attachedRepo && (
+          <motion.div
+            initial={{ opacity: 0, y: 6, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 6, scale: 0.95 }}
+            transition={{ duration: 0.15 }}
+            className="mb-3 px-1"
+          >
+            <div
+              className={cn(
+                "inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-medium",
+                isDark
+                  ? "bg-indigo-500/10 border-indigo-500/25 text-indigo-300"
+                  : "bg-indigo-50 border-indigo-200 text-indigo-700"
+              )}
+            >
+              <Github size={13} className="shrink-0" />
+              <span className="max-w-[180px] truncate">
+                {attachedRepo.owner}/{attachedRepo.repo}
+              </span>
+              <span
+                className={cn(
+                  "text-[10px] px-1.5 py-0.5 rounded-md font-semibold",
+                  isDark ? "bg-indigo-500/20 text-indigo-400" : "bg-indigo-100 text-indigo-600"
+                )}
+              >
+                {attachedRepo.fileCount} files
+              </span>
+              <button
+                onClick={() => dispatch(clearAttachedRepo())}
+                className="ml-0.5 text-current opacity-50 hover:opacity-100 transition-opacity"
+                title="Remove repo context"
+              >
+                <X size={11} />
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -468,7 +540,31 @@ const ChatInput: React.FC<ChatInputProps> = ({
                         )}
                       />
 
-                      {/* NEW: Draw Sketch Option */}
+                      {/* Import Code — GitHub Repo */}
+                      <button
+                        onClick={() => {
+                          setShowImportModal(true);
+                          setShowAttachMenu(false);
+                        }}
+                        className={cn(
+                          "flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-lg transition-colors",
+                          isDark
+                            ? "hover:bg-gray-800 text-gray-200"
+                            : "hover:bg-gray-100 text-gray-700"
+                        )}
+                      >
+                        <Github size={16} className="text-gray-400" />
+                        Import Code
+                      </button>
+
+                      <div
+                        className={cn(
+                          "h-px w-full my-1",
+                          isDark ? "bg-gray-800" : "bg-gray-100"
+                        )}
+                      />
+
+                      {/* Draw Sketch Option */}
                       <button
                         onClick={() => {
                           setShowWhiteboard(true);
@@ -582,7 +678,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
         )}
       </div>
 
-      {/* WHITEBOARD MODAL (Rendered via Portal inside component) */}
+      {/* WHITEBOARD MODAL */}
       <WhiteboardModal
         isOpen={showWhiteboard}
         onClose={() => setShowWhiteboard(false)}
@@ -591,6 +687,12 @@ const ChatInput: React.FC<ChatInputProps> = ({
           setShowWhiteboard(false);
         }}
         isDark={isDark}
+      />
+
+      {/* IMPORT CODE MODAL */}
+      <ImportCodeModal
+        isOpen={showImportModal}
+        onClose={() => setShowImportModal(false)}
       />
     </div>
   );
