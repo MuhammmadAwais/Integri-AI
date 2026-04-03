@@ -124,7 +124,7 @@ export function useRepoPacker() {
           throw new Error("Unable to connect to the proxy. Is the server running?");
         }
 
-        if (!headRes.ok) {
+        if (!headRes.ok && headRes.status !== 304) {
           if (headRes.status === 403 || headRes.status === 429) {
             const limitMsg = handleRateLimit(headRes.headers);
             if (limitMsg) throw new Error(limitMsg);
@@ -138,13 +138,20 @@ export function useRepoPacker() {
 
         let arrayBuffer: ArrayBuffer;
 
-        // ETag Cache Logic
+        // 1.1 ETag Cache Logic — Fast-path
         if (headRes.status === 304) {
-          // No changes! Rely on our cached compiled XML if available.
           const cachedPayload = localStorage.getItem(cacheKey);
           if (cachedPayload) {
-            compilePdfAndDispatch(JSON.parse(cachedPayload), owner, repo, branch || "default");
-            return;
+            try {
+              const parsed = JSON.parse(cachedPayload);
+              // Directly reconstruct from cache
+              compilePdfAndDispatch(parsed, owner, repo, branch || "default");
+              return; 
+            } catch (e) {
+              // Cache corruption? Fall back to full download
+              localStorage.removeItem(cacheKey);
+              localStorage.removeItem(etagKey);
+            }
           }
         }
 
@@ -163,6 +170,19 @@ export function useRepoPacker() {
         
         const newEtag = getRes.headers.get("etag");
         arrayBuffer = await getRes.arrayBuffer();
+
+        // Binary Zip Signature Validation (PK\x03\x04)
+        if (arrayBuffer.byteLength < 4) {
+          throw new Error("Invalid ZIP format received from proxy (too small).");
+        }
+        const signature = new Uint8Array(arrayBuffer.slice(0, 4));
+        if (signature[0] !== 0x50 || signature[1] !== 0x4B || signature[2] !== 0x03 || signature[3] !== 0x04) {
+          // It's likely a text-based error message (HTML/JSON) from the proxy instead of a binary zip
+          const decoder = new TextDecoder();
+          const textPreview = decoder.decode(arrayBuffer.slice(0, 100));
+          console.error("Invalid ZIP signature. Content preview:", textPreview);
+          throw new Error("Invalid ZIP format received from proxy.");
+        }
 
         if (newEtag) localStorage.setItem(etagKey, newEtag);
 
@@ -195,7 +215,6 @@ export function useRepoPacker() {
         workerRef.current.postMessage({ buffer: arrayBuffer, repoUrl }, [arrayBuffer]);
         
       } catch (err: any) {
-        console.error("[useRepoPacker] Error:", err);
         setError(err?.message || "An unexpected error occurred.");
         setStatus("error");
       }
