@@ -279,11 +279,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
       if (attachedRepo) {
         const packBlob = repoBlobStore.get();
         if (packBlob) {
-          sendText = [
-            `[SYSTEM: The following XML contains the full source of GitHub repo "${attachedRepo.owner}/${attachedRepo.repo}" on branch "${attachedRepo.branch}". Each file is in <file path="..."> XML tags. Use this as context to answer accurately.]`,
-            ``,
-            `[USER_QUERY]: ${inputValue}`,
-          ].join("\n");
+          sendText = `SYSTEM: The repository source code is attached as a PDF. Use the XML tags for navigation. ${inputValue}`;
           sendFiles = [packBlob, ...sendFiles];
         }
         // Clear immediately — single-use per turn

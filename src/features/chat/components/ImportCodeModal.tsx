@@ -96,13 +96,16 @@ const ImportCodeModal: React.FC<ImportCodeModalProps> = ({
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const {
-    isConnected,
-    user,
-    connect,
-    connectWithPAT,
-    disconnect,
-  } = useGitHubOAuth();
+  // const {
+  //   isConnected,
+  //   user,
+  //   connect,
+  //   connectWithPAT,
+  //   disconnect,
+  // } = useGitHubOAuth();
+
+  const isConnected = false;
+  const user = null as any;
 
   const { packRepo, reset, status, progress, error } = useRepoPacker();
 
@@ -120,8 +123,10 @@ const ImportCodeModal: React.FC<ImportCodeModalProps> = ({
         `✅ ${attachedRepo.owner}/${attachedRepo.repo} indexed — ${attachedRepo.fileCount} files, ${(attachedRepo.tokenCount / 1000).toFixed(0)}K tokens`,
         { autoClose: 4000 }
       );
+    } else if (status === "error" && error) {
+      toast.error(error);
     }
-  }, [status, attachedRepo]);
+  }, [status, attachedRepo, error]);
 
   const handleImport = () => {
     if (!repoUrl.trim()) return;
@@ -136,18 +141,18 @@ const ImportCodeModal: React.FC<ImportCodeModalProps> = ({
   };
 
   const handlePATConnect = async () => {
-    if (!pat.trim()) return;
-    setPatLoading(true);
-    try {
-      await connectWithPAT(pat);
-      setPat("");
-      setShowPATInput(false);
-      toast.success("GitHub account connected!");
-    } catch (err: any) {
-      toast.error(err.message || "Failed to connect GitHub account.");
-    } finally {
-      setPatLoading(false);
-    }
+    // if (!pat.trim()) return;
+    // setPatLoading(true);
+    // try {
+    //   await connectWithPAT(pat);
+    //   setPat("");
+    //   setShowPATInput(false);
+    //   toast.success("GitHub account connected!");
+    // } catch (err: any) {
+    //   toast.error(err.message || "Failed to connect GitHub account.");
+    // } finally {
+    //   setPatLoading(false);
+    // }
   };
 
   const handleClose = () => {
@@ -418,11 +423,7 @@ const ImportCodeModal: React.FC<ImportCodeModalProps> = ({
                     {/* File counter */}
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-gray-500">
-                        {status === "fetching_tree"
-                          ? "Fetching repository structure..."
-                          : status === "packing"
-                          ? "Packaging context file..."
-                          : `Indexing files...`}
+                        {progress.phase || "Processing..."}
                       </span>
                       {progress.total > 0 && (
                         <span className="text-xs font-mono font-semibold text-indigo-400">
@@ -485,7 +486,7 @@ const ImportCodeModal: React.FC<ImportCodeModalProps> = ({
                           </span>
                         )}
                       </div>
-                      {isConnected ? (
+                      {/* isConnected ? (
                         <button
                           onClick={disconnect}
                           className="text-xs text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
@@ -507,7 +508,7 @@ const ImportCodeModal: React.FC<ImportCodeModalProps> = ({
                             Connect
                           </button>
                         </div>
-                      )}
+                      ) */}
                     </div>
 
                     {/* PAT input (collapsible) */}
@@ -611,14 +612,15 @@ const ImportCodeModal: React.FC<ImportCodeModalProps> = ({
 
                     {/* Info note */}
                     <p className={cn("text-xs", isDark ? "text-gray-500" : "text-gray-400")}>
-                      Public repos work without connecting. For private repos,{" "}
+                      Currently only public repos are supported without authentication.
+                      {/* For private repos,{" "}
                       <button
                         onClick={() => setShowPATInput(true)}
                         className="text-indigo-400 hover:underline"
                       >
                         connect your GitHub account
                       </button>
-                      .
+                      . */}
                     </p>
 
                     {/* Import button */}

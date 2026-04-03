@@ -122,11 +122,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
     if (attachedRepo) {
       const packBlob = repoBlobStore.get();
       if (packBlob) {
-        sendText = [
-          `[SYSTEM: The following XML contains the full source of GitHub repo "${attachedRepo.owner}/${attachedRepo.repo}" on branch "${attachedRepo.branch}". Each file is in <file path="..."> XML tags. Use this as context to answer accurately.]`,
-          ``,
-          `[USER_QUERY]: ${input}`,
-        ].join("\n");
+        sendText = `SYSTEM: The repository source code is attached as a PDF. Use the XML tags for navigation. ${input}`;
         sendFiles = [packBlob, ...sendFiles];
       }
       // Clear immediately — single-use per turn
