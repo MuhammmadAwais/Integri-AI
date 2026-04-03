@@ -19,7 +19,7 @@ import { repoBlobStore } from "../services/repoBlobStore";
 import { jsPDF } from "jspdf";
 import PackWorker from "../services/repoPackerWorker?worker";
 
-const MAX_ZIP_BYTES = 100 * 1024 * 1024; // 100MB
+const MAX_ZIP_BYTES = 50 * 1024 * 1024; // 50MB
 
 export type PackerStatus =
   | "idle"
@@ -258,7 +258,7 @@ export function useRepoPacker() {
       }
 
       const pdfBlob = doc.output("blob");
-      const packFile = new File([pdfBlob], "repo_context.pdf", {
+      const packFile = new File([pdfBlob], "Repo_Context.pdf", {
         type: "application/pdf",
       });
 

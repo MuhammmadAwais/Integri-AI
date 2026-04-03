@@ -151,30 +151,41 @@ const MessageBubble: React.FC<MessageProps> = ({
                 )}
 
                 {/* --- TEXT BUBBLE --- */}
-                {content && content.replace(/\[File:\s*[^\]]+\]/g, "").trim() !== "" && !isGeneratingImage && (
-                  <div
-                    className={cn(
-                      "text-[15px] leading-7 w-full overflow-hidden relative",
-                      isUser
-                        ? cn(
-                            "px-5 py-3 rounded-2xl rounded-tr-sm shadow-sm",
-                            isDark
-                              ? "bg-[#2F3336] text-[#E7E9EA]"
-                              : "bg-[#F3F4F6] text-[#111827]"
-                          )
-                        : cn(
-                            "px-1 py-0 bg-transparent",
-                            isDark ? "text-[#E7E9EA]" : "text-[#0F1419]"
-                          )
-                    )}
-                  >
-                    <MessageMarkdown
-                      content={content.replace(/\[File:\s*[^\]]+\]/g, "").trim()}
-                      isDark={isDark}
-                      isUser={isUser}
-                    />
-                  </div>
-                )}
+                {(() => {
+                  const displayContent = content
+                    ? content
+                        .replace(/\[File:\s*[^\]]+\]/g, "")
+                        .replace("SYSTEM: The repository source code is attached as a PDF. Use the XML tags for navigation. ", "")
+                        .trim()
+                    : "";
+
+                  if (!displayContent || isGeneratingImage) return null;
+
+                  return (
+                    <div
+                      className={cn(
+                        "text-[15px] leading-7 w-full overflow-hidden relative",
+                        isUser
+                          ? cn(
+                              "px-5 py-3 rounded-2xl rounded-tr-sm shadow-sm",
+                              isDark
+                                ? "bg-[#2F3336] text-[#E7E9EA]"
+                                : "bg-[#F3F4F6] text-[#111827]"
+                            )
+                          : cn(
+                              "px-1 py-0 bg-transparent",
+                              isDark ? "text-[#E7E9EA]" : "text-[#0F1419]"
+                            )
+                      )}
+                    >
+                      <MessageMarkdown
+                        content={displayContent}
+                        isDark={isDark}
+                        isUser={isUser}
+                      />
+                    </div>
+                  );
+                })()}
               </div>
 
               {((attachments && attachments.length > 0) || attachment) && !isGeneratingImage && isUser && (

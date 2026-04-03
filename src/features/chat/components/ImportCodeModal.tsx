@@ -75,12 +75,13 @@ const ImportCodeModal: React.FC<ImportCodeModalProps> = ({ isOpen, onClose }) =>
 
   useEffect(() => {
     if (status === "done" && attachedRepo) {
-      success(`Repository indexed correctly: ${attachedRepo.repo}`);
+      success(`Repository Imported Successfully: ${attachedRepo.repo}`);
+      reset();
       onClose();
     } else if (status === "error" && error) {
       toastError(error);
     }
-  }, [status, attachedRepo, error, onClose, success, toastError]);
+  }, [status, attachedRepo, error, onClose, success, toastError, reset]);
 
   const handleImport = () => {
     if (!repoUrl.trim() || status !== "idle") return;
@@ -143,7 +144,7 @@ const ImportCodeModal: React.FC<ImportCodeModalProps> = ({ isOpen, onClose }) =>
                 <button
                   onClick={handleClose}
                   disabled={isLoading}
-                  className={cn("p-1.5 rounded-lg transition-colors hover:cursor-pointer", isLoading ? "opacity-30 cursor-not-allowed" : "hover:bg-zinc-800 text-zinc-400 hover:text-white ")}
+                  className={cn("p-1.5 rounded-lg transition-colors", isLoading ? "opacity-30 cursor-not-allowed" : "hover:bg-zinc-800 text-zinc-400 hover:text-white hover:cursor-pointer")}
                 >
                   <X size={16} />
                 </button>
@@ -171,7 +172,7 @@ const ImportCodeModal: React.FC<ImportCodeModalProps> = ({ isOpen, onClose }) =>
                       </div>
                       <button
                         onClick={() => { reset(); if (repoUrl.trim()) packRepo(repoUrl); }}
-                        className="w-full py-2.5 rounded-xl text-sm font-semibold bg-zinc-100 hover:bg-white text-zinc-900 transition-colors shadow-lg"
+                        className="w-full py-2.5 rounded-xl text-sm font-semibold bg-zinc-100 hover:bg-white text-zinc-900 transition-colors shadow-lg hover:cursor-pointer"
                       >
                         Retry Import
                       </button>

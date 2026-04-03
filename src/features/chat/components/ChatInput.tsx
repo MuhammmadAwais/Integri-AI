@@ -246,7 +246,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
               </span>
               <button
                 onClick={() => dispatch(clearAttachedRepo())}
-                className="ml-0.5 text-current opacity-50 hover:opacity-100 transition-opacity"
+                className="ml-0.5 text-current opacity-50 hover:opacity-100 transition-opacity hover:cursor-pointer"
                 title="Remove repo context"
               >
                 <X size={11} />
