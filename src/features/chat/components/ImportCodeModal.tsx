@@ -30,7 +30,7 @@ import {
   Cpu,
 } from "lucide-react";
 import { cn } from "../../../lib/utils";
-import { useGitHubOAuth } from "../hooks/useGitHubOAuth";
+
 import { useRepoPacker } from "../hooks/useRepoPacker";
 import { useAppSelector } from "../../../hooks/useRedux";
 import { toast } from "react-toastify";
@@ -93,6 +93,7 @@ const ImportCodeModal: React.FC<ImportCodeModalProps> = ({
   const [showPat, setShowPat] = useState(false);
   const [showPATInput, setShowPATInput] = useState(false);
   const [patLoading, setPatLoading] = useState(false);
+  {setPatLoading}{setShowPATInput}
 
   const inputRef = useRef<HTMLInputElement>(null);
 
