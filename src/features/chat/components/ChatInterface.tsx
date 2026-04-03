@@ -80,14 +80,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
     }
   }, [id, messagesLoaded, location.state, sendMessage]);
 
-  // 2. SCROLL LOGIC
-  useEffect(() => {
-    const lastMessage = messages[messages.length - 1];
-    if (lastMessage?.role === "user" && !isStreaming) {
-      scrollToBottom();
-    }
-  }, [messages.length, isStreaming]);
-
   const scrollToBottom = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollTo({
@@ -96,6 +88,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
       });
     }
   };
+
+  // 2. SCROLL LOGIC
+  useEffect(() => {
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage?.role === "user" && !isStreaming) {
+      scrollToBottom();
+    }
+  }, [messages.length, isStreaming]);
 
   // 3. MAIN SEND HANDLER
   // The Prompt Bridge (repo blob injection + text wrapping) runs upstream in

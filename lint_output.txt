@@ -1,0 +1,1916 @@
+
+> integri-ai@0.0.0 lint
+> eslint .
+
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\api\proxy-repo.ts
+  70:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ads\AdUnit.tsx
+    8:22  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+  224:21  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+  235:13  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ads\AdUnit.tsx:235:13
+  233 |                 "color: inherit"
+  234 |             );
+> 235 |             setAdFailed(true);
+      |             ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  236 |         }
+  237 |     }, []);
+  238 |  react-hooks/set-state-in-effect
+  237:8   warning  React Hook useEffect has missing dependencies: 'format', 'layout', 'slot', and 'testId'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   react-hooks/exhaustive-deps
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\layout\Layout.tsx
+  7:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\AdSense.tsx
+  15:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  37:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\AgentMenu.tsx
+   16:21  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-explicit-any
+   38:13  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-explicit-any
+   55:26  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-explicit-any
+   72:9   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\AgentMenu.tsx:72:9
+  70 |           newCoords.bottom = "auto";
+  71 |         }
+> 72 |         setCoords(newCoords);
+     |         ^^^^^^^^^ Avoid calling setState() directly within an effect
+  73 |       }
+  74 |     }
+  75 |   }, [isOpen, align, position]);  react-hooks/set-state-in-effect
+   83:40  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-explicit-any
+   86:6   warning  React Hook useEffect has a missing dependency: 'agents'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               react-hooks/exhaustive-deps
+  157:38  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\AppDownloadSheet.tsx
+  57:41  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+  60:5   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\AppDownloadSheet.tsx:60:5
+  58 |
+  59 |   useEffect(() => {
+> 60 |     setMounted(true);
+     |     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  61 |   }, []);
+  62 |
+  63 |   useEffect(() => {                                                      react-hooks/set-state-in-effect
+  69:7   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\AppDownloadSheet.tsx:69:7
+  67 |     const count = incrementVisitCount();
+  68 |     if (count % VISIT_INTERVAL === 0) {
+> 69 |       setOpen(true);
+     |       ^^^^^^^ Avoid calling setState() directly within an effect
+  70 |     }
+  71 |   }, [mounted]);
+  72 |  react-hooks/set-state-in-effect
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\Breadcrumbs.tsx
+  150:10  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\ErrorModal.tsx
+  25:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\FileCard.tsx
+  16:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\FileGallery.tsx
+  16:51  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\MessageActions.tsx
+  80:4  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\MessageBubble.tsx
+   58:41   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  149:85   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  192:103  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\MessageMarkdown.tsx
+   25:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   28:16  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   83:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  158:18  error  'node' is defined but never used          @typescript-eslint/no-unused-vars
+  158:65  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\ModelMenu.tsx
+  56:26  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-explicit-any
+  79:9   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\ModelMenu.tsx:79:9
+  77 |         }
+  78 |
+> 79 |         setCoords(newCoords);
+     |         ^^^^^^^^^ Avoid calling setState() directly within an effect
+  80 |       }
+  81 |     }
+  82 |   }, [isOpen, align, position]);  react-hooks/set-state-in-effect
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\NavButton.tsx
+   9:40  error  Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  10:7   error  'colorClass' is never reassigned. Use 'const' instead  prefer-const
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\ParticleBackground.tsx
+   6:41  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @typescript-eslint/no-explicit-any
+  16:9   error    'mouse' is never reassigned. Use 'const' instead                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                prefer-const
+  54:5   warning  Compilation Skipped: Inline `class` declarations are not supported
+
+Move class declarations outside of components/hooks.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\ParticleBackground.tsx:54:5
+   52 |     };
+   53 |
+>  54 |     class Particle {
+      |     ^^^^^^^^^^^^^^^^
+>  55 |       x: number;
+      | ^^^^^^^^^^^^^^^^
+>  56 |       y: number;
+      …
+      | ^^^^^^^^^^^^^^^^
+> 109 |       }
+      | ^^^^^^^^^^^^^^^^
+> 110 |     }
+      | ^^^^^^ Inline `class` declarations are not supported
+  111 |
+  112 |     const init = () => {
+  113 |       particles = [];
+
+  react-hooks/unsupported-syntax
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\Portal.tsx
+  8:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\Portal.tsx:8:5
+   6 |
+   7 |   useEffect(() => {
+>  8 |     setMounted(true);
+     |     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+   9 |     return () => setMounted(false);
+  10 |   }, []);
+  11 |  react-hooks/set-state-in-effect
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\ReasoningMenu.tsx
+  10:11  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  71:54  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\ShareModal.tsx
+  40:18  error  'err' is defined but never used           @typescript-eslint/no-unused-vars
+  54:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\ToastProvider.tsx
+  24:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\TrustpilotToast.tsx
+  9:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\WhiteboardModal.tsx
+  43:6  error    Expected an assignment or function call and instead saw an expression                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-expressions
+  53:9  error    Error: Cannot access variable before it is declared
+
+`setupCanvas` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\WhiteboardModal.tsx:53:9
+  51 |       // Small timeout to allow the DOM to render the portal content
+  52 |       const timer = setTimeout(() => {
+> 53 |         setupCanvas();
+     |         ^^^^^^^^^^^ `setupCanvas` accessed before it is declared
+  54 |       }, 50);
+  55 |       return () => clearTimeout(timer);
+  56 |     }
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\Components\ui\WhiteboardModal.tsx:59:3
+  57 |   }, [isOpen]);
+  58 |
+> 59 |   const setupCanvas = () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 60 |     const canvas = canvasRef.current;
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 61 |     const container = containerRef.current;
+     …
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 77 |     }
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 78 |   };
+     | ^^^^^ `setupCanvas` is declared here
+  79 |
+  80 |   // Handle Resize
+  81 |   useEffect(() => {  react-hooks/immutability
+  57:6  warning  React Hook useEffect has a missing dependency: 'setupCanvas'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      react-hooks/exhaustive-deps
+  90:6  warning  React Hook useEffect has a missing dependency: 'setupCanvas'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      react-hooks/exhaustive-deps
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\api\backendApi.ts
+   18:11  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+   19:10  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+   30:19  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  233:21  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  282:31  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  282:66  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  285:21  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  326:23  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  570:21  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  592:21  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  613:8   error  Expected an assignment or function call and instead saw an expression  @typescript-eslint/no-unused-expressions
+  614:21  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  636:21  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  661:21  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  702:21  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  720:21  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\app\App.tsx
+  62:54  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  87:54  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\config\seo.ts
+  16:58  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\agents\agentsSlice.tsx
+  60:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  67:66  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\agents\components\AgentDetailsPage.tsx
+   40:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   41:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   45:13  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   48:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  125:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  145:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  162:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  463:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\agents\components\AgentModal.tsx
+   16:11  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  109:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\agents\components\ConfirmationModal.tsx
+  31:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\agents\components\ModelSelector.tsx
+  36:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\auth\components\LoginModal.tsx
+  23:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\auth\components\NewUserBlockedModal.tsx
+  13:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\auth\services\authService.ts
+  56:12  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  57:16  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  59:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  83:12  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\auth\thunks\authThunk.ts
+  26:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  59:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  84:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\chat\chatSlice.ts
+   23:13  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   45:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   94:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   99:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  174:55  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\chat\components\ChatInput.tsx
+  51:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  52:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  53:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\chat\components\ChatInterface.tsx
+  31:41  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-explicit-any
+  32:40  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-explicit-any
+  33:47  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-explicit-any
+  35:13  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-explicit-any
+  87:7   error    Error: Cannot access variable before it is declared
+
+`scrollToBottom` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\chat\components\ChatInterface.tsx:87:7
+  85 |     const lastMessage = messages[messages.length - 1];
+  86 |     if (lastMessage?.role === "user" && !isStreaming) {
+> 87 |       scrollToBottom();
+     |       ^^^^^^^^^^^^^^ `scrollToBottom` accessed before it is declared
+  88 |     }
+  89 |   }, [messages.length, isStreaming]);
+  90 |
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\chat\components\ChatInterface.tsx:91:3
+   89 |   }, [messages.length, isStreaming]);
+   90 |
+>  91 |   const scrollToBottom = () => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  92 |     if (scrollRef.current) {
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |       scrollRef.current.scrollTo({
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  94 |         top: scrollRef.current.scrollHeight,
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  95 |         behavior: "smooth",
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |       });
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  97 |     }
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  98 |   };
+      | ^^^^^ `scrollToBottom` is declared here
+   99 |
+  100 |   // 3. MAIN SEND HANDLER
+  101 |   // The Prompt Bridge (repo blob injection + text wrapping) runs upstream in  react-hooks/immutability
+  89:6   warning  React Hook useEffect has a missing dependency: 'messages'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react-hooks/exhaustive-deps
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\chat\components\ImportCodeModal.tsx
+  62:11  error  'toast' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  63:47  error  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\chat\components\WelcomeChatInput.tsx
+   42:9   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-explicit-any
+   63:49  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-explicit-any
+   92:28  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\chat\components\WelcomeChatInput.tsx:92:28
+  90 |         try {
+  91 |           const parsed: SavedDraft = JSON.parse(savedDraft);
+> 92 |           if (parsed.text) setInputValue(parsed.text);
+     |                            ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  93 |
+  94 |           if (parsed.files && parsed.files.length > 0) {
+  95 |             Promise.all(  react-hooks/set-state-in-effect
+  111:25  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-explicit-any
+  189:8   warning  React Hook useLayoutEffect has a missing dependency: 'updateMenuPosition'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               react-hooks/exhaustive-deps
+  205:8   warning  React Hook useEffect has a missing dependency: 'updateMenuPosition'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     react-hooks/exhaustive-deps
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\chat\hooks\useChat.ts
+   34:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   46:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   47:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   58:13  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   58:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  121:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  124:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  127:13  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  129:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  179:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  189:53  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  256:13  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\chat\hooks\useGitHubOAuth.ts
+  139:14  error  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\chat\hooks\useRepoPacker.ts
+  150:22  error    'e' is defined but never used                                                                                               @typescript-eslint/no-unused-vars
+  172:9   error    'arrayBuffer' is never reassigned. Use 'const' instead                                                                      prefer-const
+  208:84  error    Empty block statement                                                                                                       no-empty
+  217:21  error    Unexpected any. Specify a different type                                                                                    @typescript-eslint/no-explicit-any
+  222:5   warning  React Hook useCallback has a missing dependency: 'compilePdfAndDispatch'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  225:43  error    Unexpected any. Specify a different type                                                                                    @typescript-eslint/no-explicit-any
+  279:19  error    Unexpected any. Specify a different type                                                                                    @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\chat\services\repoPackerWorker.ts
+   84:9   error  'totalFilesCount' is never reassigned. Use 'const' instead  prefer-const
+  121:9   error  'finalFiles' is never reassigned. Use 'const' instead       prefer-const
+  168:17  error  Unexpected any. Specify a different type                    @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\imageGen\components\GenDropdown.tsx
+  15:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\imageGen\components\GenLeftPanel.tsx
+   16:12  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+   18:12  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+   19:10  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+   62:39  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+   70:7   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\imageGen\components\GenLeftPanel.tsx:70:7
+  68 |   useEffect(() => {
+  69 |     if (externalPrompt) {
+> 70 |       setPrompt(externalPrompt);
+     |       ^^^^^^^^^ Avoid calling setState() directly within an effect
+  71 |       if (onPromptSet) onPromptSet();
+  72 |     }
+  73 |   }, [externalPrompt, onPromptSet]);  react-hooks/set-state-in-effect
+  120:5   error  Expected an assignment or function call and instead saw an expression                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-expressions
+  185:43  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+  193:41  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\imageGen\components\GenRightPanel.tsx
+   83:7   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\imageGen\components\GenRightPanel.tsx:83:7
+  81 |   useEffect(() => {
+  82 |     if (generatedImage) {
+> 83 |       setGallery((prev) => [generatedImage as any, ...prev]);
+     |       ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  84 |     }
+  85 |   }, [generatedImage]);
+  86 |  react-hooks/set-state-in-effect
+   83:47  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-explicit-any
+  126:9   error  'rafId' is never reassigned. Use 'const' instead                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        prefer-const
+  347:17  error  Unexpected constant condition                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           no-constant-condition
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\imageGen\hooks\useImageGen.ts
+   34:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  143:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\limits\components\LimitsOverviewCard.tsx
+  65:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\limits\components\VoiceTimer.tsx
+  34:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\limits\components\VoiceTimer.tsx:34:7
+  32 |   useEffect(() => {
+  33 |     if (isActive) {
+> 34 |       setSessionSeconds(0);
+     |       ^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  35 |       intervalRef.current = setInterval(() => {
+  36 |         setSessionSeconds(prev => prev + 1);
+  37 |         dispatch(addVoiceSeconds(1));  react-hooks/set-state-in-effect
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\limits\hooks\useLimits.ts
+  6:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  7:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\limits\slices\limitsSlice.ts
+  12:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\navabr\NavbarLeft.tsx
+   26:55  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   28:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   31:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   32:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  102:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\navabr\NavbarRight.tsx
+  10:71  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\news\hooks\useNews.ts
+   56:23  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-explicit-any
+   76:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\news\hooks\useNews.ts:76:13
+  74 |     useEffect(() => {
+  75 |         if (!id) {
+> 76 |             setLoading(false);
+     |             ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  77 |             return;
+  78 |         }
+  79 |         let cancelled = false;          react-hooks/set-state-in-effect
+  143:23  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-explicit-any
+  163:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\news\hooks\useNews.ts:163:13
+  161 |     useEffect(() => {
+  162 |         if (!id) {
+> 163 |             setLoading(false);
+      |             ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  164 |             return;
+  165 |         }
+  166 |         let cancelled = false;  react-hooks/set-state-in-effect
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\news\services\newsService.ts
+   26:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   43:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   60:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   77:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   87:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  117:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\playground\components\PlaygroundLane.tsx
+    8:10  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  130:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\playground\hooks\usePlaygroundLane.tsx
+   19:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   22:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   75:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   82:51  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  193:27  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\settings\components\AccountSettings.tsx
+   61:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   62:56  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  376:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  432:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  607:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  644:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\settings\components\DeletionModal.tsx
+  43:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\settings\components\DeletionModal.tsx:43:7
+  41 |   useEffect(() => {
+  42 |     if (isOpen) {
+> 43 |       setDeleteConfirmation("");
+     |       ^^^^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  44 |       setEmail("");
+  45 |       setPassword("");
+  46 |     }  react-hooks/set-state-in-effect
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\settings\components\DownloadSettings.tsx
+  33:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\settings\components\HelpAndAbout.tsx
+   8:41  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+  11:53  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+  52:8   error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\settings\components\HelpAndAbout.tsx:52:8
+  50 |       )}
+  51 |     >
+> 52 |       <LinkItem
+     |        ^^^^^^^^ This component is created during render
+  53 |         icon={HelpCircle}
+  54 |         label="FAQs"
+  55 |         onClick={() => navigate("/help")}
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\settings\components\HelpAndAbout.tsx:11:20
+   9 |   const navigate = useNavigate();
+  10 |
+> 11 |   const LinkItem = ({ icon: Icon, label, onClick }: any) => (
+     |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 12 |     <button
+     | ^^^^^^^^^^^
+> 13 |       onClick={onClick}
+     …
+     | ^^^^^^^^^^^
+> 40 |     </button>
+     | ^^^^^^^^^^^
+> 41 |   );
+     | ^^^^ The component is created during render here
+  42 |
+  43 |   return (
+  44 |     <div                                                          react-hooks/static-components
+  57:8   error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\settings\components\HelpAndAbout.tsx:57:8
+  55 |         onClick={() => navigate("/help")}
+  56 |       />
+> 57 |       <LinkItem
+     |        ^^^^^^^^ This component is created during render
+  58 |         icon={MessageSquare}
+  59 |         label="Send Feedback"
+  60 |         onClick={() => navigate("/feedback")}
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\settings\components\HelpAndAbout.tsx:11:20
+   9 |   const navigate = useNavigate();
+  10 |
+> 11 |   const LinkItem = ({ icon: Icon, label, onClick }: any) => (
+     |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 12 |     <button
+     | ^^^^^^^^^^^
+> 13 |       onClick={onClick}
+     …
+     | ^^^^^^^^^^^
+> 40 |     </button>
+     | ^^^^^^^^^^^
+> 41 |   );
+     | ^^^^ The component is created during render here
+  42 |
+  43 |   return (
+  44 |     <div      react-hooks/static-components
+  62:8   error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\settings\components\HelpAndAbout.tsx:62:8
+  60 |         onClick={() => navigate("/feedback")}
+  61 |       />
+> 62 |       <LinkItem
+     |        ^^^^^^^^ This component is created during render
+  63 |         icon={Shield}
+  64 |         label="Privacy Policy"
+  65 |         onClick={() => navigate("/privacy-policy")}
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\settings\components\HelpAndAbout.tsx:11:20
+   9 |   const navigate = useNavigate();
+  10 |
+> 11 |   const LinkItem = ({ icon: Icon, label, onClick }: any) => (
+     |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 12 |     <button
+     | ^^^^^^^^^^^
+> 13 |       onClick={onClick}
+     …
+     | ^^^^^^^^^^^
+> 40 |     </button>
+     | ^^^^^^^^^^^
+> 41 |   );
+     | ^^^^ The component is created during render here
+  42 |
+  43 |   return (
+  44 |     <div  react-hooks/static-components
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\settings\components\SettingsSection.tsx
+  6:9  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\settings\components\SubscriptionSettings.tsx
+  8:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\sidebar\components\HistoryList.tsx
+    7:10  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-explicit-any
+   27:50  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-explicit-any
+   76:35  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-explicit-any
+  111:57  error  Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\sidebar\components\HistoryList.tsx:111:57
+  109 |                 <Calendar size={12} />
+  110 |                 {new Date(
+> 111 |                   chat.updated_at || chat.created_at || Date.now()
+      |                                                         ^^^^^^^^^^ Cannot call impure function
+  112 |                 ).toLocaleDateString()}
+  113 |               </div>
+  114 |             </button>  react-hooks/purity
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\sidebar\components\HistoryModal.tsx
+  16:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  16:36  error  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  22:41  error  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  23:31  error  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  49:58  error  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  58:13  error  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  60:41  error  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\sidebar\components\HistoryPreview.tsx
+   18:10  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   20:13  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   69:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  168:33  error  'node' is defined but never used          @typescript-eslint/no-unused-vars
+  174:34  error  'node' is defined but never used          @typescript-eslint/no-unused-vars
+  180:35  error  'node' is defined but never used          @typescript-eslint/no-unused-vars
+  186:36  error  'node' is defined but never used          @typescript-eslint/no-unused-vars
+  192:37  error  'node' is defined but never used          @typescript-eslint/no-unused-vars
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\sidebar\components\MobileSidebar.tsx
+   28:41  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+   30:5   error  Expected an assignment or function call and instead saw an expression  @typescript-eslint/no-unused-expressions
+   32:41  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+   33:40  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+   34:47  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  231:33  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  288:66  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\sidebar\components\Sidebar.tsx
+   48:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   75:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  273:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  362:4   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\sidebar\components\UserProfile.tsx
+   26:41  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @typescript-eslint/no-explicit-any
+   27:3   error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/ban-ts-comment
+   29:13  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @typescript-eslint/no-explicit-any
+  116:7   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\sidebar\components\UserProfile.tsx:116:7
+  114 |   useEffect(() => {
+  115 |     if (user) {
+> 116 |       setProfileImage(user.profile || null);
+      |       ^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  117 |     }
+  118 |   }, [user]);
+  119 |  react-hooks/set-state-in-effect
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\subscriptions\components\AdBlockGuard.tsx
+  460:8   error  Expected an assignment or function call and instead saw an expression                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-expressions
+  490:54  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\subscriptions\components\AdBlockGuard.tsx:490:54
+  488 |
+  489 |   // Don't show modal if user is on subscription page and modal is disabled (unless suspicious activity detected)
+> 490 |   if (isOnSubscriptionPage && globalModalDisabled && !suspiciousActivityDetectedRef.current) {
+      |                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  491 |     return <>{children}</>;
+  492 |   }
+  493 |                                                                                                                               react-hooks/refs
+  490:55  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\subscriptions\components\AdBlockGuard.tsx:490:55
+  488 |
+  489 |   // Don't show modal if user is on subscription page and modal is disabled (unless suspicious activity detected)
+> 490 |   if (isOnSubscriptionPage && globalModalDisabled && !suspiciousActivityDetectedRef.current) {
+      |                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  491 |     return <>{children}</>;
+  492 |   }
+  493 |
+
+To initialize a ref only once, check that the ref is null with the pattern `if (ref.current == null) { ref.current = ... }`  react-hooks/refs
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\subscriptions\components\PricingCard.tsx
+  32:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\subscriptions\components\PricingHeader.tsx
+  6:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\subscriptions\components\SubscribeModal.tsx
+  19:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\subscriptions\components\SubscriptionOfferingCard.tsx
+  10:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\subscriptions\components\SubscriptionSuccessModal.tsx
+  12:53  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  13:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\subscriptions\hooks\subscriptionService.test.ts
+  23:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\subscriptions\hooks\useAdBlockDetector.ts
+   98:10  error  Expected an assignment or function call and instead saw an expression  @typescript-eslint/no-unused-expressions
+  122:73  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  136:40  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\subscriptions\hooks\useAdBlockLogic.ts
+  13:39  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-explicit-any
+  23:7   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\subscriptions\hooks\useAdBlockLogic.ts:23:7
+  21 |     // Early exit: If user is not logged in, don't show AdBlock modal
+  22 |     if (!user || !user.id) {
+> 23 |       setShouldShowAdBlock(false);
+     |       ^^^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  24 |       setVisitCount(0);
+  25 |       setIsInitialized(true);
+  26 |       return;  react-hooks/set-state-in-effect
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\subscriptions\hooks\useOfferings.ts
+  16:43  error    Unexpected any. Specify a different type                                                                           @typescript-eslint/no-explicit-any
+  43:6   warning  React Hook useEffect has a missing dependency: 'fetchOfferings'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\subscriptions\hooks\useSubscription.test.tsx
+  17:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  32:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  51:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\subscriptions\hooks\useSubscription.ts
+  18:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\subscriptions\slices\subscriptionSlice.ts
+  33:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\voice\components\Captions.tsx
+  17:45  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-explicit-any
+  41:7   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\voice\components\Captions.tsx:41:7
+  39 |   useEffect(() => {
+  40 |     if (text) {
+> 41 |       setDisplayText(text);
+     |       ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  42 |       setShowBox(true);
+  43 |     } else if (status !== "speaking") {
+  44 |       // Delay fade out  react-hooks/set-state-in-effect
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\voice\components\VoiceModelMenu.tsx
+  43:13  error  'newCoords' is never reassigned. Use 'const' instead                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                prefer-const
+  43:24  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-explicit-any
+  82:9   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\voice\components\VoiceModelMenu.tsx:82:9
+  80 |         }
+  81 |
+> 82 |         setCoords(newCoords);
+     |         ^^^^^^^^^ Avoid calling setState() directly within an effect
+  83 |       }
+  84 |     }
+  85 |   }, [isOpen, position, align]);  react-hooks/set-state-in-effect
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\voice\hooks\useVoiceChat.ts
+   45:42  error    Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\voice\hooks\useVoiceChat.ts:45:42
+  43 |   // State Flags
+  44 |   const isAssistantSpeakingRef = useRef(false);
+> 45 |   const silenceStartRef = useRef<number>(Date.now());
+     |                                          ^^^^^^^^^^ Cannot call impure function
+  46 |   const isUserSpeakingRef = useRef(false);
+  47 |
+  48 |   // -- Helpers --                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-hooks/purity
+   84:16  error    'e' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+  114:9   error    Error: Cannot access variable before it is declared
+
+`playAudioChunk` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\voice\hooks\useVoiceChat.ts:114:9
+  112 |         setStatus("speaking");
+  113 |         isAssistantSpeakingRef.current = true;
+> 114 |         playAudioChunk(data.data);
+      |         ^^^^^^^^^^^^^^ `playAudioChunk` accessed before it is declared
+  115 |       }
+  116 |
+  117 |       // --- 2. Turn Management ---
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\voice\hooks\useVoiceChat.ts:195:3
+  193 |   }, [token, sessionId, model, cancelAudioPlayback]);
+  194 |
+> 195 |   const playAudioChunk = (base64Data: string) => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 196 |     if (!audioContextRef.current) return;
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 197 |     const ctx = audioContextRef.current;
+      …
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 232 |     };
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 233 |   };
+      | ^^^^^ `playAudioChunk` is declared here
+  234 |
+  235 |   const disconnectMic = useCallback(() => {
+  236 |     if (processorRef.current) {  react-hooks/immutability
+  168:7   error    Error: Cannot access variable before it is declared
+
+`disconnectMic` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\voice\hooks\useVoiceChat.ts:168:7
+  166 |
+  167 |     const handleClose = () => {
+> 168 |       disconnectMic();
+      |       ^^^^^^^^^^^^^ `disconnectMic` accessed before it is declared
+  169 |       setStatus("disconnected");
+  170 |       setSessionId(null);
+  171 |       setCaption(null);
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\features\voice\hooks\useVoiceChat.ts:235:3
+  233 |   };
+  234 |
+> 235 |   const disconnectMic = useCallback(() => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 236 |     if (processorRef.current) {
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 237 |       processorRef.current.disconnect();
+      …
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 248 |     cancelAudioPlayback();
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 249 |   }, [cancelAudioPlayback]);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `disconnectMic` is declared here
+  250 |
+  251 |   const startSession = useCallback(async () => {
+  252 |     if (!token) {                                                                       react-hooks/immutability
+  193:6   warning  React Hook useEffect has missing dependencies: 'disconnectMic' and 'playAudioChunk'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         react-hooks/exhaustive-deps
+  272:43  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @typescript-eslint/no-explicit-any
+  351:19  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @typescript-eslint/no-explicit-any
+  365:6   warning  React Hook useCallback has a missing dependency: 'logError'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   react-hooks/exhaustive-deps
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\hooks\useAuthReset.ts
+  105:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\hooks\useCloudStorage.ts
+    9:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   18:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   18:59  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   21:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   28:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   29:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   32:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   43:15  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   43:20  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   49:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   63:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  101:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  101:59  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  106:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  115:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\hooks\useCookieConsent.ts
+  10:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\hooks\useCookieConsent.ts:10:7
+   8 |     const consent = localStorage.getItem("integri-cookie-consent");
+   9 |     if (consent === null) {
+> 10 |       setShowBanner(true);
+     |       ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  11 |     }
+  12 |   }, []);
+  13 |  react-hooks/set-state-in-effect
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\hooks\useErrorStore.ts
+  12:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  20:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  42:51  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  51:57  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\hooks\useFilePreviews.ts
+  21:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\hooks\useFilePreviews.ts:21:5
+  19 |     });
+  20 |
+> 21 |     setPreviews(newPreviews);
+     |     ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  22 |
+  23 |     // Cleanup function to revoke old URLs when files change or unmount
+  24 |     return () => {  react-hooks/set-state-in-effect
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\hooks\useFileStatuses.ts
+   4:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  20:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\hooks\useMediaQuery.ts
+  9:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\hooks\useMediaQuery.ts:9:7
+   7 |     const media = window.matchMedia(query);
+   8 |     if (media.matches !== matches) {
+>  9 |       setMatches(media.matches);
+     |       ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  10 |     }
+  11 |
+  12 |     const listener = () => setMatches(media.matches);  react-hooks/set-state-in-effect
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\Agents.tsx
+   25:13  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   28:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   29:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   30:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  120:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\ArticleDetailPage.tsx
+  145:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\ContactUs.tsx
+   28:69  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   98:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  215:4   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  285:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  412:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  422:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  435:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  445:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\GettingStarted.tsx
+   48:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   92:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   93:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  115:16  error  'err' is defined but never used           @typescript-eslint/no-unused-vars
+  461:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  494:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\HelpPage.tsx
+  50:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\HistoryPage.tsx
+   23:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   32:27  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  119:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  147:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  148:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\ImageGenPage.tsx
+  25:12  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  27:12  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  28:10  error  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  42:5   error  Expected an assignment or function call and instead saw an expression  @typescript-eslint/no-unused-expressions
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\LoginPage.tsx
+  33:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\MobileVoiceWrapper.tsx
+  19:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  21:13  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\NewsDetailPage.tsx
+  146:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\NewsPage.tsx
+  421:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PdfChat.tsx
+   37:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   38:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   39:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  251:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PersonalizationPage.tsx
+   21:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   22:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   23:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   95:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  111:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\Playground.tsx
+  10:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  11:55  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  59:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx
+   26:41  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-explicit-any
+   37:28  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-explicit-any
+   66:28  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-explicit-any
+  172:15  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:172:15
+  170 |              </h1>
+  171 |              <p className="text-sm opacity-70 mb-8">Last Updated: October 2024</p>
+> 172 |              <Card>
+      |               ^^^^ This component is created during render
+  173 |                <p>This Privacy Policy outlines how we collect, use, and protect your personal data in compliance with the General Data Protection Regulation (GDPR).</p>
+  174 |              </Card>
+  175 |            </div>
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:92:16
+   90 |   };
+   91 |
+>  92 |   const Card = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |     <div className={cn(
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  94 |       "p-6 rounded-2xl border backdrop-blur-md text-sm md:text-base leading-relaxed",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  95 |       isDark ? "bg-white/5 border-white/10" : "bg-white/50 border-gray-200 shadow-sm",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |       className
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  97 |     )}>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  98 |       {children}
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  99 |     </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+> 100 |   );
+      | ^^^^ The component is created during render here
+  101 |
+  102 |   return (
+  103 |     <div                                                                                                                                                                                                                                                           react-hooks/static-components
+  179:16  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:179:16
+  177 |            <section id="data-controller" className="privacy-section scroll-mt-24">
+  178 |               <h2 className={cn("text-2xl font-semibold mb-6", isDark ? "text-gray-100" : "text-gray-800")}>Data Controller</h2>
+> 179 |               <Card>
+      |                ^^^^ This component is created during render
+  180 |                  <p className="mb-2">The data controller for the Website and App is:</p>
+  181 |                  <p className="font-medium text-lg mb-1">Integri</p>
+  182 |                  <p>Email: <a href="mailto:info@integri.app" className="text-blue-500 hover:underline">info@integri.app</a></p>
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:92:16
+   90 |   };
+   91 |
+>  92 |   const Card = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |     <div className={cn(
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  94 |       "p-6 rounded-2xl border backdrop-blur-md text-sm md:text-base leading-relaxed",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  95 |       isDark ? "bg-white/5 border-white/10" : "bg-white/50 border-gray-200 shadow-sm",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |       className
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  97 |     )}>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  98 |       {children}
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  99 |     </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+> 100 |   );
+      | ^^^^ The component is created during render here
+  101 |
+  102 |   return (
+  103 |     <div                                                             react-hooks/static-components
+  189:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:189:18
+  187 |               <h2 className={cn("text-2xl font-semibold mb-6", isDark ? "text-gray-100" : "text-gray-800")}>Data Collection</h2>
+  188 |               <div className="space-y-4">
+> 189 |                 <Card>
+      |                  ^^^^ This component is created during render
+  190 |                   <h3 className={cn("font-medium mb-2", isDark ? "text-gray-200" : "text-gray-800")}>User-provided data:</h3>
+  191 |                   <p>Information you provide directly, such as your name, email address, and any other details you choose to share.</p>
+  192 |                 </Card>
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:92:16
+   90 |   };
+   91 |
+>  92 |   const Card = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |     <div className={cn(
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  94 |       "p-6 rounded-2xl border backdrop-blur-md text-sm md:text-base leading-relaxed",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  95 |       isDark ? "bg-white/5 border-white/10" : "bg-white/50 border-gray-200 shadow-sm",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |       className
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  97 |     )}>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  98 |       {children}
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  99 |     </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+> 100 |   );
+      | ^^^^ The component is created during render here
+  101 |
+  102 |   return (
+  103 |     <div                                                                                                  react-hooks/static-components
+  193:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:193:18
+  191 |                   <p>Information you provide directly, such as your name, email address, and any other details you choose to share.</p>
+  192 |                 </Card>
+> 193 |                 <Card>
+      |                  ^^^^ This component is created during render
+  194 |                   <h3 className={cn("font-medium mb-2", isDark ? "text-gray-200" : "text-gray-800")}>Usage data:</h3>
+  195 |                   <p>Information about how you interact with the Website and App, including device type, operating system, app version, session duration, features used, and general interaction patterns.</p>
+  196 |                 </Card>
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:92:16
+   90 |   };
+   91 |
+>  92 |   const Card = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |     <div className={cn(
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  94 |       "p-6 rounded-2xl border backdrop-blur-md text-sm md:text-base leading-relaxed",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  95 |       isDark ? "bg-white/5 border-white/10" : "bg-white/50 border-gray-200 shadow-sm",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |       className
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  97 |     )}>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  98 |       {children}
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  99 |     </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+> 100 |   );
+      | ^^^^ The component is created during render here
+  101 |
+  102 |   return (
+  103 |     <div                                              react-hooks/static-components
+  197:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:197:18
+  195 |                   <p>Information about how you interact with the Website and App, including device type, operating system, app version, session duration, features used, and general interaction patterns.</p>
+  196 |                 </Card>
+> 197 |                 <Card>
+      |                  ^^^^ This component is created during render
+  198 |                   <h3 className={cn("font-medium mb-2", isDark ? "text-gray-200" : "text-gray-800")}>Cookies and tracking data:</h3>
+  199 |                   <p>Information collected through cookies and similar technologies as described below.</p>
+  200 |                 </Card>
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:92:16
+   90 |   };
+   91 |
+>  92 |   const Card = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |     <div className={cn(
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  94 |       "p-6 rounded-2xl border backdrop-blur-md text-sm md:text-base leading-relaxed",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  95 |       isDark ? "bg-white/5 border-white/10" : "bg-white/50 border-gray-200 shadow-sm",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |       className
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  97 |     )}>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  98 |       {children}
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  99 |     </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+> 100 |   );
+      | ^^^^ The component is created during render here
+  101 |
+  102 |   return (
+  103 |     <div                                                           react-hooks/static-components
+  206:16  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:206:16
+  204 |            <section id="purpose" className="privacy-section scroll-mt-24">
+  205 |               <h2 className={cn("text-2xl font-semibold mb-6", isDark ? "text-gray-100" : "text-gray-800")}>Purpose of Data Processing</h2>
+> 206 |               <Card>
+      |                ^^^^ This component is created during render
+  207 |                 <p className="mb-4">We process your personal data for the following purposes:</p>
+  208 |                 <ul className="list-disc pl-5 space-y-2 marker:text-blue-500">
+  209 |                   <li>Providing and improving the Website & App functionality</li>
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:92:16
+   90 |   };
+   91 |
+>  92 |   const Card = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |     <div className={cn(
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  94 |       "p-6 rounded-2xl border backdrop-blur-md text-sm md:text-base leading-relaxed",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  95 |       isDark ? "bg-white/5 border-white/10" : "bg-white/50 border-gray-200 shadow-sm",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |       className
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  97 |     )}>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  98 |       {children}
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  99 |     </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+> 100 |   );
+      | ^^^^ The component is created during render here
+  101 |
+  102 |   return (
+  103 |     <div                                                                                    react-hooks/static-components
+  221:16  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:221:16
+  219 |            <section id="legal-basis" className="privacy-section scroll-mt-24">
+  220 |               <h2 className={cn("text-2xl font-semibold mb-6", isDark ? "text-gray-100" : "text-gray-800")}>Legal Basis for Processing</h2>
+> 221 |               <Card>
+      |                ^^^^ This component is created during render
+  222 |                 <p className="mb-4">We process personal data based on:</p>
+  223 |                 <ul className="list-disc pl-5 space-y-2 marker:text-blue-500 mb-6">
+  224 |                   <li><strong>Consent</strong> (e.g., cookies, personalized ads)</li>
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:92:16
+   90 |   };
+   91 |
+>  92 |   const Card = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |     <div className={cn(
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  94 |       "p-6 rounded-2xl border backdrop-blur-md text-sm md:text-base leading-relaxed",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  95 |       isDark ? "bg-white/5 border-white/10" : "bg-white/50 border-gray-200 shadow-sm",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |       className
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  97 |     )}>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  98 |       {children}
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  99 |     </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+> 100 |   );
+      | ^^^^ The component is created during render here
+  101 |
+  102 |   return (
+  103 |     <div                                                                                               react-hooks/static-components
+  238:20  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:238:20
+  236 |                 <div>
+  237 |                   <h3 className={cn("text-xl font-semibold mb-4", isDark ? "text-gray-200" : "text-gray-800")}>What Are Cookies?</h3>
+> 238 |                   <Card>
+      |                    ^^^^ This component is created during render
+  239 |                     <p className="mb-4">Cookies are small data files stored on your device when you visit a website. They help websites function properly, improve performance, and support analytics and advertising.</p>
+  240 |                     <p className="mb-2">We may also use similar technologies such as:</p>
+  241 |                     <ul className="list-disc pl-5 space-y-1 marker:text-blue-500">
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:92:16
+   90 |   };
+   91 |
+>  92 |   const Card = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |     <div className={cn(
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  94 |       "p-6 rounded-2xl border backdrop-blur-md text-sm md:text-base leading-relaxed",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  95 |       isDark ? "bg-white/5 border-white/10" : "bg-white/50 border-gray-200 shadow-sm",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |       className
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  97 |     )}>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  98 |       {children}
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  99 |     </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+> 100 |   );
+      | ^^^^ The component is created during render here
+  101 |
+  102 |   return (
+  103 |     <div   react-hooks/static-components
+  254:22  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:254:22
+  252 |                   
+  253 |                   <div className="space-y-4">
+> 254 |                     <Card>
+      |                      ^^^^ This component is created during render
+  255 |                       <h4 className={cn("font-medium text-base mb-2", isDark ? "text-gray-200" : "text-gray-800")}>1. Essential Cookies</h4>
+  256 |                       <p className="mb-3">These cookies are necessary for the Website to function properly. They enable:</p>
+  257 |                       <ul className="list-disc pl-5 space-y-1 marker:text-blue-500 mb-3 text-sm">
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:92:16
+   90 |   };
+   91 |
+>  92 |   const Card = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |     <div className={cn(
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  94 |       "p-6 rounded-2xl border backdrop-blur-md text-sm md:text-base leading-relaxed",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  95 |       isDark ? "bg-white/5 border-white/10" : "bg-white/50 border-gray-200 shadow-sm",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |       className
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  97 |     )}>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  98 |       {children}
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  99 |     </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+> 100 |   );
+      | ^^^^ The component is created during render here
+  101 |
+  102 |   return (
+  103 |     <div                                                                                                                      react-hooks/static-components
+  265:22  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:265:22
+  263 |                     </Card>
+  264 |
+> 265 |                     <Card>
+      |                      ^^^^ This component is created during render
+  266 |                       <h4 className={cn("font-medium text-base mb-2", isDark ? "text-gray-200" : "text-gray-800")}>2. Performance & Analytics Cookies</h4>
+  267 |                       <p className="mb-3">These cookies help us understand how users interact with our Website and App, including:</p>
+  268 |                       <ul className="list-disc pl-5 space-y-1 marker:text-blue-500 mb-3 text-sm">
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:92:16
+   90 |   };
+   91 |
+>  92 |   const Card = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |     <div className={cn(
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  94 |       "p-6 rounded-2xl border backdrop-blur-md text-sm md:text-base leading-relaxed",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  95 |       isDark ? "bg-white/5 border-white/10" : "bg-white/50 border-gray-200 shadow-sm",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |       className
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  97 |     )}>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  98 |       {children}
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  99 |     </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+> 100 |   );
+      | ^^^^ The component is created during render here
+  101 |
+  102 |   return (
+  103 |     <div                                                                                                                                   react-hooks/static-components
+  277:22  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:277:22
+  275 |                     </Card>
+  276 |
+> 277 |                     <Card>
+      |                      ^^^^ This component is created during render
+  278 |                       <h4 className={cn("font-medium text-base mb-2", isDark ? "text-gray-200" : "text-gray-800")}>3. Advertising Cookies and Identifiers</h4>
+  279 |                       <p className="mb-3">We may use advertising cookies and mobile identifiers to:</p>
+  280 |                       <ul className="list-disc pl-5 space-y-1 marker:text-blue-500 mb-4 text-sm">
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:92:16
+   90 |   };
+   91 |
+>  92 |   const Card = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |     <div className={cn(
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  94 |       "p-6 rounded-2xl border backdrop-blur-md text-sm md:text-base leading-relaxed",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  95 |       isDark ? "bg-white/5 border-white/10" : "bg-white/50 border-gray-200 shadow-sm",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |       className
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  97 |     )}>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  98 |       {children}
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  99 |     </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+> 100 |   );
+      | ^^^^ The component is created during render here
+  101 |
+  102 |   return (
+  103 |     <div                                                                                                                                                              react-hooks/static-components
+  300:20  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:300:20
+  298 |                 <div>
+  299 |                   <h3 className={cn("text-xl font-semibold mb-4", isDark ? "text-gray-200" : "text-gray-800")}>How You Can Control Cookies</h3>
+> 300 |                   <Card>
+      |                    ^^^^ This component is created during render
+  301 |                     <p className="mb-4">You can control cookies by:</p>
+  302 |                     <ul className="list-disc pl-5 space-y-2 marker:text-blue-500 mb-4">
+  303 |                       <li>Using our cookie consent banner (for Website users)</li>
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:92:16
+   90 |   };
+   91 |
+>  92 |   const Card = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |     <div className={cn(
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  94 |       "p-6 rounded-2xl border backdrop-blur-md text-sm md:text-base leading-relaxed",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  95 |       isDark ? "bg-white/5 border-white/10" : "bg-white/50 border-gray-200 shadow-sm",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |       className
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  97 |     )}>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  98 |       {children}
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  99 |     </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+> 100 |   );
+      | ^^^^ The component is created during render here
+  101 |
+  102 |   return (
+  103 |     <div                                                                                                                                              react-hooks/static-components
+  315:16  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:315:16
+  313 |            <section id="openai" className="privacy-section scroll-mt-24">
+  314 |               <h2 className={cn("text-2xl font-semibold mb-6", isDark ? "text-gray-100" : "text-gray-800")}>Use of OpenAI’s GPT Models</h2>
+> 315 |               <Card>
+      |                ^^^^ This component is created during render
+  316 |                 <p className="mb-4">The App uses OpenAI’s GPT models to provide AI-driven services.</p>
+  317 |                 <ul className="list-disc pl-5 space-y-2 marker:text-blue-500">
+  318 |                   <li>Input data is processed solely to generate responses.</li>
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:92:16
+   90 |   };
+   91 |
+>  92 |   const Card = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |     <div className={cn(
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  94 |       "p-6 rounded-2xl border backdrop-blur-md text-sm md:text-base leading-relaxed",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  95 |       isDark ? "bg-white/5 border-white/10" : "bg-white/50 border-gray-200 shadow-sm",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |       className
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  97 |     )}>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  98 |       {children}
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  99 |     </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+> 100 |   );
+      | ^^^^ The component is created during render here
+  101 |
+  102 |   return (
+  103 |     <div                                                                                 react-hooks/static-components
+  327:16  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:327:16
+  325 |            <section id="sharing" className="privacy-section scroll-mt-24">
+  326 |               <h2 className={cn("text-2xl font-semibold mb-6", isDark ? "text-gray-100" : "text-gray-800")}>Data Sharing</h2>
+> 327 |               <Card>
+      |                ^^^^ This component is created during render
+  328 |                 <p className="font-semibold mb-4 text-red-500 dark:text-red-400">We do not sell your personal data.</p>
+  329 |                 <p className="mb-3">We may share data only as necessary to:</p>
+  330 |                 <ul className="list-disc pl-5 space-y-2 marker:text-blue-500 mb-6">
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:92:16
+   90 |   };
+   91 |
+>  92 |   const Card = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |     <div className={cn(
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  94 |       "p-6 rounded-2xl border backdrop-blur-md text-sm md:text-base leading-relaxed",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  95 |       isDark ? "bg-white/5 border-white/10" : "bg-white/50 border-gray-200 shadow-sm",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |       className
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  97 |     )}>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  98 |       {children}
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  99 |     </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+> 100 |   );
+      | ^^^^ The component is created during render here
+  101 |
+  102 |   return (
+  103 |     <div                                                                          react-hooks/static-components
+  343:16  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:343:16
+  341 |            <section id="retention" className="privacy-section scroll-mt-24">
+  342 |               <h2 className={cn("text-2xl font-semibold mb-6", isDark ? "text-gray-100" : "text-gray-800")}>Data Retention</h2>
+> 343 |               <Card>
+      |                ^^^^ This component is created during render
+  344 |                 <p className="mb-4">We retain personal data only as long as necessary for the purposes described in this Privacy Policy or as required by law.</p>
+  345 |                 <p>Advertising and analytics data retention may follow the policies of respective service providers.</p>
+  346 |               </Card>
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:92:16
+   90 |   };
+   91 |
+>  92 |   const Card = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |     <div className={cn(
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  94 |       "p-6 rounded-2xl border backdrop-blur-md text-sm md:text-base leading-relaxed",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  95 |       isDark ? "bg-white/5 border-white/10" : "bg-white/50 border-gray-200 shadow-sm",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |       className
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  97 |     )}>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  98 |       {children}
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  99 |     </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+> 100 |   );
+      | ^^^^ The component is created during render here
+  101 |
+  102 |   return (
+  103 |     <div                                                react-hooks/static-components
+  351:16  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:351:16
+  349 |            <section id="rights" className="privacy-section scroll-mt-24">
+  350 |               <h2 className={cn("text-2xl font-semibold mb-6", isDark ? "text-gray-100" : "text-gray-800")}>Your Rights Under GDPR</h2>
+> 351 |               <Card>
+      |                ^^^^ This component is created during render
+  352 |                 <p className="mb-4">You have the right to:</p>
+  353 |                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-6 text-sm">
+  354 |                   <div className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>Access your data</div>
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:92:16
+   90 |   };
+   91 |
+>  92 |   const Card = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |     <div className={cn(
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  94 |       "p-6 rounded-2xl border backdrop-blur-md text-sm md:text-base leading-relaxed",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  95 |       isDark ? "bg-white/5 border-white/10" : "bg-white/50 border-gray-200 shadow-sm",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |       className
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  97 |     )}>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  98 |       {children}
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  99 |     </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+> 100 |   );
+      | ^^^^ The component is created during render here
+  101 |
+  102 |   return (
+  103 |     <div                                                         react-hooks/static-components
+  370:16  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:370:16
+  368 |            <section id="security" className="privacy-section scroll-mt-24">
+  369 |               <h2 className={cn("text-2xl font-semibold mb-6", isDark ? "text-gray-100" : "text-gray-800")}>Data Security</h2>
+> 370 |               <Card>
+      |                ^^^^ This component is created during render
+  371 |                 <p>We implement appropriate technical and organizational measures to protect your data from unauthorized access, alteration, disclosure, or destruction.</p>
+  372 |               </Card>
+  373 |            </section>
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:92:16
+   90 |   };
+   91 |
+>  92 |   const Card = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |     <div className={cn(
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  94 |       "p-6 rounded-2xl border backdrop-blur-md text-sm md:text-base leading-relaxed",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  95 |       isDark ? "bg-white/5 border-white/10" : "bg-white/50 border-gray-200 shadow-sm",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |       className
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  97 |     )}>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  98 |       {children}
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  99 |     </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+> 100 |   );
+      | ^^^^ The component is created during render here
+  101 |
+  102 |   return (
+  103 |     <div                                                                                                                                           react-hooks/static-components
+  377:16  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:377:16
+  375 |            <section id="transfers" className="privacy-section scroll-mt-24">
+  376 |               <h2 className={cn("text-2xl font-semibold mb-6", isDark ? "text-gray-100" : "text-gray-800")}>International Data Transfers</h2>
+> 377 |               <Card>
+      |                ^^^^ This component is created during render
+  378 |                 <p className="mb-4">If data is transferred outside the European Economic Area (EEA), we ensure appropriate safeguards such as:</p>
+  379 |                 <ul className="list-disc pl-5 space-y-2 marker:text-blue-500">
+  380 |                   <li>Standard Contractual Clauses (SCCs)</li>
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:92:16
+   90 |   };
+   91 |
+>  92 |   const Card = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |     <div className={cn(
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  94 |       "p-6 rounded-2xl border backdrop-blur-md text-sm md:text-base leading-relaxed",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  95 |       isDark ? "bg-white/5 border-white/10" : "bg-white/50 border-gray-200 shadow-sm",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |       className
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  97 |     )}>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  98 |       {children}
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  99 |     </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+> 100 |   );
+      | ^^^^ The component is created during render here
+  101 |
+  102 |   return (
+  103 |     <div                                                   react-hooks/static-components
+  390:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:390:18
+  388 |               <h2 className={cn("text-2xl font-semibold mb-6", isDark ? "text-gray-100" : "text-gray-800")}>Changes to This Privacy Policy</h2>
+  389 |               <div className="space-y-6">
+> 390 |                 <Card>
+      |                  ^^^^ This component is created during render
+  391 |                   <p>We may update this Privacy Policy from time to time. Updates will be published within the App and on the Website.</p>
+  392 |                 </Card>
+  393 |                 
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:92:16
+   90 |   };
+   91 |
+>  92 |   const Card = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |     <div className={cn(
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  94 |       "p-6 rounded-2xl border backdrop-blur-md text-sm md:text-base leading-relaxed",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  95 |       isDark ? "bg-white/5 border-white/10" : "bg-white/50 border-gray-200 shadow-sm",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |       className
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  97 |     )}>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  98 |       {children}
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  99 |     </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+> 100 |   );
+      | ^^^^ The component is created during render here
+  101 |
+  102 |   return (
+  103 |     <div                                                                                                                                                                                             react-hooks/static-components
+  396:21  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:396:21
+  394 |                 <div>
+  395 |                    <h3 className={cn("text-xl font-semibold mb-4", isDark ? "text-gray-200" : "text-gray-800")}>Contact</h3>
+> 396 |                    <Card>
+      |                     ^^^^ This component is created during render
+  397 |                      <p className="mb-2">If you have questions about this Privacy Policy or our data practices, contact:</p>
+  398 |                      <p className="font-medium">Integri</p>
+  399 |                      <p>Email: <a href="mailto:info@integri.app" className="text-blue-500 hover:underline">info@integri.app</a></p>
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\PrivacyPolicy.tsx:92:16
+   90 |   };
+   91 |
+>  92 |   const Card = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |     <div className={cn(
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  94 |       "p-6 rounded-2xl border backdrop-blur-md text-sm md:text-base leading-relaxed",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  95 |       isDark ? "bg-white/5 border-white/10" : "bg-white/50 border-gray-200 shadow-sm",
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |       className
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  97 |     )}>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  98 |       {children}
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+>  99 |     </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+> 100 |   );
+      | ^^^^ The component is created during render here
+  101 |
+  102 |   return (
+  103 |     <div                                                                                     react-hooks/static-components
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\SendFeedbackPage.tsx
+  22:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  23:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\SettingsPage.tsx
+  25:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\SignupPage.tsx
+  64:9   error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+  79:41  error  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\SignupQRPage.tsx
+  14:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\SubscriptionPage.tsx
+  24:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  25:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  27:13  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\Voice.tsx
+  20:56  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  21:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  23:13  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\pages\WelcomePage.tsx
+   18:41  error  Unexpected any. Specify a different type                                   @typescript-eslint/no-explicit-any
+   19:56  error  Unexpected any. Specify a different type                                   @typescript-eslint/no-explicit-any
+   21:4   error  Expected an assignment or function call and instead saw an expression      @typescript-eslint/no-unused-expressions
+   24:13  error  Unexpected any. Specify a different type                                   @typescript-eslint/no-explicit-any
+  124:8   error  Unexpected constant truthiness on the left-hand side of a `&&` expression  no-constant-binary-expression
+  176:8   error  Unexpected constant truthiness on the left-hand side of a `&&` expression  no-constant-binary-expression
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\services\VoiceWebSocketService.ts
+  18:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Prime\OneDrive\Documents\Office\Office Projects\integri-updated\integri-web-chatbot\src\services\WebSocketsService.ts
+  13:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  83:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 379 problems (367 errors, 12 warnings)
+  6 errors and 0 warnings potentially fixable with the `--fix` option.
+

@@ -38,23 +38,11 @@ const WhiteboardModal: React.FC<WhiteboardModalProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [color, setColor] = useState(isDark ? "#ffffff" : "#000000");
-  const [lineWidth, setLineWidth] = useState(3);
+  const [lineWidth] = useState(3);
   const [tool, setTool] = useState<"pen" | "eraser">("pen");
-    {setLineWidth}//for dev (vercel fix)
   // History for Undo/Redo
   const [history, setHistory] = useState<ImageData[]>([]);
   const [historyStep, setHistoryStep] = useState(-1);
-
-  // Initialize Canvas
-  useEffect(() => {
-    if (isOpen) {
-      // Small timeout to allow the DOM to render the portal content
-      const timer = setTimeout(() => {
-        setupCanvas();
-      }, 50);
-      return () => clearTimeout(timer);
-    }
-  }, [isOpen]);
 
   const setupCanvas = () => {
     const canvas = canvasRef.current;
@@ -76,6 +64,17 @@ const WhiteboardModal: React.FC<WhiteboardModalProps> = ({
       }
     }
   };
+
+  // Initialize Canvas
+  useEffect(() => {
+    if (isOpen) {
+      // Small timeout to allow the DOM to render the portal content
+      const timer = setTimeout(() => {
+        setupCanvas();
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   // Handle Resize
   useEffect(() => {
@@ -210,7 +209,7 @@ const WhiteboardModal: React.FC<WhiteboardModalProps> = ({
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-10000 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
       {/* Modal Container */}
       <div
         className={cn(

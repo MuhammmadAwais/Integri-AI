@@ -4,41 +4,48 @@ import { useNavigate } from "react-router-dom";
 import { cn } from "../../../lib/utils";
 import { useAppSelector } from "../../../hooks/useRedux";
 
+interface LinkItemProps {
+  icon: any;
+  label: string;
+  onClick: () => void;
+  isDark: boolean;
+}
+
+const LinkItem: React.FC<LinkItemProps> = ({ icon: Icon, label, onClick, isDark }) => (
+  <button
+    onClick={onClick}
+    className={cn(
+      "w-full flex items-center justify-between p-3 rounded-xl transition-colors group hover:cursor-pointer",
+      isDark ? "hover:bg-[#222]" : "hover:bg-gray-50"
+    )}
+  >
+    <div className="flex items-center gap-3">
+      <Icon
+        size={18}
+        className={cn(isDark ? "text-gray-400" : "text-gray-500")}
+      />
+      <span
+        className={cn(
+          "text-sm font-medium",
+          isDark ? "text-gray-200" : "text-gray-700"
+        )}
+      >
+        {label}
+      </span>
+    </div>
+    <ChevronRight
+      size={16}
+      className={cn(
+        "opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0",
+        isDark ? "text-gray-500" : "text-gray-400"
+      )}
+    />
+  </button>
+);
+
 const HelpAndAbout: React.FC = () => {
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   const navigate = useNavigate();
-
-  const LinkItem = ({ icon: Icon, label, onClick }: any) => (
-    <button
-      onClick={onClick}
-      className={cn(
-        "w-full flex items-center justify-between p-3 rounded-xl transition-colors group hover:cursor-pointer",
-        isDark ? "hover:bg-[#222]" : "hover:bg-gray-50"
-      )}
-    >
-      <div className="flex items-center gap-3">
-        <Icon
-          size={18}
-          className={cn(isDark ? "text-gray-400" : "text-gray-500")}
-        />
-        <span
-          className={cn(
-            "text-sm font-medium",
-            isDark ? "text-gray-200" : "text-gray-700"
-          )}
-        >
-          {label}
-        </span>
-      </div>
-      <ChevronRight
-        size={16}
-        className={cn(
-          "opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0",
-          isDark ? "text-gray-500" : "text-gray-400"
-        )}
-      />
-    </button>
-  );
 
   return (
     <div
@@ -53,16 +60,19 @@ const HelpAndAbout: React.FC = () => {
         icon={HelpCircle}
         label="FAQs"
         onClick={() => navigate("/help")}
+        isDark={isDark}
       />
       <LinkItem
         icon={MessageSquare}
         label="Send Feedback"
         onClick={() => navigate("/feedback")}
+        isDark={isDark}
       />
       <LinkItem
         icon={Shield}
         label="Privacy Policy"
         onClick={() => navigate("/privacy-policy")}
+        isDark={isDark}
       />
       <div className="p-3">
         <div className="flex items-center gap-3 mb-2">

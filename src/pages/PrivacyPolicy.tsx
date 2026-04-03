@@ -22,6 +22,22 @@ const sections = [
   { id: 'updates', title: 'Changes To Policy & Contact' },
 ];
 
+interface CardProps {
+  children: React.ReactNode;
+  className?: string;
+  isDark: boolean;
+}
+
+const Card = ({ children, className, isDark }: CardProps) => (
+  <div className={cn(
+    "p-6 rounded-2xl border backdrop-blur-md text-sm md:text-base leading-relaxed",
+    isDark ? "bg-white/5 border-white/10" : "bg-white/50 border-gray-200 shadow-sm",
+    className
+  )}>
+    {children}
+  </div>
+);
+
 const PrivacyPolicy: React.FC = () => {
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -88,16 +104,6 @@ const PrivacyPolicy: React.FC = () => {
       });
     }
   };
-
-  const Card = ({ children, className }: { children: React.ReactNode, className?: string }) => (
-    <div className={cn(
-      "p-6 rounded-2xl border backdrop-blur-md text-sm md:text-base leading-relaxed",
-      isDark ? "bg-white/5 border-white/10" : "bg-white/50 border-gray-200 shadow-sm",
-      className
-    )}>
-      {children}
-    </div>
-  );
 
   return (
     <div 
@@ -169,14 +175,14 @@ const PrivacyPolicy: React.FC = () => {
                Privacy Policy
              </h1>
              <p className="text-sm opacity-70 mb-8">Last Updated: October 2024</p>
-             <Card>
+             <Card isDark={isDark}>
                <p>This Privacy Policy outlines how we collect, use, and protect your personal data in compliance with the General Data Protection Regulation (GDPR).</p>
              </Card>
            </div>
 
            <section id="data-controller" className="privacy-section scroll-mt-24">
               <h2 className={cn("text-2xl font-semibold mb-6", isDark ? "text-gray-100" : "text-gray-800")}>Data Controller</h2>
-              <Card>
+              <Card isDark={isDark}>
                  <p className="mb-2">The data controller for the Website and App is:</p>
                  <p className="font-medium text-lg mb-1">Integri</p>
                  <p>Email: <a href="mailto:info@integri.app" className="text-blue-500 hover:underline">info@integri.app</a></p>
@@ -186,15 +192,15 @@ const PrivacyPolicy: React.FC = () => {
            <section id="data-collection" className="privacy-section scroll-mt-24">
               <h2 className={cn("text-2xl font-semibold mb-6", isDark ? "text-gray-100" : "text-gray-800")}>Data Collection</h2>
               <div className="space-y-4">
-                <Card>
+                <Card isDark={isDark}>
                   <h3 className={cn("font-medium mb-2", isDark ? "text-gray-200" : "text-gray-800")}>User-provided data:</h3>
                   <p>Information you provide directly, such as your name, email address, and any other details you choose to share.</p>
                 </Card>
-                <Card>
+                <Card isDark={isDark}>
                   <h3 className={cn("font-medium mb-2", isDark ? "text-gray-200" : "text-gray-800")}>Usage data:</h3>
                   <p>Information about how you interact with the Website and App, including device type, operating system, app version, session duration, features used, and general interaction patterns.</p>
                 </Card>
-                <Card>
+                <Card isDark={isDark}>
                   <h3 className={cn("font-medium mb-2", isDark ? "text-gray-200" : "text-gray-800")}>Cookies and tracking data:</h3>
                   <p>Information collected through cookies and similar technologies as described below.</p>
                 </Card>
@@ -203,7 +209,7 @@ const PrivacyPolicy: React.FC = () => {
 
            <section id="purpose" className="privacy-section scroll-mt-24">
               <h2 className={cn("text-2xl font-semibold mb-6", isDark ? "text-gray-100" : "text-gray-800")}>Purpose of Data Processing</h2>
-              <Card>
+              <Card isDark={isDark}>
                 <p className="mb-4">We process your personal data for the following purposes:</p>
                 <ul className="list-disc pl-5 space-y-2 marker:text-blue-500">
                   <li>Providing and improving the Website & App functionality</li>
@@ -218,7 +224,7 @@ const PrivacyPolicy: React.FC = () => {
 
            <section id="legal-basis" className="privacy-section scroll-mt-24">
               <h2 className={cn("text-2xl font-semibold mb-6", isDark ? "text-gray-100" : "text-gray-800")}>Legal Basis for Processing</h2>
-              <Card>
+              <Card isDark={isDark}>
                 <p className="mb-4">We process personal data based on:</p>
                 <ul className="list-disc pl-5 space-y-2 marker:text-blue-500 mb-6">
                   <li><strong>Consent</strong> (e.g., cookies, personalized ads)</li>
@@ -235,7 +241,7 @@ const PrivacyPolicy: React.FC = () => {
               <div className="space-y-8">
                 <div>
                   <h3 className={cn("text-xl font-semibold mb-4", isDark ? "text-gray-200" : "text-gray-800")}>What Are Cookies?</h3>
-                  <Card>
+                  <Card isDark={isDark}>
                     <p className="mb-4">Cookies are small data files stored on your device when you visit a website. They help websites function properly, improve performance, and support analytics and advertising.</p>
                     <p className="mb-2">We may also use similar technologies such as:</p>
                     <ul className="list-disc pl-5 space-y-1 marker:text-blue-500">
@@ -251,7 +257,7 @@ const PrivacyPolicy: React.FC = () => {
                   <h3 className={cn("text-xl font-semibold mb-4", isDark ? "text-gray-200" : "text-gray-800")}>Types of Cookies We Use</h3>
                   
                   <div className="space-y-4">
-                    <Card>
+                    <Card isDark={isDark}>
                       <h4 className={cn("font-medium text-base mb-2", isDark ? "text-gray-200" : "text-gray-800")}>1. Essential Cookies</h4>
                       <p className="mb-3">These cookies are necessary for the Website to function properly. They enable:</p>
                       <ul className="list-disc pl-5 space-y-1 marker:text-blue-500 mb-3 text-sm">
@@ -262,7 +268,7 @@ const PrivacyPolicy: React.FC = () => {
                       <p className="text-xs font-medium text-red-500 dark:text-red-400">These cookies cannot be disabled.</p>
                     </Card>
 
-                    <Card>
+                    <Card isDark={isDark}>
                       <h4 className={cn("font-medium text-base mb-2", isDark ? "text-gray-200" : "text-gray-800")}>2. Performance & Analytics Cookies</h4>
                       <p className="mb-3">These cookies help us understand how users interact with our Website and App, including:</p>
                       <ul className="list-disc pl-5 space-y-1 marker:text-blue-500 mb-3 text-sm">
@@ -274,7 +280,7 @@ const PrivacyPolicy: React.FC = () => {
                       <p className="text-sm">This data helps us improve performance and user experience.</p>
                     </Card>
 
-                    <Card>
+                    <Card isDark={isDark}>
                       <h4 className={cn("font-medium text-base mb-2", isDark ? "text-gray-200" : "text-gray-800")}>3. Advertising Cookies and Identifiers</h4>
                       <p className="mb-3">We may use advertising cookies and mobile identifiers to:</p>
                       <ul className="list-disc pl-5 space-y-1 marker:text-blue-500 mb-4 text-sm">
@@ -297,7 +303,7 @@ const PrivacyPolicy: React.FC = () => {
 
                 <div>
                   <h3 className={cn("text-xl font-semibold mb-4", isDark ? "text-gray-200" : "text-gray-800")}>How You Can Control Cookies</h3>
-                  <Card>
+                  <Card isDark={isDark}>
                     <p className="mb-4">You can control cookies by:</p>
                     <ul className="list-disc pl-5 space-y-2 marker:text-blue-500 mb-4">
                       <li>Using our cookie consent banner (for Website users)</li>
@@ -312,7 +318,7 @@ const PrivacyPolicy: React.FC = () => {
 
            <section id="openai" className="privacy-section scroll-mt-24">
               <h2 className={cn("text-2xl font-semibold mb-6", isDark ? "text-gray-100" : "text-gray-800")}>Use of OpenAI’s GPT Models</h2>
-              <Card>
+              <Card isDark={isDark}>
                 <p className="mb-4">The App uses OpenAI’s GPT models to provide AI-driven services.</p>
                 <ul className="list-disc pl-5 space-y-2 marker:text-blue-500">
                   <li>Input data is processed solely to generate responses.</li>
@@ -324,7 +330,7 @@ const PrivacyPolicy: React.FC = () => {
 
            <section id="sharing" className="privacy-section scroll-mt-24">
               <h2 className={cn("text-2xl font-semibold mb-6", isDark ? "text-gray-100" : "text-gray-800")}>Data Sharing</h2>
-              <Card>
+              <Card isDark={isDark}>
                 <p className="font-semibold mb-4 text-red-500 dark:text-red-400">We do not sell your personal data.</p>
                 <p className="mb-3">We may share data only as necessary to:</p>
                 <ul className="list-disc pl-5 space-y-2 marker:text-blue-500 mb-6">
@@ -340,7 +346,7 @@ const PrivacyPolicy: React.FC = () => {
 
            <section id="retention" className="privacy-section scroll-mt-24">
               <h2 className={cn("text-2xl font-semibold mb-6", isDark ? "text-gray-100" : "text-gray-800")}>Data Retention</h2>
-              <Card>
+              <Card isDark={isDark}>
                 <p className="mb-4">We retain personal data only as long as necessary for the purposes described in this Privacy Policy or as required by law.</p>
                 <p>Advertising and analytics data retention may follow the policies of respective service providers.</p>
               </Card>
@@ -348,7 +354,7 @@ const PrivacyPolicy: React.FC = () => {
 
            <section id="rights" className="privacy-section scroll-mt-24">
               <h2 className={cn("text-2xl font-semibold mb-6", isDark ? "text-gray-100" : "text-gray-800")}>Your Rights Under GDPR</h2>
-              <Card>
+              <Card isDark={isDark}>
                 <p className="mb-4">You have the right to:</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-6 text-sm">
                   <div className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>Access your data</div>
@@ -367,14 +373,14 @@ const PrivacyPolicy: React.FC = () => {
 
            <section id="security" className="privacy-section scroll-mt-24">
               <h2 className={cn("text-2xl font-semibold mb-6", isDark ? "text-gray-100" : "text-gray-800")}>Data Security</h2>
-              <Card>
+              <Card isDark={isDark}>
                 <p>We implement appropriate technical and organizational measures to protect your data from unauthorized access, alteration, disclosure, or destruction.</p>
               </Card>
            </section>
 
            <section id="transfers" className="privacy-section scroll-mt-24">
               <h2 className={cn("text-2xl font-semibold mb-6", isDark ? "text-gray-100" : "text-gray-800")}>International Data Transfers</h2>
-              <Card>
+              <Card isDark={isDark}>
                 <p className="mb-4">If data is transferred outside the European Economic Area (EEA), we ensure appropriate safeguards such as:</p>
                 <ul className="list-disc pl-5 space-y-2 marker:text-blue-500">
                   <li>Standard Contractual Clauses (SCCs)</li>
@@ -387,13 +393,13 @@ const PrivacyPolicy: React.FC = () => {
            <section id="updates" className="privacy-section scroll-mt-24">
               <h2 className={cn("text-2xl font-semibold mb-6", isDark ? "text-gray-100" : "text-gray-800")}>Changes to This Privacy Policy</h2>
               <div className="space-y-6">
-                <Card>
+                <Card isDark={isDark}>
                   <p>We may update this Privacy Policy from time to time. Updates will be published within the App and on the Website.</p>
                 </Card>
                 
                 <div>
                    <h3 className={cn("text-xl font-semibold mb-4", isDark ? "text-gray-200" : "text-gray-800")}>Contact</h3>
-                   <Card>
+                   <Card isDark={isDark}>
                      <p className="mb-2">If you have questions about this Privacy Policy or our data practices, contact:</p>
                      <p className="font-medium">Integri</p>
                      <p>Email: <a href="mailto:info@integri.app" className="text-blue-500 hover:underline">info@integri.app</a></p>

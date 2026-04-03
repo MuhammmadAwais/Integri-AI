@@ -42,7 +42,7 @@ export const useVoiceChat = (
 
   // State Flags
   const isAssistantSpeakingRef = useRef(false);
-  const silenceStartRef = useRef<number>(Date.now());
+  const silenceStartRef = useRef<number>(0); // Initialize with 0, will be updated in startSession
   const isUserSpeakingRef = useRef(false);
 
   // -- Helpers --
@@ -95,6 +95,62 @@ export const useVoiceChat = (
     // 3. Reset Assistant Flag
     isAssistantSpeakingRef.current = false;
   }, []);
+
+  const playAudioChunk = (base64Data: string) => {
+    if (!audioContextRef.current) return;
+    const ctx = audioContextRef.current;
+
+    // Decode PCM
+    const int16Data = new Int16Array(base64ToArrayBuffer(base64Data));
+    const float32Data = new Float32Array(int16Data.length);
+    for (let i = 0; i < int16Data.length; i++) {
+      float32Data[i] = int16Data[i] / 32768.0;
+    }
+
+    const buffer = ctx.createBuffer(1, float32Data.length, 24000);
+    buffer.copyToChannel(float32Data, 0);
+
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(ctx.destination);
+
+    // Jitter Buffer & Scheduling
+    const currentTime = ctx.currentTime;
+
+    // If we are starting a new phrase or lagged behind, reset clock + small buffer
+    if (nextStartTimeRef.current < currentTime) {
+      nextStartTimeRef.current = currentTime + 0.05; // 50ms look-ahead buffer to prevent pops
+    }
+
+    source.start(nextStartTimeRef.current);
+    nextStartTimeRef.current += buffer.duration;
+
+    // Track this source so we can kill it later
+    activeSourcesRef.current.push(source);
+
+    // Auto-cleanup on natural end
+    source.onended = () => {
+      activeSourcesRef.current = activeSourcesRef.current.filter(
+        (s) => s !== source
+      );
+    };
+  };
+
+  const disconnectMic = useCallback(() => {
+    if (processorRef.current) {
+      processorRef.current.disconnect();
+      processorRef.current = null;
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+    }
+    if (audioContextRef.current) {
+      audioContextRef.current.close();
+      audioContextRef.current = null;
+    }
+    cancelAudioPlayback();
+  }, [cancelAudioPlayback]);
 
   // -- 1. Effect: Socket Connection --
   useEffect(() => {
@@ -192,61 +248,6 @@ export const useVoiceChat = (
     };
   }, [token, sessionId, model, cancelAudioPlayback]);
 
-  const playAudioChunk = (base64Data: string) => {
-    if (!audioContextRef.current) return;
-    const ctx = audioContextRef.current;
-
-    // Decode PCM
-    const int16Data = new Int16Array(base64ToArrayBuffer(base64Data));
-    const float32Data = new Float32Array(int16Data.length);
-    for (let i = 0; i < int16Data.length; i++) {
-      float32Data[i] = int16Data[i] / 32768.0;
-    }
-
-    const buffer = ctx.createBuffer(1, float32Data.length, 24000);
-    buffer.copyToChannel(float32Data, 0);
-
-    const source = ctx.createBufferSource();
-    source.buffer = buffer;
-    source.connect(ctx.destination);
-
-    // Jitter Buffer & Scheduling
-    const currentTime = ctx.currentTime;
-
-    // If we are starting a new phrase or lagged behind, reset clock + small buffer
-    if (nextStartTimeRef.current < currentTime) {
-      nextStartTimeRef.current = currentTime + 0.05; // 50ms look-ahead buffer to prevent pops
-    }
-
-    source.start(nextStartTimeRef.current);
-    nextStartTimeRef.current += buffer.duration;
-
-    // Track this source so we can kill it later
-    activeSourcesRef.current.push(source);
-
-    // Auto-cleanup on natural end
-    source.onended = () => {
-      activeSourcesRef.current = activeSourcesRef.current.filter(
-        (s) => s !== source
-      );
-    };
-  };
-
-  const disconnectMic = useCallback(() => {
-    if (processorRef.current) {
-      processorRef.current.disconnect();
-      processorRef.current = null;
-    }
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((t) => t.stop());
-      streamRef.current = null;
-    }
-    if (audioContextRef.current) {
-      audioContextRef.current.close();
-      audioContextRef.current = null;
-    }
-    cancelAudioPlayback();
-  }, [cancelAudioPlayback]);
 
   const startSession = useCallback(async () => {
     if (!token) {

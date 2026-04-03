@@ -22,7 +22,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
   const location = useLocation();
   const { t, i18n } = useTranslation();
   const [isOnSubscriptionPage, setIsOnSubscriptionPage] = useState(false);
-  const suspiciousActivityDetectedRef = useRef(false);
+  const [suspiciousActivityDetected, setSuspiciousActivityDetected] = useState(false);
 
   // Check if we're on subscription page using window.location
   useEffect(() => {
@@ -40,12 +40,12 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
       
       // If user is on subscription page, disable modal (unless suspicious activity)
       if (isCurrentlyOnSubscriptions) {
-        if (!suspiciousActivityDetectedRef.current) {
+        if (!suspiciousActivityDetected) {
           globalModalDisabled = true;
         }
       } else if (wasOnSubscriptions && !isCurrentlyOnSubscriptions) {
         // User tried to navigate away from subscription page - suspicious activity
-        suspiciousActivityDetectedRef.current = true;
+        setSuspiciousActivityDetected(true);
         globalModalDisabled = false;
       }
       
@@ -366,7 +366,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
     globalSubscriptionPageActive = true;
     globalModalDisabled = true;
     // Reset suspicious activity flag when user clicks upgrade again
-    suspiciousActivityDetectedRef.current = false;
+    setSuspiciousActivityDetected(false);
     window.location.href = "/subscriptions";
   };
 
@@ -387,7 +387,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
     // If user tries to navigate away, mark as suspicious and show modal again
     const handleBeforeUnload = () => {
       if (globalSubscriptionPageActive) {
-        suspiciousActivityDetectedRef.current = true;
+        setSuspiciousActivityDetected(true);
         globalModalDisabled = false;
       }
     };
@@ -403,7 +403,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
       const url = args[2] as string;
       if (url && url !== "/subscriptions" && !url.includes("/subscriptions")) {
         // Suspicious activity detected - user trying to navigate away
-        suspiciousActivityDetectedRef.current = true;
+        setSuspiciousActivityDetected(true);
         globalModalDisabled = false;
         // Block navigation, keep user on subscription page
         return;
@@ -416,7 +416,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
       const url = args[2] as string;
       if (url && url !== "/subscriptions" && !url.includes("/subscriptions")) {
         // Suspicious activity detected - user trying to navigate away
-        suspiciousActivityDetectedRef.current = true;
+        setSuspiciousActivityDetected(true);
         globalModalDisabled = false;
         // Block navigation, keep user on subscription page
         return;
@@ -436,7 +436,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
           e.preventDefault();
           e.stopPropagation();
           // Mark as suspicious activity and show modal again
-          suspiciousActivityDetectedRef.current = true;
+          setSuspiciousActivityDetected(true);
           globalModalDisabled = false;
           // The modal will remain visible
           return false;
@@ -450,7 +450,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
         const currentPath = window.location.pathname;
         if (currentPath !== "/subscriptions" && globalSubscriptionPageActive) {
           // User tried to navigate away - suspicious activity
-          suspiciousActivityDetectedRef.current = true;
+          setSuspiciousActivityDetected(true);
           globalModalDisabled = false;
           // Push subscription page back to history
           window.history.pushState(null, "", "/subscriptions");
@@ -487,7 +487,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
   }
 
   // Don't show modal if user is on subscription page and modal is disabled (unless suspicious activity detected)
-  if (isOnSubscriptionPage && globalModalDisabled && !suspiciousActivityDetectedRef.current) {
+  if (isOnSubscriptionPage && globalModalDisabled && !suspiciousActivityDetected) {
     return <>{children}</>;
   }
 

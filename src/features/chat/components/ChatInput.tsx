@@ -284,7 +284,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                       if (fileInputRef.current) fileInputRef.current.value = "";
                     }}
                     className={cn(
-                      "absolute z-10 flex items-center justify-center rounded-full bg-gray-500/80 text-white hover:bg-gray-600 transition-colors",
+                      "absolute z-10 flex items-center justify-center rounded-full bg-gray-500/80 text-white hover:bg-gray-600 transition-colors hover:cursor-pointer",
                       isImage ? "top-1 right-1 w-4 h-4 backdrop-blur-md opacity-0 group-hover:opacity-100" : "top-1.5 right-1.5 w-4 h-4 opacity-50 hover:opacity-100"
                     )}
                   >
@@ -638,7 +638,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 className={cn(
                   "p-2 rounded-full transition-all duration-200 flex items-center justify-center",
                   (input.trim() || files.length > 0) && !disabled && !isCloudLoading && !isFileProcessing
-                    ? "bg-blue-600 text-white hover:bg-blue-700 shadow-md"
+                    ? "bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:cursor-pointer"
                     : isDark
                     ? "bg-gray-800 text-gray-500"
                     : "bg-gray-200 text-gray-400 cursor-not-allowed"

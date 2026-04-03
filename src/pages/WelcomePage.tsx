@@ -18,7 +18,6 @@ const WelcomePage: React.FC = () => {
   const isDark = useAppSelector((state: any) => state.theme?.isDark);
   const { user, accessToken } = useAppSelector((state: any) => state.auth);
   const { isFree } = useSubscription();
-  {isFree}
   // Model and Agent state from Redux
   const { newChatModel, selectedAgentId } = useAppSelector(
     (state: any) => state.chat
@@ -121,8 +120,9 @@ const WelcomePage: React.FC = () => {
      {user && ( <SubscriptionOfferingCard />)}
 
       {/* LEFT SKYSCRAPER AD — fixed to left margin, freemium only */}
-      {false /* temporarily disabled: isFree */ && (
-        <div className="hidden lg:block fixed left-[256px] top-1/2 -translate-y-1/2 w-[160px] xl:w-[200px] max-h-[350px] mb-8 z-[5]">
+      {/* temporarily disabled */}
+      {false && isFree && (
+        <div className="hidden lg:block fixed left-[256px] top-1/2 -translate-y-1/2 w-[160px] xl:w-[200px] max-h-[350px] mb-8 z-5">
           <AdUnit
             slot={AD_SLOTS.WELCOME_LEFT_SKYSCRAPER}
             format="vertical"
@@ -173,8 +173,9 @@ const WelcomePage: React.FC = () => {
       </div>
 
       {/* RIGHT SKYSCRAPER AD — fixed to right margin, freemium only */}
-      {false /* temporarily disabled: isFree */ && (
-        <div className="hidden lg:block fixed right-4 top-1/2 -translate-y-1/2 w-[160px] xl:w-[200px] max-h-[350px] mb-8 z-[5]">
+      {/* temporarily disabled */}
+      {false && isFree && (
+        <div className="hidden lg:block fixed right-4 top-1/2 -translate-y-1/2 w-[160px] xl:w-[200px] max-h-[350px] mb-8 z-5">
           <AdUnit
             slot={AD_SLOTS.WELCOME_RIGHT_SKYSCRAPER}
             format="vertical"

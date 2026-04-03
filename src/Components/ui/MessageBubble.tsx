@@ -115,7 +115,7 @@ const MessageBubble: React.FC<MessageProps> = ({
                 {isUser && onDelete && id && (
                   <button
                     onClick={() => onDelete(id)}
-                    className="absolute -left-8 top-1 p-1.5 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute -left-8 top-1 p-1.5 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer"
                     title={t("common.deleteMessage")}
                   >
                     <Trash2 size={14} />
@@ -155,7 +155,7 @@ const MessageBubble: React.FC<MessageProps> = ({
                   const displayContent = content
                     ? content
                         .replace(/\[File:\s*[^\]]+\]/g, "")
-                        .replace("SYSTEM: The repository source code is attached as a PDF. Use the XML tags for navigation. ", "")
+                        .replace(/SYSTEM: The repository source code is attached as a PDF\. Use the XML tags for navigation\.\s*/gi, "")
                         .trim()
                     : "";
 

@@ -59,11 +59,12 @@ const LiquidProgressBar: React.FC<{ value: number; total: number }> = ({ value, 
 };
 
 const ImportCodeModal: React.FC<ImportCodeModalProps> = ({ isOpen, onClose }) => {
-  const { toast, success, error: toastError } = useToast();
+  const { success, error: toastError } = useToast();
   const attachedRepo = useAppSelector((state: any) => state.chat.attachedRepo);
 
   const [repoUrl, setRepoUrl] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const lastNotifiedRepoRef = useRef<string | null>(null);
 
   const { packRepo, reset, status, progress, error } = useRepoPacker();
 
@@ -75,7 +76,11 @@ const ImportCodeModal: React.FC<ImportCodeModalProps> = ({ isOpen, onClose }) =>
 
   useEffect(() => {
     if (status === "done" && attachedRepo) {
-      success(`Repository Imported Successfully: ${attachedRepo.repo}`);
+      const repoKey = `${attachedRepo.owner}/${attachedRepo.repo}`;
+      if (lastNotifiedRepoRef.current !== repoKey) {
+        success(`Repository Imported Successfully: ${attachedRepo.repo}`);
+        lastNotifiedRepoRef.current = repoKey;
+      }
       reset();
       onClose();
     } else if (status === "error" && error) {
@@ -114,7 +119,7 @@ const ImportCodeModal: React.FC<ImportCodeModalProps> = ({ isOpen, onClose }) =>
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9998] bg-black/80 backdrop-blur-sm"
+            className="fixed inset-0 z-9998 bg-black/80 backdrop-blur-sm"
             onClick={handleClose}
           />
 
@@ -125,7 +130,7 @@ const ImportCodeModal: React.FC<ImportCodeModalProps> = ({ isOpen, onClose }) =>
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className={cn(
-              "fixed z-[9999] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
+              "fixed z-60 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
               "w-[90vw] max-w-[480px] rounded-2xl overflow-hidden shadow-2xl",
               "bg-zinc-950/40 backdrop-blur-2xl border border-zinc-800 text-zinc-100",
               "shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"

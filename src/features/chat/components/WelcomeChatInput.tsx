@@ -397,7 +397,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
                           title={t("common.removeFile")}
                           onClick={() => setSelectedFiles(selectedFiles.filter((_, i) => i !== idx))}
                           className={cn(
-                            "absolute z-10 flex items-center justify-center rounded-full bg-gray-500/80 text-white hover:bg-gray-600 transition-colors",
+                            "absolute z-10 flex items-center justify-center rounded-full bg-gray-500/80 text-white hover:bg-gray-600 transition-colors hover:cursor-pointer",
                             isImage ? "top-1 right-1 w-4 h-4 backdrop-blur-md opacity-0 group-hover:opacity-100" : "top-1.5 right-1.5 w-4 h-4 opacity-50 hover:opacity-100"
                           )}
                         >
