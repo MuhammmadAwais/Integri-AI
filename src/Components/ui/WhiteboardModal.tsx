@@ -209,7 +209,7 @@ const WhiteboardModal: React.FC<WhiteboardModalProps> = ({
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-10000 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
       {/* Modal Container */}
       <div
         className={cn(

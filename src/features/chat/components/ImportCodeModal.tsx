@@ -119,7 +119,7 @@ const ImportCodeModal: React.FC<ImportCodeModalProps> = ({ isOpen, onClose }) =>
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-9998 bg-black/80 backdrop-blur-sm"
+            className="fixed inset-0 z-[9998] bg-black/80 backdrop-blur-sm"
             onClick={handleClose}
           />
 
@@ -130,7 +130,7 @@ const ImportCodeModal: React.FC<ImportCodeModalProps> = ({ isOpen, onClose }) =>
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className={cn(
-              "fixed z-60 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
+              "fixed z-[9999] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
               "w-[90vw] max-w-[480px] rounded-2xl overflow-hidden shadow-2xl",
               "bg-zinc-950/40 backdrop-blur-2xl border border-zinc-800 text-zinc-100",
               "shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
