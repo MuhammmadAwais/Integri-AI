@@ -5,7 +5,7 @@ import { cn } from "../../../lib/utils";
 interface AuthButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean;
-  variant?: "primary" | "google" | "outline" | "createAccount";
+  variant?: "primary" | "google" | "apple" | "outline" | "createAccount";
 }
 
 const AuthButton: React.FC<AuthButtonProps> = ({
@@ -19,6 +19,8 @@ const AuthButton: React.FC<AuthButtonProps> = ({
     primary:
       "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white shadow-lg shadow-red-900/20 border-transparent",
     google:
+      "bg-[#27272A] h-14 hover:bg-[#323236] text-white border border-[#3F3F46] hover:border-gray-500 w-50",
+    apple:
       "bg-[#27272A] h-14 hover:bg-[#323236] text-white border border-[#3F3F46] hover:border-gray-500 w-50",
     outline:
       "bg-transparent hover:bg-[#27272A] text-gray-300 border border-[#3F3F46]",

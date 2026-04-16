@@ -91,6 +91,35 @@ export const loginWithGoogle = createAsyncThunk(
   },
 );
 
+// --- APPLE LOGIN THUNK ---
+export const loginWithApple = createAsyncThunk(
+  "auth/loginWithApple",
+  async (_, { rejectWithValue }) => {
+    try {
+      // 1. Apple Login — throws NewUserBlockedError if no Firestore doc
+      const user = await AuthService.loginWithApple();
+
+      // 2. Get Token from Backend (only reached for existing users)
+      const backendData = await getBackendToken(
+        user.id,
+        user.email,
+        user.subscriptionTier,
+      );
+
+      return {
+        user: user,
+        accessToken: backendData.access_token,
+      };
+    } catch (error: any) {
+      // Distinguish new-user-blocked from generic errors
+      if (error?.code === "NEW_USER_BLOCKED" || error?.name === "NewUserBlockedError") {
+        return rejectWithValue("NEW_USER_BLOCKED");
+      }
+      return rejectWithValue(error.message || "Apple login failed");
+    }
+  },
+);
+
 // --- LOGOUT THUNK ---
 export const logoutUser = createAsyncThunk("auth/logout", async () => {
   await AuthService.logout();

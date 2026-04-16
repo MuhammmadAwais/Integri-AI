@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Mail, Lock, LogIn, Chrome } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
-import { loginUser, loginWithGoogle } from "../features/auth/thunks/authThunk";
+import { loginUser, loginWithGoogle, loginWithApple } from "../features/auth/thunks/authThunk";
 import AuthLayout from "../Components/layout/AuthLayout";
 import AuthInput from "../features/auth/components/AuthInput";
 import AuthButton from "../features/auth/components/AuthButton";
@@ -30,6 +30,18 @@ const Login: React.FC = () => {
     if (loginWithGoogle.fulfilled.match(result)) {
       navigate("/");
     } else if (loginWithGoogle.rejected.match(result)) {
+      const payload = result.payload as any;
+      if (payload === "NEW_USER_BLOCKED") {
+        setShowBlockedModal(true);
+      }
+    }
+  };
+
+  const handleAppleLogin = async () => {
+    const result = await dispatch(loginWithApple());
+    if (loginWithApple.fulfilled.match(result)) {
+      navigate("/");
+    } else if (loginWithApple.rejected.match(result)) {
       const payload = result.payload as any;
       if (payload === "NEW_USER_BLOCKED") {
         setShowBlockedModal(true);
@@ -101,15 +113,27 @@ const Login: React.FC = () => {
           </div>
         </div>
 
-        <AuthButton
-          type="button"
-          variant="google"
-          className="hover:cursor-pointer w-full"
-          onClick={handleGoogleLogin}
-        >
-          <Chrome size={18} className="text-white" />
-          <span>Google</span>
-        </AuthButton>
+        <div className="flex gap-3">
+          <AuthButton
+            type="button"
+            variant="google"
+            className="hover:cursor-pointer flex-1"
+            onClick={handleGoogleLogin}
+          >
+            <Chrome size={18} className="text-white" />
+            <span>Google</span>
+          </AuthButton>
+
+          <AuthButton
+            type="button"
+            variant="apple"
+            className="hover:cursor-pointer flex-1"
+            onClick={handleAppleLogin}
+          >
+            <img src="/dark-theme-apple.png" alt="Apple" className="w-5 h-5 object-contain" />
+            <span>Apple</span>
+          </AuthButton>
+        </div>
 
         <p className="text-center text-sm text-gray-500 mt-6">
           {t("login.dontHaveAccount")}{" "}

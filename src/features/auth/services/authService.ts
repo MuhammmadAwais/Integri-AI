@@ -4,6 +4,7 @@ import {
   signOut,
   updateProfile,
   GoogleAuthProvider,
+  OAuthProvider,
   signInWithPopup,
   getAdditionalUserInfo,
   deleteUser,
@@ -245,6 +246,40 @@ export const AuthService = {
         console.log("🚫 New user blocked and Firebase account deleted.");
       } catch (deleteErr) {
         console.error("⚠️ Could not delete new Firebase user:", deleteErr);
+      }
+      throw new NewUserBlockedError();
+    }
+
+    return await AuthService.fetchUserProfile(userCredential.user);
+  },
+
+  loginWithApple: async (): Promise<UserData> => {
+    const provider = new OAuthProvider("apple.com");
+    // Request name and email scopes from Apple
+    provider.addScope("name");
+    provider.addScope("email");
+    const userCredential = await signInWithPopup(auth, provider);
+
+    // ── New-user guard ─────────────────────────────────────────────────────────
+    // Check #1: Firebase additionalUserInfo (fast, no Firestore round-trip)
+    const additionalInfo = getAdditionalUserInfo(userCredential);
+    const isFirebaseNew = additionalInfo?.isNewUser ?? false;
+
+    // Check #2: No document in our Firestore Users collection (belt-and-suspenders)
+    let isFirestoreNew = false;
+    if (!isFirebaseNew) {
+      const userDoc = await getDoc(doc(db, "Users", userCredential.user.uid));
+      isFirestoreNew = !userDoc.exists();
+    }
+
+    if (isFirebaseNew || isFirestoreNew) {
+      // Immediately delete the freshly-created Firebase Auth account
+      // so no orphan record remains in the Auth console
+      try {
+        await deleteUser(userCredential.user);
+        console.log("🚫 New Apple user blocked and Firebase account deleted.");
+      } catch (deleteErr) {
+        console.error("⚠️ Could not delete new Firebase Apple user:", deleteErr);
       }
       throw new NewUserBlockedError();
     }
