@@ -19,7 +19,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useAppSelector } from "../hooks/useRedux";
 import { cn } from "../lib/utils";
 import ParticleBackground from "../Components/ui/ParticleBackground";
-
+import { sendEmail } from "../services/mailService";
+import GsapToast from "../Components/ui/GsapToast";
 
 // Register GSAP
 gsap.registerPlugin(ScrollTrigger);
@@ -286,6 +287,11 @@ const ContactUs: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [toastState, setToastState] = useState<{message: string, type: "success" | "error" | "warning", visible: boolean}>({
+    message: "",
+    type: "success",
+    visible: false
+  });
 
   // Form State
   const [formData, setFormData] = useState({
@@ -314,15 +320,32 @@ const ContactUs: React.FC = () => {
     return () => ctx.revert();
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.email || !formData.message) {
+      setToastState({ message: "Please provide your email and a message.", type: "warning", visible: true });
+      return;
+    }
+
     setIsSubmitting(true);
-    setTimeout(() => {
+    try {
+      await sendEmail({
+        subject: `Contact Form Submission from ${formData.firstName} ${formData.lastName}`,
+        textContent: `You have received a new message from ${formData.firstName} ${formData.lastName} (${formData.email}):\n\n${formData.message}`,
+        replyToEmail: formData.email,
+        replyToName: `${formData.firstName} ${formData.lastName}`.trim() || formData.email,
+      });
+
       setIsSubmitting(false);
       setIsSuccess(true);
+      setToastState({ message: "Message Sent Successfully!", type: "success", visible: true });
       setTimeout(() => setIsSuccess(false), 4000);
       setFormData({ firstName: "", lastName: "", email: "", message: "" });
-    }, 2000);
+    } catch (error) {
+      console.error("Failed to send message", error);
+      setToastState({ message: "Failed to send message. Please try again later.", type: "error", visible: true });
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -334,6 +357,11 @@ const ContactUs: React.FC = () => {
         isDark ? "bg-[#09090b] text-zinc-100" : "bg-zinc-50 text-zinc-900"
       )}
     >
+      <GsapToast 
+        {...toastState} 
+        isDark={isDark} 
+        onClose={() => setToastState(prev => ({ ...prev, visible: false }))} 
+      />
       <div className="fixed inset-0 z-0 opacity-40 pointer-events-none">
         <ParticleBackground />
       </div>

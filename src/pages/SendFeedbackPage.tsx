@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Send, Star, MessageSquare } from "lucide-react";
-import { toast } from "react-toastify";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "../app/firebase"; // Ensure correct path
+import { sendEmail } from "../services/mailService";
 import { useAppSelector } from "../hooks/useRedux";
 import { cn } from "../lib/utils";
 import Button from "../Components/ui/Button";
 import ParticleBackground from "../Components/ui/ParticleBackground";
+import GsapToast from "../Components/ui/GsapToast";
 
 const CATEGORIES = [
   "Bug Report",
@@ -26,11 +27,16 @@ const SendFeedbackPage: React.FC = () => {
   const [rating, setRating] = useState<number>(0);
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [toastState, setToastState] = useState<{message: string, type: "success" | "error" | "warning", visible: boolean}>({
+    message: "",
+    type: "success",
+    visible: false
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) {
-      toast.warn("Please enter a message.");
+      setToastState({ message: "Please enter a message.", type: "warning", visible: true });
       return;
     }
 
@@ -48,13 +54,26 @@ const SendFeedbackPage: React.FC = () => {
         });
       }
 
-      toast.success("Feedback sent! Thank you.", {
-        theme: isDark ? "dark" : "light",
-      });
-      setTimeout(() => navigate("/settings"), 1500);
+      try {
+        await sendEmail({
+          subject: `New Feedback: ${category} (${rating} Stars)`,
+          textContent: `User: ${user?.email || "anonymous"} (ID: ${user?.id || "anonymous"})\nCategory: ${category}\nRating: ${rating} Stars\n\nMessage:\n${message}`,
+          replyToEmail: user?.email || "info@integri.app",
+        });
+      } catch (emailError) {
+        console.error("Failed to send feedback email notification", emailError);
+        // Do not fail the whole form submission just because the email failed
+      }
+
+      setToastState({ message: "Feedback sent! Thank you.", type: "success", visible: true });
+      setCategory("General Feedback");
+      setRating(0);
+      setMessage("");
+
+      setTimeout(() => navigate("/settings"), 2500);
     } catch (error) {
       console.error("Feedback error", error);
-      toast.error("Failed to send feedback.");
+      setToastState({ message: "Failed to send feedback.", type: "error", visible: true });
       setIsSubmitting(false);
     }
   };
@@ -66,6 +85,11 @@ const SendFeedbackPage: React.FC = () => {
         isDark ? "bg-[#09090b] text-white" : "bg-gray-50 text-gray-900"
       )}
     >
+      <GsapToast 
+        {...toastState} 
+        isDark={isDark} 
+        onClose={() => setToastState(prev => ({ ...prev, visible: false }))} 
+      />
       <ParticleBackground />
       <div className="max-w-2xl mx-auto">
         {/* Header */}
