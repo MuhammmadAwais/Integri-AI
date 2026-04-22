@@ -4,14 +4,18 @@ const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
 const API_KEY = import.meta.env.VITE_BREVO_API_KEY;
 
 interface MailParams {
-  subject: string;
-  textContent: string;
-  htmlContent?: string;
   replyToEmail: string;
   replyToName?: string;
+  templateId: number;
+  params: {
+    FNAME: string;
+    EMAIL: string;
+    SUBJECT: string;
+    MESSAGE: string;
+  };
 }
 
-export const sendEmail = async ({ subject, textContent, htmlContent, replyToEmail, replyToName }: MailParams) => {
+export const sendEmail = async ({ replyToEmail, replyToName, templateId, params }: MailParams) => {
   if (!API_KEY) {
     console.error("Brevo API key is not defined in environment variables.");
     throw new Error("Brevo API key is not defined.");
@@ -24,17 +28,15 @@ export const sendEmail = async ({ subject, textContent, htmlContent, replyToEmai
     },
     to: [
       {
-        email: "info@integri.app",
-        name: "Integri Support"
+        email: "info@integri.app"
       }
     ],
     replyTo: {
       email: replyToEmail,
       name: replyToName || replyToEmail 
     },
-    subject: subject,
-    textContent: textContent,
-    htmlContent: htmlContent || textContent
+    templateId: templateId,
+    params: params
   };
 
   try {

@@ -56,8 +56,13 @@ const SendFeedbackPage: React.FC = () => {
 
       try {
         await sendEmail({
-          subject: `New Feedback: ${category} (${rating} Stars)`,
-          textContent: `User: ${user?.email || "anonymous"} (ID: ${user?.id || "anonymous"})\nCategory: ${category}\nRating: ${rating} Stars\n\nMessage:\n${message}`,
+          templateId: 1, // Please replace 1 with your actual template ID if different
+          params: {
+            FNAME: user?.name || "User",
+            EMAIL: user?.email || "anonymous",
+            SUBJECT: "User Platform Feedback",
+            MESSAGE: `Category: ${category}\nRating: ${rating} Stars\n\nMessage:\n${message}`
+          },
           replyToEmail: user?.email || "info@integri.app",
         });
       } catch (emailError) {

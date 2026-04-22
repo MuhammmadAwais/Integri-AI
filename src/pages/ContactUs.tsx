@@ -330,8 +330,13 @@ const ContactUs: React.FC = () => {
     setIsSubmitting(true);
     try {
       await sendEmail({
-        subject: `Contact Form Submission from ${formData.firstName} ${formData.lastName}`,
-        textContent: `You have received a new message from ${formData.firstName} ${formData.lastName} (${formData.email}):\n\n${formData.message}`,
+        templateId: 1, // Please replace 1 with your actual template ID if different
+        params: {
+          FNAME: formData.firstName || "User",
+          EMAIL: formData.email,
+          SUBJECT: `Contact Form Submission from ${formData.firstName} ${formData.lastName}`,
+          MESSAGE: formData.message
+        },
         replyToEmail: formData.email,
         replyToName: `${formData.firstName} ${formData.lastName}`.trim() || formData.email,
       });
