@@ -5,7 +5,7 @@ type VoiceMessage =
   | { type: "audio"; data: string }
   | { type: "commit" }
   | { type: "interrupt" }
-  | { type: "config"; voice?: string; vad_threshold?: number };
+  | { type: "config"; voice?: string; vad_threshold?: number };// ONLY FOR DEVELOPEMENT PURPOSES 
 
 class VoiceWebSocketService extends EventTarget {
   private socket: WebSocket | null = null;
