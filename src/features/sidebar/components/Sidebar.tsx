@@ -142,7 +142,7 @@ const Sidebar: React.FC = () => {
       <div
         className={cn(
           "flex flex-col h-full border-e transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] relative z-40 select-none",
-          isExpanded ? "w-60" : "w-[60px]",
+          isExpanded ? "w-60" : "w-[68px]",
           isDark
             ? "bg-[#000000] border-[#1F1F1F] text-[#E7E9EA]"
             : "bg-white border-gray-200 text-gray-900",
@@ -201,13 +201,13 @@ const Sidebar: React.FC = () => {
               title={t("common.search")}
               onClick={() => setIsExpanded(true)}
               className={cn(
-                "w-9 h-9 rounded-full flex items-center justify-center transition-colors",
+                "w-9 h-9 rounded-full flex items-center hover:cursor-pointer hover:scale-115 hover:bg-gray-100 justify-center transition-colors duration-100 ease-in-out pr-0.5",
                 isDark
                   ? "hover:bg-[#1A1A1A] text-gray-400"
                   : "hover:bg-gray-100",
               )}
             >
-              <Search size={20} />
+              <Search size={24} />
             </button>
           )}
         </div>
