@@ -16,6 +16,7 @@ import { decrementMessages } from "../../limits/slices/limitsSlice";
 import { showLimitReachedToast } from "../../limits/components/LimitToast";
 import { toast } from "react-toastify";
 import SkeletonLoader from "../../../Components/ui/SkeletonLoader";
+import { FileSizeLimitToastPortal } from "./FileSizeLimitToast";
 
 interface ChatInterfaceProps {
   features?: boolean;
@@ -34,7 +35,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
   const selectedAgentId = useAppSelector(
     (state: any) => state.chat.selectedAgentId
   );
-  const { isFree } = useSubscription();
+  const { isFree, isPro } = useSubscription();
   const { hasRemainingMessages, limits, resetTimeFormatted } = useLimits();
   const dispatch = useAppDispatch();
   const limitReached = !hasRemainingMessages;
@@ -50,6 +51,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
     isThinking,
     messagesLoaded,
     fileUploadStage,
+    fileSizeLimitError,
+    clearFileSizeLimitError,
   } = useChat(id, location.state?.initialMessage, location.state?.initialFiles || (location.state?.initialFile ? [location.state?.initialFile] : undefined));
 
   const hasAutoSent = useRef(false);
@@ -294,6 +297,16 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
           )}
         </div>
       </div>
+
+      {/* File Size Limit Toast — GSAP animated, only when a 413 error occurs */}
+      {fileSizeLimitError && (
+        <FileSizeLimitToastPortal
+          message={fileSizeLimitError.message}
+          maxSize={fileSizeLimitError.maxSize}
+          isPro={isPro}
+          onClose={clearFileSizeLimitError}
+        />
+      )}
     </div>
   );
 };

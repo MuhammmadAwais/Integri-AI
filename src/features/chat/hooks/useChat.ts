@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { extractMaxSizeFromError } from "../components/FileSizeLimitToast";
 import { socketService } from "../../../services/WebSocketsService";
 import { SessionService } from "../../../api/backendApi";
 import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux";
@@ -109,6 +110,12 @@ export const useChat = (sessionId: string | undefined, initialMessage?: string, 
   const [fileUploadStage, setFileUploadStage] = useState<
     "idle" | "uploading" | "processing" | "error"
   >("idle");
+
+  // File size limit error state — set when backend returns 413
+  const [fileSizeLimitError, setFileSizeLimitError] = useState<{
+    message: string;
+    maxSize?: string;
+  } | null>(null);
 
   // Ref to track if we need to fetch title (prevents duplicate fetches)
   const hasFetchedTitleRef = useRef(false);
@@ -458,12 +465,32 @@ export const useChat = (sessionId: string | undefined, initialMessage?: string, 
             ));
             
             setFileUploadStage("idle");
-          } catch (uploadError) {
+          } catch (uploadError: any) {
             console.error("❌ [useChat] File pipeline failed:", uploadError);
             setFileUploadStage("error");
             setTimeout(() => setFileUploadStage("idle"), 3000);
             setIsThinking(false);
             setIsUploading(false);
+
+            // ── Detect backend 413 file-size limit errors ──────────────────
+            const status = uploadError?.response?.status;
+            const detail =
+              uploadError?.response?.data?.detail ||
+              uploadError?.response?.data?.message ||
+              uploadError?.message ||
+              "";
+            const isFileSizeError =
+              status === 413 ||
+              /file size|too large|exceeds.*limit|limit.*exceeded/i.test(detail);
+
+            if (isFileSizeError) {
+              const backendMsg = detail || "File size exceeds the limit for your plan.";
+              setFileSizeLimitError({
+                message: backendMsg,
+                maxSize: extractMaxSizeFromError(backendMsg),
+              });
+            }
+
             return;
           } finally {
             setIsUploading(false);
@@ -501,5 +528,7 @@ export const useChat = (sessionId: string | undefined, initialMessage?: string, 
     isUploading,
     messagesLoaded,
     fileUploadStage,
+    fileSizeLimitError,
+    clearFileSizeLimitError: () => setFileSizeLimitError(null),
   };
 };

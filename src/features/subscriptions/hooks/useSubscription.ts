@@ -9,8 +9,8 @@ import { fetchLimits } from "../../limits/slices/limitsSlice";
 
 const TIER_LEVELS: Record<SubscriptionTier, number> = {
   free: 0,
-  pro: 1,
-  premium: 2,
+  premium: 1,
+  pro: 2, // Pro is the highest/most superior tier
 };
 
 export const useSubscription = () => {
@@ -30,19 +30,19 @@ export const useSubscription = () => {
     const currentLevel = TIER_LEVELS[tier] ?? 0;
 
     const features = {
-      // Pro Features (Pro + Premium)
-      advancedModels: currentLevel >= TIER_LEVELS.pro,
-      unlimitedHistory: currentLevel >= TIER_LEVELS.pro,
-      standardVoice: currentLevel >= TIER_LEVELS.pro,
-      standardImageGen: currentLevel >= TIER_LEVELS.pro,
-      prioritySupport: currentLevel >= TIER_LEVELS.pro,
+      // Available from Premium tier and above (Premium + Pro)
+      advancedModels: currentLevel >= TIER_LEVELS.premium,
+      unlimitedHistory: currentLevel >= TIER_LEVELS.premium,
+      standardVoice: currentLevel >= TIER_LEVELS.premium,
+      standardImageGen: currentLevel >= TIER_LEVELS.premium,
+      prioritySupport: currentLevel >= TIER_LEVELS.premium,
 
-      // Premium Features (Premium Only)
-      nextGenModels: currentLevel >= TIER_LEVELS.premium,
-      realTimeVoice: currentLevel >= TIER_LEVELS.premium,
-      hdImageGen: currentLevel >= TIER_LEVELS.premium,
-      highLimits: currentLevel >= TIER_LEVELS.premium,
-      betaAccess: currentLevel >= TIER_LEVELS.premium,
+      // Available from Pro tier only (highest tier)
+      nextGenModels: currentLevel >= TIER_LEVELS.pro,
+      realTimeVoice: currentLevel >= TIER_LEVELS.pro,
+      hdImageGen: currentLevel >= TIER_LEVELS.pro,
+      highLimits: currentLevel >= TIER_LEVELS.pro,
+      betaAccess: currentLevel >= TIER_LEVELS.pro,
     };
 
     const availableModels = getAvailableModelsByTier(tier);
@@ -53,7 +53,8 @@ export const useSubscription = () => {
       isFree: tier === "free",
       isPro: tier === "pro",
       isPremium: tier === "premium",
-      isAtLeastPro: currentLevel >= TIER_LEVELS.pro,
+      isAtLeastPremium: currentLevel >= TIER_LEVELS.premium, // premium or pro
+      isAtLeastPro: currentLevel >= TIER_LEVELS.pro,         // pro only
       canAccess: (feature: keyof typeof features) => features[feature],
       availableModels,
       multiChatLimit,
