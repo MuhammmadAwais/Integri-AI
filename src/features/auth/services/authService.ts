@@ -71,7 +71,9 @@ export interface UserData {
   subscriptionTier: SubscriptionTier; // UPDATED: Changed from isPremium boolean
   planId: string;
   country: string | null;
+  language: string | null;
   myCode: number;
+  dateOfBirth?: any | null;
   isNewUser?: boolean;
 }
 
@@ -119,7 +121,9 @@ export const AuthService = {
         subscriptionTier: tier, // Set the fetched tier (or "pro" if whitelisted)
         planId: tier === "free" ? "freemium" : tier,
         country: data.country,
+        language: data.selectedLanguageCode || "en",
         myCode: data.myCode,
+        dateOfBirth: data.dateOfBirth,
       };
     }
 
@@ -133,7 +137,9 @@ export const AuthService = {
       subscriptionTier: tier, // Set the fetched tier (or "pro" if whitelisted)
       planId: "freemium",
       country: null,
+      language: "en",
       myCode,
+      dateOfBirth: null,
       isNewUser: true, // Force redirect to GettingStarted
     };
   },
@@ -206,7 +212,9 @@ export const AuthService = {
       subscriptionTier: tier, // "free" or "pro" if whitelisted
       planId: tier === "free" ? "freemium" : tier,
       country: null,
+      language: "en",
       myCode,
+      dateOfBirth: null,
       isNewUser: true, // Force redirect to GettingStarted
     };
   },

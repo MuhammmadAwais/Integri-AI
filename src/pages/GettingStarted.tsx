@@ -243,7 +243,11 @@ const GettingStarted: React.FC = () => {
           name: user.name || "",
         });
       }
-      dispatch(completeOnboarding());
+      dispatch(completeOnboarding({
+        country: formData.countryCode,
+        language: formData.languageCode,
+        dateOfBirth: formData.dateOfBirth,
+      }));
       navigate("/");
     } catch (error) {
       console.error("Onboarding Error", error);

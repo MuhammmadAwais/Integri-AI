@@ -46,10 +46,15 @@ const authSlice = createSlice({
       }
       state.isLoading = false;
     },
-    completeOnboarding: (state) => {
+    completeOnboarding: (state, action: PayloadAction<{ country: string; language: string; dateOfBirth: any } | undefined>) => {
       state.isNewUser = false;
       if (state.user) {
         state.user.isNewUser = false;
+        if (action.payload) {
+          state.user.country = action.payload.country;
+          state.user.language = action.payload.language;
+          state.user.dateOfBirth = action.payload.dateOfBirth;
+        }
       }
     },
   },

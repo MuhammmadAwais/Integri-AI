@@ -353,9 +353,9 @@ const AccountSettings: React.FC = () => {
       await setDoc(
         userRef,
         {
-          name: displayName,
+          userName: displayName,
           country: country,
-          language: language,
+          selectedLanguageCode: language,
           dateOfBirth: dateOfBirth, // Update Date of Birth
         },
         { merge: true }
