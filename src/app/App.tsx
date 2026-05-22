@@ -34,6 +34,8 @@ import PdfChatPage from "../pages/PdfChat";
 import NewsPage from "../pages/NewsPage";
 import NewsDetailPage from "../pages/NewsDetailPage";
 import ArticleDetailPage from "../pages/ArticleDetailPage";
+import BlogPage from "../pages/BlogPage";
+import BlogDetailPage from "../pages/BlogDetailPage";
 import SettingsPage from "../pages/SettingsPage";
 import SendFeedbackPage from "../pages/SendFeedbackPage";
 import HelpPage from "../pages/HelpPage";
@@ -146,6 +148,8 @@ const router = createBrowserRouter([
               { path: "news", element: <NewsPage /> },
               { path: "news/:id", element: <NewsDetailPage /> },
               { path: "articles/:id", element: <ArticleDetailPage /> },
+              { path: "blog", element: <BlogPage /> },
+              { path: "blog/:slug", element: <BlogDetailPage /> },
               { path: "settings", element: <SettingsPage /> },
               { path: "settings/personalization", element: <PersonalizationPage /> },
               { path: "feedback", element: <SendFeedbackPage /> },

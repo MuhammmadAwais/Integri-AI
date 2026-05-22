@@ -13,6 +13,7 @@ import {
   CheckCircle,
   MessageCircle,
   Newspaper,
+  BookOpen,
 } from "lucide-react";
 import { useAppSelector } from "../../../hooks/useRedux";
 import { useChatList } from "../../chat/hooks/useChat";
@@ -29,6 +30,7 @@ const NAV_ITEMS = [
   { id: "imageGen", labelKey: "nav.imageGen", icon: ImageIcon, path: "/imageGen" },
   { id: "pdf", labelKey: "nav.pdfChat", icon: FileText, path: "/pdf" },
   { id: "news", labelKey: "nav.news", icon: Newspaper, path: "/news" },
+  { id: "blogs", labelKey: "nav.blogs", icon: BookOpen, path: "/blog" },
 ];
 
 const Sidebar: React.FC = () => {
