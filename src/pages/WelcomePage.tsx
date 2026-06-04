@@ -48,7 +48,7 @@ const WelcomePage: React.FC = () => {
     return () => ctx.revert();
   }, []);
 
-  const handleStartChat = async (text: string, files?: File[], searchMode?: "search" | "deep-search" | null) => {
+  const handleStartChat = async (text: string, files?: File[], searchMode?: "search" | "deep-search" | null, webSearch?: boolean) => {
     if ((!text.trim() && (!files || files.length === 0)) || !accessToken) return;
 
     // Override model if search mode is active
@@ -74,6 +74,7 @@ const WelcomePage: React.FC = () => {
             initialMessage: text || t("chat.explainThis"),
             initialFile: firstFile,
             file: firstFile,
+            webSearch: webSearch || false,
           },
         });
       } catch (error) {
@@ -96,6 +97,7 @@ const WelcomePage: React.FC = () => {
           initialMessage: content,
           initialFiles: files,
           model: currentModelId,
+          webSearch: webSearch || false,
         },
       });
     } catch (error) {

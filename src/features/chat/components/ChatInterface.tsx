@@ -68,7 +68,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
       !hasAutoSent.current
     ) {
       hasAutoSent.current = true;
-      const { initialMessage, initialFiles, initialFile } = location.state;
+      const { initialMessage, initialFiles, initialFile, webSearch } = location.state;
       const filesToPass = initialFiles || (initialFile ? [initialFile] : undefined);
 
       // Always call sendMessage - it will check if message exists and avoid duplicates
@@ -76,7 +76,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
       // If there's files, the `useChat`'s `sendMessage` handles the
       // Promise-Gate `uploadFilesSequentially` blocking transparently before
       // the websocket message fires.
-      sendMessage(initialMessage, filesToPass);
+      sendMessage(initialMessage, filesToPass, undefined, webSearch || false);
 
       // Clear state to prevent re-sending on refresh
       window.history.replaceState({}, document.title);
@@ -104,7 +104,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
   // The Prompt Bridge (repo blob injection + text wrapping) runs upstream in
   // ChatInput.handleSend / WelcomeChatInput.handleSubmit, so by the time we
   // receive `text` and `files` here they are already fully enriched.
-  const handleSend = async (text: string, files?: File[], searchMode?: "search" | "deep-search" | null) => {
+  const handleSend = async (text: string, files?: File[], searchMode?: "search" | "deep-search" | null, webSearch?: boolean) => {
     const file = files && files.length > 0 ? files[0] : null;
     if (!text.trim() && !file) return;
 
@@ -130,7 +130,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ features = true }) => {
     }
 
     if (id) {
-      sendMessage(text, files || (file ? [file] : []), modelId);
+      sendMessage(text, files || (file ? [file] : []), modelId, webSearch);
       setTimeout(scrollToBottom, 100);
       return;
     }

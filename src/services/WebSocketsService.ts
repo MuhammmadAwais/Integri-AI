@@ -6,6 +6,7 @@ type WebSocketMessage = {
   provider?: string;
   model?: string;
   file_ids?: string[]; // Added file_ids support
+  web_search?: boolean; // Web search toggle
 };
 
 export class WebSocketService {
@@ -51,7 +52,7 @@ export class WebSocketService {
     };
   }
 
-  // Updated signature to accept fileIds and image generation parameters
+  // Updated signature to accept fileIds, image generation parameters, and web search
   sendMessage(
     content: string,
     model: string,
@@ -59,6 +60,7 @@ export class WebSocketService {
     fileIds: string[] = [],
     aspectRatio?: string,
     quality?: string,
+    webSearch?: boolean,
   ) {
     const message: WebSocketMessage = {
       type: "message",
@@ -68,6 +70,7 @@ export class WebSocketService {
       file_ids: fileIds, // Include file IDs in the payload
       ...(aspectRatio && { aspect_ratio: aspectRatio }), // Include aspect ratio if provided
       ...(quality && { quality: quality }), // Include quality/resolution if provided
+      ...(webSearch && { web_search: true }), // Include web_search flag if enabled
     };
 
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {

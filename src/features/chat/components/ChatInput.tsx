@@ -11,6 +11,7 @@ import {
   SearchX,
   Ban,
   Github,
+  Globe,
 } from "lucide-react";
 import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux";
 import { cn } from "../../../lib/utils";
@@ -30,7 +31,7 @@ type SearchMode = null | "search" | "deep-search";
 type FileUploadStage = "idle" | "uploading" | "processing" | "error";
 
 interface ChatInputProps {
-  onSend?: (text: string, files?: File[], searchMode?: SearchMode) => void;
+  onSend?: (text: string, files?: File[], searchMode?: SearchMode, webSearch?: boolean) => void;
   placeholder?: string;
   isDark?: boolean;
   disabled?: boolean;
@@ -58,6 +59,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [searchMode, setSearchMode] = useState<SearchMode>(null);
+  const [webSearch, setWebSearch] = useState(false);
 
   // Check subscription tier for search features
   const { isPro, isPremium } = useSubscription();
@@ -132,10 +134,11 @@ const ChatInput: React.FC<ChatInputProps> = ({
     // ═════════════════
 
     if ((sendText.trim() || sendFiles.length > 0) && onSend) {
-      onSend(sendText, sendFiles, searchMode);
+      onSend(sendText, sendFiles, searchMode, webSearch);
       setInput("");
       setFiles([]);
       setSearchMode(null);
+      setWebSearch(false);
       if (textareaRef.current) textareaRef.current.style.height = "auto";
     }
   };
@@ -584,7 +587,25 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
             {/* Right Tools (Search Modes / Send) */}
             <div className="flex items-center gap-2">
-              {/* Search Mode Icons - Only show for Pro/Premium users when input has content */}
+              {/* Web Search Toggle — always visible, no subscription gate */}
+              <button
+                title="Web Search"
+                onClick={() => setWebSearch(!webSearch)}
+                className={cn(
+                  "p-2 rounded-full transition-colors flex items-center justify-center",
+                  webSearch
+                    ? isDark
+                      ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                      : "bg-emerald-100 text-emerald-600 border border-emerald-300"
+                    : isDark
+                    ? "text-gray-400 hover:bg-gray-800 hover:text-white"
+                    : "text-gray-500 hover:bg-gray-200 hover:text-black"
+                )}
+              >
+                <Globe size={18} />
+              </button>
+
+              {/* Search / Deep-Search — Pro/Premium only, shown when there's input */}
               {canUseSearch && (input.trim() || files.length > 0) && (
                 <>
                   <button

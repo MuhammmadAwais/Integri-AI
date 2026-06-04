@@ -18,6 +18,7 @@ import {
   X,
   HardDrive,
   Github,
+  Globe,
 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { useCloudStorage } from "../../../hooks/useCloudStorage";
@@ -38,7 +39,7 @@ type SearchMode = null | "search" | "deep-search";
 type FileUploadStage = "idle" | "uploading" | "processing" | "error";
 
 interface WelcomeChatInputProps {
-  onStartChat: (text: string, files?: File[], searchMode?: SearchMode) => void;
+  onStartChat: (text: string, files?: File[], searchMode?: SearchMode, webSearch?: boolean) => void;
   user: any;
   isDark: boolean;
   isLoading?: boolean;
@@ -69,6 +70,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
     const [showSubscribeModal, setShowSubscribeModal] = useState(false);
     const [showImportModal, setShowImportModal] = useState(false);
     const [searchMode, setSearchMode] = useState<SearchMode>(null);
+    const [webSearch, setWebSearch] = useState(false);
 
     const filePreviews = useFilePreviews(selectedFiles);
 
@@ -288,10 +290,11 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
       }
       // ═════════════════
 
-      onStartChat(sendText, sendFiles, searchMode);
+      onStartChat(sendText, sendFiles, searchMode, webSearch);
       setInputValue("");
       setSelectedFiles([]);
       setSearchMode(null);
+      setWebSearch(false);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -719,6 +722,23 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
           <div className="flex gap-2 items-center">
             {/* Search Mode Icons - Show for all users, but free users see upgrade modal */}
             <>
+              {/* Web Search Toggle */}
+              <button
+                title="Web Search"
+                onClick={() => setWebSearch(!webSearch)}
+                className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:cursor-pointer",
+                  webSearch
+                    ? isDark
+                      ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                      : "bg-emerald-100 text-emerald-600 border border-emerald-300"
+                    : isDark
+                    ? "text-gray-400 hover:bg-white/10 hover:text-white"
+                    : "text-gray-500 hover:bg-black/5 hover:text-black"
+                )}
+              >
+                <Globe size={18} />
+              </button>
               <button
                 title={t("chat.searchMode")}
                 onClick={() => {

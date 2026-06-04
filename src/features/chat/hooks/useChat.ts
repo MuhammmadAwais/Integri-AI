@@ -339,9 +339,17 @@ export const useChat = (sessionId: string | undefined, initialMessage?: string, 
             !lastMsg.isGeneratingImage &&
             !lastMsg.attachment
           ) {
+            // Normal case: append chunk to existing assistant message
             return [
               ...prev.slice(0, -1),
               { ...lastMsg, content: lastMsg.content + chunk },
+            ];
+          } else if (lastMsg?.role === "assistant" && lastMsg.isGeneratingImage) {
+            // A "status" placeholder was set but a text stream arrived — it's NOT
+            // an image generation; replace the skeleton with the real streamed text.
+            return [
+              ...prev.slice(0, -1),
+              { role: "assistant", content: chunk, isGeneratingImage: false },
             ];
           } else {
             return [...prev, { role: "assistant", content: chunk }];
@@ -350,18 +358,30 @@ export const useChat = (sessionId: string | undefined, initialMessage?: string, 
       }
 
       // B. Image Generation Status
+      // Only show the generating-image skeleton when the backend explicitly signals
+      // image generation. Generic "status" events (e.g. web search progress) must
+      // NOT trigger this path — they just keep the thinking indicator alive.
       if (data.type === "status") {
-        setIsThinking(false);
-        setMessages((prev) => {
-          const lastMsg = prev[prev.length - 1];
-          if (lastMsg?.role === "assistant" && lastMsg.isGeneratingImage)
-            return prev;
+        const isImageStatus =
+          data.status === "generating_image" ||
+          data.generating_image === true ||
+          data.image_generation === true;
 
-          return [
-            ...prev,
-            { role: "assistant", content: "", isGeneratingImage: true },
-          ];
-        });
+        if (isImageStatus) {
+          setIsThinking(false);
+          setMessages((prev) => {
+            const lastMsg = prev[prev.length - 1];
+            if (lastMsg?.role === "assistant" && lastMsg.isGeneratingImage)
+              return prev;
+
+            return [
+              ...prev,
+              { role: "assistant", content: "", isGeneratingImage: true },
+            ];
+          });
+        }
+        // For non-image status events (web search, etc.) do nothing extra —
+        // the thinking spinner already visible is sufficient feedback.
       }
 
       // C. Image Generated
@@ -409,7 +429,7 @@ export const useChat = (sessionId: string | undefined, initialMessage?: string, 
 
   // 4. Send Message — S3 4-Step Pipeline
   const sendMessage = useCallback(
-    async (content: string, files?: File[], modelOverride?: string) => {
+    async (content: string, files?: File[], modelOverride?: string, webSearch?: boolean) => {
       const validFiles = files?.filter((f) => f != null) || [];
       if (!content.trim() && validFiles.length === 0) return;
 
@@ -498,7 +518,7 @@ export const useChat = (sessionId: string | undefined, initialMessage?: string, 
         }
 
         if (sessionId) {
-          socketService.sendMessage(content, model, provider, fileIds);
+          socketService.sendMessage(content, model, provider, fileIds, undefined, undefined, webSearch);
         }
       } catch (err) {
         console.error("Send message flow failed", err);
