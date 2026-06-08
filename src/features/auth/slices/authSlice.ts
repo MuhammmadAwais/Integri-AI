@@ -5,6 +5,7 @@ import {
   registerUser,
   logoutUser,
   loginWithGoogle,
+  loginWithApple,
 } from "../thunks/authThunk";
 import { purchaseSubscription } from "../../subscriptions/slices/subscriptionSlice";
 import type { SubscriptionTier } from "../../../../Constants";
@@ -93,7 +94,7 @@ const authSlice = createSlice({
         state.error = action.payload as string;
       })
 
-      // --- GOOGLE ---\
+      // --- GOOGLE ---
       .addCase(loginWithGoogle.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -105,6 +106,22 @@ const authSlice = createSlice({
         state.isNewUser = !!action.payload.user.isNewUser;
       })
       .addCase(loginWithGoogle.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+
+      // --- APPLE ---
+      .addCase(loginWithApple.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(loginWithApple.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload.user;
+        state.accessToken = action.payload.accessToken;
+        state.isNewUser = !!action.payload.user.isNewUser;
+      })
+      .addCase(loginWithApple.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       })

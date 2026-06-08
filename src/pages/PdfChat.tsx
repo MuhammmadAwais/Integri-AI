@@ -37,7 +37,7 @@ const PdfChatPage: React.FC = () => {
   const isDark = useAppSelector((state: any) => state.theme.isDark);
   const token = useAppSelector((state: any) => state.auth.accessToken);
   const user = useAppSelector((state: any) => state.auth.user);
-  const { isAtLeastPro } = useSubscription();
+  const { isAtLeastPremium } = useSubscription();
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"chat" | "pdf">("chat");
   const [isUploading, setIsUploading] = useState(false);
@@ -66,7 +66,7 @@ const PdfChatPage: React.FC = () => {
       return;
     }
     if (!token) return;
-    if (!isAtLeastPro) {
+    if (!isAtLeastPremium) {
       setShowSubscriptionModal(true);
       return;
     }
