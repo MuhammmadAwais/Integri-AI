@@ -7,7 +7,7 @@ import { Check, Bot, Sparkles, Plus, Loader2 } from "lucide-react";
 
 // ⚠️ CRITICAL: Verify this path matches your project structure
 // It should point to where you saved 'agentsSlice.tsx'
-import {fetchAgents} from "../../features/agents/agentsSlice";
+import { fetchAgents, fetchPublicAgents } from "../../features/agents/agentsSlice";
 
 interface AgentMenuProps {
   isOpen: boolean;
@@ -33,8 +33,11 @@ const AgentMenu: React.FC<AgentMenuProps> = ({
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
+  // Tabs state
+  const [activeTab, setActiveTab] = useState<"personal" | "public">("personal");
+
   // Select Agents directly from Redux
-  const { items: agents, isLoading } = useAppSelector(
+  const { items: agents, publicItems, isLoading, isPublicLoading, publicError } = useAppSelector(
     (state: any) => state.agents
   );
 
@@ -45,6 +48,13 @@ const AgentMenu: React.FC<AgentMenuProps> = ({
     bottom?: number;
   } | null>(null);
   const anchorRef = useRef<HTMLDivElement>(null);
+
+  // Reset tab when closing/opening
+  useEffect(() => {
+    if (!isOpen) {
+      setActiveTab("personal");
+    }
+  }, [isOpen]);
 
   // 1. Calculate Position
   useEffect(() => {
@@ -85,6 +95,15 @@ const AgentMenu: React.FC<AgentMenuProps> = ({
     }
   }, [isOpen, token, agents?.length, isLoading, dispatch]);
 
+  // 3. FETCH PUBLIC AGENTS ON OPEN/TAB SWITCH (If list is empty)
+  useEffect(() => {
+    if (isOpen && activeTab === "public" && token) {
+      if ((!publicItems || publicItems.length === 0) && !isPublicLoading) {
+        dispatch(fetchPublicAgents(token) as any);
+      }
+    }
+  }, [isOpen, activeTab, token, publicItems?.length, isPublicLoading, dispatch]);
+
   // Keep anchor in DOM
   if (!isOpen) return <div ref={anchorRef} className="hidden" />;
 
@@ -117,90 +136,197 @@ const AgentMenu: React.FC<AgentMenuProps> = ({
                 : "bg-white/95 border-gray-200 shadow-lg"
             )}
           >
-            <div className="flex items-center justify-between px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-500/10 mb-2">
+            <div className="flex items-center justify-between px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
               <span>Select AI Agent</span>
-              {isLoading && (
+              {(isLoading || isPublicLoading) && (
                 <Loader2 size={12} className="animate-spin text-indigo-500" />
               )}
             </div>
 
-            <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
-              {/* Standard Chat Option */}
+            {/* Tabs Selector */}
+            <div className={cn(
+              "flex p-0.5 rounded-lg mb-2 border",
+              isDark ? "border-[#27272a] bg-[#161618]" : "border-gray-100 bg-gray-50"
+            )}>
               <button
-                onClick={() => {
-                  onSelect(null);
-                  onClose();
-                }}
+                type="button"
+                onClick={() => setActiveTab("personal")}
                 className={cn(
-                  "w-full px-3 py-2.5 rounded-lg text-sm transition-all flex items-center justify-between mb-1 group hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white hover:shadow-sm  hover:duration-150 hover:ease-in hover:cursor-pointer",
-                  !selectedId
+                  "flex-1 py-1 text-[11px] font-semibold rounded-md transition-all cursor-pointer",
+                  activeTab === "personal"
                     ? isDark
-                      ? "bg-blue-500/10 text-blue-400"
-                      : "bg-blue-50 text-blue-600"
-                    : isDark
-                    ? "text-gray-300 hover:bg-white/5"
-                    : "text-gray-700 hover:bg-gray-100"
+                      ? "bg-zinc-800 text-white font-bold shadow-sm"
+                      : "bg-white text-zinc-950 shadow-sm font-bold"
+                    : "text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300"
                 )}
               >
-                <div className="flex items-center gap-2">
-                  <Bot
-                    size={16}
-                    className={!selectedId ? "text-blue-500" : "text-gray-400"}
-                  />
-                  <span className="font-medium">Standard Chat</span>
-                </div>
-                {!selectedId && <Check size={14} className="shrink-0" />}
+                Personal
               </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("public")}
+                className={cn(
+                  "flex-1 py-1 text-[11px] font-semibold rounded-md transition-all cursor-pointer",
+                  activeTab === "public"
+                    ? isDark
+                      ? "bg-zinc-800 text-white font-bold shadow-sm"
+                      : "bg-white text-zinc-950 shadow-sm font-bold"
+                    : "text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300"
+                )}
+              >
+                Public
+              </button>
+            </div>
 
-              {/* Agents List from Redux */}
-              {agents && agents.length > 0
-                ? agents.map((agent: any) => {
-                    const isSelected = selectedId === agent.gpt_id;
-                    return (
-                      <button
-                        key={agent.gpt_id}
-                        onClick={() => {
-                          onSelect(agent);
-                          onClose();
-                        }}
-                        className={cn(
-                          "w-full px-3 py-2.5 rounded-lg text-sm transition-all flex items-center justify-between mb-1 group hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white hover:shadow-sm  hover:duration-150 hover:ease-in hover:cursor-pointer",
-                          isSelected
-                            ? isDark
-                              ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
-                              : "bg-indigo-50 text-indigo-600 border border-indigo-100"
-                            : isDark
-                            ? "text-gray-300 hover:bg-white/5 border border-transparent"
-                            : "text-gray-700 hover:bg-gray-100 border border-transparent"
-                        )}
-                      >
-                        <div className="flex items-center gap-2 overflow-hidden">
-                          <Sparkles
-                            size={14}
-                            className={
+            <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
+              {activeTab === "personal" ? (
+                <>
+                  {/* Standard Chat Option */}
+                  <button
+                    onClick={() => {
+                      onSelect(null);
+                      onClose();
+                    }}
+                    className={cn(
+                      "w-full px-3 py-2.5 rounded-lg text-sm transition-all flex items-center justify-between mb-1 group hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white hover:shadow-sm  hover:duration-150 hover:ease-in hover:cursor-pointer",
+                      !selectedId
+                        ? isDark
+                          ? "bg-blue-500/10 text-blue-400"
+                          : "bg-blue-50 text-blue-600"
+                        : isDark
+                        ? "text-gray-300 hover:bg-white/5"
+                        : "text-gray-700 hover:bg-gray-100"
+                    )}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Bot
+                        size={16}
+                        className={!selectedId ? "text-blue-500" : "text-gray-400"}
+                      />
+                      <span className="font-medium">Standard Chat</span>
+                    </div>
+                    {!selectedId && <Check size={14} className="shrink-0" />}
+                  </button>
+
+                  {/* Personal Agents List */}
+                  {agents && agents.length > 0
+                    ? agents.map((agent: any) => {
+                        const isSelected = selectedId === agent.gpt_id;
+                        return (
+                          <button
+                            key={agent.gpt_id}
+                            onClick={() => {
+                              onSelect(agent);
+                              onClose();
+                            }}
+                            className={cn(
+                              "w-full px-3 py-2.5 rounded-lg text-sm transition-all flex items-center justify-between mb-1 group hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white hover:shadow-sm  hover:duration-150 hover:ease-in hover:cursor-pointer",
                               isSelected
-                                ? "text-indigo-500"
-                                : "text-gray-400 opacity-50"
-                            }
-                          />
-                          <div className="flex flex-col items-start truncate">
-                            <span className="font-medium truncate max-w-[140px]">
-                              {agent.name}
-                            </span>
-                            <span className="text-[10px] opacity-60 uppercase">
-                              {agent.model}
-                            </span>
-                          </div>
+                                ? isDark
+                                  ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
+                                  : "bg-indigo-50 text-indigo-600 border border-indigo-100"
+                                : isDark
+                                ? "text-gray-300 hover:bg-white/5 border border-transparent"
+                                : "text-gray-700 hover:bg-gray-100 border border-transparent"
+                            )}
+                          >
+                            <div className="flex items-center gap-2 overflow-hidden">
+                              <Sparkles
+                                size={14}
+                                className={
+                                  isSelected
+                                    ? "text-indigo-500"
+                                    : "text-gray-400 opacity-50"
+                                }
+                              />
+                              <div className="flex flex-col items-start truncate">
+                                <span className="font-medium truncate max-w-[140px]">
+                                  {agent.name}
+                                </span>
+                                <span className="text-[10px] opacity-60 uppercase">
+                                  {agent.model}
+                                </span>
+                              </div>
+                            </div>
+                            {isSelected && (
+                              <Check size={14} className="shrink-0 ml-2" />
+                            )}
+                          </button>
+                        );
+                      })
+                    : !isLoading && (
+                        <div className="px-3 py-4 text-xs text-center text-gray-505">
+                          No personal agents found.
                         </div>
-                        {isSelected && (
-                          <Check size={14} className="shrink-0 ml-2" />
-                        )}
-                      </button>
-                    );
-                  })
-                : /* Empty State */
-                  null}
-              {!isLoading && (
+                      )}
+                </>
+              ) : (
+                <>
+                  {/* Public Agents List */}
+                  {isPublicLoading && (!publicItems || publicItems.length === 0) ? (
+                    <div className="flex items-center justify-center py-6 text-xs text-gray-505 gap-2">
+                      <Loader2 size={14} className="animate-spin text-indigo-500" />
+                      <span>Loading public agents...</span>
+                    </div>
+                  ) : publicError ? (
+                    <div className="px-3 py-4 text-xs text-center text-red-500">
+                      {publicError}
+                    </div>
+                  ) : publicItems && publicItems.length > 0 ? (
+                    publicItems.map((agent: any) => {
+                      const isSelected = selectedId === agent.gpt_id;
+                      return (
+                        <button
+                          key={agent.gpt_id}
+                          onClick={() => {
+                            onSelect(agent);
+                            onClose();
+                          }}
+                          className={cn(
+                            "w-full px-3 py-2.5 rounded-lg text-sm transition-all flex items-center justify-between mb-1 group hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white hover:shadow-sm  hover:duration-150 hover:ease-in hover:cursor-pointer",
+                            isSelected
+                              ? isDark
+                                ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
+                                : "bg-indigo-50 text-indigo-600 border border-indigo-100"
+                              : isDark
+                              ? "text-gray-300 hover:bg-white/5 border border-transparent"
+                              : "text-gray-700 hover:bg-gray-100 border border-transparent"
+                          )}
+                        >
+                          <div className="flex items-center gap-2 overflow-hidden">
+                            <Sparkles
+                              size={14}
+                              className={
+                                isSelected
+                                  ? "text-indigo-500"
+                                  : "text-gray-400 opacity-50"
+                              }
+                            />
+                            <div className="flex flex-col items-start truncate">
+                              <span className="font-medium truncate max-w-[140px]">
+                                {agent.name}
+                              </span>
+                              <span className="text-[10px] opacity-60 uppercase">
+                                {agent.model}
+                              </span>
+                            </div>
+                          </div>
+                          {isSelected && (
+                            <Check size={14} className="shrink-0 ml-2" />
+                          )}
+                        </button>
+                      );
+                    })
+                  ) : (
+                    <div className="px-3 py-4 text-xs text-center text-gray-505">
+                      No public agents found.
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* Create New Agent button - only show under Personal tab when not loading */}
+              {activeTab === "personal" && !isLoading && (
                 <button
                   onClick={() => {
                     onClose();

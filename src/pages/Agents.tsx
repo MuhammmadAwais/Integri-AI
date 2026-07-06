@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Plus, Box } from "lucide-react";
+import { Plus, Box, RotateCw } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import {
   fetchAgents,
+  fetchPublicAgents,
   deleteAgent,
   openCreateModal,
   openEditModal,
@@ -16,51 +17,42 @@ import AgentModal from "../features/agents/components/AgentModal";
 import SkeletonLoader from "../Components/ui/SkeletonLoader";
 import ParticleBackground from "../Components/ui/ParticleBackground";
 import LoginModal from "../features/auth/components/LoginModal";
-import { AgentService } from "../api/backendApi";
 
 const Agents: React.FC = () => {
   const dispatch = useAppDispatch();
 
-  // Retrieve 'editingAgent' from the store
-  const { items, isLoading, error, isModalOpen, editingAgent } = useAppSelector(
-    (state: any) => state.agents
-  );
+  // Retrieve 'editingAgent' and agents from the store
+  const {
+    items,
+    publicItems,
+    isLoading,
+    isPublicLoading,
+    error,
+    publicError,
+    isModalOpen,
+    editingAgent,
+  } = useAppSelector((state: any) => state.agents);
+
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { isDark } = useAppSelector((state: any) => state.theme);
   const token = useAppSelector((state: any) => state.auth.accessToken);
   const user = useAppSelector((state: any) => state.auth.user);
 
   const [activeTab, setActiveTab] = useState<"my" | "public">("my");
-  const [publicAgents, setPublicAgents] = useState<any[]>([]);
-  const [isPublicLoading, setIsPublicLoading] = useState(false);
-  const [publicError, setPublicError] = useState<string | null>(null);
 
-  // Initial fetch of user's own agents
+  // Initial fetch of user's own agents if they aren't loaded yet
   useEffect(() => {
-    if (token) {
+    if (token && items.length === 0 && !isLoading) {
       dispatch(fetchAgents(token));
     }
-  }, [dispatch, token]);
+  }, [dispatch, token, items.length, isLoading]);
 
-  // Fetch public agents when public tab is active
+  // Initial fetch of public agents if they aren't loaded yet
   useEffect(() => {
-    const fetchPublicAgentsData = async () => {
-      if (activeTab === "public" && token) {
-        setIsPublicLoading(true);
-        setPublicError(null);
-        try {
-          const data = await AgentService.getPublicAgents(token);
-          setPublicAgents(data);
-        } catch (err: any) {
-          console.error("Failed to load public agents", err);
-          setPublicError(err.message || "Failed to load public agents.");
-        } finally {
-          setIsPublicLoading(false);
-        }
-      }
-    };
-    fetchPublicAgentsData();
-  }, [activeTab, token]);
+    if (token && publicItems.length === 0 && !isPublicLoading) {
+      dispatch(fetchPublicAgents(token));
+    }
+  }, [dispatch, token, publicItems.length, isPublicLoading]);
 
   const handleDelete = (gpt_id: string) => {
     // Map 'gpt_id' to 'id' because the deleteAgent thunk expects { token, id }
@@ -71,6 +63,13 @@ const Agents: React.FC = () => {
   const handleSuccess = () => {
     if (token) {
       dispatch(fetchAgents(token));
+    }
+  };
+
+  const handleRefresh = () => {
+    if (token) {
+      dispatch(fetchAgents(token));
+      dispatch(fetchPublicAgents(token));
     }
   };
 
@@ -179,6 +178,26 @@ const Agents: React.FC = () => {
             />{" "}
             Create Agent
           </Button>
+
+          {/* Refresh Button */}
+          <button
+            onClick={handleRefresh}
+            className={cn(
+              "p-2.5 rounded-xl border transition-all hover:cursor-pointer flex items-center justify-center shrink-0",
+              isDark
+                ? "border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-900"
+                : "border-zinc-200 text-zinc-600 hover:text-zinc-950 hover:bg-zinc-50"
+            )}
+            title="Refresh Agents List"
+          >
+            <RotateCw
+              size={18}
+              className={cn(
+                "bg-transparent",
+                (isLoading || isPublicLoading) && "animate-spin"
+              )}
+            />
+          </button>
         </div>
       </div>
 
@@ -191,7 +210,7 @@ const Agents: React.FC = () => {
 
       {/* Grid Content */}
       {((activeTab === "my" && isLoading && items.length === 0) ||
-        (activeTab === "public" && isPublicLoading && publicAgents.length === 0)) ? (
+        (activeTab === "public" && isPublicLoading && (!publicItems || publicItems.length === 0))) ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <SkeletonLoader count={6} className="h-64 w-full rounded-2xl" />
         </div>
@@ -228,9 +247,9 @@ const Agents: React.FC = () => {
         )
       ) : (
         /* activeTab === "public" */
-        publicAgents.length > 0 ? (
+        publicItems && publicItems.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {publicAgents.map((agent: any) => (
+            {publicItems.map((agent: any) => (
               <AgentCard
                 key={agent.gpt_id}
                 agent={agent}

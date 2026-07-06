@@ -47,7 +47,7 @@ import ContactUs from "../pages/ContactUs";
 import MobileVoiceWrapper from "../pages/MobileVoiceWrapper"; // <--- IMPORT ADDED
 import PrivacyPolicy from "../pages/PrivacyPolicy";
 import PersonalizationPage from "../pages/PersonalizationPage";
-import { fetchAgents } from "../features/agents/agentsSlice";
+import { fetchAgents, fetchPublicAgents } from "../features/agents/agentsSlice";
 import AppDownloadSheet from "../Components/ui/AppDownloadSheet";
 import AdBlockGuard from "../features/subscriptions/components/AdBlockGuard";
 import CookieConsentBanner from "../Components/CookieConsentBanner";
@@ -175,12 +175,13 @@ const App: React.FC = () => {
   const dispatch = useAppDispatch();
   const token = useAppSelector((state) => state.auth.accessToken);
 
-  // Fetch agents whenever we have a valid token
+  // Fetch agents and public agents whenever we have a valid token
   useEffect(() => {
     if (token) {
       dispatch(fetchAgents(token));
+      dispatch(fetchPublicAgents(token));
     }
-  });
+  }, [token, dispatch]);
 
   useEffect(() => {
     // This listener handles the "Auto Login" logic by detecting the existing session

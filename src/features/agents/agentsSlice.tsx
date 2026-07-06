@@ -30,20 +30,26 @@ export interface AgentDocument {
 
 interface AgentsState {
   items: Agent[];
+  publicItems: Agent[];
   documents: AgentDocument[]; // Current documents for the viewed/edited agent
   isLoading: boolean;
+  isPublicLoading: boolean; // Loading state for public agents
   isDocsLoading: boolean; // Loading state for documents
   error: string | null;
+  publicError: string | null;
   isModalOpen: boolean;
   editingAgent: Agent | null;
 }
 
 const initialState: AgentsState = {
   items: [],
+  publicItems: [],
   documents: [],
   isLoading: false,
+  isPublicLoading: false,
   isDocsLoading: false,
   error: null,
+  publicError: null,
   isModalOpen: false,
   editingAgent: null,
 };
@@ -54,6 +60,13 @@ export const fetchAgents = createAsyncThunk(
   "agents/fetch",
   async (token: string) => {
     return await AgentService.getAgents(token);
+  }
+);
+
+export const fetchPublicAgents = createAsyncThunk(
+  "agents/fetchPublic",
+  async (token: string) => {
+    return await AgentService.getPublicAgents(token);
   }
 );
 
@@ -166,6 +179,19 @@ const agentsSlice = createSlice({
       .addCase(fetchAgents.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message || "Failed to fetch agents";
+      })
+      // Fetch Public Agents
+      .addCase(fetchPublicAgents.pending, (state) => {
+        state.isPublicLoading = true;
+        state.publicError = null;
+      })
+      .addCase(fetchPublicAgents.fulfilled, (state, action) => {
+        state.isPublicLoading = false;
+        state.publicItems = action.payload;
+      })
+      .addCase(fetchPublicAgents.rejected, (state, action) => {
+        state.isPublicLoading = false;
+        state.publicError = action.error.message || "Failed to fetch public agents";
       })
       // Create Agent
       .addCase(createAgent.fulfilled, (state, action) => {
