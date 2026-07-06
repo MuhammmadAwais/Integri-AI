@@ -331,23 +331,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                   </button>
                 </Link>
 
-                {/* About Us */}
-
-                <a
-                  href="https://enterprise.integri.app/"
-                  target="_blank"
-                  className={cn(
-                    "w-full px-4 py-2 text-sm flex items-center gap-2 cursor-pointer transition-colors ",
-                    isDark
-                      ? "hover:bg-white/5 text-white"
-                      : "hover:bg-gray-200 text-black",
-                  )}
-                  rel="noopener noreferrer"
-                >
-                  <Info size={16} />
-                  About Us
-                </a>
-
                 <Link to="/privacy-policy">
                   <button
                     className={cn(
