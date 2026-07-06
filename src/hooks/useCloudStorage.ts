@@ -111,6 +111,60 @@ export const useCloudStorage = (onFileSelected: (file: File) => void) => {
 
   const handleOneDrivePick = async () => {
     setIsLoading(true);
+    // Open the popup window synchronously with the user click gesture to prevent browser popup blockers from blocking it.
+    const win = window.open("", "Picker", "width=1080,height=650");
+    if (!win) {
+      alert("Pop-up blocked. Please allow pop-ups for this site.");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      win.document.write(`
+        <html>
+          <head>
+            <title>Connecting to OneDrive</title>
+            <style>
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                margin: 0;
+                background-color: #f3f2f1;
+                color: #323130;
+              }
+              .container {
+                text-align: center;
+              }
+              .spinner {
+                border: 4px solid #c8c6c4;
+                border-top: 4px solid #0078d4;
+                border-radius: 50%;
+                width: 36px;
+                height: 36px;
+                animation: spin 1s linear infinite;
+                margin: 0 auto 16px;
+              }
+              @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="spinner"></div>
+              <div>Connecting to OneDrive...</div>
+            </div>
+          </body>
+        </html>
+      `);
+    } catch (e) {
+      console.warn("Failed to write initial HTML to popup window", e);
+    }
+
     try {
       const msal: any = await loadMsal();
 
@@ -135,6 +189,7 @@ export const useCloudStorage = (onFileSelected: (file: File) => void) => {
         accessToken = loginResponse.accessToken;
       } catch (loginErr) {
         console.error("OneDrive Login Failed", loginErr);
+        win.close();
         setIsLoading(false);
         return;
       }
@@ -167,14 +222,6 @@ export const useCloudStorage = (onFileSelected: (file: File) => void) => {
           },
         },
       };
-
-      // Open the popup window
-      const win = window.open("", "Picker", "width=1080,height=650");
-      if (!win) {
-        alert("Pop-up blocked. Please allow pop-ups for this site.");
-        setIsLoading(false);
-        return;
-      }
 
       // Create a form to POST authentication to the picker URL
       const form = win.document.createElement("form");
