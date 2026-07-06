@@ -246,7 +246,7 @@ const GettingStarted: React.FC = () => {
       dispatch(completeOnboarding({
         country: formData.countryCode,
         language: formData.languageCode,
-        dateOfBirth: formData.dateOfBirth,
+        dateOfBirth: formData.dateOfBirth ? formData.dateOfBirth.toISOString() : null,
       }));
       navigate("/");
     } catch (error) {

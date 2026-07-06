@@ -60,7 +60,7 @@ interface FirestoreUserModel {
   freeDayStartDateTime: any | null;
   subscribedNotificationCategoriesIds: string[] | null;
   notificationPreference: boolean;
-  dateOfBirth: Date | null;
+  dateOfBirth: any;
 }
 
 export interface UserData {
@@ -113,6 +113,18 @@ export const AuthService = {
 
     if (userDoc.exists()) {
       const data = userDoc.data() as FirestoreUserModel;
+      let dob = data.dateOfBirth;
+      if (dob) {
+        if (dob instanceof Date) {
+          dob = dob.toISOString();
+        } else if (typeof dob === "object") {
+          if ("toDate" in dob && typeof dob.toDate === "function") {
+            dob = dob.toDate().toISOString();
+          } else if ("seconds" in dob) {
+            dob = new Date(dob.seconds * 1000).toISOString();
+          }
+        }
+      }
       return {
         id: user.uid,
         email: user.email,
@@ -123,7 +135,7 @@ export const AuthService = {
         country: data.country,
         language: data.selectedLanguageCode || "en",
         myCode: data.myCode,
-        dateOfBirth: data.dateOfBirth,
+        dateOfBirth: dob,
       };
     }
 

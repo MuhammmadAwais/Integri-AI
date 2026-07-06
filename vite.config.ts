@@ -151,4 +151,19 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
   },
+  server: {
+    proxy: {
+      '/api/v1/chat': {
+        target: 'https://integri.cloud',
+        ws: true,
+        changeOrigin: true,
+        secure: false,
+      },
+      '/api/v1': {
+        target: 'https://integri.cloud',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
 })
