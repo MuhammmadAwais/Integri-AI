@@ -352,6 +352,22 @@ export const AgentService = {
     }
   },
 
+  getPublicAgents: async (token: string, limit: number = 50) => {
+    try {
+      const response = await backendApi.get("/api/v1/custom-gpts/public", {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { limit },
+      });
+      console.log("✅ [API] Fetched public agents", response.data);
+      return Array.isArray(response.data)
+        ? response.data
+        : response.data.items || [];
+    } catch (error) {
+      console.error("❌ [API] Failed to fetch public agents", error);
+      throw error;
+    }
+  },
+
   getAgentById: async (token: string, agentId: string) => {
     try {
       const response = await backendApi.get(`/api/v1/custom-gpts/${agentId}`, {

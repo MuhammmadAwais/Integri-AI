@@ -1,4 +1,4 @@
-import React, { useEffect , useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Plus, Box } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
@@ -16,28 +16,54 @@ import AgentModal from "../features/agents/components/AgentModal";
 import SkeletonLoader from "../Components/ui/SkeletonLoader";
 import ParticleBackground from "../Components/ui/ParticleBackground";
 import LoginModal from "../features/auth/components/LoginModal";
+import { AgentService } from "../api/backendApi";
 
 const Agents: React.FC = () => {
   const dispatch = useAppDispatch();
 
-  // FIX 1: Retrieve 'editingAgent' from the store
+  // Retrieve 'editingAgent' from the store
   const { items, isLoading, error, isModalOpen, editingAgent } = useAppSelector(
     (state: any) => state.agents
   );
- const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const { isDark } = useAppSelector((state: any) => state.theme);
   const token = useAppSelector((state: any) => state.auth.accessToken);
   const user = useAppSelector((state: any) => state.auth.user);
 
-  // Initial fetch of agents
+  const [activeTab, setActiveTab] = useState<"my" | "public">("my");
+  const [publicAgents, setPublicAgents] = useState<any[]>([]);
+  const [isPublicLoading, setIsPublicLoading] = useState(false);
+  const [publicError, setPublicError] = useState<string | null>(null);
+
+  // Initial fetch of user's own agents
   useEffect(() => {
     if (token) {
       dispatch(fetchAgents(token));
     }
   }, [dispatch, token]);
 
+  // Fetch public agents when public tab is active
+  useEffect(() => {
+    const fetchPublicAgentsData = async () => {
+      if (activeTab === "public" && token) {
+        setIsPublicLoading(true);
+        setPublicError(null);
+        try {
+          const data = await AgentService.getPublicAgents(token);
+          setPublicAgents(data);
+        } catch (err: any) {
+          console.error("Failed to load public agents", err);
+          setPublicError(err.message || "Failed to load public agents.");
+        } finally {
+          setIsPublicLoading(false);
+        }
+      }
+    };
+    fetchPublicAgentsData();
+  }, [activeTab, token]);
+
   const handleDelete = (gpt_id: string) => {
-    // FIX 2: Map 'gpt_id' to 'id' because the deleteAgent thunk expects { token, id }
+    // Map 'gpt_id' to 'id' because the deleteAgent thunk expects { token, id }
     if (token) dispatch(deleteAgent({ token, id: gpt_id }));
   };
 
@@ -47,13 +73,23 @@ const Agents: React.FC = () => {
       dispatch(fetchAgents(token));
     }
   };
+
   const handleopenCreateModal = () => {
     if (!user?.id) {
       setShowLoginModal(true);
     } else {
       dispatch(openCreateModal());
     }
-  }
+  };
+
+  const handleTabChange = (tab: "my" | "public") => {
+    if (!user?.id) {
+      setShowLoginModal(true);
+    } else {
+      setActiveTab(tab);
+    }
+  };
+
   return (
     <div
       className={cn(
@@ -66,6 +102,7 @@ const Agents: React.FC = () => {
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
       />
+
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
         <div>
@@ -75,78 +112,151 @@ const Agents: React.FC = () => {
               isDark ? "text-white" : "text-gray-900"
             )}
           >
-            My Alex Agents
+            {activeTab === "my" ? "My Alex Agents" : "Public Agents"}
           </h1>
           <p className={cn("mt-1", isDark ? "text-gray-400" : "text-gray-500")}>
-            Create and manage custom AI assistants tailored to your needs.
+            {activeTab === "my"
+              ? "Create and manage custom AI assistants tailored to your needs."
+              : "Discover and chat with pre-built AI assistants."}
           </p>
         </div>
 
-        {/* Open Modal for Creating a New Agent */}
-        <Button
-          className={cn(
-            " bg-transparent ",
-            isDark
-              ? "text-white hover:bg-gray-800"
-              : "text-gray-900 hover:bg-blue-50"
-          )}
-          onClick={() => handleopenCreateModal()}
-        >
-          <Plus
-            size={20}
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+          <div
             className={cn(
-              "mr-2 bg-transparent",
-              isDark ? "text-white" : "text-gray-900"
+              "flex p-1 border rounded-md",
+              isDark ? "border-zinc-800 bg-zinc-950" : "border-zinc-200 bg-zinc-100"
             )}
-          />{" "}
-          Create Agent
-        </Button>
+          >
+            <button
+              onClick={() => handleTabChange("my")}
+              className={cn(
+                "px-4 py-2 text-sm font-medium transition-all duration-200 cursor-pointer rounded-sm",
+                activeTab === "my"
+                  ? isDark
+                    ? "bg-zinc-800 text-white font-bold"
+                    : "bg-white text-zinc-900 shadow-sm font-bold"
+                  : isDark
+                  ? "text-zinc-500 hover:text-zinc-300"
+                  : "text-zinc-600 hover:text-zinc-900"
+              )}
+            >
+              My Agents
+            </button>
+            <button
+              onClick={() => handleTabChange("public")}
+              className={cn(
+                "px-4 py-2 text-sm font-medium transition-all duration-200 cursor-pointer rounded-sm",
+                activeTab === "public"
+                  ? isDark
+                    ? "bg-zinc-800 text-white font-bold"
+                    : "bg-white text-zinc-900 shadow-sm font-bold"
+                  : isDark
+                  ? "text-zinc-500 hover:text-zinc-300"
+                  : "text-zinc-600 hover:text-zinc-900"
+              )}
+            >
+              Public Agents
+            </button>
+          </div>
+
+          <Button
+            className={cn(
+              " bg-transparent ",
+              isDark
+                ? "text-white hover:bg-gray-800"
+                : "text-gray-900 hover:bg-blue-50"
+            )}
+            onClick={() => handleopenCreateModal()}
+          >
+            <Plus
+              size={20}
+              className={cn(
+                "mr-2 bg-transparent",
+                isDark ? "text-white" : "text-gray-900"
+              )}
+            />{" "}
+            Create Agent
+          </Button>
+        </div>
       </div>
 
       {/* Error State Display */}
-      {error && (
+      {(error || publicError) && (
         <div className="p-4 mb-6 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500">
-          Error: {error}
+          Error: {error || publicError}
         </div>
       )}
 
       {/* Grid Content */}
-      {isLoading && items.length === 0 ? (
+      {((activeTab === "my" && isLoading && items.length === 0) ||
+        (activeTab === "public" && isPublicLoading && publicAgents.length === 0)) ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <SkeletonLoader count={6} className="h-64 w-full rounded-2xl" />
         </div>
-      ) : items.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {items.map((agent: any) => (
-            <AgentCard
-              key={agent.gpt_id}
-              agent={agent}
-              isDark={isDark}
-              onEdit={(a) => dispatch(openEditModal(a))}
-              onDelete={handleDelete}
-            />
-          ))}
-        </div>
+      ) : activeTab === "my" ? (
+        items.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {items.map((agent: any) => (
+              <AgentCard
+                key={agent.gpt_id}
+                agent={agent}
+                isDark={isDark}
+                onEdit={(a) => dispatch(openEditModal(a))}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
+        ) : (
+          /* Empty State for My Agents */
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex flex-col items-center justify-center py-20 text-center opacity-60"
+          >
+            <Box size={64} className="mb-4 text-gray-400" />
+            <h3 className="text-xl font-semibold mb-2">No Agents Created Yet</h3>
+            <p className="max-w-sm mx-auto mb-6">
+              Start by creating your first custom agent to automate tasks or
+              roleplay specific scenarios.
+            </p>
+            <Button variant="outline" onClick={() => handleopenCreateModal()}>
+              Create Your First Agent
+            </Button>
+          </motion.div>
+        )
       ) : (
-        /* Empty State */
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex flex-col items-center justify-center py-20 text-center opacity-60"
-        >
-          <Box size={64} className="mb-4 text-gray-400" />
-          <h3 className="text-xl font-semibold mb-2">No Agents Created Yet</h3>
-          <p className="max-w-sm mx-auto mb-6">
-            Start by creating your first custom agent to automate tasks or
-            roleplay specific scenarios.
-          </p>
-          <Button variant="outline" onClick={() => handleopenCreateModal()}>
-            Create Your First Agent
-          </Button>
-        </motion.div>
+        /* activeTab === "public" */
+        publicAgents.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {publicAgents.map((agent: any) => (
+              <AgentCard
+                key={agent.gpt_id}
+                agent={agent}
+                isDark={isDark}
+                onEdit={(a) => dispatch(openEditModal(a))}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
+        ) : (
+          /* Empty State for Public Agents */
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex flex-col items-center justify-center py-20 text-center opacity-60"
+          >
+            <Box size={64} className="mb-4 text-gray-400" />
+            <h3 className="text-xl font-semibold mb-2">No Public Agents Available</h3>
+            <p className="max-w-sm mx-auto mb-6">
+              There are no built-in or public agents available at this moment.
+            </p>
+          </motion.div>
+        )
       )}
 
-      {/* FIX 3: Pass the 'editingAgent' prop to the modal so it can pre-fill data */}
+      {/* Pass the 'editingAgent' prop to the modal so it can pre-fill data */}
       <AgentModal
         isOpen={isModalOpen}
         onClose={() => dispatch(closeModal())}

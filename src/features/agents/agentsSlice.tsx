@@ -15,6 +15,8 @@ export interface Agent {
   created_at?: string;
   conversation_starters?: string[];
   recommended_model?: string;
+  is_owner?: boolean;
+  is_public?: boolean;
 }
 
 export interface AgentDocument {

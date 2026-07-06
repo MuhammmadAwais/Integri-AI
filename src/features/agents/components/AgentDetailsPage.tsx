@@ -72,7 +72,9 @@ const AgentDetailPage = () => {
         setAgent(data);
 
         // Fetch Documents
-        dispatch(fetchAgentDocuments({ token, gpt_id: id }));
+        if (data && data.is_owner !== false) {
+          dispatch(fetchAgentDocuments({ token, gpt_id: id }));
+        }
       } catch (err) {
         console.error("Failed to load agent", err);
         setError("Failed to load agent details.");
@@ -321,7 +323,11 @@ const AgentDetailPage = () => {
               value: agent.recommended_model || "integri",
               icon: Cpu,
             },
-            { label: "Access Level", value: "Private / Secure", icon: Shield },
+            {
+              label: "Access Level",
+              value: agent.is_public ? "Public Agent" : "Private / Secure",
+              icon: Shield,
+            },
             { label: "Response Type", value: "Analytical", icon: Terminal },
             { label: "Latency", value: "Low / Real-time", icon: Clock },
           ].map((stat, idx) => (
@@ -352,156 +358,158 @@ const AgentDetailPage = () => {
         </div>
 
         {/* --- KNOWLEDGE BASE SECTION --- */}
-        <div className="mb-16">
-          <div className="flex items-center gap-4 mb-6">
-            <div
-              className={cn(
-                "h-px flex-1",
-                isDark ? "bg-zinc-800" : "bg-zinc-300"
-              )}
-            />
-            <h3
-              className={cn(
-                "flex items-center gap-2 font-mono text-sm uppercase tracking-widest",
-                isDark ? "text-zinc-500" : "text-zinc-400"
-              )}
-            >
-              <Database size={16} /> Knowledge Base
-            </h3>
-            <div
-              className={cn(
-                "h-px flex-1",
-                isDark ? "bg-zinc-800" : "bg-zinc-300"
-              )}
-            />
-          </div>
-
-          <div
-            className={cn(
-              "p-6 border",
-              isDark
-                ? "bg-zinc-900/20 border-zinc-800"
-                : "bg-white border-zinc-200"
-            )}
-          >
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h4
-                  className={cn(
-                    "text-lg font-bold",
-                    isDark ? "text-white" : "text-black"
-                  )}
-                >
-                  Attached Documents
-                </h4>
-                <p
-                  className={cn(
-                    "text-sm",
-                    isDark ? "text-zinc-500" : "text-zinc-500"
-                  )}
-                >
-                  These files provide context for the agent's responses.
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                {/* --- NEW: Clear All Button --- */}
-                {documents.length > 0 && (
-                  <button
-                    onClick={() => setIsClearModalOpen(true)}
-                    className={cn(
-                      "flex items-center gap-2 px-3 py-2 text-xs font-bold uppercase tracking-wide border transition-all hover:cursor-pointer",
-                      isDark
-                        ? "border-red-900/50 text-red-500 hover:bg-red-900/20"
-                        : "border-red-200 text-red-600 hover:bg-red-50"
-                    )}
-                    title="Clear all knowledge"
-                  >
-                    <AlertOctagon size={14} />
-                    Clear All
-                  </button>
+        {agent.is_owner !== false && (
+          <div className="mb-16">
+            <div className="flex items-center gap-4 mb-6">
+              <div
+                className={cn(
+                  "h-px flex-1",
+                  isDark ? "bg-zinc-800" : "bg-zinc-300"
                 )}
-
-                <input
-                  title="file"
-                  type="file"
-                  multiple
-                  ref={fileInputRef}
-                  className="hidden"
-                  onChange={handleFileUpload}
-                  accept=".pdf,.txt,.docx,.md"
-                />
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={uploadingDocs}
-                  className={cn(
-                    "hover:cursor-pointer flex items-center gap-2 px-4 py-2 text-sm font-bold uppercase tracking-wide border transition-all ",
-                    isDark
-                      ? "border-zinc-700 hover:bg-white hover:text-black"
-                      : "border-zinc-300 hover:bg-black hover:text-white"
-                  )}
-                >
-                  {uploadingDocs ? (
-                    <Loader2 size={16} className="animate-spin" />
-                  ) : (
-                    <Upload className="hover:cursor-pointer" size={16} />
-                  )}
-                  Upload
-                </button>
-              </div>
+              />
+              <h3
+                className={cn(
+                  "flex items-center gap-2 font-mono text-sm uppercase tracking-widest",
+                  isDark ? "text-zinc-500" : "text-zinc-400"
+                )}
+              >
+                <Database size={16} /> Knowledge Base
+              </h3>
+              <div
+                className={cn(
+                  "h-px flex-1",
+                  isDark ? "bg-zinc-800" : "bg-zinc-300"
+                )}
+              />
             </div>
 
-            {isDocsLoading ? (
-              <div className="py-8 flex justify-center">
-                <Loader2 className="animate-spin text-zinc-500" />
-              </div>
-            ) : documents.length === 0 ? (
-              <div className="text-center py-8 text-zinc-500 text-sm italic border-2 border-dashed border-zinc-200 dark:border-zinc-800">
-                No knowledge documents attached.
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {documents.map((doc: any) => (
-                  <div
-                    key={doc.document_id}
+            <div
+              className={cn(
+                "p-6 border",
+                isDark
+                  ? "bg-zinc-900/20 border-zinc-800"
+                  : "bg-white border-zinc-200"
+              )}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h4
                     className={cn(
-                      "flex items-center justify-between p-4 border group",
-                      isDark
-                        ? "bg-black border-zinc-800"
-                        : "bg-gray-50 border-zinc-200"
+                      "text-lg font-bold",
+                      isDark ? "text-white" : "text-black"
                     )}
                   >
-                    <div className="flex items-center gap-3 overflow-hidden">
-                      <div
-                        className={cn(
-                          "p-2",
-                          isDark ? "bg-zinc-900" : "bg-white"
-                        )}
-                      >
-                        <FileText size={20} className="text-blue-500" />
-                      </div>
-                      <div className="flex flex-col overflow-hidden">
-                        <span className="text-sm font-medium truncate">
-                          {doc.filename}
-                        </span>
-                        <span className="text-xs text-zinc-500 uppercase">
-                          {doc.file_type} • {(doc.file_size / 1024).toFixed(0)}{" "}
-                          KB
-                        </span>
-                      </div>
-                    </div>
+                    Attached Documents
+                  </h4>
+                  <p
+                    className={cn(
+                      "text-sm",
+                      isDark ? "text-zinc-500" : "text-zinc-500"
+                    )}
+                  >
+                    These files provide context for the agent's responses.
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  {/* --- NEW: Clear All Button --- */}
+                  {documents.length > 0 && (
                     <button
-                      title="delete"
-                      onClick={() => handleDeleteDoc(doc.document_id)} // Handled inconsistent IDs safely
-                      className="opacity-0 group-hover:opacity-100 p-2 text-zinc-500 hover:text-red-500 transition-all hover:cursor-pointer"
+                      onClick={() => setIsClearModalOpen(true)}
+                      className={cn(
+                        "flex items-center gap-2 px-3 py-2 text-xs font-bold uppercase tracking-wide border transition-all hover:cursor-pointer",
+                        isDark
+                          ? "border-red-900/50 text-red-500 hover:bg-red-900/20"
+                          : "border-red-200 text-red-600 hover:bg-red-50"
+                      )}
+                      title="Clear all knowledge"
                     >
-                      <Trash2 className="hover:cursor-pointer" size={16} />
+                      <AlertOctagon size={14} />
+                      Clear All
                     </button>
-                  </div>
-                ))}
+                  )}
+
+                  <input
+                    title="file"
+                    type="file"
+                    multiple
+                    ref={fileInputRef}
+                    className="hidden"
+                    onChange={handleFileUpload}
+                    accept=".pdf,.txt,.docx,.md"
+                  />
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadingDocs}
+                    className={cn(
+                      "hover:cursor-pointer flex items-center gap-2 px-4 py-2 text-sm font-bold uppercase tracking-wide border transition-all ",
+                      isDark
+                        ? "border-zinc-700 hover:bg-white hover:text-black"
+                        : "border-zinc-300 hover:bg-black hover:text-white"
+                    )}
+                  >
+                    {uploadingDocs ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : (
+                      <Upload className="hover:cursor-pointer" size={16} />
+                    )}
+                    Upload
+                  </button>
+                </div>
               </div>
-            )}
+
+              {isDocsLoading ? (
+                <div className="py-8 flex justify-center">
+                  <Loader2 className="animate-spin text-zinc-500" />
+                </div>
+              ) : documents.length === 0 ? (
+                <div className="text-center py-8 text-zinc-500 text-sm italic border-2 border-dashed border-zinc-200 dark:border-zinc-800">
+                  No knowledge documents attached.
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {documents.map((doc: any) => (
+                    <div
+                      key={doc.document_id}
+                      className={cn(
+                        "flex items-center justify-between p-4 border group",
+                        isDark
+                          ? "bg-black border-zinc-800"
+                          : "bg-gray-50 border-zinc-200"
+                      )}
+                    >
+                      <div className="flex items-center gap-3 overflow-hidden">
+                        <div
+                          className={cn(
+                            "p-2",
+                            isDark ? "bg-zinc-900" : "bg-white"
+                          )}
+                        >
+                          <FileText size={20} className="text-blue-500" />
+                        </div>
+                        <div className="flex flex-col overflow-hidden">
+                          <span className="text-sm font-medium truncate">
+                            {doc.filename}
+                          </span>
+                          <span className="text-xs text-zinc-500 uppercase">
+                            {doc.file_type} • {(doc.file_size / 1024).toFixed(0)}{" "}
+                            KB
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        title="delete"
+                        onClick={() => handleDeleteDoc(doc.document_id)} // Handled inconsistent IDs safely
+                        className="opacity-0 group-hover:opacity-100 p-2 text-zinc-500 hover:text-red-500 transition-all hover:cursor-pointer"
+                      >
+                        <Trash2 className="hover:cursor-pointer" size={16} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* --- CONVERSATION STARTERS --- */}
         {agent.conversation_starters?.length > 0 && (

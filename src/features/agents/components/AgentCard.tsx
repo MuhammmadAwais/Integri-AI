@@ -85,43 +85,47 @@ const AgentCard: React.FC<AgentCardProps> = ({
               : "bg-zinc-50 border-zinc-200 text-zinc-600"
           )}
         >
-          {agent.model}
+          {agent.model || agent.recommended_model}
         </span>
 
         <div
           className="flex items-center gap-2"
           onClick={(e) => e.stopPropagation()}
         >
-          <button
-            onClick={() => onEdit(agent)}
-            className={cn(
-              "hover:cursor-pointer p-1.5 transition-colors",
-              isDark
-                ? "text-zinc-500 hover:text-white"
-                : "text-zinc-400 hover:text-black"
-            )}
-            title="Edit"
-          >
-            <Edit2 size={14} />
-          </button>
-          <button
-            onClick={() => {
-              if (
-                window.confirm("Are you sure you want to delete this agent?")
-              ) {
-                onDelete(agent.gpt_id);
-              }
-            }}
-            className={cn(
-              "p-1.5 transition-colors hover:cursor-pointer",
-              isDark
-                ? "text-zinc-500 hover:text-red-400"
-                : "text-zinc-400 hover:text-red-600"
-            )}
-            title="Delete"
-          >
-            <Trash2 size={14} />
-          </button>
+          {agent.is_owner !== false && (
+            <>
+              <button
+                onClick={() => onEdit(agent)}
+                className={cn(
+                  "hover:cursor-pointer p-1.5 transition-colors",
+                  isDark
+                    ? "text-zinc-500 hover:text-white"
+                    : "text-zinc-400 hover:text-black"
+                )}
+                title="Edit"
+              >
+                <Edit2 size={14} />
+              </button>
+              <button
+                onClick={() => {
+                  if (
+                    window.confirm("Are you sure you want to delete this agent?")
+                  ) {
+                    onDelete(agent.gpt_id);
+                  }
+                }}
+                className={cn(
+                  "p-1.5 transition-colors hover:cursor-pointer",
+                  isDark
+                    ? "text-zinc-500 hover:text-red-400"
+                    : "text-zinc-400 hover:text-red-600"
+                )}
+                title="Delete"
+              >
+                <Trash2 size={14} />
+              </button>
+            </>
+          )}
         </div>
       </div>
     </motion.div>
