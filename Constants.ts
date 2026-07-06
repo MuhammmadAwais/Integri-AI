@@ -737,7 +737,8 @@ export const PRO_WHITELIST: ProWhitelistUser[] = [
   // Add whitelisted users here
   { email: "ningagamerz456@gmail.com" }, // uid is optional
   { email: "javaidshahana@gmail.com" },
-  { email: "rajausama8421@gmail.com" }
+  { email: "rajausama8421@gmail.com" },
+  { email: "ttaurus57@gmail.com" },
 ];
 
 // --- PREMIUM WHITELIST ---
