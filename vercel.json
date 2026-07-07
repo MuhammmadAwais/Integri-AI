@@ -10,7 +10,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i)(googlebot|bingbot|twitterbot|facebookexternalhit|linkedinbot|slackbot|discordbot|telegrambot|whatsapp|pinterest|redditbot|applebot)"
+          "value": ".*([Gg]ooglebot|[Bb]ingbot|[Tt]witterbot|[Ff]acebookexternalhit|[Ll]inkedin[Bb]ot|[Ss]lackbot|[Dd]iscord[Bb]ot|[Tt]elegram[Bb]ot|[Ww]hatsapp|[Pp]interest|[Rr]edditbot|[Aa]pplebot).*"
         }
       ],
       "destination": "/api/preview?type=news&id=:id"
@@ -21,7 +21,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i)(googlebot|bingbot|twitterbot|facebookexternalhit|linkedinbot|slackbot|discordbot|telegrambot|whatsapp|pinterest|redditbot|applebot)"
+          "value": ".*([Gg]ooglebot|[Bb]ingbot|[Tt]witterbot|[Ff]acebookexternalhit|[Ll]inkedin[Bb]ot|[Ss]lackbot|[Dd]iscord[Bb]ot|[Tt]elegram[Bb]ot|[Ww]hatsapp|[Pp]interest|[Rr]edditbot|[Aa]pplebot).*"
         }
       ],
       "destination": "/api/preview?type=article&id=:id"
@@ -32,7 +32,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i)(googlebot|bingbot|twitterbot|facebookexternalhit|linkedinbot|slackbot|discordbot|telegrambot|whatsapp|pinterest|redditbot|applebot)"
+          "value": ".*([Gg]ooglebot|[Bb]ingbot|[Tt]witterbot|[Ff]acebookexternalhit|[Ll]inkedin[Bb]ot|[Ss]lackbot|[Dd]iscord[Bb]ot|[Tt]elegram[Bb]ot|[Ww]hatsapp|[Pp]interest|[Rr]edditbot|[Aa]pplebot).*"
         }
       ],
       "destination": "/api/preview?type=blog&slug=:slug"

@@ -222,16 +222,10 @@ export default async function handler(request: Request): Promise<Response> {
   };
 
   try {
-    const projectId = process.env.VITE_FIREBASE_PROJECT_ID;
-    const apiKey = process.env.VITE_FIREBASE_API_KEY;
+    const projectId = process.env.VITE_FIREBASE_PROJECT_ID || "integri-957a2";
+    const apiKey = process.env.VITE_FIREBASE_API_KEY || "AIzaSyAIYRCpE3gdcbk13tnVMQL_Vnq4CBHZj_8";
 
-    if (!projectId || !apiKey) {
-      console.warn("Missing VITE_FIREBASE_PROJECT_ID or VITE_FIREBASE_API_KEY env variables. Falling back to default index.html.");
-      const defaultHtml = await fetchIndexHtml();
-      return new Response(defaultHtml, {
-        headers: { "Content-Type": "text/html" },
-      });
-    }
+    console.log(`[Preview Pre-renderer] Fetching ${type} resource. ID: ${id || "none"}, Slug: ${slug || "none"}. Lang: ${lang}`);
 
     let seoData: SEOData | null = null;
 
@@ -246,6 +240,8 @@ export default async function handler(request: Request): Promise<Response> {
     if (!seoData) {
       throw new Error("Invalid request arguments or unable to identify resource context.");
     }
+
+    console.log(`[Preview Pre-renderer] Resolved SEO data: Title="${seoData.title}", Image="${seoData.coverImage}"`);
 
     // Process absolute paths for OG images
     let imageUrl = seoData.coverImage;
@@ -281,7 +277,9 @@ export default async function handler(request: Request): Promise<Response> {
     // Strip out default title and description meta tags from original index.html
     let finalHtml = baseHtml;
     finalHtml = finalHtml.replace(/<title>.*?<\/title>/gi, "");
-    finalHtml = finalHtml.replace(/<meta\s+name="description"\s+content="[^"]*"\s*\/?>/gi, "");
+    finalHtml = finalHtml.replace(/<meta\s+[^>]*name="description"[^>]*>/gi, "");
+    finalHtml = finalHtml.replace(/<meta\s+[^>]*property="og:[^>]*>/gi, "");
+    finalHtml = finalHtml.replace(/<meta\s+[^>]*name="twitter:[^>]*>/gi, "");
 
     // Inject tags into head
     finalHtml = finalHtml.replace("<head>", `<head>\n${metaTags}`);
