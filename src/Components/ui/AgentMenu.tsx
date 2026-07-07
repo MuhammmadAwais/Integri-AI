@@ -5,8 +5,6 @@ import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import { cn } from "../../lib/utils";
 import { Check, Bot, Sparkles, Plus, Loader2 } from "lucide-react";
 
-// ⚠️ CRITICAL: Verify this path matches your project structure
-// It should point to where you saved 'agentsSlice.tsx'
 import { fetchAgents, fetchPublicAgents } from "../../features/agents/agentsSlice";
 
 interface AgentMenuProps {

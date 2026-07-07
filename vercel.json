@@ -5,6 +5,39 @@
       "destination": "/api/$1"
     },
     {
+      "source": "/news/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i)(googlebot|bingbot|twitterbot|facebookexternalhit|linkedinbot|slackbot|discordbot|telegrambot|whatsapp|pinterest|redditbot|applebot)"
+        }
+      ],
+      "destination": "/api/preview?type=news&id=:id"
+    },
+    {
+      "source": "/articles/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i)(googlebot|bingbot|twitterbot|facebookexternalhit|linkedinbot|slackbot|discordbot|telegrambot|whatsapp|pinterest|redditbot|applebot)"
+        }
+      ],
+      "destination": "/api/preview?type=article&id=:id"
+    },
+    {
+      "source": "/blog/:slug",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i)(googlebot|bingbot|twitterbot|facebookexternalhit|linkedinbot|slackbot|discordbot|telegrambot|whatsapp|pinterest|redditbot|applebot)"
+        }
+      ],
+      "destination": "/api/preview?type=blog&slug=:slug"
+    },
+    {
       "source": "/((?!api|src|@vite|@react-refresh|@fs|@id|node_modules|system-check\\.js|robots\\.txt|sitemap\\.xml|.+\\.[a-zA-Z0-9]+$).*)",
       "destination": "/index.html"
     }
