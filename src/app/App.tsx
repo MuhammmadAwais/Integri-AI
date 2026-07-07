@@ -41,6 +41,9 @@ import SendFeedbackPage from "../pages/SendFeedbackPage";
 import HelpPage from "../pages/HelpPage";
 import Agents from "../pages/Agents";
 import AgentDetailsPage from "../features/agents/components/AgentDetailsPage";
+import EmailCrafterWorkspace from "../features/systemTools/components/EmailCrafterWorkspace";
+import DocumentExplainerWorkspace from "../features/systemTools/components/DocumentExplainerWorkspace";
+import CostOfLivingWorkspace from "../features/systemTools/components/CostOfLivingWorkspace";
 import SubscriptionPage from "../pages/SubscriptionPage";
 import ImageGenPage from "../pages/ImageGenPage";
 import ContactUs from "../pages/ContactUs";
@@ -155,6 +158,9 @@ const router = createBrowserRouter([
               { path: "feedback", element: <SendFeedbackPage /> },
               { path: "help", element: <HelpPage /> },
               { path: "agents", element: <Agents /> },
+              { path: "agents/system/email", element: <EmailCrafterWorkspace /> },
+              { path: "agents/system/document-explainer", element: <DocumentExplainerWorkspace /> },
+              { path: "agents/system/cost-of-living", element: <CostOfLivingWorkspace /> },
               { path: "agents/:id", element: <AgentDetailsPage /> },
               { path: "subscriptions", element: <SubscriptionPage /> },
               { path: "imageGen", element: <ImageGenPage /> },

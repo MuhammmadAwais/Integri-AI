@@ -743,6 +743,72 @@ export const LimitsService = {
   },
 };
 
+// --- SYSTEM TOOLS ---
+
+export interface EmailCrafterRequest {
+  instructions: string;
+  country: string;
+  language_code: string;
+  country_code: string;
+  timezone: string;
+}
+
+export interface EmailCrafterResponse {
+  title: string;
+  email_body: string;
+  translated_body: string;
+}
+
+export interface DocumentExplainerRequest {
+  file_ids: string[];
+  language_code: string;
+  country_code: string;
+  timezone: string;
+}
+
+export interface DocumentExplainerResponse {
+  explanation: string;
+}
+
+export interface CostOfLivingRequest {
+  city1: string;
+  city2: string;
+  language_code: string;
+  language_name: string;
+  timezone: string;
+}
+
+export interface CostOfLivingResponse {
+  comparison: {
+    [category: string]: {
+      [cityName: string]: string | number;
+    };
+  };
+}
+
+export const SystemToolsService = {
+  craftEmail: async (token: string, data: EmailCrafterRequest): Promise<EmailCrafterResponse> => {
+    const response = await backendApi.post<EmailCrafterResponse>("/api/v1/agents/email", data, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
+
+  explainDocument: async (token: string, data: DocumentExplainerRequest): Promise<DocumentExplainerResponse> => {
+    const response = await backendApi.post<DocumentExplainerResponse>("/api/v1/agents/document-explainer", data, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
+
+  compareCostOfLiving: async (token: string, data: CostOfLivingRequest): Promise<CostOfLivingResponse> => {
+    const response = await backendApi.post<CostOfLivingResponse>("/api/v1/agents/cost-of-living", data, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
+};
+
 export default backendApi;
 
 

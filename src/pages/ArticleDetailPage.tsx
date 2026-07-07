@@ -14,18 +14,7 @@ import ShareModal from "../Components/ui/ShareModal";
 
 // ── Helpers ───────────────────────────────────────────────────────────
 
-function timeAgo(date: Date): string {
-    const now = Date.now();
-    const diff = now - date.getTime();
-    const mins = Math.floor(diff / 60_000);
-    if (mins < 1) return "Just now";
-    if (mins < 60) return `${mins} min ago`;
-    const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours}h ago`;
-    const days = Math.floor(hours / 24);
-    if (days < 7) return `${days}d ago`;
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-}
+
 
 function readTime(
     content: NewContent[],
@@ -126,12 +115,6 @@ const RelatedCard: React.FC<{
                 )}>
                     {localised(article.headline, lang)}
                 </h4>
-                <span className={cn(
-                    "text-[10px]",
-                    isDark ? "text-gray-500" : "text-gray-400",
-                )}>
-                    {timeAgo(article.date)}
-                </span>
             </div>
         </div>
     </Link>
@@ -316,10 +299,6 @@ const ArticleDetailPage: React.FC = () => {
                                     </span>
                                 </>
                             )}
-                            <span className={isDark ? "text-gray-500" : "text-gray-500"}>
-                                {timeAgo(article.date)}
-                            </span>
-                            <span className={isDark ? "text-gray-600" : "text-gray-400"}>·</span>
                             <span
                                 className={cn(
                                     "flex items-center gap-1",

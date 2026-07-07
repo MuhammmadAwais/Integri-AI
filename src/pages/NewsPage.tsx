@@ -21,24 +21,7 @@ import { AD_SLOTS, IN_FEED_AD_INTERVAL } from "../config/ads";
 
 // ── Helpers ───────────────────────────────────────────────────────────
 
-/** Human-friendly relative time string. */
-function timeAgo(date: Date): string {
-    const now = Date.now();
-    const diff = now - date.getTime();
-    const mins = Math.floor(diff / 60_000);
-    if (mins < 1) return "Just now";
-    if (mins < 60) return `${mins} min ago`;
-    const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours}h ago`;
-    const days = Math.floor(hours / 24);
-    if (days < 7) return `${days}d ago`;
-    if (days < 30) return `${Math.floor(days / 7)}w ago`;
-    return date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: date.getFullYear() !== new Date().getFullYear() ? "numeric" : undefined,
-    });
-}
+
 
 /** Estimate read time from description content blocks. */
 function readTime(article: NewsArticle, lang: string): string {
@@ -117,10 +100,6 @@ const FeaturedArticle: React.FC<{
                             ? localised(article.newsSource.company, lang) ||
                             article.newsSource.companyName
                             : article.topic}
-                    </span>
-                    <span className={isDark ? "text-gray-600" : "text-gray-400"}>·</span>
-                    <span className={isDark ? "text-gray-500" : "text-gray-500"}>
-                        {timeAgo(article.date)}
                     </span>
                 </div>
 
@@ -229,10 +208,6 @@ const NewsCard: React.FC<{
                             article.newsSource.companyName
                             : article.topic}
                     </span>
-                    <span className={isDark ? "text-gray-600" : "text-gray-400"}>·</span>
-                    <span className={isDark ? "text-gray-500" : "text-gray-500"}>
-                        {timeAgo(article.date)}
-                    </span>
                 </div>
 
                 {/* Title */}
@@ -312,12 +287,6 @@ const CompactCard: React.FC<{
                 )}>
                     {localised(article.headline, lang)}
                 </h4>
-                <span className={cn(
-                    "text-[10px]",
-                    isDark ? "text-gray-500" : "text-gray-400",
-                )}>
-                    {timeAgo(article.date)}
-                </span>
             </div>
         </div>
     </Link>

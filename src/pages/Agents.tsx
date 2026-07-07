@@ -16,6 +16,7 @@ import AgentCard from "../features/agents/components/AgentCard";
 import AgentModal from "../features/agents/components/AgentModal";
 import SkeletonLoader from "../Components/ui/SkeletonLoader";
 import ParticleBackground from "../Components/ui/ParticleBackground";
+import SystemToolCard from "../features/agents/components/SystemToolCard";
 import LoginModal from "../features/auth/components/LoginModal";
 
 const Agents: React.FC = () => {
@@ -38,7 +39,7 @@ const Agents: React.FC = () => {
   const token = useAppSelector((state: any) => state.auth.accessToken);
   const user = useAppSelector((state: any) => state.auth.user);
 
-  const [activeTab, setActiveTab] = useState<"my" | "public">("my");
+  const [activeTab, setActiveTab] = useState<"my" | "public" | "system">("my");
 
   // Initial fetch of user's own agents if they aren't loaded yet
   useEffect(() => {
@@ -81,7 +82,7 @@ const Agents: React.FC = () => {
     }
   };
 
-  const handleTabChange = (tab: "my" | "public") => {
+  const handleTabChange = (tab: "my" | "public" | "system") => {
     if (!user?.id) {
       setShowLoginModal(true);
     } else {
@@ -111,11 +112,13 @@ const Agents: React.FC = () => {
               isDark ? "text-white" : "text-gray-900"
             )}
           >
-            {activeTab === "my" ? "My Alex Agents" : "Public Agents"}
+            {activeTab === "my" ? "My Alex Agents" : activeTab === "system" ? "System Tools" : "Public Agents"}
           </h1>
           <p className={cn("mt-1", isDark ? "text-gray-400" : "text-gray-500")}>
             {activeTab === "my"
               ? "Create and manage custom AI assistants tailored to your needs."
+              : activeTab === "system"
+              ? "Access native system utilities and advanced processing tools."
               : "Discover and chat with pre-built AI assistants."}
           </p>
         </div>
@@ -157,6 +160,21 @@ const Agents: React.FC = () => {
               )}
             >
               Public Agents
+            </button>
+            <button
+              onClick={() => handleTabChange("system")}
+              className={cn(
+                "px-4 py-2 text-sm font-medium transition-all duration-200 cursor-pointer rounded-sm",
+                activeTab === "system"
+                  ? isDark
+                    ? "bg-zinc-800 text-white font-bold"
+                    : "bg-white text-zinc-900 shadow-sm font-bold"
+                  : isDark
+                  ? "text-zinc-500 hover:text-zinc-300"
+                  : "text-zinc-600 hover:text-zinc-900"
+              )}
+            >
+              System Tools
             </button>
           </div>
 
@@ -245,6 +263,33 @@ const Agents: React.FC = () => {
             </Button>
           </motion.div>
         )
+      ) : activeTab === "system" ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <SystemToolCard
+            id="sys-email"
+            title="Email Crafter"
+            description="Quickly draft professional, localized emails with custom tone and context."
+            model="GPT-4o-Mini"
+            link="/agents/system/email"
+            isDark={isDark}
+          />
+          <SystemToolCard
+            id="sys-doc"
+            title="Document Explainer"
+            description="Upload complex documents and get detailed, structured explanations and recommendations."
+            model="GPT-4.1"
+            link="/agents/system/document-explainer"
+            isDark={isDark}
+          />
+          <SystemToolCard
+            id="sys-cost"
+            title="Cost of Living Comparator"
+            description="Compare the cost of living between two cities globally using precise economic data."
+            model="GPT-4.1"
+            link="/agents/system/cost-of-living"
+            isDark={isDark}
+          />
+        </div>
       ) : (
         /* activeTab === "public" */
         publicItems && publicItems.length > 0 ? (

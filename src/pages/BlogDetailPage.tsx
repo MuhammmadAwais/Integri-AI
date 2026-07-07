@@ -3,8 +3,6 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeft,
   Clock,
-  Calendar,
-  Eye,
   BookOpen,
   Loader2,
   ChevronRight,
@@ -53,25 +51,6 @@ const ThumbnailFallback: React.FC<{ isDark: boolean }> = ({ isDark }) => (
   </div>
 );
 
-// ── Time Ago Helper ──────────────────────────────────────────────────
-function timeAgo(date: any): string {
-  if (!date) return "Recently";
-  const parsedDate = date instanceof Date ? date : new Date(date);
-  const now = Date.now();
-  const diff = now - parsedDate.getTime();
-  const mins = Math.floor(diff / 60_000);
-  if (mins < 1) return "Just now";
-  if (mins < 60) return `${mins} min ago`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
-  return parsedDate.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: parsedDate.getFullYear() !== new Date().getFullYear() ? "numeric" : undefined,
-  });
-}
 
 // ── Read Time Estimation ─────────────────────────────────────────────
 function estimateReadTime(blocks: BlogContentBlock[]): string {
@@ -204,14 +183,6 @@ const RelatedBlogCard: React.FC<{
         >
           {blog.title}
         </h4>
-        <span
-          className={cn(
-            "text-[10px] font-semibold",
-            isDark ? "text-gray-500" : "text-gray-400"
-          )}
-        >
-          {timeAgo(blog.createdAt)}
-        </span>
       </div>
     </div>
   </Link>
@@ -388,28 +359,8 @@ const BlogDetailPage: React.FC = () => {
                     isDark ? "text-gray-500" : "text-gray-500"
                   )}
                 >
-                  <Calendar size={13} />
-                  {timeAgo(blog.createdAt)}
-                </span>
-                <span className={isDark ? "text-gray-600" : "text-gray-400"}>·</span>
-                <span
-                  className={cn(
-                    "flex items-center gap-1.5",
-                    isDark ? "text-gray-500" : "text-gray-500"
-                  )}
-                >
                   <Clock size={13} />
                   {estimateReadTime(sortedBlocks)}
-                </span>
-                <span className={isDark ? "text-gray-600" : "text-gray-400"}>·</span>
-                <span
-                  className={cn(
-                    "flex items-center gap-1.5",
-                    isDark ? "text-gray-500" : "text-gray-500"
-                  )}
-                >
-                  <Eye size={13} />
-                  {blog.views} views
                 </span>
 
                 {/* Share Button */}

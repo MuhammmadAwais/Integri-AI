@@ -4,7 +4,6 @@ import {
   Search,
   ChevronDown,
   BookOpen,
-  Calendar,
   Tag,
   ArrowRight,
 } from "lucide-react";
@@ -50,26 +49,6 @@ const ThumbnailFallback: React.FC<{ isDark: boolean }> = ({ isDark }) => (
   </div>
 );
 
-// ── Time Ago Helper ──────────────────────────────────────────────────
-function timeAgo(date: any): string {
-  if (!date) return "Recently";
-  const parsedDate = date instanceof Date ? date : new Date(date);
-  const now = Date.now();
-  const diff = now - parsedDate.getTime();
-  const mins = Math.floor(diff / 60_000);
-  if (mins < 1) return "Just now";
-  if (mins < 60) return `${mins} min ago`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
-  if (days < 30) return `${Math.floor(days / 7)}w ago`;
-  return parsedDate.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: parsedDate.getFullYear() !== new Date().getFullYear() ? "numeric" : undefined,
-  });
-}
 
 // ── Blog Card Component ─────────────────────────────────────────────
 interface BlogCardProps {
@@ -129,16 +108,6 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog, isDark }) => {
               )}
             >
               {blog.category}
-            </span>
-            <span className={isDark ? "text-gray-600" : "text-gray-400"}>·</span>
-            <span
-              className={cn(
-                "flex items-center gap-1",
-                isDark ? "text-gray-500" : "text-gray-500"
-              )}
-            >
-              <Calendar size={11} />
-              {timeAgo(blog.createdAt)}
             </span>
           </div>
 
@@ -237,12 +206,6 @@ const BlogPage: React.FC = () => {
     error,
     searchQuery,
     setSearchQuery,
-    categoryFilter,
-    setCategoryFilter,
-    topicFilter,
-    setTopicFilter,
-    categories,
-    topics,
     hasMore,
     loadMore,
   } = useBlogMetadata(12);
@@ -322,58 +285,7 @@ const BlogPage: React.FC = () => {
             />
           </div>
 
-          {/* Dropdown Filters */}
-          <div className="flex gap-3 w-full md:w-auto">
-            {/* Category Filter */}
-            <div className="relative flex-1 md:flex-none">
-              <select
-                value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
-                className={cn(
-                  "w-full md:w-48 appearance-none px-4 py-2 pr-10 rounded-xl border text-sm outline-none cursor-pointer focus:ring-2 focus:ring-blue-500/50 transition-all",
-                  isDark
-                    ? "bg-[#0a0a0a] border-white/5 text-gray-300 focus:bg-black"
-                    : "bg-white border-gray-200 text-gray-700 focus:bg-white shadow-sm"
-                )}
-              >
-                <option value="">All Categories</option>
-                {categories.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown
-                size={14}
-                className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500"
-              />
-            </div>
 
-            {/* Topic Filter */}
-            <div className="relative flex-1 md:flex-none">
-              <select
-                value={topicFilter}
-                onChange={(e) => setTopicFilter(e.target.value)}
-                className={cn(
-                  "w-full md:w-44 appearance-none px-4 py-2 pr-10 rounded-xl border text-sm outline-none cursor-pointer focus:ring-2 focus:ring-blue-500/50 transition-all",
-                  isDark
-                    ? "bg-[#0a0a0a] border-white/5 text-gray-300 focus:bg-black"
-                    : "bg-white border-gray-200 text-gray-700 focus:bg-white shadow-sm"
-                )}
-              >
-                <option value="">All Topics</option>
-                {topics.map((top) => (
-                  <option key={top} value={top}>
-                    {top}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown
-                size={14}
-                className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500"
-              />
-            </div>
-          </div>
         </div>
 
         {/* ── Loading Skeleton State ── */}
