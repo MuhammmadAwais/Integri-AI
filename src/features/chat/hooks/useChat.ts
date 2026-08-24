@@ -9,7 +9,7 @@ import {
   setSessions,
   addSession,
   removeSession,
-  updateSessionTitle, // Import the reducer
+  updateSessionTitle, 
 } from "../../chat/chatSlice";
 import AVAILABLE_MODELS from "../../../../Constants";
 

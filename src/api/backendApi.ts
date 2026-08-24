@@ -787,6 +787,7 @@ export interface CostOfLivingResponse {
 }
 
 export const SystemToolsService = {
+
   craftEmail: async (token: string, data: EmailCrafterRequest): Promise<EmailCrafterResponse> => {
     const response = await backendApi.post<EmailCrafterResponse>("/api/v1/agents/email", data, {
       headers: { Authorization: `Bearer ${token}` },

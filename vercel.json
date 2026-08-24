@@ -1,4 +1,4 @@
-{
+﻿{
   "rewrites": [
     {
       "source": "/api/(.*)",
@@ -38,8 +38,119 @@
       "destination": "/api/preview?type=blog&slug=:slug"
     },
     {
+      "source": "/",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*([Gg]ooglebot|[Bb]ingbot|[Tt]witterbot|[Ff]acebookexternalhit|[Ll]inkedin[Bb]ot|[Ss]lackbot|[Dd]iscord[Bb]ot|[Tt]elegram[Bb]ot|[Ww]hatsapp|[Pp]interest|[Rr]edditbot|[Aa]pplebot|[Cc]lwdBot|[Oo]penGraph|[Ss]lightly[Dd]ifferent|Tavily|[Cc]url|[Ww]get|[Pp]ython-requests|[Ff]etch).*"
+        }
+      ],
+      "destination": "/api/home-preview?page=home"
+    },
+    {
+      "source": "/agents",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*([Gg]ooglebot|[Bb]ingbot|[Tt]witterbot|[Ff]acebookexternalhit|[Ll]inkedin[Bb]ot|[Ss]lackbot|[Dd]iscord[Bb]ot|[Tt]elegram[Bb]ot|[Ww]hatsapp|[Pp]interest|[Rr]edditbot|[Aa]pplebot).*"
+        }
+      ],
+      "destination": "/api/home-preview?page=agents"
+    },
+    {
+      "source": "/subscriptions",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*([Gg]ooglebot|[Bb]ingbot|[Tt]witterbot|[Ff]acebookexternalhit|[Ll]inkedin[Bb]ot|[Ss]lackbot|[Dd]iscord[Bb]ot|[Tt]elegram[Bb]ot|[Ww]hatsapp|[Pp]interest|[Rr]edditbot|[Aa]pplebot).*"
+        }
+      ],
+      "destination": "/api/home-preview?page=subscriptions"
+    },
+    {
+      "source": "/help",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*([Gg]ooglebot|[Bb]ingbot|[Tt]witterbot|[Ff]acebookexternalhit|[Ll]inkedin[Bb]ot|[Ss]lackbot|[Dd]iscord[Bb]ot|[Tt]elegram[Bb]ot|[Ww]hatsapp|[Pp]interest|[Rr]edditbot|[Aa]pplebot).*"
+        }
+      ],
+      "destination": "/api/home-preview?page=help"
+    },
+    {
+      "source": "/news",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*([Gg]ooglebot|[Bb]ingbot|[Tt]witterbot|[Ff]acebookexternalhit|[Ll]inkedin[Bb]ot|[Ss]lackbot|[Dd]iscord[Bb]ot|[Tt]elegram[Bb]ot|[Ww]hatsapp|[Pp]interest|[Rr]edditbot|[Aa]pplebot).*"
+        }
+      ],
+      "destination": "/api/home-preview?page=news"
+    },
+    {
+      "source": "/blog",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*([Gg]ooglebot|[Bb]ingbot|[Tt]witterbot|[Ff]acebookexternalhit|[Ll]inkedin[Bb]ot|[Ss]lackbot|[Dd]iscord[Bb]ot|[Tt]elegram[Bb]ot|[Ww]hatsapp|[Pp]interest|[Rr]edditbot|[Aa]pplebot).*"
+        }
+      ],
+      "destination": "/api/home-preview?page=blog"
+    },
+    {
+      "source": "/playground",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*([Gg]ooglebot|[Bb]ingbot|[Tt]witterbot|[Ff]acebookexternalhit|[Ll]inkedin[Bb]ot|[Ss]lackbot|[Dd]iscord[Bb]ot|[Tt]elegram[Bb]ot|[Ww]hatsapp|[Pp]interest|[Rr]edditbot|[Aa]pplebot).*"
+        }
+      ],
+      "destination": "/api/home-preview?page=playground"
+    },
+    {
+      "source": "/voice",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*([Gg]ooglebot|[Bb]ingbot|[Tt]witterbot|[Ff]acebookexternalhit|[Ll]inkedin[Bb]ot|[Ss]lackbot|[Dd]iscord[Bb]ot|[Tt]elegram[Bb]ot|[Ww]hatsapp|[Pp]interest|[Rr]edditbot|[Aa]pplebot).*"
+        }
+      ],
+      "destination": "/api/home-preview?page=voice"
+    },
+    {
+      "source": "/pdf",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*([Gg]ooglebot|[Bb]ingbot|[Tt]witterbot|[Ff]acebookexternalhit|[Ll]inkedin[Bb]ot|[Ss]lackbot|[Dd]iscord[Bb]ot|[Tt]elegram[Bb]ot|[Ww]hatsapp|[Pp]interest|[Rr]edditbot|[Aa]pplebot).*"
+        }
+      ],
+      "destination": "/api/home-preview?page=pdf"
+    },
+    {
+      "source": "/imageGen",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*([Gg]ooglebot|[Bb]ingbot|[Tt]witterbot|[Ff]acebookexternalhit|[Ll]inkedin[Bb]ot|[Ss]lackbot|[Dd]iscord[Bb]ot|[Tt]elegram[Bb]ot|[Ww]hatsapp|[Pp]interest|[Rr]edditbot|[Aa]pplebot).*"
+        }
+      ],
+      "destination": "/api/home-preview?page=imageGen"
+    },
+    {
       "source": "/((?!api|src|@vite|@react-refresh|@fs|@id|node_modules|system-check\\.js|robots\\.txt|sitemap\\.xml|.+\\.[a-zA-Z0-9]+$).*)",
       "destination": "/index.html"
     }
   ]
 }
+
