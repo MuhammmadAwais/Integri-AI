@@ -10,7 +10,7 @@ import {
 
 // ── Paginated news list ─────────────────────────────────────────────
 
-export function useNewsList(pageSize = 12) {
+export function useNewsList(pageSize = 12, country?: string | null) {
     const [articles, setArticles] = useState<NewsArticle[]>([]);
     const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
@@ -23,7 +23,7 @@ export function useNewsList(pageSize = 12) {
     useEffect(() => {
         let cancelled = false;
         setLoading(true);
-        fetchNews(pageSize)
+        fetchNews(pageSize, null, country)
             .then((result) => {
                 if (!cancelled) {
                     setArticles(result.articles);
@@ -42,14 +42,14 @@ export function useNewsList(pageSize = 12) {
         return () => {
             cancelled = true;
         };
-    }, [pageSize]);
+    }, [pageSize, country]);
 
     // Load more
     const loadMore = useCallback(async () => {
         if (!hasMore || loadingMore || !initialLoadDone.current) return;
         setLoadingMore(true);
         try {
-            const result = await fetchNews(pageSize, lastDocRef.current);
+            const result = await fetchNews(pageSize, lastDocRef.current, country);
             setArticles((prev) => [...prev, ...result.articles]);
             lastDocRef.current = result.lastDoc;
             setHasMore(result.hasMore);
@@ -59,7 +59,7 @@ export function useNewsList(pageSize = 12) {
         } finally {
             setLoadingMore(false);
         }
-    }, [hasMore, loadingMore, pageSize]);
+    }, [hasMore, loadingMore, pageSize, country]);
 
     return { articles, loading, loadingMore, error, hasMore, loadMore };
 }
@@ -99,7 +99,7 @@ export function useNewsArticle(id: string | undefined) {
 
 // ── Paginated articles list ─────────────────────────────────────────
 
-export function useArticlesList(pageSize = 12) {
+export function useArticlesList(pageSize = 12, country?: string | null) {
     const [articles, setArticles] = useState<NewsArticle[]>([]);
     const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
@@ -111,7 +111,7 @@ export function useArticlesList(pageSize = 12) {
     useEffect(() => {
         let cancelled = false;
         setLoading(true);
-        fetchArticles(pageSize)
+        fetchArticles(pageSize, null, country)
             .then((result) => {
                 if (!cancelled) {
                     setArticles(result.articles);
@@ -130,13 +130,13 @@ export function useArticlesList(pageSize = 12) {
         return () => {
             cancelled = true;
         };
-    }, [pageSize]);
+    }, [pageSize, country]);
 
     const loadMore = useCallback(async () => {
         if (!hasMore || loadingMore || !initialLoadDone.current) return;
         setLoadingMore(true);
         try {
-            const result = await fetchArticles(pageSize, lastDocRef.current);
+            const result = await fetchArticles(pageSize, lastDocRef.current, country);
             setArticles((prev) => [...prev, ...result.articles]);
             lastDocRef.current = result.lastDoc;
             setHasMore(result.hasMore);
@@ -146,7 +146,7 @@ export function useArticlesList(pageSize = 12) {
         } finally {
             setLoadingMore(false);
         }
-    }, [hasMore, loadingMore, pageSize]);
+    }, [hasMore, loadingMore, pageSize, country]);
 
     return { articles, loading, loadingMore, error, hasMore, loadMore };
 }

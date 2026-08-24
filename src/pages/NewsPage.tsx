@@ -9,6 +9,8 @@ import {
     Newspaper,
     BookOpen,
     TrendingUp,
+    Lock,
+    LogIn,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAppSelector } from "../hooks/useRedux";
@@ -388,6 +390,7 @@ const LoadMoreButton: React.FC<{
 
 const NewsPage: React.FC = () => {
     const isDark = useAppSelector((state: any) => state.theme.isDark);
+    const user = useAppSelector((state: any) => state.auth.user);
     const { i18n } = useTranslation();
     const lang = i18n.language;
 
@@ -401,7 +404,7 @@ const NewsPage: React.FC = () => {
         error: newsError,
         hasMore: newsHasMore,
         loadMore: loadMoreNews,
-    } = useNewsList(12);
+    } = useNewsList(12, user?.country);
 
     // Articles data
     const {
@@ -411,7 +414,7 @@ const NewsPage: React.FC = () => {
         error: articlesError,
         hasMore: articlesHasMore,
         loadMore: loadMoreArticles,
-    } = useArticlesList(12);
+    } = useArticlesList(12, user?.country);
 
     // Pick the active data set
     const articles = activeTab === "news" ? newsArticles : articlesData;
@@ -429,6 +432,47 @@ const NewsPage: React.FC = () => {
     const crossLabel = activeTab === "news" ? "Latest Articles" : "Latest News";
     const crossType: TabType = activeTab === "news" ? "articles" : "news";
     const crossLoading = activeTab === "news" ? articlesLoading : newsLoading;
+
+    if (!user) {
+        return (
+            <div
+                className={cn(
+                    "h-full w-full flex flex-col items-center justify-center p-6 text-center",
+                    isDark ? "bg-[#000]" : "bg-gray-50",
+                )}
+            >
+                <div className={cn(
+                    "max-w-md w-full p-8 rounded-2xl flex flex-col items-center gap-6",
+                    isDark ? "bg-[#0a0a0a] border border-white/10 shadow-2xl" : "bg-white shadow-xl border border-gray-100"
+                )}>
+                    <div className={cn(
+                        "w-16 h-16 rounded-full flex items-center justify-center",
+                        isDark ? "bg-white/5 text-gray-400" : "bg-gray-50 text-gray-400"
+                    )}>
+                        <Lock size={32} />
+                    </div>
+                    <div className="space-y-2">
+                        <h2 className={cn("text-2xl font-bold", isDark ? "text-white" : "text-gray-900")}>
+                            Personalized News
+                        </h2>
+                        <p className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-500")}>
+                            Sign in to read the latest global news and updates tailored to your country and language preferences.
+                        </p>
+                    </div>
+                    <Link
+                        to="/login"
+                        className={cn(
+                            "w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold transition-all",
+                            isDark ? "bg-white text-black hover:bg-gray-200" : "bg-black text-white hover:bg-gray-800"
+                        )}
+                    >
+                        <LogIn size={18} />
+                        Sign In Now
+                    </Link>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div

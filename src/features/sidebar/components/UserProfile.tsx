@@ -8,6 +8,7 @@ import {
   User as UserIcon,
   Mail,
   Info,
+  Brain,
 } from "lucide-react";
 import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux";
 import { logoutUser } from "../../auth/thunks/authThunk";
@@ -382,19 +383,19 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                     {t("userProfile.contactUs")}
                   </button>
                 </Link>
-                <a
-                  href="https://enterprise.integri.app/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={cn(
-                    "w-full text-left px-4 py-2 text-sm flex items-center gap-2 cursor-pointer transition-colors",
-                    isDark
-                      ? "hover:bg-white/5 text-white"
-                      : "hover:bg-gray-200 text-black",
-                  )}
-                >
-                  About Us
-                </a>
+
+                <Link to="/settings/personalization">
+                  <button
+                    className={cn(
+                      "w-full text-left px-4 py-2 text-sm flex items-center gap-2 cursor-pointer transition-colors",
+                      isDark
+                        ? "hover:bg-white/5 text-white"
+                        : "hover:bg-gray-200 text-black",
+                    )}
+                  >
+                    <Brain size={16} /> Memory
+                  </button>
+                </Link>
 
                 <Link to="/subscriptions">
                   <button

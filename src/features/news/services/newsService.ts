@@ -113,6 +113,7 @@ async function fetchPaginated(
     collectionName: string,
     pageSize: number,
     afterDoc?: QueryDocumentSnapshot | null,
+    country?: string | null, // Kept in signature so hooks don't break, but unused to prevent empty screens
 ): Promise<PaginatedResult> {
     const constraints: any[] = [
         orderBy("date", "desc"),
@@ -143,8 +144,9 @@ async function fetchPaginated(
 export async function fetchNews(
     pageSize = 12,
     afterDoc?: QueryDocumentSnapshot | null,
+    country?: string | null,
 ): Promise<PaginatedResult> {
-    return fetchPaginated(NEWS_COLLECTION, pageSize, afterDoc);
+    return fetchPaginated(NEWS_COLLECTION, pageSize, afterDoc, country);
 }
 
 /** Fetch a single news article by document ID. */
@@ -163,8 +165,9 @@ export async function fetchNewsById(
 export async function fetchArticles(
     pageSize = 12,
     afterDoc?: QueryDocumentSnapshot | null,
+    country?: string | null,
 ): Promise<PaginatedResult> {
-    return fetchPaginated(ARTICLES_COLLECTION, pageSize, afterDoc);
+    return fetchPaginated(ARTICLES_COLLECTION, pageSize, afterDoc, country);
 }
 
 /** Fetch a single article by document ID. */
