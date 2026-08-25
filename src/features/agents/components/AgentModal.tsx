@@ -7,6 +7,7 @@ import { useSubscription } from "../../subscriptions/hooks/useSubscription";
 import { useLimits } from "../../limits/hooks/useLimits";
 import { showLimitReachedToast } from "../../limits/components/LimitToast";
 import { ModelSelector } from "./ModelSelector"; // Check this path
+import SubscribeModal from "../../subscriptions/components/SubscribeModal";
 
 interface AgentModalProps {
   isOpen: boolean;
@@ -27,6 +28,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showSubscribeModal, setShowSubscribeModal] = useState(false);
   const { availableModels } = useSubscription();
   const { canCreateAgent, limits } = useLimits();
 
@@ -220,6 +222,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
                 setFormData({ ...formData, model: newModelId })
               }
               disabled={isSubmitting}
+              onLockedSelect={() => setShowSubscribeModal(true)}
             />
           </div>
 
@@ -336,6 +339,12 @@ const AgentModal: React.FC<AgentModalProps> = ({
           </div>
         </form>
       </div>
+
+      <SubscribeModal
+        isOpen={showSubscribeModal}
+        onClose={() => setShowSubscribeModal(false)}
+        featureName="Models"
+      />
     </>
   );
 };

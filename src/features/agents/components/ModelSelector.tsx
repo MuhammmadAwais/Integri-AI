@@ -21,6 +21,7 @@ interface ModelSelectorProps {
   selectedModelId: string;
   onChange: (modelId: string) => void;
   disabled?: boolean;
+  onLockedSelect?: () => void;
 }
 
 export const ModelSelector: React.FC<ModelSelectorProps> = ({
@@ -28,6 +29,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
   selectedModelId,
   onChange,
   disabled = false,
+  onLockedSelect,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -57,7 +59,10 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
     // Logic: Check if the model is in the user's available models list
     const isLocked = !availableModels.some((am) => am.id === model.id);
 
-    if (isLocked) return;
+    if (isLocked) {
+      if (onLockedSelect) onLockedSelect();
+      return;
+    }
 
     onChange(model.id);
     setIsOpen(false);
@@ -187,13 +192,8 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                     >
                       {model.name}
                     </span>
-                    {model.isPremium && isLocked && (
-                      <Lock
-                        size={12}
-                        className={
-                          isDark ? "text-zinc-500" : "text-zinc-400"
-                        }
-                      />
+                    {isLocked && (
+                      <img src="/crown_icon.png" alt="Premium" className="w-4 h-4 shrink-0"/>
                     )}
                   </div>
 
