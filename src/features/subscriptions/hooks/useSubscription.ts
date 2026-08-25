@@ -6,6 +6,7 @@ import AVAILABLE_MODELS, {
   type SubscriptionTier,
 } from "../../../../Constants";
 import { fetchLimits } from "../../limits/slices/limitsSlice";
+import { fetchUserPreferences } from "../../news/slices/userPreferencesSlice";
 
 const TIER_LEVELS: Record<SubscriptionTier, number> = {
   free: 0,
@@ -20,12 +21,14 @@ export const useSubscription = () => {
   const limits = useAppSelector((state: any) => state.limits.limits);
   const dispatch = useAppDispatch();
 
-  // Fetch limits whenever the token becomes available or changes
+  // Fetch limits and user preferences whenever the token becomes available or changes
   useEffect(() => {
     if (token) {
       dispatch(fetchLimits(token));
+      dispatch(fetchUserPreferences(token));
     }
   }, [token, dispatch]);
+
 
   return useMemo(() => {
     const currentLevel = TIER_LEVELS[tier] ?? 0;

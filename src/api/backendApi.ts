@@ -812,5 +812,153 @@ export const SystemToolsService = {
 
 export default backendApi;
 
+// ─── News API models ───────────────────────────────────────────────────────────
+export interface PublicNewsArticle {
+  id: string;
+  country: string;
+  topic: string;
+  collection: string;
+  headline: Record<string, string>;
+  headline_en?: string;
+  coverImage: string;
+  isAiCompiled: boolean;
+  views: number;
+  markAsTrending: boolean;
+  date: string;
+  sources_count: number;
+}
 
-//  
+export interface PublicNewsResponse {
+  total: number;
+  days_back: number;
+  country: string;
+  collection: string;
+  articles: PublicNewsArticle[];
+}
+
+export interface DailySummaryResponse {
+  summary: string;
+  date: string;
+  country: string;
+  articles_count: number;
+}
+
+export interface NewsArticleDetail {
+  id: string;
+  country: string;
+  topic: string;
+  collection: string;
+  headline: Record<string, string>;
+  coverImage: string;
+  video?: string;
+  thumbnailOfVideo?: string;
+  date: string;
+  tags: string[];
+  content: Array<{
+    type: "description" | "image" | "video";
+    value: Record<string, string>;
+    videoThumbnail?: string;
+    caption?: Record<string, string>;
+  }>;
+  markAsTrending: boolean;
+  sources?: Array<{ title: string; image: string; source: string; url: string }>;
+  newsSource?: { url: string; companyName: string; company: Record<string, string>; image: string };
+  grammar?: Array<{ title: Record<string, string>; description: Record<string, string>; example: Record<string, string>; rules: Record<string, string[]> }>;
+  keywords?: Array<{ title: Record<string, string>; nouns: Record<string, string>; description: Record<string, string> }>;
+}
+
+export interface NewsParams {
+  country?: string;
+  days?: number;
+  limit?: number;
+  sort?: string;
+}
+
+// ─── User Preferences model ────────────────────────────────────────────────────
+export interface UserPreferences {
+  country?: string;
+  language?: string;
+  interests?: string[];
+  [key: string]: any;
+}
+
+// ─── NewsService ───────────────────────────────────────────────────────────────
+export const NewsService = {
+  /** GET /api/v1/news/articles — public, no auth required */
+  getPublicFeed: async (params: NewsParams = {}, token?: string): Promise<PublicNewsResponse> => {
+    const query = new URLSearchParams();
+    if (params.country) query.set("country", params.country);
+    if (params.days) query.set("days", String(params.days));
+    if (params.limit) query.set("limit", String(params.limit));
+    if (params.sort) query.set("sort", params.sort);
+    const url = `/api/v1/news/articles${query.toString() ? `?${query}` : ""}`;
+    const headers: Record<string, string> = {};
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+    const response = await backendApi.get<PublicNewsResponse>(url, { headers });
+    return response.data;
+  },
+
+  /** GET /api/v1/news/articles/daily-summary */
+  getDailySummary: async (params: NewsParams = {}, token?: string): Promise<DailySummaryResponse> => {
+    const query = new URLSearchParams();
+    if (params.country) query.set("country", params.country);
+    if (params.days) query.set("days", String(params.days));
+    if (params.limit) query.set("limit", String(params.limit));
+    const url = `/api/v1/news/articles/daily-summary${query.toString() ? `?${query}` : ""}`;
+    const headers: Record<string, string> = {};
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+    const response = await backendApi.get<DailySummaryResponse>(url, { headers });
+    return response.data;
+  },
+
+  /** GET /api/v1/news/admin/articles/{id}?collection={collection} */
+  getArticleDetail: async (articleId: string, collection: string, token?: string): Promise<NewsArticleDetail> => {
+    const headers: Record<string, string> = {};
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+    const response = await backendApi.get<any>(
+      `/api/v1/news/admin/articles/${articleId}?collection=${encodeURIComponent(collection)}`,
+      { headers }
+    );
+    const data = response.data;
+    return (data && data.article) ? data.article : data;
+  },
+
+  /** GET /api/v1/news/countries */
+  getCountries: async (): Promise<string[]> => {
+    const response = await backendApi.get<string[]>("/api/v1/news/countries");
+    return response.data;
+  },
+
+  /** POST /api/v1/news/chat/session — start a chat with a news article */
+  createNewsChatSession: async (
+    token: string,
+    body: { news_id: string; country: string; user_language: string; user_id: string }
+  ): Promise<{ session_id: string }> => {
+    const response = await backendApi.post<{ session_id: string }>(
+      "/api/v1/news/chat/session",
+      body,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data;
+  },
+};
+
+// ─── UserPreferencesService ────────────────────────────────────────────────────
+export const UserPreferencesService = {
+  /** GET /api/v1/users/me/preferences */
+  getPreferences: async (token: string): Promise<UserPreferences> => {
+    const response = await backendApi.get<UserPreferences>("/api/v1/users/me/preferences", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
+
+  /** PUT /api/v1/users/me/preferences */
+  updatePreferences: async (token: string, prefs: Partial<UserPreferences>): Promise<UserPreferences> => {
+    const response = await backendApi.put<UserPreferences>("/api/v1/users/me/preferences", prefs, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
+};
+ 

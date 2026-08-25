@@ -3,7 +3,6 @@ import { X, Loader2, Bot, Plus, AlertTriangle } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { AgentService } from "../../../api/backendApi";
 import AVAILABLE_MODELS from "../../../../Constants";
-import { useSubscription } from "../../subscriptions/hooks/useSubscription";
 import { useLimits } from "../../limits/hooks/useLimits";
 import { showLimitReachedToast } from "../../limits/components/LimitToast";
 import { ModelSelector } from "./ModelSelector"; // Check this path
@@ -29,7 +28,6 @@ const AgentModal: React.FC<AgentModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showSubscribeModal, setShowSubscribeModal] = useState(false);
-  const { availableModels } = useSubscription();
   const { canCreateAgent, limits } = useLimits();
 
   // Block new agent creation (edit is always allowed)

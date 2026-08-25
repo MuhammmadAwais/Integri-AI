@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     ArrowRight,
-    Clock,
     Loader2,
     ChevronDown,
     Newspaper,
@@ -16,8 +15,7 @@ import { useTranslation } from "react-i18next";
 import { useAppSelector } from "../hooks/useRedux";
 import { cn } from "../lib/utils";
 import { useNewsList, useArticlesList } from "../features/news/hooks/useNews";
-import { localised } from "../features/news/models/newsArticle";
-import type { NewsArticle } from "../features/news/models/newsArticle";
+import { resolveHeadline, type PublicNewsArticle } from "../features/news/models/publicNewsArticle";
 import AdUnit from "../Components/ads/AdUnit";
 import { AD_SLOTS, IN_FEED_AD_INTERVAL } from "../config/ads";
 
@@ -25,16 +23,7 @@ import { AD_SLOTS, IN_FEED_AD_INTERVAL } from "../config/ads";
 
 
 
-/** Estimate read time from description content blocks. */
-function readTime(article: NewsArticle, lang: string): string {
-    const text = article.content
-        .filter((c) => c.type === "description")
-        .map((c) => localised(c.value, lang))
-        .join(" ");
-    const words = text.trim().split(/\s+/).length;
-    const minutes = Math.max(1, Math.round(words / 200));
-    return `${minutes} min read`;
-}
+// ── Helpers ───────────────────────────────────────────────────────────
 
 // ── Tab Types ─────────────────────────────────────────────────────────
 
@@ -43,13 +32,14 @@ type TabType = "news" | "articles";
 // ── Featured Article ──────────────────────────────────────────────────
 
 const FeaturedArticle: React.FC<{
-    article: NewsArticle;
+    article: PublicNewsArticle;
     isDark: boolean;
     lang: string;
     type: TabType;
 }> = ({ article, isDark, lang, type }) => (
     <Link
-        to={type === "news" ? `/news/${article.id}` : `/articles/${article.id}`}
+        to={type === "news" ? `/news/${article.id}?collection=${encodeURIComponent(article.collection || "News")}` : `/articles/${article.id}?collection=${encodeURIComponent(article.collection || "News")}`}
+        state={{ collection: article.collection }}
         className="block group"
         id={`featured-${type}-${article.id}`}
     >
@@ -68,7 +58,7 @@ const FeaturedArticle: React.FC<{
             <div className="md:w-[48%] aspect-[16/10] md:aspect-auto overflow-hidden flex-shrink-0 relative">
                 <img
                     src={article.coverImage}
-                    alt={localised(article.headline, lang)}
+                    alt={resolveHeadline(article.headline, lang)}
                     loading="eager"
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
@@ -83,28 +73,6 @@ const FeaturedArticle: React.FC<{
 
             {/* Content */}
             <div className="flex-1 flex flex-col justify-center py-5 px-5 md:px-6 gap-3">
-                {/* Source + Time */}
-                <div className="flex items-center gap-2 text-xs">
-                    {article.newsSource?.image && (
-                        <img
-                            src={article.newsSource.image}
-                            alt=""
-                            className="w-4 h-4 rounded-full object-cover ring-1 ring-black/10"
-                        />
-                    )}
-                    <span
-                        className={cn(
-                            "font-semibold",
-                            isDark ? "text-gray-300" : "text-gray-700",
-                        )}
-                    >
-                        {article.newsSource
-                            ? localised(article.newsSource.company, lang) ||
-                            article.newsSource.companyName
-                            : article.topic}
-                    </span>
-                </div>
-
                 {/* Title */}
                 <h2
                     className={cn(
@@ -112,23 +80,10 @@ const FeaturedArticle: React.FC<{
                         isDark ? "text-white" : "text-gray-900",
                     )}
                 >
-                    {localised(article.headline, lang)}
+                    {resolveHeadline(article.headline, lang)}
                 </h2>
 
-                {/* Excerpt */}
-                <p
-                    className={cn(
-                        "text-sm leading-relaxed line-clamp-3",
-                        isDark ? "text-gray-400" : "text-gray-600",
-                    )}
-                >
-                    {localised(
-                        article.content.find((c) => c.type === "description")?.value,
-                        lang,
-                    )}
-                </p>
-
-                {/* Category + Read time */}
+                {/* Category */}
                 <div className="flex items-center gap-3 mt-1">
                     <span
                         className={cn(
@@ -137,15 +92,6 @@ const FeaturedArticle: React.FC<{
                         )}
                     >
                         {article.topic}
-                    </span>
-                    <span
-                        className={cn(
-                            "flex items-center gap-1 text-xs",
-                            isDark ? "text-gray-500" : "text-gray-500",
-                        )}
-                    >
-                        <Clock size={12} />
-                        {readTime(article, lang)}
                     </span>
                 </div>
             </div>
@@ -156,14 +102,15 @@ const FeaturedArticle: React.FC<{
 // ── News Card ─────────────────────────────────────────────────────────
 
 const NewsCard: React.FC<{
-    article: NewsArticle;
+    article: PublicNewsArticle;
     isDark: boolean;
     lang: string;
     index: number;
     type: TabType;
 }> = ({ article, isDark, lang, index, type }) => (
     <Link
-        to={type === "news" ? `/news/${article.id}` : `/articles/${article.id}`}
+        to={type === "news" ? `/news/${article.id}?collection=${encodeURIComponent(article.collection || "News")}` : `/articles/${article.id}?collection=${encodeURIComponent(article.collection || "News")}`}
+        state={{ collection: article.collection }}
         className="block group"
         id={`${type}-card-${article.id}`}
     >
@@ -182,7 +129,7 @@ const NewsCard: React.FC<{
             <div className="aspect-[16/10] overflow-hidden relative">
                 <img
                     src={article.coverImage}
-                    alt={localised(article.headline, lang)}
+                    alt={resolveHeadline(article.headline, lang)}
                     loading="lazy"
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
@@ -190,52 +137,17 @@ const NewsCard: React.FC<{
 
             {/* Content */}
             <div className="flex flex-col gap-2 p-4 flex-1">
-                {/* Source + Time */}
-                <div className="flex items-center gap-2 text-[11px]">
-                    {article.newsSource?.image && (
-                        <img
-                            src={article.newsSource.image}
-                            alt=""
-                            className="w-3.5 h-3.5 rounded-full object-cover"
-                        />
-                    )}
-                    <span
-                        className={cn(
-                            "font-semibold",
-                            isDark ? "text-gray-300" : "text-gray-700",
-                        )}
-                    >
-                        {article.newsSource
-                            ? localised(article.newsSource.company, lang) ||
-                            article.newsSource.companyName
-                            : article.topic}
-                    </span>
-                </div>
-
                 {/* Title */}
                 <h3
                     className={cn(
-                        "text-sm font-bold leading-snug line-clamp-2 group-hover:underline decoration-1 underline-offset-2",
+                        "text-sm font-bold leading-snug line-clamp-2 group-hover:underline decoration-1 underline-offset-2 flex-1",
                         isDark ? "text-white" : "text-gray-900",
                     )}
                 >
-                    {localised(article.headline, lang)}
+                    {resolveHeadline(article.headline, lang)}
                 </h3>
 
-                {/* Excerpt */}
-                <p
-                    className={cn(
-                        "text-xs leading-relaxed line-clamp-3 flex-1",
-                        isDark ? "text-gray-400" : "text-gray-600",
-                    )}
-                >
-                    {localised(
-                        article.content.find((c) => c.type === "description")?.value,
-                        lang,
-                    )}
-                </p>
-
-                {/* Category + Read time */}
+                {/* Category */}
                 <div className="flex items-center gap-3 mt-auto pt-2">
                     <span
                         className={cn(
@@ -244,15 +156,6 @@ const NewsCard: React.FC<{
                         )}
                     >
                         {article.topic}
-                    </span>
-                    <span
-                        className={cn(
-                            "flex items-center gap-1 text-[11px]",
-                            isDark ? "text-gray-500" : "text-gray-500",
-                        )}
-                    >
-                        <Clock size={11} />
-                        {readTime(article, lang)}
                     </span>
                 </div>
             </div>
@@ -263,13 +166,14 @@ const NewsCard: React.FC<{
 // ── Compact Side Card (for sidebar lists) ─────────────────────────────
 
 const CompactCard: React.FC<{
-    article: NewsArticle;
+    article: PublicNewsArticle;
     isDark: boolean;
     lang: string;
     type: TabType;
 }> = ({ article, isDark, lang, type }) => (
     <Link
-        to={type === "news" ? `/news/${article.id}` : `/articles/${article.id}`}
+        to={type === "news" ? `/news/${article.id}?collection=${encodeURIComponent(article.collection || "News")}` : `/articles/${article.id}?collection=${encodeURIComponent(article.collection || "News")}`}
+        state={{ collection: article.collection }}
         className="block group"
     >
         <div className={cn(
@@ -278,7 +182,7 @@ const CompactCard: React.FC<{
         )}>
             <img
                 src={article.coverImage}
-                alt={localised(article.headline, lang)}
+                alt={resolveHeadline(article.headline, lang)}
                 loading="lazy"
                 className="w-20 h-14 rounded-lg object-cover flex-shrink-0"
             />
@@ -287,7 +191,7 @@ const CompactCard: React.FC<{
                     "text-xs font-semibold leading-snug line-clamp-2 group-hover:underline",
                     isDark ? "text-gray-200" : "text-gray-900",
                 )}>
-                    {localised(article.headline, lang)}
+                    {resolveHeadline(article.headline, lang)}
                 </h4>
             </div>
         </div>
@@ -753,33 +657,7 @@ const NewsPage: React.FC = () => {
                                         testId="ad-news-sidebar"
                                     />
 
-                                    {/* Quick Topics / Tags */}
-                                    <div className={cn(
-                                        "rounded-2xl p-4 space-y-3",
-                                        isDark ? "bg-[#0a0a0a] border border-white/5" : "bg-white shadow-sm",
-                                    )}>
-                                        <h3 className={cn(
-                                            "text-sm font-bold",
-                                            isDark ? "text-white" : "text-gray-900",
-                                        )}>
-                                            Trending Topics
-                                        </h3>
-                                        <div className="flex flex-wrap gap-2">
-                                            {Array.from(new Set(articles.flatMap(a => a.tags).filter(Boolean))).slice(0, 12).map((tag) => (
-                                                <span
-                                                    key={tag}
-                                                    className={cn(
-                                                        "text-[11px] px-2.5 py-1 rounded-full font-medium transition-colors cursor-default",
-                                                        isDark
-                                                            ? "bg-white/5 text-gray-400 hover:bg-white/10"
-                                                            : "bg-gray-100 text-gray-600 hover:bg-gray-200",
-                                                    )}
-                                                >
-                                                    #{tag}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </div>
+
                                 </aside>
                             </div>
                         )}

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown, Check, Lock } from "lucide-react";
+import { ChevronDown, Check } from "lucide-react";
 import { cn } from "../../../lib/utils"; // Adjust path to your utils
 import { useAppSelector } from "../../../hooks/useRedux";
 import { useSubscription } from "../../subscriptions/hooks/useSubscription";
@@ -36,7 +36,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
 
   // Access global theme state for conditional styling
   const isDark = useAppSelector((state: any) => state.theme.isDark);
-  const { availableModels, isFree } = useSubscription();
+  const { availableModels } = useSubscription();
 
   // Find the currently selected model object for display
   const selectedModel = models.find((m) => m.id === selectedModelId);
@@ -56,8 +56,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
   }, []);
 
   const handleSelect = (model: Model) => {
-    // For agent creation, freemium users can only select "integri"
-    const isLocked = isFree ? model.id !== "integri" : !availableModels.some((am) => am.id === model.id);
+    const isLocked = !availableModels.some((am) => am.id === model.id);
 
     if (isLocked) {
       if (onLockedSelect) onLockedSelect();
@@ -145,7 +144,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
         >
           <ul className="max-h-60 overflow-y-auto py-1 custom-scrollbar">
             {models.map((model) => {
-              const isLocked = isFree ? model.id !== "integri" : !availableModels.some((am) => am.id === model.id);
+              const isLocked = !availableModels.some((am) => am.id === model.id);
               const isSelected = selectedModelId === model.id;
 
               return (

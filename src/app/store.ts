@@ -5,6 +5,7 @@ import authReducer from "../features/auth/slices/authSlice";
 import agentsReducer from "../features/agents/agentsSlice";
 import subscriptionReducer from "../features/subscriptions/slices/subscriptionSlice";
 import limitsReducer from "../features/limits/slices/limitsSlice";
+import userPreferencesReducer from "../features/news/slices/userPreferencesSlice";
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     agents: agentsReducer,
     subscription: subscriptionReducer,
     limits: limitsReducer,
+    userPreferences: userPreferencesReducer,
   },
 });
 

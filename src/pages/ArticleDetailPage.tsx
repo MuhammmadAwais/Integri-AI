@@ -1,13 +1,16 @@
 import React, { useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate, Link, useLocation, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Clock, Share2, Loader2, BookOpen } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAppSelector } from "../hooks/useRedux";
 import { cn } from "../lib/utils";
 import { useArticle, useNewsList } from "../features/news/hooks/useNews";
-import { localised } from "../features/news/models/newsArticle";
-import type { NewContent, NewsArticle } from "../features/news/models/newsArticle";
+import {
+    type NewsArticleDetail,
+    type PublicNewsArticle,
+    localised,
+} from "../features/news/models/publicNewsArticle";
 import AdUnit from "../Components/ads/AdUnit";
 import { AD_SLOTS, IN_ARTICLE_AD_INTERVAL } from "../config/ads";
 import ShareModal from "../Components/ui/ShareModal";
@@ -17,7 +20,7 @@ import ShareModal from "../Components/ui/ShareModal";
 
 
 function readTime(
-    content: NewContent[],
+    content: NewsArticleDetail["content"],
     lang: string,
 ): string {
     const text = content
@@ -32,7 +35,7 @@ function readTime(
 // ── Content Block Renderer ────────────────────────────────────────────
 
 const ContentBlock: React.FC<{
-    block: NewContent;
+    block: NewsArticleDetail["content"][0];
     isDark: boolean;
     lang: string;
 }> = ({ block, isDark, lang }) => {
@@ -93,11 +96,15 @@ const ContentBlock: React.FC<{
 // ── Related Card ──────────────────────────────────────────────────────
 
 const RelatedCard: React.FC<{
-    article: NewsArticle;
+    article: PublicNewsArticle;
     isDark: boolean;
     lang: string;
 }> = ({ article, isDark, lang }) => (
-    <Link to={`/news/${article.id}`} className="block group">
+    <Link
+        to={`/news/${article.id}?collection=${encodeURIComponent(article.collection || "News")}`}
+        state={{ collection: article.collection }}
+        className="block group"
+    >
         <div className={cn(
             "flex gap-3 p-3 rounded-xl transition-all duration-200",
             isDark ? "hover:bg-[#111]" : "hover:bg-gray-50",
@@ -125,10 +132,15 @@ const RelatedCard: React.FC<{
 const ArticleDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const location = useLocation();
+    const [searchParams] = useSearchParams();
     const isDark = useAppSelector((state: any) => state.theme.isDark);
     const { i18n } = useTranslation();
     const lang = i18n.language;
-    const { article, loading, error } = useArticle(id);
+    
+    // Get collection from query params or route state, defaulting to "Articles"
+    const collection = searchParams.get("collection") || location.state?.collection || "Articles";
+    const { article, loading, error } = useArticle(id, collection);
 
     // Fetch related news to show in sidebar
     const { articles: relatedNews, loading: relatedLoading } = useNewsList(6);
@@ -187,11 +199,13 @@ const ArticleDetailPage: React.FC = () => {
 
     const headline = localised(article.headline, lang);
 
+    const content = article.content || [];
     // Separate first description block for the excerpt pull-quote
-    const firstDesc = article.content.find((c) => c.type === "description");
+    const firstDesc = content.find((c) => c.type === "description");
     const restContent = firstDesc
-        ? article.content.filter((c) => c !== firstDesc)
-        : article.content;
+        ? content.filter((c) => c !== firstDesc)
+        : content;
+    const tags = article.tags || [];
 
     return (
         <div
@@ -246,7 +260,7 @@ const ArticleDetailPage: React.FC = () => {
                             >
                                 {article.topic}
                             </span>
-                            {article.tags.map((tag) => (
+                            {tags.map((tag) => (
                                 <span
                                     key={tag}
                                     className={cn(
@@ -306,7 +320,7 @@ const ArticleDetailPage: React.FC = () => {
                                 )}
                             >
                                 <Clock size={13} />
-                                {readTime(article.content, lang)}
+                                {readTime(content, lang)}
                             </span>
                             <button
                                 onClick={() => setIsShareModalOpen(true)}
