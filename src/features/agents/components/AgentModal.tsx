@@ -211,7 +211,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
           {/* --- NEW: Custom Model Selector --- */}
           <div>
             <ModelSelector
-              models={availableModels
+              models={AVAILABLE_MODELS
                 .filter((m) => m.id !== "gpt-4o-mini-search-preview" && m.id !== "gpt-4o-mini-deep-research")
                 .map((m) => ({
                   ...m,

@@ -448,8 +448,11 @@ export const MULTI_CHAT_LIMITS: Record<SubscriptionTier, number> = {
  * Get available models filtered by subscription tier
  */
 export const getAvailableModelsByTier = (tier: SubscriptionTier) => {
-  const allowedIds = getAllowedModelIds(tier);
-  return AVAILABLE_MODELS.filter((model) => allowedIds.includes(model.id));
+  return AVAILABLE_MODELS.filter((model) => {
+    if (tier === "pro") return model.isPro;
+    if (tier === "premium") return model.isPremium;
+    return model.isFree;
+  });
 };
 
 export const SUBSCRIPTION_PLANS = [

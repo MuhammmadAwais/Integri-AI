@@ -61,7 +61,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
   ({ onStartChat, user, isDark, isLoading, fileUploadStage = "idle", isUploading = false }, ref) => {
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
-    const attachedRepo = useAppSelector((state: any) => state.chat.attachedRepo);
+    const { attachedRepo, selectedAgentId } = useAppSelector((state: any) => state.chat);
     const [inputValue, setInputValue] = useState("");
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [showAttachMenu, setShowAttachMenu] = useState(false);
@@ -793,7 +793,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
                 <SearchX size={18} />
               </button>
             </>
-            {inputValue.trim().length > 0 || selectedFiles.length > 0 ? null : (
+            {inputValue.trim().length > 0 || selectedFiles.length > 0 || selectedAgentId ? null : (
               <Link to="/voice">
                 <button
                   title={t("chat.voiceInput")}

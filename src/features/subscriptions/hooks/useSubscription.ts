@@ -1,6 +1,6 @@
 import { useMemo, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux";
-import {
+import AVAILABLE_MODELS, {
   getAvailableModelsByTier,
   MULTI_CHAT_LIMITS,
   type SubscriptionTier,
@@ -17,6 +17,7 @@ export const useSubscription = () => {
   const user  = useAppSelector((state) => state.auth.user);
   const token = useAppSelector((state: any) => state.auth.accessToken);
   const tier: SubscriptionTier = user?.subscriptionTier || "free";
+  const limits = useAppSelector((state: any) => state.limits.limits);
   const dispatch = useAppDispatch();
 
   // Fetch limits whenever the token becomes available or changes
@@ -45,7 +46,10 @@ export const useSubscription = () => {
       betaAccess: currentLevel >= TIER_LEVELS.pro,
     };
 
-    const availableModels = getAvailableModelsByTier(tier);
+    let availableModels = getAvailableModelsByTier(tier);
+    if (limits?.allowed_models && Array.isArray(limits.allowed_models)) {
+      availableModels = AVAILABLE_MODELS.filter((m) => limits.allowed_models.includes(m.id));
+    }
     const multiChatLimit = (tier && MULTI_CHAT_LIMITS[tier]) || MULTI_CHAT_LIMITS.free;
 
     return {
@@ -59,5 +63,5 @@ export const useSubscription = () => {
       availableModels,
       multiChatLimit,
     };
-  }, [tier]);
+  }, [tier, limits]);
 };
