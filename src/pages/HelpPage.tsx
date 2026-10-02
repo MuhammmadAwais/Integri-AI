@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown, Mail, Search, BookOpen } from "lucide-react";
 import { useAppSelector } from "../hooks/useRedux";
 import { cn } from "../lib/utils";
-import ParticleBackground from "../Components/ui/ParticleBackground";
+import AmbientBackground from "../Components/ui/AmbientBackground";
 
 interface FAQItem {
   question: string;
@@ -61,10 +61,10 @@ const HelpPage: React.FC = () => {
     <div
       className={cn(
         "h-full w-full overflow-y-auto custom-scrollbar p-4 md:p-8 lg:p-12",
-        isDark ? "bg-[#09090b] text-white" : "bg-gray-50 text-gray-900"
+        isDark ? "bg-[#07060A] text-white" : "bg-gray-50 text-gray-900"
       )}
     >
-      <ParticleBackground />
+      <AmbientBackground />
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
@@ -73,7 +73,7 @@ const HelpPage: React.FC = () => {
             onClick={() => navigate(-1)}
             className={cn(
               "p-2 rounded-full transition-colors hover:cursor-pointer",
-              isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-200"
+              isDark ? "hover:bg-[#18161C]" : "hover:bg-gray-200"
             )}
           >
             <ChevronLeft size={24} />
@@ -98,7 +98,7 @@ const HelpPage: React.FC = () => {
             className={cn(
               "w-full pl-12 pr-4 py-4 rounded-2xl outline-none border transition-all text-lg",
               isDark
-                ? "bg-[#18181b] border-[#27272a] focus:border-blue-500 placeholder:text-gray-600"
+                ? "bg-[#18161C] border-[#2A2830] focus:border-blue-500 placeholder:text-gray-600"
                 : "bg-white border-gray-200 focus:border-blue-500 shadow-sm"
             )}
           />
@@ -161,7 +161,7 @@ const HelpPage: React.FC = () => {
                   className={cn(
                     "rounded-xl border overflow-hidden transition-all",
                     isDark
-                      ? "bg-[#18181b] border-[#27272a]"
+                      ? "bg-[#18161C] border-[#2A2830]"
                       : "bg-white border-gray-200"
                   )}
                 >
@@ -194,7 +194,7 @@ const HelpPage: React.FC = () => {
                           className={cn(
                             "px-5 pb-5 pt-0 text-sm leading-relaxed border-t",
                             isDark
-                              ? "text-gray-400 border-[#27272a]"
+                              ? "text-gray-400 border-[#2A2830]"
                               : "text-gray-600 border-gray-100"
                           )}
                         >

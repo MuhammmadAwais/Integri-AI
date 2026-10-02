@@ -506,10 +506,10 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
       icon: Chrome,
       instruction: t("adBlockGuard.browsers.chromeEdge.instruction", "Click the Puzzle/Shield icon in your toolbar → find your AdBlocker → Toggle 'OFF' for this site."),
       detailedSteps: [
-        { icon: ShieldIcon, text: t("adBlockGuard.browsers.chromeEdge.step1", "Look for the Puzzle piece icon or Shield icon in your browser toolbar"), action: "click", color: "#3b82f6" },
-        { icon: Settings, text: t("adBlockGuard.browsers.chromeEdge.step2", "Find your AdBlocker extension in the dropdown menu"), action: "click", color: "#3b82f6" },
+        { icon: ShieldIcon, text: t("adBlockGuard.browsers.chromeEdge.step1", "Look for the Puzzle piece icon or Shield icon in your browser toolbar"), action: "click", color: "var(--integri-accent-500)" },
+        { icon: Settings, text: t("adBlockGuard.browsers.chromeEdge.step2", "Find your AdBlocker extension in the dropdown menu"), action: "click", color: "var(--integri-accent-500)" },
         { icon: Power, text: t("adBlockGuard.browsers.chromeEdge.step3", "Toggle the switch to 'OFF' for this site"), action: "disable", color: "#ef4444" },
-        { icon: RefreshCw, text: t("adBlockGuard.browsers.chromeEdge.step4", "Refresh the page to continue"), action: "click", color: "#3b82f6" },
+        { icon: RefreshCw, text: t("adBlockGuard.browsers.chromeEdge.step4", "Refresh the page to continue"), action: "click", color: "var(--integri-accent-500)" },
       ],
     },
     {
@@ -518,9 +518,9 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
       icon: ShieldIcon,
       instruction: t("adBlockGuard.browsers.brave.instruction", "Click the Lion icon next to the URL bar → Toggle Shields to 'Down'."),
       detailedSteps: [
-        { icon: ShieldIcon, text: t("adBlockGuard.browsers.brave.step1", "Locate the Brave Lion icon next to the address bar"), action: "click", color: "#3b82f6" },
+        { icon: ShieldIcon, text: t("adBlockGuard.browsers.brave.step1", "Locate the Brave Lion icon next to the address bar"), action: "click", color: "var(--integri-accent-500)" },
         { icon: Power, text: t("adBlockGuard.browsers.brave.step2", "Click 'Shields' and toggle it to 'Down' for this site"), action: "disable", color: "#ef4444" },
-        { icon: RefreshCw, text: t("adBlockGuard.browsers.brave.step3", "Refresh the page to continue"), action: "click", color: "#3b82f6" },
+        { icon: RefreshCw, text: t("adBlockGuard.browsers.brave.step3", "Refresh the page to continue"), action: "click", color: "var(--integri-accent-500)" },
       ],
     },
     {
@@ -529,10 +529,10 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
       icon: Globe,
       instruction: t("adBlockGuard.browsers.safari.instruction", "Go to Settings → Safari → Content Blockers → Disable for Integri AI."),
       detailedSteps: [
-        { icon: Settings, text: t("adBlockGuard.browsers.safari.step1", "Open Safari Settings (Safari menu → Preferences)"), action: "click", color: "#3b82f6" },
-        { icon: ShieldIcon, text: t("adBlockGuard.browsers.safari.step2", "Navigate to the 'Websites' tab → 'Content Blockers'"), action: "click", color: "#3b82f6" },
+        { icon: Settings, text: t("adBlockGuard.browsers.safari.step1", "Open Safari Settings (Safari menu → Preferences)"), action: "click", color: "var(--integri-accent-500)" },
+        { icon: ShieldIcon, text: t("adBlockGuard.browsers.safari.step2", "Navigate to the 'Websites' tab → 'Content Blockers'"), action: "click", color: "var(--integri-accent-500)" },
         { icon: Power, text: t("adBlockGuard.browsers.safari.step3", "Find 'Integri AI' and disable content blocking"), action: "disable", color: "#ef4444" },
-        { icon: RefreshCw, text: t("adBlockGuard.browsers.safari.step4", "Refresh the page to continue"), action: "click", color: "#3b82f6" },
+        { icon: RefreshCw, text: t("adBlockGuard.browsers.safari.step4", "Refresh the page to continue"), action: "click", color: "var(--integri-accent-500)" },
       ],
     },
     {
@@ -541,9 +541,9 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
       icon: ShieldIcon,
       instruction: t("adBlockGuard.browsers.ublock.instruction", "Click the uBlock icon → Click the large Power Button → Refresh."),
       detailedSteps: [
-        { icon: ShieldIcon, text: t("adBlockGuard.browsers.ublock.step1", "Click the uBlock Origin icon in your toolbar"), action: "click", color: "#3b82f6" },
+        { icon: ShieldIcon, text: t("adBlockGuard.browsers.ublock.step1", "Click the uBlock Origin icon in your toolbar"), action: "click", color: "var(--integri-accent-500)" },
         { icon: Power, text: t("adBlockGuard.browsers.ublock.step2", "Click the large Power Button to disable uBlock for this site"), action: "disable", color: "#ef4444" },
-        { icon: RefreshCw, text: t("adBlockGuard.browsers.ublock.step3", "Refresh the page to continue"), action: "click", color: "#3b82f6" },
+        { icon: RefreshCw, text: t("adBlockGuard.browsers.ublock.step3", "Refresh the page to continue"), action: "click", color: "var(--integri-accent-500)" },
       ],
     },
   ];
@@ -692,7 +692,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
                 <div
                   ref={shieldGlowRef}
                   className="absolute rounded-full blur-3xl w-32 h-32"
-                  style={{ backgroundColor: "rgba(59, 130, 246, 0.4)" }}
+                  style={{ backgroundColor: "rgba(94, 234, 212, 0.4)" }}
                 />
 
                 {/* Shield SVG */}
@@ -756,9 +756,9 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
                 onClick={handleRefresh}
                 className="relative overflow-hidden border-2 rounded-2xl py-4 px-6 font-medium hover:cursor-pointer transition-all flex items-center justify-center gap-2"
                 style={{
-                  borderColor: "#3b82f6",
-                  color: "#3b82f6",
-                  boxShadow: "0 0 15px rgba(59, 130, 246, 0.3), 0 0 15px rgba(239, 68, 68, 0.2)",
+                  borderColor: "var(--integri-accent-500)",
+                  color: "var(--integri-accent-500)",
+                  boxShadow: "0 0 15px rgba(94, 234, 212, 0.3), 0 0 15px rgba(239, 68, 68, 0.2)",
                 }}
               >
                 <RefreshCw size={18} className="relative z-10" />
@@ -822,7 +822,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
                       <div
                         ref={shieldGlowRef}
                         className="absolute rounded-full blur-3xl w-48 h-48"
-                        style={{ backgroundColor: "rgba(59, 130, 246, 0.4)" }}
+                        style={{ backgroundColor: "rgba(94, 234, 212, 0.4)" }}
                       />
 
                       {/* Shield SVG */}
@@ -888,9 +888,9 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
                         onClick={handleRefresh}
                         className="relative overflow-hidden border-2 rounded-2xl py-4 px-8 font-medium hover:cursor-pointer transition-all flex items-center justify-center gap-2"
                         style={{
-                          borderColor: "#3b82f6",
-                          color: "#3b82f6",
-                          boxShadow: "0 0 15px rgba(59, 130, 246, 0.3), 0 0 15px rgba(239, 68, 68, 0.2)",
+                          borderColor: "var(--integri-accent-500)",
+                          color: "var(--integri-accent-500)",
+                          boxShadow: "0 0 15px rgba(94, 234, 212, 0.3), 0 0 15px rgba(239, 68, 68, 0.2)",
                         }}
                       >
                         <RefreshCw size={18} className="relative z-10" />
@@ -930,12 +930,12 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
                             <div className="relative">
                               <div
                                 className="absolute rounded-full blur-2xl w-20 h-20"
-                                style={{ backgroundColor: "rgba(59, 130, 246, 0.3)" }}
+                                style={{ backgroundColor: "rgba(94, 234, 212, 0.3)" }}
                               />
                               <GuideIcon
                                 className="relative z-10"
                                 size={50}
-                                style={{ color: "#3b82f6" }}
+                                style={{ color: "var(--integri-accent-500)" }}
                               />
                             </div>
                           </div>
@@ -980,7 +980,7 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
                                       <span
                                         className="text-zinc-100 text-xs font-medium leading-relaxed"
                                         style={{
-                                          color: isClickAction ? "#3b82f6" : isDisableAction ? "#ef4444" : "#e4e4e7",
+                                          color: isClickAction ? "var(--integri-accent-500)" : isDisableAction ? "#ef4444" : "#e4e4e7",
                                         }}
                                       >
                                         {step.text}
@@ -999,9 +999,9 @@ const AdBlockGuard: React.FC<AdBlockGuardProps> = ({ children }) => {
                               onClick={handleRefresh}
                               className="w-full relative overflow-hidden border-2 rounded-2xl py-4 px-8 font-medium hover:cursor-pointer transition-all flex items-center justify-center gap-2"
                               style={{
-                                borderColor: "#3b82f6",
-                                color: "#3b82f6",
-                                boxShadow: "0 0 15px rgba(59, 130, 246, 0.3), 0 0 15px rgba(239, 68, 68, 0.2)",
+                                borderColor: "var(--integri-accent-500)",
+                                color: "var(--integri-accent-500)",
+                                boxShadow: "0 0 15px rgba(94, 234, 212, 0.3), 0 0 15px rgba(239, 68, 68, 0.2)",
                               }}
                             >
                               <RefreshCw size={18} className="relative z-10" />

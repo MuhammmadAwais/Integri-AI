@@ -3,16 +3,26 @@ import Sidebar from "../../features/sidebar/components/Sidebar";
 import NavButton from "../ui/NavButton";
 import { useAppSelector } from "../../hooks/useRedux";
 import { cn } from "../../lib/utils";
+import { useLocation } from "react-router-dom";
+
+// News is public: guests get a full-width reader without the app sidebar.
+const GUEST_FULL_WIDTH = /^\/(news|articles)(\/|$)/;
+
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const isDark = useAppSelector((state:any) => state.theme.isDark);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const user = useAppSelector((state: any) => state.auth.user);
+  const { pathname } = useLocation();
+  const showSidebar = !!user || !GUEST_FULL_WIDTH.test(pathname);
   return (
     <div
       className={cn(
         "flex h-screen w-full overflow-hidden font-sans",
-        isDark ? "bg-[#000000] text-gray-100" : "bg-white text-gray-900"
+        isDark ? "bg-[#07060A] text-gray-100" : "bg-white text-gray-900"
       )}
     >
+      {showSidebar && (
+      <>
       {/* =================================================================
           MOBILE SIDEBAR SYSTEM (Only visible on small screens)
       ================================================================= */}
@@ -56,7 +66,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           isMobileOpen ? "translate-x-0" : "-translate-x-full",
           // Explicit Background Colors are CRITICAL to fix the "glitch"
           isDark
-            ? "bg-[#000000] border-e border-[#1F1F1F]"
+            ? "bg-[#07060A] border-e border-[#2A2830]"
             : "bg-white border-e border-gray-200"
         )}
       >
@@ -68,6 +78,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <div className="hidden md:flex h-full shrink-0 z-30 relative ">
         <Sidebar />
       </div>
+      </>
+      )}
       {/* =================================================================
           MAIN CONTENT AREA
       ================================================================= */}

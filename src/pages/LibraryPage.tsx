@@ -89,7 +89,7 @@
 //     <div
 //       className={cn(
 //         "min-h-screen flex flex-col transition-colors duration-300",
-//         isDark ? "bg-black text-[#E7E9EA]" : "bg-white text-gray-900"
+//         isDark ? "bg-black text-[#F2F4F7]" : "bg-white text-gray-900"
 //       )}
 //     >
 //       {/* HEADER SECTION */}
@@ -97,7 +97,7 @@
 //         className={cn(
 //           "sticky top-0 z-30 border-b backdrop-blur-md px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4",
 //           isDark
-//             ? "bg-black/80 border-[#2F3336]"
+//             ? "bg-black/80 border-[#2A2830]"
 //             : "bg-white/80 border-gray-200"
 //         )}
 //       >
@@ -119,7 +119,7 @@
 //         <div
 //           className={cn(
 //             "flex p-1 rounded-xl w-full md:w-auto",
-//             isDark ? "bg-[#16181C]" : "bg-gray-100"
+//             isDark ? "bg-[#18161C]" : "bg-gray-100"
 //           )}
 //         >
 //           <button
@@ -128,7 +128,7 @@
 //               "flex-1 md:w-32 py-2 rounded-lg text-sm font-medium transition-all",
 //               activeTab === "sent"
 //                 ? isDark
-//                   ? "bg-[#2F3336] text-white shadow-sm"
+//                   ? "bg-[#2A2830] text-white shadow-sm"
 //                   : "bg-white text-black shadow-sm"
 //                 : "text-gray-500 hover:text-gray-700"
 //             )}
@@ -141,7 +141,7 @@
 //               "flex-1 md:w-32 py-2 rounded-lg text-sm font-medium transition-all",
 //               activeTab === "received"
 //                 ? isDark
-//                   ? "bg-[#2F3336] text-white shadow-sm"
+//                   ? "bg-[#2A2830] text-white shadow-sm"
 //                   : "bg-white text-black shadow-sm"
 //                 : "text-gray-500 hover:text-gray-700"
 //             )}
@@ -157,7 +157,7 @@
 //           className={cn(
 //             "max-w-6xl mx-auto rounded-2xl overflow-hidden border shadow-sm",
 //             isDark
-//               ? "bg-[#16181C] border-[#2F3336]"
+//               ? "bg-[#18161C] border-[#2A2830]"
 //               : "bg-white border-gray-200"
 //           )}
 //         >
@@ -178,7 +178,7 @@
 //                   className={cn(
 //                     "border-b text-xs uppercase tracking-wider",
 //                     isDark
-//                       ? "border-[#2F3336] text-gray-500 bg-[#16181C]"
+//                       ? "border-[#2A2830] text-gray-500 bg-[#18161C]"
 //                       : "border-gray-100 text-gray-400 bg-gray-50"
 //                   )}
 //                 >
@@ -195,7 +195,7 @@
 //                   <th className="p-4 pr-6 font-medium text-right">Actions</th>
 //                 </tr>
 //               </thead>
-//               <tbody className="divide-y divide-gray-100 dark:divide-[#2F3336]">
+//               <tbody className="divide-y divide-gray-100 dark:divide-[#2A2830]">
 //                 {sortedFiles.map((file) => (
 //                   <tr
 //                     key={file.id}
@@ -211,7 +211,7 @@
 //                           className={cn(
 //                             "p-2 rounded-lg",
 //                             isDark
-//                               ? "bg-[#2F3336] text-blue-400"
+//                               ? "bg-[#2A2830] text-blue-400"
 //                               : "bg-blue-50 text-blue-600"
 //                           )}
 //                         >

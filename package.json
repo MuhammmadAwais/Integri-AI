@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && npm run prerender && npm run sitemaps",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prerender": "node scripts/prerender-seo.mjs",
+    "sitemaps": "node scripts/generate-sitemaps.mjs"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.11.0",

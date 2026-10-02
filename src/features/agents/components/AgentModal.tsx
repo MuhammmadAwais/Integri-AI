@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { X, Loader2, Bot, Plus, AlertTriangle } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { AgentService } from "../../../api/backendApi";
-import AVAILABLE_MODELS from "../../../../Constants";
+import { resolveModel } from "../../../../Constants";
+import { useSubscription } from "../../subscriptions/hooks/useSubscription";
 import { useLimits } from "../../limits/hooks/useLimits";
 import { showLimitReachedToast } from "../../limits/components/LimitToast";
 import { ModelSelector } from "./ModelSelector"; // Check this path
@@ -29,6 +30,10 @@ const AgentModal: React.FC<AgentModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [showSubscribeModal, setShowSubscribeModal] = useState(false);
   const { canCreateAgent, limits } = useLimits();
+  const { isFree, pickerModels } = useSubscription();
+
+  // Same rule as the mobile app: free users can only build agents on Integri.
+  const isLockedForAgent = (modelId: string) => isFree && modelId !== "integri";
 
   // Block new agent creation (edit is always allowed)
   const isAtLimit = !agent && !canCreateAgent;
@@ -75,6 +80,11 @@ const AgentModal: React.FC<AgentModalProps> = ({
     e.preventDefault();
     setError(null);
 
+    if (isLockedForAgent(formData.model)) {
+      setShowSubscribeModal(true);
+      return;
+    }
+
     // Guard: new agents only
     if (isAtLimit) {
       showLimitReachedToast({
@@ -87,10 +97,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
 
     setIsSubmitting(true);
     try {
-      const selectedModelObj = AVAILABLE_MODELS.find(
-        (m) => m.id === formData.model
-      );
-      const provider = selectedModelObj?.provider || "openai";
+      const provider = resolveModel(formData.model).provider;
       const payload = {
         name: formData.name,
         description: formData.description,
@@ -209,18 +216,17 @@ const AgentModal: React.FC<AgentModalProps> = ({
           {/* --- NEW: Custom Model Selector --- */}
           <div>
             <ModelSelector
-              models={AVAILABLE_MODELS
-                .filter((m) => m.id !== "gpt-4o-mini-search-preview" && m.id !== "gpt-4o-mini-deep-research")
-                .map((m) => ({
-                  ...m,
-                  name: m.label, // Mapping 'label' to 'name' for the component
-                }))}
+              models={pickerModels.map((m) => ({
+                ...m,
+                name: m.label, // Mapping 'label' to 'name' for the component
+              }))}
               selectedModelId={formData.model}
               onChange={(newModelId) =>
                 setFormData({ ...formData, model: newModelId })
               }
               disabled={isSubmitting}
               onLockedSelect={() => setShowSubscribeModal(true)}
+              isModelLocked={isLockedForAgent}
             />
           </div>
 

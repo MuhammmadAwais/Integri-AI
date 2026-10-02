@@ -55,7 +55,7 @@ const WhiteboardModal: React.FC<WhiteboardModalProps> = ({
       const ctx = canvas.getContext("2d");
       if (ctx) {
         // Fill background based on theme immediately so it's not transparent
-        ctx.fillStyle = isDark ? "#18181b" : "#ffffff";
+        ctx.fillStyle = isDark ? "#18161C" : "#ffffff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         ctx.lineCap = "round";
@@ -128,7 +128,7 @@ const WhiteboardModal: React.FC<WhiteboardModalProps> = ({
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
     if (canvas && ctx) {
-      ctx.fillStyle = isDark ? "#18181b" : "#ffffff";
+      ctx.fillStyle = isDark ? "#18161C" : "#ffffff";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       saveHistory();
     }
@@ -168,7 +168,7 @@ const WhiteboardModal: React.FC<WhiteboardModalProps> = ({
       ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.strokeStyle =
-        tool === "eraser" ? (isDark ? "#18181b" : "#ffffff") : color;
+        tool === "eraser" ? (isDark ? "#18161C" : "#ffffff") : color;
       ctx.lineWidth = tool === "eraser" ? 20 : lineWidth;
       setIsDrawing(true);
     }
@@ -214,7 +214,7 @@ const WhiteboardModal: React.FC<WhiteboardModalProps> = ({
       <div
         className={cn(
           "relative w-full h-full md:w-[90vw] md:h-[85vh] md:max-w-6xl md:rounded-3xl shadow-2xl overflow-hidden flex flex-col",
-          isDark ? "bg-[#18181b]" : "bg-white"
+          isDark ? "bg-[#18161C]" : "bg-white"
         )}
       >
         {/* Header / Close Button */}
@@ -255,7 +255,7 @@ const WhiteboardModal: React.FC<WhiteboardModalProps> = ({
             className={cn(
               "flex flex-wrap items-center justify-center gap-3 px-4 py-3 rounded-2xl shadow-2xl border",
               isDark
-                ? "bg-[#27272a]/90 border-white/10 backdrop-blur-md"
+                ? "bg-[#1F1D25]/90 border-white/10 backdrop-blur-md"
                 : "bg-white/90 border-gray-200 backdrop-blur-md"
             )}
           >

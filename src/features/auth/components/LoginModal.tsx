@@ -45,7 +45,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
             transform transition-all scale-100 opacity-100
             ${
               isDark
-                ? "bg-[#09090b] border-[#27272a] text-white"
+                ? "bg-[#07060A] border-[#2A2830] text-white"
                 : "bg-white border-gray-200 text-gray-900"
             }
           `}
@@ -59,7 +59,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
               absolute right-4 top-4 p-1 rounded-md transition-colors hover:cursor-pointer
               ${
                 isDark
-                  ? "hover:bg-[#27272a] text-gray-400"
+                  ? "hover:bg-[#1F1D25] text-gray-400"
                   : "hover:bg-gray-100 text-gray-500"
               }
             `}
@@ -72,7 +72,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
             <div
               className={`
               p-3 rounded-full mb-4
-              ${isDark ? "bg-[#27272a] text-white" : "bg-gray-100 text-black"}
+              ${isDark ? "bg-[#1F1D25] text-white" : "bg-gray-100 text-black"}
             `}
             >
               <Lock size={24} />
@@ -111,7 +111,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
                 w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg font-medium border transition-all hover:cursor-pointer
                 ${
                   isDark
-                    ? "border-[#27272a] hover:bg-[#27272a] text-white"
+                    ? "border-[#2A2830] hover:bg-[#1F1D25] text-white"
                     : "border-gray-200 hover:bg-gray-50 text-gray-700"
                 }
               `}
@@ -127,7 +127,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
             py-3 px-6 text-center text-[11px] border-t
             ${
               isDark
-                ? "border-[#27272a] bg-[#101012] text-gray-500"
+                ? "border-[#2A2830] bg-[#101012] text-gray-500"
                 : "border-gray-100 bg-gray-50 text-gray-400"
             }
           `}

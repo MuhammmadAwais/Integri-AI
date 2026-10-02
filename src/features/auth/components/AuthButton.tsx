@@ -17,15 +17,16 @@ const AuthButton: React.FC<AuthButtonProps> = ({
 }) => {
   const variants = {
     primary:
-      "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white shadow-lg shadow-red-900/20 border-transparent",
+      // The app's primary button: light pill, dark text (IntegriColors.buttonWhite)
+      "bg-[#F2F4F7] hover:bg-white text-[#07060A] shadow-lg shadow-black/20 border-transparent",
     google:
-      "bg-[#27272A] h-14 hover:bg-[#323236] text-white border border-[#3F3F46] hover:border-gray-500 w-50",
+      "bg-[#1F1D25] h-14 hover:bg-[#323236] text-white border border-[#3A3845] hover:border-gray-500 w-50",
     apple:
-      "bg-[#27272A] h-14 hover:bg-[#323236] text-white border border-[#3F3F46] hover:border-gray-500 w-50",
+      "bg-[#1F1D25] h-14 hover:bg-[#323236] text-white border border-[#3A3845] hover:border-gray-500 w-50",
     outline:
-      "bg-transparent hover:bg-[#27272A] text-gray-300 border border-[#3F3F46]",
+      "bg-transparent hover:bg-[#1F1D25] text-gray-300 border border-[#3A3845]",
     createAccount:
-      "bg-gradient-to-r h-14 from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white shadow-lg shadow-red-900/20 border-transparen w-50",
+      "bg-[#F2F4F7] h-14 hover:bg-white text-[#07060A] shadow-lg shadow-black/20 border-transparent w-50",
   };
 
   return (

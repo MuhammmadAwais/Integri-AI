@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import { useChatList } from "../features/chat/hooks/useChat";
-import ParticleBackground from "../Components/ui/ParticleBackground";
+import AmbientBackground from "../Components/ui/AmbientBackground";
 
 // --- TYPES ---
 type SortKey = "title" | "date" | "model";
@@ -60,7 +60,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
         className={cn(
           "w-full max-w-md rounded-2xl shadow-2xl transform transition-all animate-in zoom-in-95 duration-200 p-6 border",
           isDark
-            ? "bg-[#181818] border-[#2A2B32] text-white"
+            ? "bg-[#18161C] border-[#2A2830] text-white"
             : "bg-white border-gray-200 text-gray-900"
         )}
         onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
@@ -96,7 +96,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
             className={cn(
               "hover:cursor-pointer flex-1 px-4 py-2.5 rounded-xl font-medium transition-colors text-sm",
               isDark
-                ? "bg-[#2A2B32] hover:bg-[#3A3B42] text-gray-200"
+                ? "bg-[#1F1D25] hover:bg-[#3A3845] text-gray-200"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             )}
           >
@@ -202,7 +202,7 @@ const HistoryPage: React.FC = () => {
 
   return (
     <>
-    <ParticleBackground/>
+    <AmbientBackground />
       <div
         className={cn(
           "max-w-6xl mx-auto p-4 md:p-8 h-full overflow-y-auto",
@@ -234,7 +234,7 @@ const HistoryPage: React.FC = () => {
           className={cn(
             "w-full overflow-hidden rounded-xl border shadow-sm",
             isDark
-              ? "border-[#2A2B32] bg-[#1a1a1a]"
+              ? "border-[#2A2830] bg-[#18161C]"
               : "border-gray-200 bg-white"
           )}
         >
@@ -251,7 +251,7 @@ const HistoryPage: React.FC = () => {
                     className={cn(
                       "border-b",
                       isDark
-                        ? "border-[#2A2B32] bg-[#212121] text-gray-300"
+                        ? "border-[#2A2830] bg-[#212121] text-gray-300"
                         : "border-gray-200 bg-gray-50 text-gray-600"
                     )}
                   >
@@ -285,7 +285,7 @@ const HistoryPage: React.FC = () => {
                 <tbody
                   className={cn(
                     "divide-y",
-                    isDark ? "divide-[#2A2B32]" : "divide-gray-100"
+                    isDark ? "divide-[#2A2830]" : "divide-gray-100"
                   )}
                 >
                   {sortedSessions.length === 0 ? (
@@ -303,7 +303,7 @@ const HistoryPage: React.FC = () => {
                           onClick={() => navigate(`/chat/${sessionId}`)}
                           className={cn(
                             "group cursor-pointer transition-colors",
-                            isDark ? "hover:bg-[#2A2B32]" : "hover:bg-gray-50"
+                            isDark ? "hover:bg-[#1F1D25]" : "hover:bg-gray-50"
                           )}
                         >
                           <td className="p-4">

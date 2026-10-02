@@ -8,11 +8,9 @@ import ModelMenu from "../../Components/ui/ModelMenu";
 import AgentMenu from "../../Components/ui/AgentMenu";
 import VoiceModelMenu from "../voice/components/VoiceModelMenu";
 import { useSubscription } from "../subscriptions/hooks/useSubscription";
-import AVAILABLE_MODELS, { VOICE_MODELS } from "../../../Constants";
+import { VOICE_MODELS, resolveModel } from "../../../Constants";
 import {
-  setNewChatModel,
   addPlaygroundModel,
-  setNewChatAgent,
   setVoiceChatModel,
   setVoiceShowCaptions, // Import action
 } from "../chat/chatSlice";
@@ -27,12 +25,8 @@ const NavbarLeft: React.FC = () => {
   const { multiChatLimit } = useSubscription();
   const { token } = useAppSelector((state: any) => state.auth);
 
-  const { newChatModel, selectedAgentId, voiceChatModel, voiceShowCaptions } =
-    useAppSelector((state: any) => state.chat);
-  const { items: agents } = useAppSelector((state: any) => state.agents);
+  const { voiceChatModel, voiceShowCaptions } = useAppSelector((state: any) => state.chat);
 
-  const [showModelMenu, setShowModelMenu] = useState(false);
-  const [showAgentMenu, setShowAgentMenu] = useState(false);
   const [showAddMenu, setShowAddMenu] = useState(false);
   const [showAddAgentMenu, setShowAddAgentMenu] = useState(false);
   const [showVoiceMenu, setShowVoiceMenu] = useState(false);
@@ -52,7 +46,7 @@ const NavbarLeft: React.FC = () => {
             className={cn(
               "flex items-center gap-2 px-3 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all hover:cursor-pointer border ml-1 md:ml-0",
               isDark
-                ? "border-white/10 text-gray-200 hover:bg-[#1A1A1A]"
+                ? "border-white/10 text-gray-200 hover:bg-[#18161C]"
                 : "border-black/5 text-gray-700 hover:bg-gray-100"
             )}
           >
@@ -96,106 +90,8 @@ const NavbarLeft: React.FC = () => {
     );
   }
 
-  // ... (Rest of the component remains unchanged for Welcome/Playground) ...
-  if (location.pathname === "/") {
-    // Existing Welcome Screen code...
-    const selectedAgent = agents.find((a: any) => a.gpt_id === selectedAgentId);
-    const selectedModelLabel =
-      AVAILABLE_MODELS.find((m) => m.id === newChatModel.id)?.label ||
-      newChatModel.id;
-
-    return (
-      <div className="flex items-center gap-2 relative">
-        <div className="relative">
-          <button
-            onClick={() => !selectedAgentId && setShowModelMenu(!showModelMenu)}
-            className={cn(
-              "flex items-center gap-2 px-2 py-2 rounded-xl text-xs md:text-md font-semibold transition-all hover:cursor-pointer border ml-1 md:ml-0",
-              isDark
-                ? "border-white/10 text-gray-200 hover:bg-[#1A1A1A]"
-                : "border-black/5 text-gray-700 hover:bg-gray-100",
-              selectedAgentId && "opacity-50 cursor-not-allowed"
-            )}
-          >
-            <span className="opacity-90">
-              {selectedAgentId ? t("nav.agentActive") : selectedModelLabel}
-            </span>
-            {!selectedAgentId && <ChevronDown size={16} />}
-          </button>
-
-          <ModelMenu
-            isOpen={showModelMenu}
-            onClose={() => setShowModelMenu(false)}
-            selected={newChatModel.id}
-            isDark={isDark}
-            position="top"
-            align="left"
-            onSelect={(id) => {
-              const model = AVAILABLE_MODELS.find((m) => m.id === id);
-              if (model) {
-                dispatch(setNewChatAgent(null));
-                dispatch(
-                  setNewChatModel({ id: model.id, provider: model.provider })
-                );
-              }
-            }}
-          />
-        </div>
-
-        <div className="w-px h-6 bg-gray-500/20" />
-
-        {/* Agent Selector */}
-        <div className="relative">
-          <button
-            onClick={() => setShowAgentMenu(!showAgentMenu)}
-            className={cn(
-              "flex items-center gap-2 px-2 py-2 rounded-xl text-xs md:text-md font-semibold transition-all hover:cursor-pointer border",
-              selectedAgentId
-                ? "bg-zinc-600 text-white border-zinc-500 shadow-lg shadow-zinc-500/20"
-                : isDark
-                ? "border-white/10 text-gray-400 hover:bg-white/5"
-                : "border-black/5 text-gray-600 hover:bg-black/5"
-            )}
-          >
-            <Sparkles
-              size={14}
-              className={selectedAgentId ? "animate-pulse" : ""}
-            />
-            <span>{selectedAgent?.name || t("nav.selectAgent")}</span>
-            <ChevronDown
-              size={14}
-              className={cn(
-                "transition-transform",
-                showAgentMenu && "rotate-180"
-              )}
-            />
-          </button>
-
-          {/* FIX 2: Added position="top" so it drops DOWN instead of UP */}
-          <AgentMenu
-            isOpen={showAgentMenu}
-            onClose={() => setShowAgentMenu(false)}
-            selectedId={selectedAgentId}
-            isDark={isDark}
-            token={token}
-            position="top"
-            align="left"
-            onSelect={(agent) => {
-              dispatch(setNewChatAgent(agent ? agent.gpt_id : null));
-              if (agent) {
-                dispatch(
-                  setNewChatModel({
-                    id: agent.model,
-                    provider: agent.recommended_provider || "openai",
-                  })
-                );
-              }
-            }}
-          />
-        </div>
-      </div>
-    );
-  }
+  // Welcome ("/"): model and agent pickers live in the composer
+  // (ComposerModelPicker), so the top bar stays empty there.
 
   if (location.pathname === "/playground") {
     // Existing Playground code...
@@ -229,8 +125,7 @@ const NavbarLeft: React.FC = () => {
                   setShowLimitModal(true);
                   return;
                 }
-                const model = AVAILABLE_MODELS.find((m) => m.id === id);
-                if (model) dispatch(addPlaygroundModel(model));
+                dispatch(addPlaygroundModel(resolveModel(id)));
                 setShowAddMenu(false);
               }}
             />
@@ -268,9 +163,11 @@ const NavbarLeft: React.FC = () => {
                   }
                   dispatch(
                     addPlaygroundModel({
-                      id: agent.model,
+                      id: agent.recommended_model || agent.model || "integri",
                       label: agent.name,
-                      provider: agent.recommended_provider || "openai",
+                      provider:
+                        agent.recommended_provider ||
+                        resolveModel(agent.recommended_model || agent.model).provider,
                       gpt_id: agent.gpt_id,
                       instructions: agent.instructions,
                     })

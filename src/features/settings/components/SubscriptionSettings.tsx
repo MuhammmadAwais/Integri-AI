@@ -12,7 +12,7 @@ const SubscriptionSettings: React.FC = () => {
       className={cn(
         "relative overflow-hidden rounded-xl p-6 border transition-all",
         isDark
-          ? "bg-linear-to-br from-gray-700 to-[#18181b] border-blue-900/30"
+          ? "bg-linear-to-br from-gray-700 to-[#18161C] border-blue-900/30"
           : "bg-linear-to-br from-blue-50 to-white border-blue-100"
       )}
     >

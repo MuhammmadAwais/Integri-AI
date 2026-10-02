@@ -76,7 +76,7 @@ const TestAdPlaceholder: React.FC<{
             className={cn(
                 "ad-container overflow-hidden rounded-xl transition-colors",
                 isDark
-                    ? "bg-[#0a0a0a] border border-dashed border-yellow-500/30"
+                    ? "bg-[#07060A] border border-dashed border-yellow-500/30"
                     : "bg-white border border-dashed border-yellow-500/50",
             )}
             data-testid={testId}
@@ -256,7 +256,7 @@ const AdUnit: React.FC<AdUnitProps> = ({
         <div
             className={cn(
                 "ad-container overflow-hidden rounded-xl transition-colors",
-                isDark ? "bg-[#0a0a0a] border border-white/5" : "bg-white border border-gray-100",
+                isDark ? "bg-[#07060A] border border-white/5" : "bg-white border border-gray-100",
                 className,
             )}
             data-testid={testId}

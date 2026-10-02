@@ -69,7 +69,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, isDark, shareD
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
             ),
             onClick: () => { handleCopy(); toast.info("Embed link copied!"); },
-            bgCls: "bg-gray-100 hover:bg-gray-200 dark:bg-[#1f1f1f] dark:hover:bg-[#333] text-gray-900 dark:text-white"
+            bgCls: "bg-gray-100 hover:bg-gray-200 dark:bg-[#1F1D25] dark:hover:bg-[#2A2830] text-gray-900 dark:text-white"
         },
         {
             name: "WhatsApp",
@@ -93,7 +93,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, isDark, shareD
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
             ),
             href: `https://x.com/intent/tweet?url=${encodeURIComponent(url)}${shareData?.title ? `&text=${encodeURIComponent(shareData.title)}` : ""}`,
-            bgCls: "bg-black hover:bg-[#111] dark:bg-white dark:hover:bg-gray-200 text-white dark:text-black"
+            bgCls: "bg-black hover:bg-[#18161C] dark:bg-white dark:hover:bg-gray-200 text-white dark:text-black"
         },
         {
             name: "Discord",
@@ -140,7 +140,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, isDark, shareD
                                 "relative w-full max-w-md p-6 rounded-2xl shadow-xl overflow-hidden",
                                 "border border-white/10",
                                 isDark 
-                                    ? "bg-[#181818]/90 text-white" 
+                                    ? "bg-[#18161C]/90 text-white" 
                                     : "bg-white/95 text-gray-900"
                             )}
                         >

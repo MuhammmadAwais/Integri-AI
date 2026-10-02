@@ -8,7 +8,7 @@ import { sendEmail } from "../services/mailService";
 import { useAppSelector } from "../hooks/useRedux";
 import { cn } from "../lib/utils";
 import Button from "../Components/ui/Button";
-import ParticleBackground from "../Components/ui/ParticleBackground";
+import AmbientBackground from "../Components/ui/AmbientBackground";
 import GsapToast from "../Components/ui/GsapToast";
 
 const CATEGORIES = [
@@ -87,7 +87,7 @@ const SendFeedbackPage: React.FC = () => {
     <div
       className={cn(
         "h-full w-full overflow-y-auto custom-scrollbar p-4 md:p-8 lg:p-12",
-        isDark ? "bg-[#09090b] text-white" : "bg-gray-50 text-gray-900"
+        isDark ? "bg-[#07060A] text-white" : "bg-gray-50 text-gray-900"
       )}
     >
       <GsapToast 
@@ -95,7 +95,7 @@ const SendFeedbackPage: React.FC = () => {
         isDark={isDark} 
         onClose={() => setToastState(prev => ({ ...prev, visible: false }))} 
       />
-      <ParticleBackground />
+      <AmbientBackground />
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
@@ -104,7 +104,7 @@ const SendFeedbackPage: React.FC = () => {
             onClick={() => navigate(-1)}
             className={cn(
               "p-2 rounded-full transition-colors",
-              isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-200"
+              isDark ? "hover:bg-[#18161C]" : "hover:bg-gray-200"
             )}
           >
             <ChevronLeft size={24} />
@@ -118,7 +118,7 @@ const SendFeedbackPage: React.FC = () => {
           className={cn(
             "rounded-2xl border p-8 shadow-sm",
             isDark
-              ? "bg-[#18181b] border-[#27272a]"
+              ? "bg-[#18161C] border-[#2A2830]"
               : "bg-white border-gray-200"
           )}
         >
@@ -205,7 +205,7 @@ const SendFeedbackPage: React.FC = () => {
                           ? "bg-white text-black border-white"
                           : "bg-black text-white border-black"
                         : isDark
-                        ? "bg-transparent border-[#333] text-gray-400 hover:border-gray-500"
+                        ? "bg-transparent border-[#2A2830] text-gray-400 hover:border-gray-500"
                         : "bg-white border-gray-200 text-gray-600 hover:border-gray-300"
                     )}
                   >
@@ -233,7 +233,7 @@ const SendFeedbackPage: React.FC = () => {
                 className={cn(
                   "w-full px-4 py-3 rounded-xl border outline-none resize-none transition-all",
                   isDark
-                    ? "bg-[#222] border-[#333] focus:border-purple-500 text-white placeholder:text-gray-600"
+                    ? "bg-[#1F1D25] border-[#2A2830] focus:border-purple-500 text-white placeholder:text-gray-600"
                     : "bg-gray-50 border-gray-200 focus:border-purple-500 text-gray-900 placeholder:text-gray-400"
                 )}
               />

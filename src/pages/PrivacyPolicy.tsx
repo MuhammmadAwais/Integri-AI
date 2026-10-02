@@ -111,7 +111,7 @@ const PrivacyPolicy: React.FC = () => {
       id="privacy-scroll-container"
       className={cn(
         "h-full w-full overflow-y-auto custom-scrollbar relative font-sans",
-        isDark ? "bg-[#0a0a0a] text-gray-300" : "bg-white text-slate-800"
+        isDark ? "bg-[#07060A] text-gray-300" : "bg-white text-slate-800"
       )}
     >
       <div className="fixed top-0 left-0 right-0 h-1 z-50 bg-transparent">

@@ -16,8 +16,8 @@ import { SessionService } from "../../../api/backendApi";
 import { useChatList } from "../../chat/hooks/useChat";
 import { cn } from "../../../lib/utils";
 import DeleteModal from "../../../Components/ui/DeleteModal";
-// 1. Import AVAILABLE_MODELS to lookup the provider
-import  AVAILABLE_MODELS  from "../../../../Constants";
+// 1. Import resolveModel to lookup the provider
+import { resolveModel } from "../../../../Constants";
 
 const MobileSidebar: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -52,8 +52,7 @@ const MobileSidebar: React.FC = () => {
     try {
       // 2. Resolve the correct Provider for the current model
       const modelId = currentModel || "gpt-5.1";
-      const modelConfig = AVAILABLE_MODELS.find((m) => m.id === modelId);
-      const provider = modelConfig ? modelConfig.provider : "openai";
+      const provider = resolveModel(modelId).provider;
 
       // 3. Pass 'provider' to the createSession call
       const response = await SessionService.createSession(
@@ -156,7 +155,7 @@ const MobileSidebar: React.FC = () => {
             className={cn(
               "p-2 rounded-full transition-colors",
               isDark
-                ? "hover:bg-[#1A1A1A] text-white"
+                ? "hover:bg-[#18161C] text-white"
                 : "hover:bg-gray-100 text-black"
             )}
           >
@@ -215,7 +214,7 @@ const MobileSidebar: React.FC = () => {
 
         {/* 3. Recent Chats Header */}
         <div className="px-6 py-2 shrink-0">
-          <span className="text-[#71767B] text-xs font-bold uppercase tracking-wider">
+          <span className="text-[#999999] text-xs font-bold uppercase tracking-wider">
             Recent Chats
           </span>
         </div>
@@ -243,10 +242,10 @@ const MobileSidebar: React.FC = () => {
                       "group relative flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-200 cursor-pointer text-sm",
                       location.pathname.includes(sessionId)
                         ? isDark
-                          ? "bg-[#2A2B32] text-white font-medium"
+                          ? "bg-[#1F1D25] text-white font-medium"
                           : "bg-gray-100 text-gray-900 font-medium"
                         : isDark
-                        ? "text-[#9CA3AF] hover:bg-[#1A1A1A] hover:text-white"
+                        ? "text-[#9CA3AF] hover:bg-[#18161C] hover:text-white"
                         : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                     )}
                   >
@@ -267,7 +266,7 @@ const MobileSidebar: React.FC = () => {
                       className={cn(
                         "p-2 rounded-full transition-colors shrink-0 z-10",
                         isDark
-                          ? "text-gray-500 hover:text-red-400 hover:bg-[#3A3B42]"
+                          ? "text-gray-500 hover:text-red-400 hover:bg-[#3A3845]"
                           : "text-gray-400 hover:text-red-600 hover:bg-gray-200"
                       )}
                     >
@@ -292,10 +291,10 @@ const NavTile = ({ icon: Icon, label, active, onClick, isDark }: any) => (
       "flex flex-col items-center justify-center gap-1.5 p-2 rounded-xl transition-all cursor-pointer h-[70px]",
       active
         ? isDark
-          ? "bg-[#1A1A1A] text-white"
+          ? "bg-[#18161C] text-white"
           : "bg-gray-100 text-black"
         : isDark
-        ? "text-gray-500 hover:bg-[#111] hover:text-gray-300"
+        ? "text-gray-500 hover:bg-[#18161C] hover:text-gray-300"
         : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
     )}
   >

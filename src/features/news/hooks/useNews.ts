@@ -7,6 +7,11 @@ import {
     fetchArticleById,
 } from "../services/newsService";
 import { useAppSelector } from "../../../hooks/useRedux";
+import { NewsService } from "../../../api/backendApi";
+import { detectVisitorNewsCountry } from "../utils/countryHelper";
+
+// Guests have no profile country; guess theirs once from the browser.
+const visitorCountry = detectVisitorNewsCountry();
 
 // ── Paginated news list ─────────────────────────────────────────────
 
@@ -15,8 +20,8 @@ export function useNewsList(pageSize = 12, countryOverride?: string | null) {
     const preferredCountry = useAppSelector(
         (state: any) => state.userPreferences.preferences?.country
     );
-    // Use explicit override first, then user's preference, then undefined (global)
-    const country = countryOverride !== undefined ? countryOverride : preferredCountry;
+    // Explicit override first, then the user's preference, then the visitor's guessed country
+    const country = (countryOverride !== undefined ? countryOverride : preferredCountry) || visitorCountry;
 
     const [articles, setArticles] = useState<PublicNewsArticle[]>([]);
     const [loading, setLoading] = useState(true);
@@ -26,12 +31,9 @@ export function useNewsList(pageSize = 12, countryOverride?: string | null) {
     const offsetRef = useRef(0);
     const initialLoadDone = useRef(false);
 
-    // Initial load — re-runs when country or token changes
+    // Initial load — re-runs when country or token changes. The feed is public,
+    // so guests load it too; the token (when present) is passed along.
     useEffect(() => {
-        if (!token) {
-            setLoading(false);
-            return;
-        }
         let cancelled = false;
         offsetRef.current = 0;
         initialLoadDone.current = false;
@@ -58,7 +60,7 @@ export function useNewsList(pageSize = 12, countryOverride?: string | null) {
 
     // Load more
     const loadMore = useCallback(async () => {
-        if (!hasMore || loadingMore || !initialLoadDone.current || !token) return;
+        if (!hasMore || loadingMore || !initialLoadDone.current) return;
         setLoadingMore(true);
         try {
             const result = await fetchNews(pageSize, offsetRef.current, country, token);
@@ -87,9 +89,6 @@ export function useNewsArticle(id: string | undefined, collection?: string) {
     useEffect(() => {
         if (!id) {
             setLoading(false);
-            return;
-        }
-        if (!token) {
             return;
         }
         let cancelled = false;
@@ -125,7 +124,7 @@ export function useArticlesList(pageSize = 12, countryOverride?: string | null) 
     const preferredCountry = useAppSelector(
         (state: any) => state.userPreferences.preferences?.country
     );
-    const country = countryOverride !== undefined ? countryOverride : preferredCountry;
+    const country = (countryOverride !== undefined ? countryOverride : preferredCountry) || visitorCountry;
 
     const [articles, setArticles] = useState<PublicNewsArticle[]>([]);
     const [loading, setLoading] = useState(true);
@@ -136,10 +135,6 @@ export function useArticlesList(pageSize = 12, countryOverride?: string | null) 
     const initialLoadDone = useRef(false);
 
     useEffect(() => {
-        if (!token) {
-            setLoading(false);
-            return;
-        }
         let cancelled = false;
         offsetRef.current = 0;
         initialLoadDone.current = false;
@@ -165,7 +160,7 @@ export function useArticlesList(pageSize = 12, countryOverride?: string | null) 
     }, [pageSize, country, token]);
 
     const loadMore = useCallback(async () => {
-        if (!hasMore || loadingMore || !initialLoadDone.current || !token) return;
+        if (!hasMore || loadingMore || !initialLoadDone.current) return;
         setLoadingMore(true);
         try {
             const result = await fetchArticles(pageSize, offsetRef.current, country, token);
@@ -196,9 +191,6 @@ export function useArticle(id: string | undefined, collection?: string) {
             setLoading(false);
             return;
         }
-        if (!token) {
-            return;
-        }
         let cancelled = false;
         setLoading(true);
         setError(null);
@@ -223,4 +215,42 @@ export function useArticle(id: string | undefined, collection?: string) {
     }, [id, collection, token]);
 
     return { article, loading, error };
+}
+
+// ── Whole country feed (news page with numbered pages) ──────────────
+// The API has no offset/page parameter, so the page loads the country's
+// last 30 days in one request (API max: 200) and pages through it locally.
+
+const FEED_DAYS = 30;
+const FEED_LIMIT = 200;
+const feedCache = new Map<string, PublicNewsArticle[]>();
+
+export function useNewsFeed(country: string) {
+    const token = useAppSelector((state: any) => state.auth.accessToken);
+    // Result tagged with its country, so switching country never shows stale rows.
+    const [result, setResult] = useState<{ country: string; error: string | null } | null>(null);
+
+    useEffect(() => {
+        let cancelled = false;
+        NewsService.getPublicFeed({ country, days: FEED_DAYS, limit: FEED_LIMIT }, token ?? undefined)
+            .then((data) => {
+                feedCache.set(country, data.articles ?? []);
+                if (!cancelled) setResult({ country, error: null });
+            })
+            .catch((err) => {
+                console.error("useNewsFeed error:", err);
+                if (!cancelled) {
+                    setResult({ country, error: err.response?.data?.detail || err.message || "Failed to load news" });
+                }
+            });
+        return () => { cancelled = true; };
+    }, [country, token]);
+
+    const cached = feedCache.get(country);
+    const settled = result?.country === country;
+    return {
+        articles: cached ?? [],
+        loading: !cached && !settled,
+        error: !cached && settled ? result.error : null,
+    };
 }

@@ -31,3 +31,7 @@ dist-ssr
 
 *.pem
 .vercel
+
+# Firebase
+.firebase/
+firebase-debug.log

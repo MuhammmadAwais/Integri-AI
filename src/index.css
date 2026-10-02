@@ -1,5 +1,140 @@
 @import "tailwindcss";
 @import "katex/dist/katex.min.css";
+
+/* `dark:` follows the in-app theme toggle (App.tsx sets .dark on <html>),
+   not the OS preference. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ─── Integri brand palette ──────────────────────────────────────────────────
+ * Mirrors the mobile app (Integri_backend lib/constants/theme.dart →
+ * IntegriColors). Components pick Tailwind palette classes by `isDark`, so
+ * remapping the palette variables here re-themes the whole site without
+ * touching each class string.
+ */
+:root {
+  --integri-background: #07060a;
+  --integri-surface: #18161c;
+  --integri-surface-elevated: #1f1d25;
+  --integri-teal: #5eead4;
+  --integri-teal-dim: #3bb8a0;
+  --integri-gold: #e0a858;
+  --integri-green: #3dd68c;
+  --integri-text-primary: #f2f4f7;
+  --integri-text-secondary: #999999;
+  --integri-text-muted: #666666;
+  --integri-border: #2a2830;
+  --integri-border-light: #3a3845;
+
+  /* Accent: the app's teal replaces the site's blue/indigo/violet/purple.
+     Light mode uses deeper shades so it stays readable on white. */
+  --integri-accent-50: #effcf9;
+  --integri-accent-100: #d0f7ef;
+  --integri-accent-200: #a2eedf;
+  --integri-accent-300: #5eead4;
+  --integri-accent-400: #3bb8a0;
+  --integri-accent-500: #14998a;
+  --integri-accent-600: #0f7c71;
+  --integri-accent-700: #0e635b;
+  --integri-accent-800: #0f4f4a;
+  --integri-accent-900: #10413d;
+}
+
+.dark {
+  --integri-accent-50: #0b1f1c;
+  --integri-accent-100: #0f2c28;
+  --integri-accent-200: #15443d;
+  --integri-accent-300: #8ff0e0;
+  --integri-accent-400: #5eead4;
+  --integri-accent-500: #5eead4;
+  --integri-accent-600: #5eead4;
+  --integri-accent-700: #3bb8a0;
+  --integri-accent-800: #2a8a78;
+  --integri-accent-900: #1d5f54;
+
+  /* Neutrals → app surfaces, borders and text */
+  --color-black: var(--integri-background);
+  --color-white: var(--integri-text-primary);
+}
+
+:root,
+.dark {
+  --color-blue-50: var(--integri-accent-50);
+  --color-blue-100: var(--integri-accent-100);
+  --color-blue-200: var(--integri-accent-200);
+  --color-blue-300: var(--integri-accent-300);
+  --color-blue-400: var(--integri-accent-400);
+  --color-blue-500: var(--integri-accent-500);
+  --color-blue-600: var(--integri-accent-600);
+  --color-blue-700: var(--integri-accent-700);
+  --color-blue-800: var(--integri-accent-800);
+  --color-blue-900: var(--integri-accent-900);
+  --color-indigo-50: var(--integri-accent-50);
+  --color-indigo-100: var(--integri-accent-100);
+  --color-indigo-200: var(--integri-accent-200);
+  --color-indigo-300: var(--integri-accent-300);
+  --color-indigo-400: var(--integri-accent-400);
+  --color-indigo-500: var(--integri-accent-500);
+  --color-indigo-600: var(--integri-accent-600);
+  --color-indigo-700: var(--integri-accent-700);
+  --color-indigo-800: var(--integri-accent-800);
+  --color-indigo-900: var(--integri-accent-900);
+  --color-violet-400: var(--integri-accent-400);
+  --color-violet-500: var(--integri-accent-500);
+  --color-violet-600: var(--integri-accent-600);
+  --color-purple-400: var(--integri-accent-400);
+  --color-purple-500: var(--integri-accent-500);
+  --color-purple-600: var(--integri-accent-600);
+}
+
+/* Dark neutral scales → the app's surfaces (900/950), borders (700/800)
+   and text tones (400–600). Light shades are left for light mode. */
+.dark {
+  --color-zinc-950: var(--integri-background);
+  --color-zinc-900: var(--integri-surface);
+  --color-zinc-800: var(--integri-border);
+  --color-zinc-700: var(--integri-border-light);
+  --color-zinc-600: var(--integri-text-muted);
+  --color-zinc-500: #808080;
+  --color-zinc-400: var(--integri-text-secondary);
+
+  --color-gray-950: var(--integri-background);
+  --color-gray-900: var(--integri-surface);
+  --color-gray-800: var(--integri-border);
+  --color-gray-700: var(--integri-border-light);
+  --color-gray-600: var(--integri-text-muted);
+  --color-gray-500: #808080;
+  --color-gray-400: var(--integri-text-secondary);
+
+  --color-neutral-950: var(--integri-background);
+  --color-neutral-900: var(--integri-surface);
+  --color-neutral-800: var(--integri-border);
+  --color-neutral-700: var(--integri-border-light);
+
+  --color-stone-950: var(--integri-background);
+  --color-stone-900: var(--integri-surface);
+  --color-stone-800: var(--integri-border);
+  --color-stone-700: var(--integri-border-light);
+
+  --color-slate-950: var(--integri-background);
+  --color-slate-900: var(--integri-surface);
+  --color-slate-800: var(--integri-border);
+  --color-slate-700: var(--integri-border-light);
+}
+
+.dark body {
+  background-color: var(--integri-background);
+  color: var(--integri-text-primary);
+}
+
+/* The app pairs teal with dark text; white on mint is unreadable. */
+.dark :is(.bg-blue-500, .bg-blue-600, .bg-indigo-500, .bg-indigo-600, .bg-violet-600, .bg-purple-600, .from-blue-500, .from-blue-600, .from-indigo-500, .from-indigo-600).text-white {
+  color: var(--integri-background);
+}
+
+/* Selection + focus in brand teal */
+::selection {
+  background-color: color-mix(in oklab, var(--integri-teal) 35%, transparent);
+}
 .markdown-body {
   width: 100%;
   word-break: break-word;
@@ -97,4 +232,10 @@ body {
 /* BiDi Math Protection: Ensure math blocks are always LTR globally */
 .katex, .katex-display {
     direction: ltr !important;
+}
+
+/* Integri Studio: placeholder shimmer while an image generates */
+@keyframes studio-shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
 }

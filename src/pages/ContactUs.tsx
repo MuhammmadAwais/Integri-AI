@@ -18,7 +18,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useAppSelector } from "../hooks/useRedux";
 import { cn } from "../lib/utils";
-import ParticleBackground from "../Components/ui/ParticleBackground";
+import AmbientBackground from "../Components/ui/AmbientBackground";
 import { sendEmail } from "../services/mailService";
 import GsapToast from "../Components/ui/GsapToast";
 
@@ -111,7 +111,7 @@ const AbstractAurora = ({ isDark }: { isDark: boolean }) => {
       <div
         className={cn(
           "absolute inset-0 z-0",
-          isDark ? "bg-[#09090b]" : "bg-zinc-100"
+          isDark ? "bg-[#07060A]" : "bg-zinc-100"
         )}
       />
       {/* Animated Blobs */}
@@ -221,7 +221,7 @@ const BoxInput = ({
       className={cn(
         "relative group rounded-xl px-4 py-3 transition-all duration-300 border",
         isDark
-          ? "bg-[#27272a] border-zinc-700/50"
+          ? "bg-[#1F1D25] border-zinc-700/50"
           : "bg-zinc-50 border-zinc-200",
         focused
           ? "border-zinc-500! ring-1 ring-zinc-500/20"
@@ -359,7 +359,7 @@ const ContactUs: React.FC = () => {
       ref={containerRef}
       className={cn(
         "h-full w-full overflow-y-auto overflow-x-hidden relative font-sans selection:bg-zinc-500/30",
-        isDark ? "bg-[#09090b] text-zinc-100" : "bg-zinc-50 text-zinc-900"
+        isDark ? "bg-[#07060A] text-zinc-100" : "bg-zinc-50 text-zinc-900"
       )}
     >
       <GsapToast 
@@ -368,7 +368,7 @@ const ContactUs: React.FC = () => {
         onClose={() => setToastState(prev => ({ ...prev, visible: false }))} 
       />
       <div className="fixed inset-0 z-0 opacity-40 pointer-events-none">
-        <ParticleBackground />
+        <AmbientBackground />
       </div>
 
       <div className="relative z-10 container mx-auto px-4 py-16 flex flex-col items-center">
@@ -417,7 +417,7 @@ const ContactUs: React.FC = () => {
                 
               )}
             >
-              <ParticleBackground/>
+              <AmbientBackground />
               {/* === LEFT: FORM === */}
               <div className="flex-1 p-8 lg:p-14 flex flex-col justify-center relative z-20">
                 <div className="mb-10">

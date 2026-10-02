@@ -12,10 +12,10 @@ import {
 } from "../features/agents/agentsSlice";
 import { cn } from "../lib/utils";
 import Button from "../Components/ui/Button";
-import AgentCard from "../features/agents/components/AgentCard";
+import AgentGridCard from "../features/agents/components/AgentGridCard";
 import AgentModal from "../features/agents/components/AgentModal";
 import SkeletonLoader from "../Components/ui/SkeletonLoader";
-import ParticleBackground from "../Components/ui/ParticleBackground";
+import AmbientBackground from "../Components/ui/AmbientBackground";
 import SystemToolCard from "../features/agents/components/SystemToolCard";
 import LoginModal from "../features/auth/components/LoginModal";
 
@@ -94,10 +94,10 @@ const Agents: React.FC = () => {
     <div
       className={cn(
         "h-full w-full overflow-y-auto custom-scrollbar p-6 lg:p-10",
-        isDark ? "bg-[#09090b] text-white" : "bg-gray-50 text-gray-900"
+        isDark ? "bg-[#07060A] text-white" : "bg-gray-50 text-gray-900"
       )}
     >
-      <ParticleBackground />
+      <AmbientBackground />
       <LoginModal
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
@@ -236,10 +236,9 @@ const Agents: React.FC = () => {
         items.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {items.map((agent: any) => (
-              <AgentCard
+              <AgentGridCard
                 key={agent.gpt_id}
                 agent={agent}
-                isDark={isDark}
                 onEdit={(a) => dispatch(openEditModal(a))}
                 onDelete={handleDelete}
               />
@@ -295,10 +294,9 @@ const Agents: React.FC = () => {
         publicItems && publicItems.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {publicItems.map((agent: any) => (
-              <AgentCard
+              <AgentGridCard
                 key={agent.gpt_id}
                 agent={agent}
-                isDark={isDark}
                 onEdit={(a) => dispatch(openEditModal(a))}
                 onDelete={handleDelete}
               />

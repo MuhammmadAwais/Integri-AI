@@ -27,7 +27,7 @@ import {
 } from "../../agents/agentsSlice";
 import { setNewChatAgent } from "../../chat/chatSlice";
 import { cn } from "../../../lib/utils";
-import ParticleBackground from "../../../Components/ui/ParticleBackground";
+import AmbientBackground from "../../../Components/ui/AmbientBackground";
 import ConfirmationModal from "./ConfirmationModal"; // Imported Modal
 import ErrorModal from "../../../Components/ui/ErrorModal"; // Imported Modal
 
@@ -213,7 +213,7 @@ const AgentDetailPage = () => {
         isDark ? "bg-black text-white" : "bg-gray-50 text-black"
       )}
     >
-      <ParticleBackground />
+      <AmbientBackground />
 
       {/* --- NEW: Modals Rendered via Portal --- */}
       <ConfirmationModal

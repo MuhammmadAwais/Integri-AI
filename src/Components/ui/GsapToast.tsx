@@ -59,7 +59,7 @@ const GsapToast: React.FC<ToastProps> = ({ message, type, visible, onClose, isDa
         ref={toastRef}
         className={cn(
           "pointer-events-auto flex items-center gap-3 px-4 py-4 rounded-xl shadow-2xl border w-80",
-          isDark ? "bg-[#18181b] border-zinc-800 text-zinc-100" : "bg-white border-zinc-200 text-zinc-900"
+          isDark ? "bg-[#18161C] border-zinc-800 text-zinc-100" : "bg-white border-zinc-200 text-zinc-900"
         )}
       >
         <div className={cn(

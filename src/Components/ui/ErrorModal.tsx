@@ -47,7 +47,7 @@ const ErrorModal: React.FC<ErrorModalProps> = ({
             className={cn(
               "relative w-full max-w-sm overflow-hidden rounded-2xl border shadow-2xl transition-all",
               isDark
-                ? "bg-[#18181b] border-zinc-800 text-zinc-100"
+                ? "bg-[#18161C] border-zinc-800 text-zinc-100"
                 : "bg-white border-zinc-200 text-zinc-900"
             )}
           >

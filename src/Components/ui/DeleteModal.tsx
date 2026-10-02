@@ -30,7 +30,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
           className={cn(
             "w-full max-w-sm rounded-2xl shadow-2xl transform transition-all animate-in zoom-in-95 duration-200 p-6 border relative",
             isDark
-              ? "bg-[#181818] border-[#2A2B32] text-white"
+              ? "bg-[#18161C] border-[#2A2830] text-white"
               : "bg-white border-gray-200 text-gray-900"
           )}
           onClick={(e) => e.stopPropagation()}
@@ -67,7 +67,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
               className={cn(
                 "hover:cursor-pointer flex-1 px-4 py-2.5 rounded-xl font-medium transition-colors text-sm",
                 isDark
-                  ? "bg-[#2A2B32] hover:bg-[#3A3B42] text-gray-200"
+                  ? "bg-[#1F1D25] hover:bg-[#3A3845] text-gray-200"
                   : "bg-gray-100 hover:bg-gray-200 text-gray-700"
               )}
             >

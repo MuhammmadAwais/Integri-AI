@@ -27,7 +27,7 @@ const DownloadModal: React.FC<DownloadModalProps> = ({
             className={cn(
               "relative p-4 rounded-2xl shadow-2xl border w-[200px] flex flex-col items-center text-center",
               isDark
-                ? "bg-[#1A1A1A] border-[#333] text-white"
+                ? "bg-[#18161C] border-[#2A2830] text-white"
                 : "bg-white border-gray-200 text-black"
             )}
           >
@@ -36,7 +36,7 @@ const DownloadModal: React.FC<DownloadModalProps> = ({
               className={cn(
                 "absolute -bottom-2 right-6 w-4 h-4 rotate-45 border-r border-b",
                 isDark
-                  ? "bg-[#1A1A1A] border-[#333]"
+                  ? "bg-[#18161C] border-[#2A2830]"
                   : "bg-white border-gray-200"
               )}
             />

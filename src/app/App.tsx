@@ -180,6 +180,13 @@ const router = createBrowserRouter([
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
   const token = useAppSelector((state) => state.auth.accessToken);
+  const isDark = useAppSelector((state) => state.theme.isDark);
+
+  // `.dark` on <html> switches the brand palette in index.css for every
+  // route, including the ones outside the Home layout (login, signup, …).
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDark);
+  }, [isDark]);
 
   // Fetch agents and public agents whenever we have a valid token
   useEffect(() => {

@@ -51,10 +51,10 @@ const MessageAvatar: React.FC<{
           "w-9 h-9 rounded-full flex items-center justify-center shadow-sm border transition-transform hover:scale-105 select-none",
           isUser
             ? isDark
-              ? "bg-[#2F3336] border-[#2F3336] text-white"
+              ? "bg-[#2A2830] border-[#2A2830] text-white"
               : "bg-white border-gray-200 text-gray-700"
             : isDark
-            ? "bg-[#2F3336]  border-transparent"
+            ? "bg-[#2A2830]  border-transparent"
             : "bg-white border-transparent"
         )}
       >

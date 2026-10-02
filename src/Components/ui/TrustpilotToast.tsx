@@ -3,10 +3,25 @@ import { X, Star } from 'lucide-react';
 import gsap from 'gsap';
 import { useAppSelector } from '../../hooks/useRedux';
 
+const DISMISS_KEY = "integri_trustpilot_dismissed";
+/** Ask for a review only once someone has actually used the app. */
+const MIN_CHATS = 3;
+
+const wasDismissed = () => {
+  try {
+    return localStorage.getItem(DISMISS_KEY) === "1";
+  } catch {
+    return false;
+  }
+};
+
 const TrustpilotToast: React.FC = () => {
-  const [isVisible, setIsVisible] = useState(true);
   const toastRef = useRef<HTMLAnchorElement>(null);
-  const isDark = useAppSelector((state: any) => state.theme?.isDark ?? true);
+  const isDark = useAppSelector((state) => state.theme?.isDark ?? true);
+  const signedIn = useAppSelector((state) => !!state.auth?.user);
+  const chatCount = useAppSelector((state) => state.chat?.sessions?.length ?? 0);
+  const [dismissed, setDismissed] = useState(wasDismissed);
+  const isVisible = signedIn && chatCount >= MIN_CHATS && !dismissed;
 
   useLayoutEffect(() => {
     if (!toastRef.current) return;
@@ -32,7 +47,7 @@ const TrustpilotToast: React.FC = () => {
     }, toastRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [isVisible]);
 
   const handleDismiss = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent redirect
@@ -45,7 +60,14 @@ const TrustpilotToast: React.FC = () => {
       scale: 0.9,
       duration: 0.3,
       ease: "power2.in",
-      onComplete: () => setIsVisible(false)
+      onComplete: () => {
+        try {
+          localStorage.setItem(DISMISS_KEY, "1");
+        } catch {
+          // Storage blocked: it just reappears next visit.
+        }
+        setDismissed(true);
+      }
     });
   };
 
@@ -64,7 +86,7 @@ const TrustpilotToast: React.FC = () => {
         transition-transform duration-200
         sm:bottom-8 sm:right-8 sm:scale-100 scale-90 origin-bottom-right
         ${isDark 
-          ? 'bg-[#18181b]/80 backdrop-blur-md border border-[#27272a] text-white' 
+          ? 'bg-[#18161C]/80 backdrop-blur-md border border-[#2A2830] text-white' 
           : 'bg-white/80 backdrop-blur-md border border-gray-200 text-gray-900'}
       `}
       style={{
@@ -89,7 +111,7 @@ const TrustpilotToast: React.FC = () => {
         title="Dismiss"
         className={`
           absolute top-1.5 right-1.5 p-1 rounded-md opacity-60 hover:opacity-100 transition-opacity hover:cursor-pointer
-          ${isDark ? 'hover:bg-[#27272a]' : 'hover:bg-gray-100'}
+          ${isDark ? 'hover:bg-[#1F1D25]' : 'hover:bg-gray-100'}
         `}
       >
         <X size={14} />

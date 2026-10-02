@@ -10,7 +10,7 @@ const Navbar: React.FC = () => {
     <nav
       className={cn(
         "relative flex items-center justify-between px-4 py-2 h-16 w-full transition-colors z-50",
-        isDark ? "bg-[#000000]" : "bg-white"
+        isDark ? "bg-[#07060A]" : "bg-white"
       )}
     >
       <div className="flex items-center md:hidden ">

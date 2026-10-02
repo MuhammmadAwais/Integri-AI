@@ -65,13 +65,13 @@ const EmailCrafterWorkspace: React.FC = () => {
     <div
       className={cn(
         "h-full w-full flex flex-col overflow-hidden",
-        isDark ? "bg-[#09090b] text-white" : "bg-gray-50 text-gray-900"
+        isDark ? "bg-[#07060A] text-white" : "bg-gray-50 text-gray-900"
       )}
     >
       {/* Header */}
       <div className={cn(
         "shrink-0 p-4 border-b flex items-center gap-4",
-        isDark ? "border-white/5 bg-[#0a0a0a]" : "border-gray-200 bg-white"
+        isDark ? "border-white/5 bg-[#07060A]" : "border-gray-200 bg-white"
       )}>
         <button
           onClick={() => navigate("/agents")}
@@ -99,7 +99,7 @@ const EmailCrafterWorkspace: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             className={cn(
               "flex flex-col rounded-2xl border p-6 h-[800px] lg:h-auto",
-              isDark ? "bg-[#0a0a0a] border-white/5" : "bg-white border-gray-200 shadow-sm"
+              isDark ? "bg-[#07060A] border-white/5" : "bg-white border-gray-200 shadow-sm"
             )}
           >
             <h2 className="font-semibold mb-6">Input Configuration</h2>
@@ -113,7 +113,7 @@ const EmailCrafterWorkspace: React.FC = () => {
                   className={cn(
                     "flex-1 p-4 rounded-xl border resize-none focus:ring-2 focus:ring-blue-500/50 outline-none transition-all",
                     isDark
-                      ? "bg-black border-white/10 placeholder-gray-600 text-gray-200 focus:bg-[#111]"
+                      ? "bg-black border-white/10 placeholder-gray-600 text-gray-200 focus:bg-[#18161C]"
                       : "bg-gray-50 border-gray-200 placeholder-gray-400 text-gray-800 focus:bg-white"
                   )}
                   required
@@ -130,7 +130,7 @@ const EmailCrafterWorkspace: React.FC = () => {
                     className={cn(
                       "p-3 rounded-xl border focus:ring-2 focus:ring-blue-500/50 outline-none transition-all",
                       isDark
-                        ? "bg-black border-white/10 text-gray-200 focus:bg-[#111]"
+                        ? "bg-black border-white/10 text-gray-200 focus:bg-[#18161C]"
                         : "bg-gray-50 border-gray-200 text-gray-800 focus:bg-white"
                     )}
                     required
@@ -146,7 +146,7 @@ const EmailCrafterWorkspace: React.FC = () => {
                     className={cn(
                       "p-3 rounded-xl border focus:ring-2 focus:ring-blue-500/50 outline-none transition-all",
                       isDark
-                        ? "bg-black border-white/10 text-gray-200 focus:bg-[#111]"
+                        ? "bg-black border-white/10 text-gray-200 focus:bg-[#18161C]"
                         : "bg-gray-50 border-gray-200 text-gray-800 focus:bg-white"
                     )}
                     required
@@ -177,7 +177,7 @@ const EmailCrafterWorkspace: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             className={cn(
               "flex flex-col rounded-2xl border p-6 min-h-[600px] lg:min-h-0",
-              isDark ? "bg-[#0a0a0a] border-white/5" : "bg-white border-gray-200 shadow-sm"
+              isDark ? "bg-[#07060A] border-white/5" : "bg-white border-gray-200 shadow-sm"
             )}
           >
             <h2 className="font-semibold mb-6">Generated Output</h2>

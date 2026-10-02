@@ -6,6 +6,7 @@ import { cn } from "../../lib/utils";
 import { Check, Bot, Sparkles, Plus, Loader2 } from "lucide-react";
 
 import { fetchAgents, fetchPublicAgents } from "../../features/agents/agentsSlice";
+import { resolveModel } from "../../../Constants";
 
 interface AgentMenuProps {
   isOpen: boolean;
@@ -130,7 +131,7 @@ const AgentMenu: React.FC<AgentMenuProps> = ({
             className={cn(
               "w-64 p-2 rounded-xl border shadow-xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-200",
               isDark
-                ? "bg-[#121212]/95 border-[#27272a] shadow-black/50"
+                ? "bg-[#18161C]/95 border-[#2A2830] shadow-black/50"
                 : "bg-white/95 border-gray-200 shadow-lg"
             )}
           >
@@ -144,7 +145,7 @@ const AgentMenu: React.FC<AgentMenuProps> = ({
             {/* Tabs Selector */}
             <div className={cn(
               "flex p-0.5 rounded-lg mb-2 border",
-              isDark ? "border-[#27272a] bg-[#161618]" : "border-gray-100 bg-gray-50"
+              isDark ? "border-[#2A2830] bg-[#161618]" : "border-gray-100 bg-gray-50"
             )}>
               <button
                 type="button"
@@ -242,7 +243,7 @@ const AgentMenu: React.FC<AgentMenuProps> = ({
                                   {agent.name}
                                 </span>
                                 <span className="text-[10px] opacity-60 uppercase">
-                                  {agent.model}
+                                  {resolveModel(agent.recommended_model || agent.model).label}
                                 </span>
                               </div>
                             </div>
@@ -305,7 +306,7 @@ const AgentMenu: React.FC<AgentMenuProps> = ({
                                 {agent.name}
                               </span>
                               <span className="text-[10px] opacity-60 uppercase">
-                                {agent.model}
+                                {resolveModel(agent.recommended_model || agent.model).label}
                               </span>
                             </div>
                           </div>

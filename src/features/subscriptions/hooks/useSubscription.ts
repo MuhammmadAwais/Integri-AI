@@ -2,7 +2,10 @@ import { useMemo, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux";
 import AVAILABLE_MODELS, {
   getAvailableModelsByTier,
+  HIDDEN_PICKER_MODEL_IDS,
   MULTI_CHAT_LIMITS,
+  resolveAllowedModels,
+  type ModelConfig,
   type SubscriptionTier,
 } from "../../../../Constants";
 import { fetchLimits } from "../../limits/slices/limitsSlice";
@@ -49,10 +52,25 @@ export const useSubscription = () => {
       betaAccess: currentLevel >= TIER_LEVELS.pro,
     };
 
-    let availableModels = getAvailableModelsByTier(tier);
-    if (limits?.allowed_models && Array.isArray(limits.allowed_models)) {
-      availableModels = AVAILABLE_MODELS.filter((m) => limits.allowed_models.includes(m.id));
-    }
+    // Same resolution order as the mobile app: the live server list wins, but a
+    // list that collapses to a single entry (the /me/limits failure fallback
+    // returns just `integri`) is treated as "no real data" and the tier
+    // catalog is used instead.
+    const allowed: string[] = Array.isArray(limits?.allowed_models)
+      ? limits.allowed_models
+      : [];
+    const availableModels: ModelConfig[] =
+      allowed.length > 1
+        ? resolveAllowedModels(allowed)
+        : (getAvailableModelsByTier(tier) as ModelConfig[]);
+
+    // Everything a picker should list: allowed models first, then catalog
+    // models the plan doesn't include (rendered as locked).
+    const availableIds = new Set(availableModels.map((m) => m.id));
+    const pickerModels: ModelConfig[] = [
+      ...availableModels,
+      ...(AVAILABLE_MODELS as ModelConfig[]).filter((m) => !availableIds.has(m.id)),
+    ].filter((m) => !HIDDEN_PICKER_MODEL_IDS.includes(m.id));
     const multiChatLimit = (tier && MULTI_CHAT_LIMITS[tier]) || MULTI_CHAT_LIMITS.free;
 
     return {
@@ -64,6 +82,7 @@ export const useSubscription = () => {
       isAtLeastPro: currentLevel >= TIER_LEVELS.pro,         // pro only
       canAccess: (feature: keyof typeof features) => features[feature],
       availableModels,
+      pickerModels,
       multiChatLimit,
     };
   }, [tier, limits]);

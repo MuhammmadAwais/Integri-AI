@@ -43,12 +43,12 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
   return (
     <div
       ref={containerRef}
-      className="flex min-h-screen max-h-screen items-center w-full bg-[#18181B] overflow-hidden" 
+      className="flex min-h-screen max-h-screen items-center w-full bg-[#07060A] overflow-hidden" 
     >
       {/* --- LEFT SIDE: Form --- */}
       <div className="w-full lg:w-1/2 h-screen md:h-auto flex items-center justify-center p-6 sm:p-8 md:p-12 relative z-10 overflow-hidden">
         {/* Decorative Background Blob */}
-        <div className="absolute  top-[-20%] left-[-10%] w-[500px] h-[500px] bg-red-600/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute  top-[-20%] left-[-10%] w-[500px] h-[500px] bg-[#5EEAD4]/5 rounded-full blur-[120px] pointer-events-none" />
 
         <div className="w-full max-w-md mx-auto">
           <div className="mb-6 auth-content">
@@ -103,7 +103,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
 
       {/* --- RIGHT SIDE: Image --- */}
       <div className="hidden lg:block w-1/2 relative p-4 h-screen top-0 overflow-hidden">
-        <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl bg-black border border-[#27272A]">
+        <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl bg-black border border-[#2A2830]">
           <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent z-10" />
           <img
             ref={imageRef}

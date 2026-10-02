@@ -34,7 +34,7 @@ const ReasoningMenu : React.FC<ReasoningMenuProps> = ({
         className={cn(
           "absolute bottom-16 right-0 w-[90vw] sm:w-[260px] rounded-2xl border shadow-2xl z-50 overflow-hidden animate-in zoom-in-95 duration-100 p-2 ",
           isDark
-            ? "bg-[#181818] border-[#2A2B32] text-gray-200"
+            ? "bg-[#18161C] border-[#2A2830] text-gray-200"
             : "bg-white border-gray-200 text-gray-900"
         )}
       >
@@ -47,8 +47,8 @@ const ReasoningMenu : React.FC<ReasoningMenuProps> = ({
             }}
             className={cn(
               "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors hover:cursor-pointer",
-              isDark ? "hover:bg-[#2A2B32]" : "hover:bg-gray-100",
-              selected === opt.id && (isDark ? "bg-[#2A2B32]" : "bg-gray-100")
+              isDark ? "hover:bg-[#1F1D25]" : "hover:bg-gray-100",
+              selected === opt.id && (isDark ? "bg-[#1F1D25]" : "bg-gray-100")
             )}
           >
             <opt.icon

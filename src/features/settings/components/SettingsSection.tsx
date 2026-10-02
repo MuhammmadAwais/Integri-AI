@@ -28,7 +28,7 @@ const SettingsSection: React.FC<SettingsSectionProps> = ({
       className={cn(
         "rounded-2xl border p-6 transition-all duration-300 mb-6",
         isDark
-          ? "bg-[#18181b] border-[#27272a]"
+          ? "bg-[#18161C] border-[#2A2830]"
           : "bg-white border-gray-200 shadow-sm"
       )}
     >

@@ -15,6 +15,7 @@ export interface Agent {
   created_at?: string;
   conversation_starters?: string[];
   recommended_model?: string;
+  recommended_provider?: string;
   is_owner?: boolean;
   is_public?: boolean;
 }

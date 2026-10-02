@@ -13,6 +13,7 @@ import { cn } from "../lib/utils";
 import { useBlogPost, useBlogMetadata } from "../features/blog/hooks/useBlog";
 import type { BlogContentBlock, BlogMetadata } from "../features/blog/models/blog";
 import ShareModal from "../Components/ui/ShareModal";
+import Seo, { toMetaDescription } from "../Components/seo/Seo";
 import gsap from "gsap";
 
 // ── Minimalist SVG Thumbnail Fallback ──────────────────────────────────
@@ -20,7 +21,7 @@ const ThumbnailFallback: React.FC<{ isDark: boolean }> = ({ isDark }) => (
   <div
     className={cn(
       "w-full h-full flex items-center justify-center relative overflow-hidden select-none",
-      isDark ? "bg-[#111]" : "bg-gray-100"
+      isDark ? "bg-[#18161C]" : "bg-gray-100"
     )}
   >
     <div
@@ -120,7 +121,7 @@ const BlogBlock: React.FC<{
       const imgUrl = typeof block.value === "string" ? block.value : "";
       return (
         <figure className="my-6 space-y-2 select-none">
-          <div className="rounded-xl overflow-hidden bg-[#080808] border border-black/5 dark:border-white/5">
+          <div className="rounded-xl overflow-hidden bg-[#07060A] border border-black/5 dark:border-white/5">
             <img
               src={imgUrl}
               alt=""
@@ -149,11 +150,11 @@ const RelatedBlogCard: React.FC<{
       className={cn(
         "flex gap-3 p-3 rounded-xl transition-all duration-200 border border-transparent",
         isDark
-          ? "hover:bg-[#111] hover:border-white/5"
+          ? "hover:bg-[#18161C] hover:border-white/5"
           : "hover:bg-gray-100/60 hover:border-gray-200 shadow-sm hover:shadow"
       )}
     >
-      <div className="w-20 h-14 rounded-lg overflow-hidden shrink-0 bg-[#080808] relative">
+      <div className="w-20 h-14 rounded-lg overflow-hidden shrink-0 bg-[#07060A] relative">
         {blog.thumbnail ? (
           <img
             src={blog.thumbnail}
@@ -223,7 +224,7 @@ const BlogDetailPage: React.FC = () => {
       <div
         className={cn(
           "h-full w-full flex flex-col items-center justify-center gap-3",
-          isDark ? "bg-[#000]" : "bg-gray-50/50"
+          isDark ? "bg-[#07060A]" : "bg-gray-50/50"
         )}
       >
         <Loader2
@@ -248,9 +249,11 @@ const BlogDetailPage: React.FC = () => {
       <div
         className={cn(
           "h-full w-full flex flex-col items-center justify-center gap-4",
-          isDark ? "bg-[#000] text-white" : "bg-gray-50/50 text-gray-900"
+          isDark ? "bg-[#07060A] text-white" : "bg-gray-50/50 text-gray-900"
         )}
       >
+        {/* Missing post: a soft 404, so keep it out of the index */}
+        <Seo title="Post not found | Integri" description="This blog post could not be found." noindex />
         <h2 className="text-xl font-bold">{error ?? "Blueprint not found"}</h2>
         <button
           onClick={() => navigate("/blog")}
@@ -265,14 +268,28 @@ const BlogDetailPage: React.FC = () => {
   // Sort blocks sequentially
   const sortedBlocks = [...blog.blocks].sort((a, b) => a.order - b.order);
 
+  const summary = toMetaDescription(
+    sortedBlocks.find((b) => b.type === "paragraph" && typeof b.value === "string" && b.value.trim())
+      ?.value as string ?? blog.title
+  );
+
   return (
     <div
       className={cn(
         "h-full w-full overflow-y-auto",
-        isDark ? "bg-[#000]" : "bg-gray-50/50"
+        isDark ? "bg-[#07060A]" : "bg-gray-50/50"
       )}
       id="blog-detail-root"
     >
+      <Seo
+        title={`${blog.title} | Integri`}
+        description={summary}
+        canonicalPath={`/blog/${slug}`}
+        type="article"
+        image={blog.thumbnail || undefined}
+        // Drafts are reachable by id but must never be indexed
+        noindex={blog.status !== "published"}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
         {/* Breadcrumb Navigation */}
         <nav
@@ -333,7 +350,7 @@ const BlogDetailPage: React.FC = () => {
                     key={tag}
                     className={cn(
                       "text-[10px] px-2 py-0.5 rounded-full font-medium",
-                      isDark ? "bg-[#161616] text-gray-400" : "bg-gray-200/50 text-gray-600"
+                      isDark ? "bg-[#18161C] text-gray-400" : "bg-gray-200/50 text-gray-600"
                     )}
                   >
                     #{tag}
@@ -369,7 +386,7 @@ const BlogDetailPage: React.FC = () => {
                   className={cn(
                     "ml-auto flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full transition-colors cursor-pointer focus:ring-2 focus:ring-blue-500/50",
                     isDark
-                      ? "bg-[#161616] text-gray-300 hover:bg-[#222]"
+                      ? "bg-[#18161C] text-gray-300 hover:bg-[#1F1D25]"
                       : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 shadow-sm"
                   )}
                 >
@@ -379,7 +396,7 @@ const BlogDetailPage: React.FC = () => {
               </div>
 
               {/* Hero Image / Minimalist Fallback */}
-              <div className="detail-animate rounded-2xl overflow-hidden bg-[#080808] border border-black/5 dark:border-white/5 aspect-video w-full relative">
+              <div className="detail-animate rounded-2xl overflow-hidden bg-[#07060A] border border-black/5 dark:border-white/5 aspect-video w-full relative">
                 {blog.thumbnail ? (
                   <img
                     src={blog.thumbnail}
@@ -414,7 +431,7 @@ const BlogDetailPage: React.FC = () => {
             <div
               className={cn(
                 "rounded-2xl overflow-hidden sticky top-6 border",
-                isDark ? "bg-[#0a0a0a] border-white/5" : "bg-white border-gray-100 shadow-sm"
+                isDark ? "bg-[#07060A] border-white/5" : "bg-white border-gray-100 shadow-sm"
               )}
             >
               <div
@@ -449,20 +466,20 @@ const BlogDetailPage: React.FC = () => {
                       <div
                         className={cn(
                           "w-20 h-14 rounded-lg shrink-0",
-                          isDark ? "bg-[#161616]" : "bg-gray-100"
+                          isDark ? "bg-[#18161C]" : "bg-gray-100"
                         )}
                       />
                       <div className="flex flex-col justify-center gap-2 flex-1">
                         <div
                           className={cn(
                             "h-3 w-full rounded",
-                            isDark ? "bg-[#161616]" : "bg-gray-100"
+                            isDark ? "bg-[#18161C]" : "bg-gray-100"
                           )}
                         />
                         <div
                           className={cn(
                             "h-2.5 w-16 rounded",
-                            isDark ? "bg-[#161616]" : "bg-gray-100"
+                            isDark ? "bg-[#18161C]" : "bg-gray-100"
                           )}
                         />
                       </div>

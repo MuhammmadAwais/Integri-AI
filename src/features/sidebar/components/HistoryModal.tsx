@@ -146,7 +146,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
         <div
           className={`relative w-full h-full md:w-[90vw] md:h-[85vh] md:max-w-6xl md:rounded-2xl overflow-hidden flex border ${
             isDark
-              ? "bg-[#101010] border-[#2A2B32] text-white"
+              ? "bg-[#101010] border-[#2A2830] text-white"
               : "bg-white border-gray-200 text-black"
           }`}
           onClick={(e) => e.stopPropagation()}

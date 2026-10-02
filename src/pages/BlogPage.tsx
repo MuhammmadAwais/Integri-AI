@@ -18,7 +18,7 @@ const ThumbnailFallback: React.FC<{ isDark: boolean }> = ({ isDark }) => (
   <div
     className={cn(
       "w-full h-full flex items-center justify-center relative overflow-hidden select-none",
-      isDark ? "bg-[#111]" : "bg-gray-100"
+      isDark ? "bg-[#18161C]" : "bg-gray-100"
     )}
   >
     <div
@@ -67,12 +67,12 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog, isDark }) => {
         className={cn(
           "rounded-xl overflow-hidden transition-all duration-300 h-full flex flex-col focus-within:ring-2 focus-within:ring-blue-500/50",
           isDark
-            ? "bg-[#0a0a0a] hover:bg-[#111] border border-white/5 hover:border-white/10"
+            ? "bg-[#07060A] hover:bg-[#18161C] border border-white/5 hover:border-white/10"
             : "bg-white hover:bg-gray-50/80 border border-gray-100 hover:border-gray-200 shadow-sm hover:shadow-md"
         )}
       >
         {/* Thumbnail Image / SVG Fallback */}
-        <div className="aspect-[16/10] w-full overflow-hidden relative border-b border-black/5 bg-[#080808]">
+        <div className="aspect-[16/10] w-full overflow-hidden relative border-b border-black/5 bg-[#07060A]">
           {blog.thumbnail ? (
             <img
               src={blog.thumbnail}
@@ -154,13 +154,13 @@ const CardSkeleton: React.FC<{ isDark: boolean }> = ({ isDark }) => (
   <div
     className={cn(
       "rounded-xl overflow-hidden animate-pulse h-[340px] flex flex-col border",
-      isDark ? "bg-[#0a0a0a] border-white/5" : "bg-white border-gray-100 shadow-sm"
+      isDark ? "bg-[#07060A] border-white/5" : "bg-white border-gray-100 shadow-sm"
     )}
   >
     <div
       className={cn(
         "aspect-[16/10]",
-        isDark ? "bg-[#161616]" : "bg-gray-100"
+        isDark ? "bg-[#18161C]" : "bg-gray-100"
       )}
     />
     <div className="p-5 flex-1 space-y-3">
@@ -168,26 +168,26 @@ const CardSkeleton: React.FC<{ isDark: boolean }> = ({ isDark }) => (
         <div
           className={cn(
             "h-3.5 w-16 rounded",
-            isDark ? "bg-[#161616]" : "bg-gray-100"
+            isDark ? "bg-[#18161C]" : "bg-gray-100"
           )}
         />
         <div
           className={cn(
             "h-3.5 w-24 rounded",
-            isDark ? "bg-[#161616]" : "bg-gray-100"
+            isDark ? "bg-[#18161C]" : "bg-gray-100"
           )}
         />
       </div>
       <div
         className={cn(
           "h-5 w-full rounded",
-          isDark ? "bg-[#161616]" : "bg-gray-100"
+          isDark ? "bg-[#18161C]" : "bg-gray-100"
         )}
       />
       <div
         className={cn(
           "h-4 w-3/4 rounded",
-          isDark ? "bg-[#161616]" : "bg-gray-100"
+          isDark ? "bg-[#18161C]" : "bg-gray-100"
         )}
       />
     </div>
@@ -236,7 +236,7 @@ const BlogPage: React.FC = () => {
       ref={containerRef}
       className={cn(
         "h-full w-full overflow-y-auto select-none",
-        isDark ? "bg-[#000]" : "bg-gray-50/50"
+        isDark ? "bg-[#07060A]" : "bg-gray-50/50"
       )}
       id="blog-page-root"
     >
@@ -268,7 +268,7 @@ const BlogPage: React.FC = () => {
             className={cn(
               "flex items-center gap-2.5 px-4 py-2 rounded-xl border w-full md:max-w-md transition-all group",
               isDark
-                ? "bg-[#0a0a0a] border-white/5 focus-within:border-white/20 focus-within:bg-black"
+                ? "bg-[#07060A] border-white/5 focus-within:border-white/20 focus-within:bg-black"
                 : "bg-white border-gray-200 focus-within:bg-white focus-within:border-gray-300 shadow-sm"
             )}
           >

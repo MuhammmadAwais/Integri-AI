@@ -22,6 +22,8 @@ interface ModelSelectorProps {
   onChange: (modelId: string) => void;
   disabled?: boolean;
   onLockedSelect?: () => void;
+  /** Extra lock rule on top of plan availability (e.g. agent-builder limits). */
+  isModelLocked?: (modelId: string) => boolean;
 }
 
 export const ModelSelector: React.FC<ModelSelectorProps> = ({
@@ -30,6 +32,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
   onChange,
   disabled = false,
   onLockedSelect,
+  isModelLocked,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -56,7 +59,9 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
   }, []);
 
   const handleSelect = (model: Model) => {
-    const isLocked = !availableModels.some((am) => am.id === model.id);
+    const isLocked =
+      !availableModels.some((am) => am.id === model.id) ||
+      !!isModelLocked?.(model.id);
 
     if (isLocked) {
       if (onLockedSelect) onLockedSelect();
@@ -138,13 +143,15 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
             "absolute left-0 top-full z-50 mt-2 w-full overflow-hidden rounded-xl border shadow-xl animate-in fade-in zoom-in-95 duration-100",
             // Menu Container Styles
             isDark
-              ? "border-zinc-800 bg-[#09090b] text-white"
+              ? "border-zinc-800 bg-[#07060A] text-white"
               : "border-zinc-200 bg-white"
           )}
         >
           <ul className="max-h-60 overflow-y-auto py-1 custom-scrollbar">
             {models.map((model) => {
-              const isLocked = !availableModels.some((am) => am.id === model.id);
+              const isLocked =
+                !availableModels.some((am) => am.id === model.id) ||
+                !!isModelLocked?.(model.id);
               const isSelected = selectedModelId === model.id;
 
               return (

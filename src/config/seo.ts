@@ -14,7 +14,7 @@ export const SITE_KEYWORDS =
 
 const BASE_URL =
   (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_APP_SITE_URL) ||
-  "https://integri.app";
+  "https://www.integri.app";
 
 export const getCanonicalUrl = (path: string) => {
   const p = path.startsWith("/") ? path : `/${path}`;
@@ -35,6 +35,12 @@ export type PageSEOConfig = {
   keywords?: string;
   /** Override for JSON-LD breadcrumb label */
   breadcrumbLabel?: string;
+  /**
+   * Article detail routes. The page itself (or, for crawlers that don't run
+   * JS, the ssrPreview function) supplies the per-article title/description,
+   * so the route-level defaults must not overwrite them.
+   */
+  isArticle?: boolean;
 };
 
 /**
@@ -53,24 +59,28 @@ const PAGE_SEO: Record<string, PageSEOConfig> = {
     title: `Sign In | ${SITE_NAME}`,
     description: "Sign in to Integri AI to access your custom agents, chatbots, and all AI models in one place.",
     canonicalPath: "/login",
+    noindex: true,
     breadcrumbLabel: "Sign In",
   },
   "/signup": {
     title: `Create Account | ${SITE_NAME}`,
     description: "Create your Integri AI account. Start building custom agents and chatting with GPT, Claude, Gemini, and more.",
     canonicalPath: "/signup",
+    noindex: true,
     breadcrumbLabel: "Sign Up",
   },
   "/getting-started": {
     title: `Getting Started | ${SITE_NAME}`,
     description: "Set up your Integri AI profile and learn how to use custom agents, chatbots, and all AI models.",
     canonicalPath: "/getting-started",
+    noindex: true,
     breadcrumbLabel: "Getting Started",
   },
   "/history": {
     title: `Chat History | ${SITE_NAME}`,
     description: "View and manage your Integri AI chat history across all models and custom agents.",
     canonicalPath: "/history",
+    noindex: true,
     breadcrumbLabel: "History",
   },
   "/playground": {
@@ -95,12 +105,14 @@ const PAGE_SEO: Record<string, PageSEOConfig> = {
     title: `Settings | ${SITE_NAME}`,
     description: "Manage your Integri AI account, subscription, and app settings.",
     canonicalPath: "/settings",
+    noindex: true,
     breadcrumbLabel: "Settings",
   },
   "/feedback": {
     title: `Send Feedback | ${SITE_NAME}`,
     description: "Share feedback about Integri AI. Help us improve custom agents, chatbots, and the unified AI experience.",
     canonicalPath: "/feedback",
+    noindex: true,
     breadcrumbLabel: "Feedback",
   },
   "/help": {
@@ -133,6 +145,19 @@ const PAGE_SEO: Record<string, PageSEOConfig> = {
     description: "Contact Integri AI support. Questions about custom agents, chatbots, or your account? We're here to help.",
     canonicalPath: "/contactUs",
     breadcrumbLabel: "Contact",
+  },
+  "/blog": {
+    title: `Blog – AI Insights, Guides & Analysis | ${SITE_NAME}`,
+    description: "In-depth articles on artificial intelligence: AI model comparisons, how-to guides, and analysis of the trends shaping the future of AI.",
+    canonicalPath: "/blog",
+    keywords: "AI blog, AI guides, GPT vs Claude, AI model comparison, prompt engineering, Integri AI",
+    breadcrumbLabel: "Blog",
+  },
+  "/privacy-policy": {
+    title: `Privacy Policy | ${SITE_NAME}`,
+    description: "How Integri AI collects, uses, and protects your personal data.",
+    canonicalPath: "/privacy-policy",
+    breadcrumbLabel: "Privacy Policy",
   },
   "/news": {
     title: `AI News & Articles | ${SITE_NAME}`,
@@ -207,6 +232,7 @@ const DYNAMIC_PATTERNS: { pattern: RegExp; config: PageSEOConfig; basePath: stri
       description: "Read the latest AI news and technology updates on Integri AI.",
       canonicalPath: "/news",
       breadcrumbLabel: "News Detail",
+      isArticle: true,
     },
     basePath: "/news",
   },
@@ -217,8 +243,20 @@ const DYNAMIC_PATTERNS: { pattern: RegExp; config: PageSEOConfig; basePath: stri
       description: "Read in-depth AI articles, tutorials, and guides on Integri AI.",
       canonicalPath: "/news",
       breadcrumbLabel: "Article Detail",
+      isArticle: true,
     },
     basePath: "/news",
+  },
+  {
+    pattern: /^\/blog\/[^/]+$/,
+    config: {
+      title: `Blog | ${SITE_NAME}`,
+      description: "Read in-depth AI articles, guides, and analysis on the Integri AI blog.",
+      canonicalPath: "/blog",
+      breadcrumbLabel: "Blog Post",
+      isArticle: true,
+    },
+    basePath: "/blog",
   },
 ];
 
@@ -230,14 +268,14 @@ function getConfigForPath(pathname: string): PageSEOConfig & { canonicalPath: st
     if (pattern.test(pathname)) {
       return {
         ...config,
-        canonicalPath: config.canonicalPath ?? basePath,
+        canonicalPath: config.isArticle ? pathname : config.canonicalPath ?? basePath,
         basePath,
       };
     }
   }
 
-  // Unknown/junk routes (e.g. /recruit, /12345.htm, /siteinfo/...) — same SPA HTML.
-  // Use canonical "/" + noindex to fix "Duplicate without user-selected canonical".
+  // Unknown/junk routes (e.g. /recruit, /12345.htm, /siteinfo/...) — same SPA
+  // HTML. noindex only; PageSEO emits no canonical for noindex pages.
   return {
     title: SITE_DEFAULT_TITLE,
     description: SITE_DEFAULT_DESCRIPTION,
@@ -257,24 +295,23 @@ export function getSEOForPath(pathname: string) {
   };
 }
 
-/** Paths to include in sitemap.xml (indexable only). */
+/**
+ * Indexable static routes. scripts/generate-sitemaps.mjs keeps its own copy
+ * (it runs in Node, outside the Vite build) — update both together.
+ */
 export const SITEMAP_PATHS: { path: string; changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly"; priority?: number }[] = [
   { path: "/", changefreq: "daily", priority: 1 },
-  { path: "/login", changefreq: "monthly", priority: 0.6 },
-  { path: "/signup", changefreq: "monthly", priority: 0.6 },
-  { path: "/getting-started", changefreq: "monthly", priority: 0.7 },
-  { path: "/history", changefreq: "daily", priority: 0.8 },
-  { path: "/playground", changefreq: "weekly", priority: 0.9 },
-  { path: "/voice", changefreq: "weekly", priority: 0.9 },
-  { path: "/pdf", changefreq: "weekly", priority: 0.9 },
-  { path: "/settings", changefreq: "monthly", priority: 0.6 },
-  { path: "/feedback", changefreq: "monthly", priority: 0.5 },
-  { path: "/help", changefreq: "weekly", priority: 0.7 },
-  { path: "/agents", changefreq: "weekly", priority: 0.9 },
-  { path: "/subscriptions", changefreq: "weekly", priority: 0.9 },
-  { path: "/imageGen", changefreq: "weekly", priority: 0.9 },
-  { path: "/contactUs", changefreq: "monthly", priority: 0.7 },
   { path: "/news", changefreq: "daily", priority: 0.9 },
+  { path: "/blog", changefreq: "daily", priority: 0.9 },
+  { path: "/agents", changefreq: "weekly", priority: 0.9 },
+  { path: "/playground", changefreq: "weekly", priority: 0.9 },
+  { path: "/voice", changefreq: "weekly", priority: 0.8 },
+  { path: "/pdf", changefreq: "weekly", priority: 0.8 },
+  { path: "/imageGen", changefreq: "weekly", priority: 0.8 },
+  { path: "/subscriptions", changefreq: "weekly", priority: 0.8 },
+  { path: "/help", changefreq: "monthly", priority: 0.6 },
+  { path: "/contactUs", changefreq: "monthly", priority: 0.5 },
+  { path: "/privacy-policy", changefreq: "yearly", priority: 0.3 },
 ];
 
 export { BASE_URL };

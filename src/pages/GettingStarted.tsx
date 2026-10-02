@@ -371,7 +371,7 @@ const GettingStarted: React.FC = () => {
         <div
           className="absolute inset-0 z-10 opacity-40 transition-opacity duration-500"
           style={{
-            background: `radial-gradient(600px circle at ${mousePos.x}px ${mousePos.y}px, rgba(99, 102, 241, 0.15), transparent 40%)`,
+            background: `radial-gradient(600px circle at ${mousePos.x}px ${mousePos.y}px, rgba(94, 234, 212, 0.15), transparent 40%)`,
           }}
         />
       </div>
@@ -570,7 +570,7 @@ const GettingStarted: React.FC = () => {
                               width: dateInputRef.current?.offsetWidth || 300,
                               transformOrigin: coords.origin,
                             }}
-                            className="z-9999 p-4 rounded-xl border border-zinc-700/50 bg-[#121212]/95 backdrop-blur-xl shadow-2xl"
+                            className="z-9999 p-4 rounded-xl border border-zinc-700/50 bg-[#18161C]/95 backdrop-blur-xl shadow-2xl"
                           >
                             {/* Calendar Header */}
                             <div className="flex items-center justify-between mb-4">

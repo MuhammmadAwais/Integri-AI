@@ -177,7 +177,7 @@ const Signup: React.FC = () => {
           {t("signup.alreadyHaveAccount")}{" "}
           <Link
             to="/login"
-            className="text-red-500 hover:text-red-400 font-semibold transition-colors hover:cursor-pointer"
+            className="text-[#5EEAD4] hover:text-[#8FF0E0] font-semibold transition-colors hover:cursor-pointer"
           >
             {t("signup.signInLink")}
           </Link>

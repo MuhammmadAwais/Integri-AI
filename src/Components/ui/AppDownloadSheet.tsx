@@ -91,7 +91,7 @@ const AppDownloadSheet: React.FC = () => {
           "animate-in slide-in-from-bottom duration-300",
           "pb-[env(safe-area-inset-bottom)]",
           isDark
-            ? "bg-[#09090b] border-[#27272a]"
+            ? "bg-[#07060A] border-[#2A2830]"
             : "bg-white border-gray-200"
         )}
         onClick={(e) => e.stopPropagation()}

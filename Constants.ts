@@ -455,6 +455,133 @@ export const getAvailableModelsByTier = (tier: SubscriptionTier) => {
   });
 };
 
+// ─── Dynamic model resolution ────────────────────────────────────────────────
+// Mirrors the mobile app (AiAgentsScreenController): the server's
+// `allowed_models` from /me/limits is the source of truth, and ids that the
+// hardcoded catalog doesn't know yet get a derived label/provider/logo instead
+// of being dropped.
+
+export interface ModelConfig {
+  id: string;
+  label: string;
+  provider: string;
+  alt_provider?: string;
+  badge?: string;
+  light_theme_logo: string;
+  dark_theme_logo: string;
+  isPro: boolean;
+  isPremium: boolean;
+  isFree: boolean;
+}
+
+/** Models hidden from pickers (tool-style models / deprecated). */
+export const HIDDEN_PICKER_MODEL_IDS = [
+  "gpt-4o-mini-search-preview",
+  "gpt-4o-mini-deep-research",
+  "gpt-3.5-turbo",
+];
+
+const PROVIDER_LOGOS: Record<string, { light: string; dark: string }> = {
+  openai: { light: "/light-theme-openai.png", dark: "/dark-theme-openai.png" },
+  gemini: { light: "/gemini.png", dark: "/gemini.png" },
+  grok: { light: "/light-theme-grok.png", dark: "/dark-theme-grok.png" },
+  claude: { light: "/claude.png", dark: "/claude.png" },
+  deepseek: { light: "/deepseek.png", dark: "/deepseek.png" },
+  perplexity: { light: "/perplexity.png", dark: "/perplexity.png" },
+  mistral: { light: "/mistral.png", dark: "/mistral.png" },
+  glm: { light: "/zai.png", dark: "/zai.png" },
+};
+
+/** Curated labels for ids the app knows but the web catalog may not. */
+const KNOWN_MODEL_LABELS: Record<string, string> = {
+  "gpt-5-mini": "GPT-5 Mini",
+  "gpt-4.1": "GPT-4.1",
+  "gpt-4.1-mini": "GPT-4.1 Mini",
+  o3: "O3",
+  "o3-mini": "O3 Mini",
+  "claude-opus-4-8": "Claude Opus 4.8",
+  "claude-opus-4-6": "Claude Opus 4.6",
+  "claude-opus-4-5": "Claude Opus 4.5",
+  "claude-sonnet-4-6": "Claude Sonnet 4.6",
+  "claude-sonnet-4-5": "Claude Sonnet 4.5",
+  "claude-sonnet-4": "Claude Sonnet 4",
+  "glm-5": "GLM-5",
+  "glm-5.1": "GLM-5.1",
+  "glm-5.2": "GLM-5.2",
+};
+
+const providerForModelId = (id: string): string => {
+  const l = id.toLowerCase();
+  if (l === "integri") return "openai";
+  if (l.startsWith("gpt") || l.startsWith("chatgpt") || /^o\d/.test(l)) return "openai";
+  if (l.startsWith("gemini")) return "gemini";
+  if (l.startsWith("grok")) return "grok";
+  if (l.startsWith("claude")) return "claude";
+  if (l.startsWith("deepseek")) return "deepseek";
+  if (l.includes("sonar") || l.includes("perplexity")) return "perplexity";
+  if (l.startsWith("mistral")) return "mistral";
+  if (l.startsWith("glm")) return "glm";
+  if (l.startsWith("kimi")) return "kimi";
+  if (l.startsWith("moonshot")) return "moonshot";
+  return "openai";
+};
+
+const prettifyModelId = (id: string): string =>
+  id
+    .split(/[-_]/)
+    .map((part) => {
+      if (!part) return part;
+      const lower = part.toLowerCase();
+      if (lower === "gpt" || lower === "glm" || lower === "ocr") return part.toUpperCase();
+      if (/^o\d+$/.test(lower)) return part.toUpperCase();
+      if (/^[0-9]/.test(part)) return part;
+      return part[0].toUpperCase() + part.slice(1);
+    })
+    .join(" ");
+
+/**
+ * Returns the catalog entry for `id`, or a derived config for ids the catalog
+ * doesn't know (e.g. a model newly enabled on the backend).
+ */
+export const resolveModel = (id: string | null | undefined): ModelConfig => {
+  // Records without a model (e.g. some agents) fall back to Integri.
+  if (!id) id = "integri";
+  const known = (AVAILABLE_MODELS as ModelConfig[]).find((m) => m.id === id);
+  if (known) return known;
+  const provider = providerForModelId(id);
+  const logo = PROVIDER_LOGOS[provider] ?? {
+    light: "/light-theme-logo.png",
+    dark: "/dark-theme-logo.png",
+  };
+  return {
+    id,
+    label: KNOWN_MODEL_LABELS[id] ?? prettifyModelId(id),
+    provider,
+    light_theme_logo: logo.light,
+    dark_theme_logo: logo.dark,
+    isPro: true,
+    isPremium: true,
+    isFree: true,
+  };
+};
+
+/**
+ * Turns the server's `allowed_models` into display configs: de-duplicated,
+ * deprecated ids removed, and `integri` always first.
+ */
+export const resolveAllowedModels = (allowed: string[]): ModelConfig[] => {
+  const seen = new Set<string>();
+  const out: ModelConfig[] = [];
+  for (const raw of allowed) {
+    const id = raw?.trim();
+    if (!id || id === "gpt-3.5-turbo" || seen.has(id)) continue;
+    seen.add(id);
+    out.push(resolveModel(id));
+  }
+  if (!seen.has("integri")) out.unshift(resolveModel("integri"));
+  return out;
+};
+
 export const SUBSCRIPTION_PLANS = [
   {
     id: "Monthly Pro Subscription",

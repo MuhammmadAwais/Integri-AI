@@ -52,7 +52,7 @@ const NewUserBlockedModal: React.FC<NewUserBlockedModalProps> = ({ isOpen, onClo
           className={`
             relative w-full max-w-md rounded-2xl border shadow-2xl overflow-hidden
             ${isDark
-              ? "bg-[#09090b] border-zinc-800 text-white"
+              ? "bg-[#07060A] border-zinc-800 text-white"
               : "bg-white border-zinc-200 text-zinc-900"}
           `}
         >

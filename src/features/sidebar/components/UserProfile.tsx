@@ -16,6 +16,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { cn } from "../../../lib/utils";
 import Portal from "../../../Components/ui/Portal";
 import DownloadSettings from "../../settings/components/DownloadSettings";
+import ProfilePreferences from "./ProfilePreferences";
 import { useSubscription } from "../../subscriptions/hooks/useSubscription";
 
 interface UserProfileProps {
@@ -164,7 +165,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
           "flex items-center rounded-xl transition-colors cursor-pointer relative group select-none",
           isExpanded
             ? isDark
-              ? "p-2 hover:bg-[#181818] "
+              ? "p-2 hover:bg-[#18161C] "
               : " p-2 hover:bg-transparent"
             : "justify-center p-0 mt-2 w-full aspect-square hover:bg-transparent",
         )}
@@ -222,12 +223,12 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
           <p
             className={cn(
               "font-bold text-sm truncate",
-              isDark ? "text-[#E7E9EA]" : "text-black",
+              isDark ? "text-[#F2F4F7]" : "text-black",
             )}
           >
             {fullName}
           </p>
-          <p className="text-[#71767B] text-xs truncate">
+          <p className="text-[#999999] text-xs truncate">
             {username.split("@")[0]}
           </p>
         </div>
@@ -244,7 +245,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
           className={cn(
             "absolute flex items-center justify-center rounded-full shadow-md border transition-all duration-200 z-50 mb-4",
             isDark
-              ? "bg-[#1E1E1E] border-[#333] text-gray-400 hover:text-white hover:bg-[#333]"
+              ? "bg-[#1F1D25] border-[#2A2830] text-gray-400 hover:text-white hover:bg-[#2A2830]"
               : "bg-white border-gray-200 text-gray-500 hover:text-black hover:bg-gray-50",
             // Position Logic
             isExpanded
@@ -265,7 +266,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
             className={cn(
               "z-9990 rounded-xl shadow-2xl border overflow-hidden py-1 animate-in fade-in zoom-in-95 duration-100",
               isDark
-                ? "bg-[#1E1E1E] border-gray-700"
+                ? "bg-[#1F1D25] border-gray-700"
                 : "bg-white border-gray-200",
             )}
           >
@@ -287,6 +288,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ isExpanded, onToggle }) => {
                 {username}
               </p>
             </div>
+
+            <ProfilePreferences />
 
             {isGuest || !user ? (
               <>

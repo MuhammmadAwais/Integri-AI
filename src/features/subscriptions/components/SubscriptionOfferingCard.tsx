@@ -23,8 +23,8 @@ const SubscriptionOfferingCard: React.FC = () => {
     label: "Free Plan",
     headline: "Upgrade Now",
     subtext: null,
-    highlightColor: "text-[#00A9A4]",
-    hoverColor: "group-hover:text-[#00A9A4]",
+    highlightColor: "text-[#3BB8A0]",
+    hoverColor: "group-hover:text-[#3BB8A0]",
     overlayColor: isDark ? "bg-teal-500/10" : "bg-transparent",
     icon: null,
   };

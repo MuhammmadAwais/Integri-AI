@@ -28,7 +28,7 @@ const SystemToolCard: React.FC<SystemToolCardProps> = ({
         className={cn(
           "relative flex flex-col h-[260px] p-6 rounded-2xl border transition-all duration-300 overflow-hidden",
           isDark
-            ? "bg-[#0a0a0a] border-white/10 hover:border-white/20 hover:bg-[#111]"
+            ? "bg-[#07060A] border-white/10 hover:border-white/20 hover:bg-[#18161C]"
             : "bg-white border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300"
         )}
       >

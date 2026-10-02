@@ -10,7 +10,7 @@ import SubscriptionSettings from "../features/settings/components/SubscriptionSe
 import DownloadSettings from "../features/settings/components/DownloadSettings";
 import HelpAndAbout from "../features/settings/components/HelpAndAbout";
 import PersonalizationSettings from "../features/settings/components/PersonalizationSettings";
-import ParticleBackground from "../Components/ui/ParticleBackground";
+import AmbientBackground from "../Components/ui/AmbientBackground";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -29,10 +29,10 @@ const SettingsPage: React.FC = () => {
     <div
     className={cn(
       "h-full w-full overflow-y-auto custom-scrollbar p-4 md:p-8 lg:p-12",
-      isDark ? "bg-[#09090b] text-white" : "bg-gray-50 text-gray-900"
+      isDark ? "bg-[#07060A] text-white" : "bg-gray-50 text-gray-900"
     )}
     >
-    <ParticleBackground />
+    <AmbientBackground />
       <div className="max-w-3xl mx-auto pb-20">
         {/* Header */}
         <motion.div

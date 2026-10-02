@@ -110,13 +110,13 @@ const DocumentExplainerWorkspace: React.FC = () => {
     <div
       className={cn(
         "h-full w-full flex flex-col overflow-hidden",
-        isDark ? "bg-[#09090b] text-white" : "bg-gray-50 text-gray-900"
+        isDark ? "bg-[#07060A] text-white" : "bg-gray-50 text-gray-900"
       )}
     >
       {/* Header */}
       <div className={cn(
         "shrink-0 p-4 border-b flex items-center gap-4",
-        isDark ? "border-white/5 bg-[#0a0a0a]" : "border-gray-200 bg-white"
+        isDark ? "border-white/5 bg-[#07060A]" : "border-gray-200 bg-white"
       )}>
         <button
           onClick={() => navigate("/agents")}
@@ -144,7 +144,7 @@ const DocumentExplainerWorkspace: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             className={cn(
               "flex flex-col rounded-2xl border p-6 min-h-[400px]",
-              isDark ? "bg-[#0a0a0a] border-white/5" : "bg-white border-gray-200 shadow-sm"
+              isDark ? "bg-[#07060A] border-white/5" : "bg-white border-gray-200 shadow-sm"
             )}
           >
             <h2 className="font-semibold mb-6">Upload Document</h2>
@@ -214,7 +214,7 @@ const DocumentExplainerWorkspace: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             className={cn(
               "flex flex-col rounded-2xl border p-6 min-h-[600px] lg:min-h-0",
-              isDark ? "bg-[#0a0a0a] border-white/5" : "bg-white border-gray-200 shadow-sm"
+              isDark ? "bg-[#07060A] border-white/5" : "bg-white border-gray-200 shadow-sm"
             )}
           >
             <h2 className="font-semibold mb-6">Explanation Output</h2>

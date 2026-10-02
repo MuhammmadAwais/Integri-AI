@@ -12,7 +12,12 @@ type WebSocketMessage = {
 export class WebSocketService {
   private socket: WebSocket | null = null;
   private messageHandler: ((data: any) => void) | null = null;
-  private readonly socketUrl = import.meta.env.VITE_APP_WEBSOCKET_BASE_URL;
+  private closeHandler: (() => void) | null = null;
+  private lastAuth: { token: string; sessionId: string } | null = null;
+  // Dev: same-origin socket through Vite's ws proxy (see backendApi.ts).
+  private readonly socketUrl = import.meta.env.DEV
+    ? `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.host}/api/v1/chat`
+    : import.meta.env.VITE_APP_WEBSOCKET_BASE_URL;
   private messageQueue: WebSocketMessage[] = [];
 
   connect(token: string, sessionId: string) {
@@ -20,6 +25,7 @@ export class WebSocketService {
       this.disconnect();
     }
 
+    this.lastAuth = { token, sessionId };
     console.log(`🔌 [WS] Connecting to session: ${sessionId}`);
     this.socket = new WebSocket(this.socketUrl);
 
@@ -47,8 +53,14 @@ export class WebSocketService {
 
     this.socket.onerror = (error) => console.error("❌ [WS] Error:", error);
 
-    this.socket.onclose = () => {
-      // Optional: Auto-reconnect logic could go here
+    const socket = this.socket;
+    socket.onclose = () => {
+      // disconnect() detaches this.socket first, so only unexpected closes
+      // (server dropped the connection, network loss) reach the handler.
+      if (this.socket === socket) {
+        this.socket = null;
+        this.closeHandler?.();
+      }
     };
   }
 
@@ -80,6 +92,11 @@ export class WebSocketService {
     } else {
       console.log("📤 [WS] Sending Message:", message);
       this.messageQueue.push(message);
+      // The server dropped the previous connection: reopen the same session;
+      // onopen re-authenticates and flushes the queue.
+      if (!this.socket && this.lastAuth) {
+        this.connect(this.lastAuth.token, this.lastAuth.sessionId);
+      }
     }
   }
 
@@ -87,7 +104,12 @@ export class WebSocketService {
     this.messageHandler = callback;
   }
 
+  onClose(callback: () => void) {
+    this.closeHandler = callback;
+  }
+
   disconnect() {
+    this.lastAuth = null;
     if (!this.socket) return;
 
     const socket = this.socket;

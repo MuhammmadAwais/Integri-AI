@@ -118,12 +118,12 @@ const FileSizeLimitToast: React.FC<FileSizeLimitToastProps> = ({
 
     // Icon container
     iconBg: isDark
-      ? "rgba(59, 130, 246, 0.12)"  // blue-500/12
+      ? "rgba(94, 234, 212, 0.12)"  // blue-500/12
       : "rgba(239, 246, 255, 1)",    // blue-50
     iconBorder: isDark
-      ? "1px solid rgba(59, 130, 246, 0.22)"
+      ? "1px solid rgba(94, 234, 212, 0.22)"
       : "1px solid rgba(191, 219, 254, 1)", // blue-200
-    iconColor: isDark ? "#60a5fa" : "#3b82f6", // blue-400 / blue-500
+    iconColor: isDark ? "#5EEAD4" : "#14998A", // brand teal
 
     // Text
     title:    isDark ? "#f4f4f5" : "#09090b",   // zinc-100 / zinc-950

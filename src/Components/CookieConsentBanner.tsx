@@ -142,7 +142,7 @@ const CookieConsentBanner: React.FC = () => {
       ref={bannerRef}
       className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-[9999] backdrop-blur-[16px] bg-zinc-950/80 border border-white/10 rounded-2xl p-4 md:p-5 shadow-2xl w-[calc(100%-2rem)] sm:w-auto sm:max-w-[520px]"
       style={{
-        boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 0 40px rgba(59, 130, 246, 0.25)",
+        boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 0 40px rgba(94, 234, 212, 0.25)",
       }}
     >
       <div className="flex flex-row gap-3 md:gap-4 items-center">
@@ -174,7 +174,7 @@ const CookieConsentBanner: React.FC = () => {
             <button
               ref={acceptButtonRef}
               onClick={handleAccept}
-              className="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 text-white font-semibold rounded-xl py-2.5 px-5 hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-all hover:cursor-pointer relative overflow-hidden group flex-1"
+              className="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 text-white font-semibold rounded-xl py-2.5 px-5 hover:shadow-[0_0_20px_rgba(94,234,212,0.5)] transition-all hover:cursor-pointer relative overflow-hidden group flex-1"
             >
               {/* Shimmer effect */}
               <span className="shimmer-effect absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent w-1/2" style={{ transform: "translateX(-100%)" }}></span>

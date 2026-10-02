@@ -101,7 +101,7 @@ export const AttachmentGrid: React.FC<AttachmentProps> = ({ attachments, isDark 
                 className={cn(
                   "flex items-center gap-3 p-3 rounded-xl border shadow-sm transition-colors",
                   isDark
-                    ? "bg-[#2A2B32]/80 border-white/5 backdrop-blur-md"
+                    ? "bg-[#1F1D25]/80 border-white/5 backdrop-blur-md"
                     : "bg-white border-gray-200/60 backdrop-blur-md",
                   isProcessingOrThinking && 'animate-pulse opacity-70 cursor-wait'
                 )}

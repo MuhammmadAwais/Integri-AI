@@ -94,9 +94,8 @@ const SubmitButton: React.FC<{
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
       className="relative w-full overflow-hidden flex items-center justify-center gap-2
-                 py-4 rounded-xl font-bold text-sm text-white
-                 bg-linear-to-r from-red-600 to-red-700
-                 hover:from-red-500 hover:to-red-600
+                 py-4 rounded-xl font-bold text-sm text-[#07060A]
+                 bg-[#F2F4F7] hover:bg-white
                  transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed
                  shadow-lg shadow-red-900/25 cursor-pointer"
     >
@@ -140,7 +139,7 @@ const ForgotPasswordPage: React.FC = () => {
         autoClose: 4500,
         theme: "dark",
         style: {
-          background: "#111113",
+          background: "#18161C",
           border: "0.5px solid rgba(255,255,255,0.1)",
           borderRadius: "12px",
           color: "#f87171",

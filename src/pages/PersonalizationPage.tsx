@@ -115,7 +115,7 @@ const PersonalizationPage: React.FC = () => {
     }
   };
 
-  const bg = isDark ? 'bg-[#09090b]' : 'bg-zinc-50';
+  const bg = isDark ? 'bg-[#07060A]' : 'bg-zinc-50';
   const divider = isDark ? 'border-zinc-800' : 'border-zinc-200';
 
   return (

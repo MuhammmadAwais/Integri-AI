@@ -1,8 +1,11 @@
 import axios from "axios";
 import type { SubscriptionTier } from "../../Constants";
 
-const API_URL =
-  import.meta.env.VITE_APP_BACKEND_API_BASE_URL || "https://integri.cloud";
+// In dev, call the page's own origin so Vite's /api/v1 proxy (vite.config.ts)
+// forwards to the backend without CORS — whatever port the dev server took.
+const API_URL = import.meta.env.DEV
+  ? window.location.origin
+  : import.meta.env.VITE_APP_BACKEND_API_BASE_URL || "https://integri.cloud";
 
 const backendApi = axios.create({
   baseURL: API_URL,
@@ -684,6 +687,50 @@ export const MemoryService = {
   },
 };
 
+// --- IMAGE GENERATION (Integri Studio) ---
+// Same job API as the mobile app: start a job, poll its status, and fetch a
+// fresh signed URL for a finished job (the one in the status response expires).
+
+export const IMAGE_GEN_MODEL = "gpt-image-2";
+
+export type ImageJobStatus =
+  | { status: "ready"; image_url: string }
+  | { status: "error"; error?: string }
+  | { status: "pending" | "processing" | string; image_url?: string; error?: string };
+
+export const ImageGenService = {
+  /** POST /api/v1/images/generate → { job_id } */
+  startJob: async (
+    token: string,
+    body: { content: string; session_id: string; override_limits?: boolean }
+  ): Promise<string> => {
+    const response = await backendApi.post<{ job_id: string }>(
+      "/api/v1/images/generate",
+      { ...body, model: IMAGE_GEN_MODEL, override_limits: body.override_limits ?? false },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data.job_id;
+  },
+
+  /** GET /api/v1/images/generate/{job_id}/status */
+  getStatus: async (token: string, jobId: string): Promise<ImageJobStatus> => {
+    const response = await backendApi.get<ImageJobStatus>(
+      `/api/v1/images/generate/${encodeURIComponent(jobId)}/status`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data;
+  },
+
+  /** GET /api/v1/images/generate/{job_id}/url → fresh signed image URL */
+  getFreshUrl: async (token: string, jobId: string): Promise<string | null> => {
+    const response = await backendApi.get<{ image_url?: string }>(
+      `/api/v1/images/generate/${encodeURIComponent(jobId)}/url`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data?.image_url ?? null;
+  },
+};
+
 // --- USER LIMITS ---
 
 export interface UserLimits {
@@ -694,6 +741,21 @@ export interface UserLimits {
   daily_messages_remaining: number;
   daily_limit_resets_at: string;
   is_daily_limit_reached: boolean;
+  // Integri model has its own daily message quota
+  integri_messages_used?: number;
+  integri_message_limit?: number;
+  integri_messages_remaining?: number;
+  is_integri_daily_limit_reached?: boolean;
+  // Token quotas (0 means not reported / unlimited)
+  daily_tokens_used?: number;
+  daily_token_limit?: number;
+  daily_tokens_remaining?: number;
+  is_daily_token_limit_reached?: boolean;
+  monthly_tokens_used?: number;
+  monthly_token_limit?: number;
+  monthly_tokens_remaining?: number;
+  monthly_limit_resets_at?: string | null;
+  is_monthly_token_limit_reached?: boolean;
   voice_minutes_used: number;
   voice_limit_minutes: number;
   images_generated_this_month: number;

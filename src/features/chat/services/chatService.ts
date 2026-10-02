@@ -1,5 +1,5 @@
 import { SessionService } from "../../../api/backendApi";
-import AVAILABLE_MODELS from "../../../../Constants";
+import { resolveModel } from "../../../../Constants";
 import { triggerChatUpdate } from "../hooks/useChat";
 
 export const ChatService = {
@@ -11,8 +11,7 @@ export const ChatService = {
   ) => {
     try {
       // Lookup the provider
-      const selectedModel = AVAILABLE_MODELS.find((m) => m.id === modelId);
-      const provider = selectedModel ? selectedModel.provider : "openai";
+      const provider = resolveModel(modelId).provider;
 
       // Pass token, model, provider AND custom_gpt_id to backendApi
       const response = await SessionService.createSession(

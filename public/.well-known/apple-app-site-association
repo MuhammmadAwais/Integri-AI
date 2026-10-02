@@ -4,7 +4,18 @@
     "details": [
       {
         "appID": "68GJW5T4BK.com.nexar.integri",
-        "paths": ["/News/*", "/Login/*"]
+        "paths": [
+          "/News/*",
+          "/share/news/*",
+          "/Articles/*",
+          "/Article/*",
+          "/articles/*",
+          "/news/*",
+          "/Login/*",
+          "/Login",
+          "/subscription",
+          "/subscription/*"
+        ]
       }
     ]
   }

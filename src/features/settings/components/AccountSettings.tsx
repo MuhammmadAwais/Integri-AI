@@ -572,7 +572,7 @@ const AccountSettings: React.FC = () => {
             className={cn(
               "w-full px-4 py-2.5 rounded-xl border outline-none transition-all",
               isDark
-                ? "bg-[#222] border-[#333] focus:border-blue-500 text-white"
+                ? "bg-[#1F1D25] border-[#2A2830] focus:border-blue-500 text-white"
                 : "bg-white border-gray-300 focus:border-blue-500 text-gray-900"
             )}
             placeholder="Enter your name"
@@ -597,7 +597,7 @@ const AccountSettings: React.FC = () => {
               className={cn(
                 "w-full px-4 py-2.5 rounded-xl border outline-none transition-all appearance-none cursor-pointer",
                 isDark
-                  ? "bg-[#222] border-[#333] focus:border-blue-500 text-white"
+                  ? "bg-[#1F1D25] border-[#2A2830] focus:border-blue-500 text-white"
                   : "bg-white border-gray-300 focus:border-blue-500 text-gray-900"
               )}
             >
@@ -634,7 +634,7 @@ const AccountSettings: React.FC = () => {
               className={cn(
                 "w-full px-4 py-2.5 rounded-xl border outline-none transition-all appearance-none cursor-pointer",
                 isDark
-                  ? "bg-[#222] border-[#333] focus:border-blue-500 text-white"
+                  ? "bg-[#1F1D25] border-[#2A2830] focus:border-blue-500 text-white"
                   : "bg-white border-gray-300 focus:border-blue-500 text-gray-900"
               )}
             >
@@ -674,7 +674,7 @@ const AccountSettings: React.FC = () => {
             className={cn(
               "w-full px-4 py-2.5 rounded-xl border outline-none transition-all cursor-pointer flex items-center justify-between",
               isDark
-                ? "bg-[#222] border-[#333] hover:border-[#444] text-white"
+                ? "bg-[#1F1D25] border-[#2A2830] hover:border-[#444] text-white"
                 : "bg-white border-gray-300 hover:border-gray-400 text-gray-900",
               showCalendar && "border-blue-500 ring-1 ring-blue-500"
             )}
@@ -729,7 +729,7 @@ const AccountSettings: React.FC = () => {
                   className={cn(
                     "z-9999 p-4 rounded-xl border shadow-2xl backdrop-blur-xl",
                     isDark
-                      ? "bg-[#18181b]/95 border-zinc-700"
+                      ? "bg-[#18161C]/95 border-zinc-700"
                       : "bg-white/95 border-gray-200"
                   )}
                 >

@@ -8,9 +8,10 @@ import React, {
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import {
-  Paperclip,
+  Plus,
+  Check,
   ArrowUp,
-  AudioLines,
+  Mic,
   FileText,
   PenTool,
   Search,
@@ -33,6 +34,7 @@ import { useAppSelector, useAppDispatch } from "../../../hooks/useRedux";
 import ImportCodeModal from "./ImportCodeModal";
 import { clearAttachedRepo } from "../chatSlice";
 import { repoBlobStore } from "../services/repoBlobStore";
+import ComposerModelPicker from "./ComposerModelPicker";
 
 type SearchMode = null | "search" | "deep-search";
 
@@ -76,8 +78,10 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
 
     // State for dynamic menu positioning
     const [menuPosition, setMenuPosition] = useState<{
-      top: number;
+      top?: number;
+      bottom?: number;
       left: number;
+      maxHeight: number;
     } | null>(null);
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -145,7 +149,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
         const scrollHeight = textarea.scrollHeight;
 
         // Config: Start big (60px internal), Cap at ~8 lines (200px)
-        const MIN_HEIGHT = 60;
+        const MIN_HEIGHT = 40;
         const MAX_HEIGHT = 200;
 
         // Calculate the target height: Grow freely between MIN and MAX
@@ -179,10 +183,20 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
     const updateMenuPosition = () => {
       if (buttonRef.current && showAttachMenu) {
         const rect = buttonRef.current.getBoundingClientRect();
-        setMenuPosition({
-          top: rect.top - 10,
-          left: rect.left,
-        });
+        // Open below the composer when there is room, otherwise above it.
+        // (Explicit top/bottom: framer-motion owns `transform`, so a CSS
+        // translateY(-100%) here would be overwritten.)
+        const MENU_HEIGHT = 470;
+        const GAP = 8;
+        const box = buttonRef.current.closest("[data-composer]")?.getBoundingClientRect() ?? rect;
+        const spaceBelow = window.innerHeight - box.bottom - GAP * 2;
+        const spaceAbove = box.top - GAP * 2;
+        const below = spaceBelow >= MENU_HEIGHT || spaceBelow >= spaceAbove;
+        setMenuPosition(
+          below
+            ? { top: box.bottom + GAP, left: rect.left, maxHeight: spaceBelow }
+            : { bottom: window.innerHeight - box.top + GAP, left: rect.left, maxHeight: spaceAbove }
+        );
       }
     };
 
@@ -221,11 +235,21 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
         setShowAttachMenu(false);
       };
 
+      const handleEscape = (event: KeyboardEvent) => {
+        if (event.key === "Escape") {
+          setShowAttachMenu(false);
+          buttonRef.current?.focus();
+        }
+      };
+
       if (showAttachMenu) {
         document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener("keydown", handleEscape);
       }
-      return () =>
+      return () => {
         document.removeEventListener("mousedown", handleClickOutside);
+        document.removeEventListener("keydown", handleEscape);
+      };
     }, [showAttachMenu]);
 
     // --- 6. HANDLERS ---
@@ -256,6 +280,21 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
 
     // Check subscription tier for search features
     const {  isFree } = useSubscription();
+
+    // Tools live in the "+" menu. Web search is open to everyone; Search and
+    // Deep search need an account and a paid plan (same gating as before).
+    const tools = [
+      { id: "web", label: t("chat.webSearch", "Web search"), icon: Globe, active: webSearch },
+      { id: "search", label: t("chat.searchMode"), icon: Search, active: searchMode === "search" },
+      { id: "deep-search", label: t("chat.deepSearchMode"), icon: SearchX, active: searchMode === "deep-search" },
+    ] as const;
+
+    const toggleTool = (id: (typeof tools)[number]["id"]) => {
+      if (id === "web") return setWebSearch(!webSearch);
+      if (!user?.id) return setShowLoginModal(true);
+      if (isFree) return setShowSubscribeModal(true);
+      setSearchMode(searchMode === id ? null : id);
+    };
 
     const isFileProcessing =
       isUploading || fileUploadStage === "uploading" || fileUploadStage === "processing";
@@ -306,16 +345,19 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
 
     // const firstName = user?.name?.split(" ")[0] || "Friend";  //for later use
 
+    const hasContent = inputValue.trim().length > 0 || selectedFiles.length > 0;
+
     return (
       <div
         ref={ref}
+        data-composer
         className={cn(
           // Container: Flex Column. "min-h-[140px]" ensures the big initial look.
           // It will grow naturally because it's a block element with dynamic children.
-          "w-full relative group rounded-3xl transition-all duration-300 border shadow-sm flex flex-col justify-between min-h-[105px] hover:rounded-2xl",
+          "w-full relative rounded-[28px] border flex flex-col transition-colors duration-200",
           isDark
-            ? "bg-[#121212] border-[#2A2B32] hover:border-gray-700"
-            : "bg-gray-50 border-gray-200 hover:border-gray-300"
+            ? "bg-[#18161C] border-[#2A2830] focus-within:border-[#3A3845]"
+            : "bg-white border-gray-200 shadow-sm focus-within:border-gray-300"
         )}
       >
         <LoginModal
@@ -372,8 +414,30 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
           )}
         </AnimatePresence>
 
-        {/* --- TOP SECTION: File Preview & Text Area --- */}
-        <div className="flex flex-col w-full flex-1">
+        {/* Active tools as removable chips (ChatGPT style) */}
+        {tools.some((tool) => tool.active) && (
+          <div className="flex flex-wrap gap-2 px-4 pt-3">
+            {tools.filter((tool) => tool.active).map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => toggleTool(id)}
+                aria-label={`${label} — ${t("common.remove", "remove")}`}
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium hover:cursor-pointer",
+                  "bg-[color-mix(in_oklab,var(--integri-accent-600)_14%,transparent)] text-(--integri-accent-600)"
+                )}
+              >
+                <Icon size={13} aria-hidden />
+                {label}
+                <X size={12} aria-hidden className="opacity-70" />
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* --- TOP SECTION: File Preview --- */}
+        <div className="flex flex-col w-full">
           {/* File Previews */}
           {selectedFiles.length > 0 && (
             <div className="px-4 pt-3 pb-0 animate-in slide-in-from-bottom-2 fade-in">
@@ -391,7 +455,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
                         isImage ? "w-12 h-12 rounded-xl overflow-hidden" : "h-12 px-3 gap-3 rounded-xl min-w-[140px] max-w-[200px]",
                         fileUploadStage === "error"
                           ? isDark ? "bg-red-900/20 border-red-900/40" : "bg-red-50 border-red-200"
-                          : isDark ? "bg-[#2A2B32] border-[#3A3B42]" : "bg-white border-gray-200 shadow-sm"
+                          : isDark ? "bg-[#1F1D25] border-[#3A3845]" : "bg-white border-gray-200 shadow-sm"
                       )}
                     >
                       {/* Remove Button */}
@@ -450,50 +514,12 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
             </div>
           )}
 
-          {/* Main Text Input */}
-          <textarea
-            ref={textareaRef}
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            onPaste={handlePaste}
-            rows={1}
-            placeholder={t("chat.askMeAnything")}
-            className={cn(
-              // Layout: w-full, transparent bg, no resize handle
-              "w-full bg-transparent outline-none text-lg px-6 py-2 placeholder:text-gray-500/80 font-medium z-20 resize-none",
-
-              // Colors
-              isDark ? "text-gray-100" : "text-gray-900",
-
-              // Spacing: Margin right ensures the scrollbar doesn't hit the rounded border
-              "mr-0 mt-2",
-
-              // Animation: Smooth height transition
-              "transition-[height] duration-200 ease-out",
-
-              // --- GEMINI SCROLLBAR STYLING ---
-              // Width
-              "[&::-webkit-scrollbar]:w-3",
-              // Track (Transparent)
-              "[&::-webkit-scrollbar-track]:bg-transparent",
-              // Thumb (Rounded & Colored)
-              "[&::-webkit-scrollbar-thumb]:rounded-tl-full hover:[&::-webkit-scrollbar-thumb]:rounded-lg",
-              "[&::-webkit-scrollbar]:h-7",
-              isDark
-                ? "[&::-webkit-scrollbar-thumb]:bg-zinc-700 hover:[&::-webkit-scrollbar-thumb]:bg-zinc-600"
-                : "[&::-webkit-scrollbar-thumb]:bg-zinc-300 hover:[&::-webkit-scrollbar-thumb]:bg-zinc-400"
-            )}
-            // IMPORTANT: Remove any fixed height here to let the useEffect control it strictly
-            // But provide a min-height matching logic to prevent jump on load
-            style={{ minHeight: "45px", overflowY: "hidden" }}
-          />
         </div>
 
-        {/* --- BOTTOM SECTION: Fixed Controls --- */}
-        <div className="flex items-center justify-between w-full px-3 pb-1 pt-1">
-          {/* LEFT: Attachment Menu Trigger */}
-          <div className="relative">
+        {/* --- INPUT ROW: [+] [text] [model] [mic/send] --- */}
+        <div className="flex items-end gap-1 w-full px-2 py-2">
+          {/* LEFT: "+" menu — attachments and tools */}
+          <div className="relative shrink-0">
             <input
               title="file"
               type="file"
@@ -507,8 +533,9 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
               ref={buttonRef}
               title={t("common.attachFile")}
               onClick={() => setShowAttachMenu(!showAttachMenu)}
+              aria-label={t("common.attachFile")}
               className={cn(
-                "p-2.5 rounded-full transition-colors shrink-0 hover:cursor-pointer",
+                "w-10 h-10 flex items-center justify-center rounded-full transition-colors shrink-0 hover:cursor-pointer",
                 showAttachMenu
                   ? isDark
                     ? "bg-white/10 text-white"
@@ -519,7 +546,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
                 selectedFiles.length > 0 && "text-blue-500"
               )}
             >
-              <Paperclip size={20} strokeWidth={2.5} />
+              <Plus size={20} strokeWidth={1.75} />
             </button>
 
             {/* PORTAL: Attachment Menu */}
@@ -528,20 +555,21 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
                 {showAttachMenu && menuPosition && (
                   <motion.div
                     ref={menuRef}
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    transition={{ duration: 0.1 }}
+                    initial={{ opacity: 0, scale: 0.97 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.97 }}
+                    transition={{ duration: 0.12 }}
                     style={{
                       position: "fixed",
                       top: menuPosition.top,
+                      bottom: menuPosition.bottom,
                       left: menuPosition.left,
-                      transform: "translateY(-100%)",
+                      maxHeight: menuPosition.maxHeight,
                     }}
                     className={cn(
-                      "w-56 p-1.5 rounded-xl border shadow-xl backdrop-blur-md z-9999 overflow-hidden",
+                      "w-56 p-1.5 rounded-xl border shadow-xl backdrop-blur-md z-9999 overflow-y-auto",
                       isDark
-                        ? "bg-[#18181b]/95 border-gray-700"
+                        ? "bg-[#18161C]/95 border-gray-700"
                         : "bg-white/95 border-gray-200"
                     )}
                   >
@@ -711,6 +739,37 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
                       <PenTool size={18} className="text-purple-500" />
                       {t("chat.drawSketch")}
                     </button>
+
+                    <div
+                      className={cn(
+                        "h-px w-full my-1",
+                        isDark ? "bg-gray-700" : "bg-gray-100"
+                      )}
+                    />
+                    <p className="px-3 pt-1.5 pb-1 text-[11px] font-medium uppercase tracking-wide text-gray-500">
+                      {t("chat.tools", "Tools")}
+                    </p>
+                    {tools.map(({ id, label, icon: Icon, active }) => (
+                      <button
+                        key={id}
+                        role="menuitemcheckbox"
+                        aria-checked={active}
+                        onClick={() => {
+                          toggleTool(id);
+                          setShowAttachMenu(false);
+                        }}
+                        className={cn(
+                          "w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors hover:cursor-pointer",
+                          isDark
+                            ? "hover:bg-white/10 text-gray-200"
+                            : "hover:bg-gray-100 text-gray-700"
+                        )}
+                      >
+                        <Icon size={18} className="text-gray-400" />
+                        <span className="flex-1 text-left">{label}</span>
+                        {active && <Check size={16} className="text-(--integri-accent-600)" />}
+                      </button>
+                    ))}
                   </motion.div>
                 )}
               </AnimatePresence>,
@@ -718,94 +777,63 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
             )}
           </div>
 
-          {/* RIGHT: Search Modes / Voice / Send Button */}
-          <div className="flex gap-2 items-center">
-            {/* Search Mode Icons - Show for all users, but free users see upgrade modal */}
-            <>
-              {/* Web Search Toggle */}
-              <button
-                title="Web Search"
-                onClick={() => setWebSearch(!webSearch)}
-                className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:cursor-pointer",
-                  webSearch
-                    ? isDark
-                      ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                      : "bg-emerald-100 text-emerald-600 border border-emerald-300"
-                    : isDark
-                    ? "text-gray-400 hover:bg-white/10 hover:text-white"
-                    : "text-gray-500 hover:bg-black/5 hover:text-black"
-                )}
-              >
-                <Globe size={18} />
-              </button>
-              <button
-                title={t("chat.searchMode")}
-                onClick={() => {
-                  if (!user?.id) {
-                    setShowLoginModal(true);
-                    return;
-                  }
-                  if (isFree) {
-                    setShowSubscribeModal(true);
-                    return;
-                  }
-                  setSearchMode(searchMode === "search" ? null : "search");
-                }}
-                className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:cursor-pointer",
-                  searchMode === "search"
-                    ? isDark
-                      ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                      : "bg-blue-100 text-blue-600 border border-blue-300"
-                    : isDark
-                    ? "text-gray-400 hover:bg-white/10 hover:text-white"
-                    : "text-gray-500 hover:bg-black/5 hover:text-black"
-                )}
-              >
-                <Search size={18} />
-              </button>
-              <button
-                title={t("chat.deepSearchMode")}
-                onClick={() => {
-                  if (!user?.id) {
-                    setShowLoginModal(true);
-                    return;
-                  }
-                  if (isFree) {
-                    setShowSubscribeModal(true);
-                    return;
-                  }
-                  const newMode = searchMode === "deep-search" ? null : "deep-search";
-                  setSearchMode(newMode);
-                }}
-                className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:cursor-pointer",
-                  searchMode === "deep-search"
-                    ? isDark
-                      ? "bg-purple-500/20 text-purple-400 border border-purple-500/30"
-                      : "bg-purple-100 text-purple-600 border border-purple-300"
-                    : isDark
-                    ? "text-gray-400 hover:bg-white/10 hover:text-white"
-                    : "text-gray-500 hover:bg-black/5 hover:text-black"
-                )}
-              >
-                <SearchX size={18} />
-              </button>
-            </>
+          <div className="flex-1 min-w-0">
+          {/* Main Text Input */}
+          <textarea
+            ref={textareaRef}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onPaste={handlePaste}
+            rows={1}
+            placeholder={t("chat.askMeAnything")}
+            className={cn(
+              // Layout: w-full, transparent bg, no resize handle
+              "w-full bg-transparent outline-none text-base leading-6 px-2 py-2 placeholder:text-gray-500 z-20 resize-none",
+
+              // Colors
+              isDark ? "text-gray-100" : "text-gray-900",
+
+              // Spacing: Margin right ensures the scrollbar doesn't hit the rounded border
+              "mr-0",
+
+              // Animation: Smooth height transition
+              "transition-[height] duration-200 ease-out",
+
+              // --- GEMINI SCROLLBAR STYLING ---
+              // Width
+              "[&::-webkit-scrollbar]:w-3",
+              // Track (Transparent)
+              "[&::-webkit-scrollbar-track]:bg-transparent",
+              // Thumb (Rounded & Colored)
+              "[&::-webkit-scrollbar-thumb]:rounded-tl-full hover:[&::-webkit-scrollbar-thumb]:rounded-lg",
+              "[&::-webkit-scrollbar]:h-7",
+              isDark
+                ? "[&::-webkit-scrollbar-thumb]:bg-zinc-700 hover:[&::-webkit-scrollbar-thumb]:bg-zinc-600"
+                : "[&::-webkit-scrollbar-thumb]:bg-zinc-300 hover:[&::-webkit-scrollbar-thumb]:bg-zinc-400"
+            )}
+            // IMPORTANT: Remove any fixed height here to let the useEffect control it strictly
+            // But provide a min-height matching logic to prevent jump on load
+            style={{ minHeight: "40px", overflowY: "hidden" }}
+          />
+          </div>
+
+          {/* RIGHT: model / agent, voice, send */}
+          <div className="flex gap-1 items-center shrink-0 h-10">
+            <ComposerModelPicker isDark={isDark} />
             {inputValue.trim().length > 0 || selectedFiles.length > 0 || selectedAgentId ? null : (
-              <Link to="/voice">
-                <button
-                  title={t("chat.voiceInput")}
-                  className={cn(
-                    "w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:cursor-pointer",
-                    isDark
-                      ? "text-gray-400 hover:bg-white/10 hover:text-white"
-                      : "text-gray-500 hover:bg-black/5 hover:text-black"
-                  )}
-                >
-                  <AudioLines size={20} />
-                </button>
+              <Link
+                to="/voice"
+                title={t("chat.voiceInput")}
+                aria-label={t("chat.voiceInput")}
+                className={cn(
+                  "w-9 h-9 rounded-full flex items-center justify-center transition-colors",
+                  isDark
+                    ? "text-zinc-400 hover:bg-white/[0.06] hover:text-white"
+                    : "text-zinc-500 hover:bg-black/[0.04] hover:text-zinc-900"
+                )}
+              >
+                <Mic size={18} strokeWidth={1.75} aria-hidden />
               </Link>
             )}
             <button
@@ -816,9 +844,14 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
                   : undefined
               }
               disabled={isFileProcessing}
+              aria-label={t("chat.sendMessage")}
               className={cn(
-                "w-8 h-8 rounded-full flex items-center justify-center transition-transform active:scale-95 animate-in zoom-in duration-200 hover:cursor-pointer",
-                isFileProcessing
+                "w-9 h-9 rounded-full flex items-center justify-center transition-all active:scale-95 animate-in zoom-in duration-200 hover:cursor-pointer",
+                !hasContent && !isLoading && !isCloudLoading && !isFileProcessing
+                  ? isDark
+                    ? "bg-white/10 text-zinc-500 hover:bg-white/15"
+                    : "bg-black/[0.06] text-zinc-400 hover:bg-black/10"
+                  : isFileProcessing
                   ? isDark
                     ? "bg-white/40 text-black/50 cursor-not-allowed"
                     : "bg-black/40 text-white/50 cursor-not-allowed"
@@ -830,7 +863,7 @@ const WelcomeChatInput = forwardRef<HTMLDivElement, WelcomeChatInputProps>(
               {isLoading || isCloudLoading || isFileProcessing ? (
                 <div className="animate-spin h-4 w-4 border-2 border-black/30 border-t-black rounded-full dark:border-white/30 dark:border-t-white" />
               ) : (
-                <ArrowUp size={18} strokeWidth={3} />
+                <ArrowUp size={18} strokeWidth={2.5} />
               )}
             </button>
           </div>

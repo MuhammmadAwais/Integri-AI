@@ -51,7 +51,7 @@ const ThinkingSkeleton: React.FC<ThinkingSkeletonProps> = ({ isDark, provider, i
         className={cn(
           "w-9 h-9 rounded-full flex items-center justify-center shrink-0 border select-none",
           isDark
-            ? "bg-[#2F3336] border-transparent"
+            ? "bg-[#2A2830] border-transparent"
             : "bg-white border-transparent shadow-sm"
         )}
       >
@@ -68,7 +68,7 @@ const ThinkingSkeleton: React.FC<ThinkingSkeletonProps> = ({ isDark, provider, i
       <div 
         className={cn(
           "flex items-center gap-1.5 px-4 py-3 rounded-2xl rounded-tl-sm w-fit",
-          isDark ? "bg-[#2A2B32]/70" : "bg-white shadow-sm border border-gray-100"
+          isDark ? "bg-[#1F1D25]/70" : "bg-white shadow-sm border border-gray-100"
         )}
       >
         <div className="flex gap-1">

@@ -46,7 +46,7 @@ const DownloadSettings: React.FC<DownloadSettingsProps> = ({
         className={cn(
           "relative flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 group min-w-[280px] w-full sm:w-auto flex-1",
           isDark
-            ? "bg-[#121212] border-[#2A2B32] hover:border-gray-600 hover:bg-[#1A1A1A]"
+            ? "bg-[#18161C] border-[#2A2830] hover:border-gray-600 hover:bg-[#18161C]"
             : "bg-white border-gray-200 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-500/5"
         )}
       >
@@ -146,7 +146,7 @@ const DownloadSettings: React.FC<DownloadSettingsProps> = ({
         className={cn(
           "fixed z-9999 p-6 rounded-3xl border shadow-2xl backdrop-blur-xl max-w-[460px] w-auto hidden md:block",
           isDark
-            ? "bg-[#18181b]/95 border-zinc-700/50 shadow-black/50"
+            ? "bg-[#18161C]/95 border-zinc-700/50 shadow-black/50"
             : "bg-white/95 border-gray-200 shadow-xl"
         )}
       >

@@ -11,9 +11,8 @@ import {
     type PublicNewsArticle,
     localised,
 } from "../features/news/models/publicNewsArticle";
-import AdUnit from "../Components/ads/AdUnit";
-import { AD_SLOTS, IN_ARTICLE_AD_INTERVAL } from "../config/ads";
 import ShareModal from "../Components/ui/ShareModal";
+import Seo, { toMetaDescription } from "../Components/seo/Seo";
 
 // ── Helpers ───────────────────────────────────────────────────────────
 
@@ -108,7 +107,7 @@ const RelatedCard: React.FC<{
     >
         <div className={cn(
             "flex gap-3 p-3 rounded-xl transition-all duration-200",
-            isDark ? "hover:bg-[#111]" : "hover:bg-gray-50",
+            isDark ? "hover:bg-[#18161C]" : "hover:bg-gray-50",
         )}>
             <img
                 src={article.coverImage}
@@ -207,6 +206,9 @@ const NewsDetailPage: React.FC = () => {
         ? content.filter((c) => c !== firstDesc)
         : content;
     const tags = article.tags || [];
+    const summary = toMetaDescription(
+        (firstDesc && localised(firstDesc.value, lang)) || headline,
+    );
 
     return (
         <div
@@ -215,6 +217,13 @@ const NewsDetailPage: React.FC = () => {
                 isDark ? "bg-black" : "bg-gray-50",
             )}
         >
+            <Seo
+                title={`${headline} | Integri`}
+                description={summary}
+                canonicalPath={`/news/${id}`}
+                type="article"
+                image={article.coverImage || undefined}
+            />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Main Content */}
@@ -230,7 +239,7 @@ const NewsDetailPage: React.FC = () => {
                             className={cn(
                                 "flex items-center gap-2 text-sm font-medium transition-colors rounded-lg px-3 py-2 -ml-3 cursor-pointer",
                                 isDark
-                                    ? "text-gray-400 hover:text-white hover:bg-[#1a1a1a]"
+                                    ? "text-gray-400 hover:text-white hover:bg-[#18161C]"
                                     : "text-gray-600 hover:text-gray-900 hover:bg-gray-100",
                             )}
                         >
@@ -267,7 +276,7 @@ const NewsDetailPage: React.FC = () => {
                                     className={cn(
                                         "text-[11px] px-2 py-0.5 rounded-full",
                                         isDark
-                                            ? "bg-[#1a1a1a] text-gray-400"
+                                            ? "bg-[#18161C] text-gray-400"
                                             : "bg-gray-100 text-gray-600",
                                     )}
                                 >
@@ -328,7 +337,7 @@ const NewsDetailPage: React.FC = () => {
                                 className={cn(
                                     "ml-auto flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full transition-colors cursor-pointer",
                                     isDark
-                                        ? "bg-[#1a1a1a] text-gray-300 hover:bg-[#252525]"
+                                        ? "bg-[#18161C] text-gray-300 hover:bg-[#252525]"
                                         : "bg-gray-100 text-gray-600 hover:bg-gray-200",
                                 )}
                             >
@@ -365,14 +374,6 @@ const NewsDetailPage: React.FC = () => {
                             </p>
                         )}
 
-                        {/* ── Ad: Top of article (below excerpt) ── */}
-                        <AdUnit
-                            slot={AD_SLOTS.NEWS_DETAIL_TOP}
-                            format="auto"
-                            responsive
-                            isDark={isDark}
-                            testId="ad-news-detail-top"
-                        />
 
                         {/* ── Remaining Content Blocks ── */}
                         <div className="space-y-5 pb-12">
@@ -383,16 +384,6 @@ const NewsDetailPage: React.FC = () => {
                                         isDark={isDark}
                                         lang={lang}
                                     />
-                                    {/* Insert in-article ad every N content blocks */}
-                                    {(i + 1) % IN_ARTICLE_AD_INTERVAL === 0 && i < restContent.length - 1 && (
-                                        <AdUnit
-                                            slot={AD_SLOTS.NEWS_DETAIL_IN_ARTICLE}
-                                            format="fluid"
-                                            layout="in-article"
-                                            isDark={isDark}
-                                            testId={`ad-news-in-article-${i}`}
-                                        />
-                                    )}
                                 </React.Fragment>
                             ))}
                         </div>
@@ -402,7 +393,7 @@ const NewsDetailPage: React.FC = () => {
                     <aside className="lg:w-72 xl:w-80 shrink-0 space-y-4">
                         <div className={cn(
                             "rounded-2xl overflow-hidden sticky top-6",
-                            isDark ? "bg-[#0a0a0a] border border-white/5" : "bg-white shadow-sm",
+                            isDark ? "bg-[#07060A] border border-white/5" : "bg-white shadow-sm",
                         )}>
                             <div className={cn(
                                 "px-4 py-3 flex items-center justify-between",
@@ -430,16 +421,16 @@ const NewsDetailPage: React.FC = () => {
                                         <div key={i} className="flex gap-3 animate-pulse">
                                             <div className={cn(
                                                 "w-20 h-14 rounded-lg shrink-0",
-                                                isDark ? "bg-[#1a1a1a]" : "bg-gray-200",
+                                                isDark ? "bg-[#18161C]" : "bg-gray-200",
                                             )} />
                                             <div className="flex flex-col justify-center gap-2 flex-1">
                                                 <div className={cn(
                                                     "h-3 w-full rounded",
-                                                    isDark ? "bg-[#1a1a1a]" : "bg-gray-200",
+                                                    isDark ? "bg-[#18161C]" : "bg-gray-200",
                                                 )} />
                                                 <div className={cn(
                                                     "h-2.5 w-16 rounded",
-                                                    isDark ? "bg-[#1a1a1a]" : "bg-gray-200",
+                                                    isDark ? "bg-[#18161C]" : "bg-gray-200",
                                                 )} />
                                             </div>
                                         </div>
@@ -468,14 +459,6 @@ const NewsDetailPage: React.FC = () => {
                             )}
                         </div>
 
-                        {/* ── Ad: Sidebar ── */}
-                        <AdUnit
-                            slot={AD_SLOTS.NEWS_DETAIL_SIDEBAR}
-                            format="auto"
-                            responsive
-                            isDark={isDark}
-                            testId="ad-news-detail-sidebar"
-                        />
                     </aside>
                 </div>
             </div>

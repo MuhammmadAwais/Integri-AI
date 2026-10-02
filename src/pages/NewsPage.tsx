@@ -1,677 +1,375 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-    ArrowRight,
-    Loader2,
-    ChevronDown,
-    Newspaper,
-    BookOpen,
-    TrendingUp,
-    Lock,
-    LogIn,
-} from "lucide-react";
+import React, { useEffect, useMemo, useRef } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAppSelector } from "../hooks/useRedux";
 import { cn } from "../lib/utils";
-import { useNewsList, useArticlesList } from "../features/news/hooks/useNews";
+import { useNewsFeed } from "../features/news/hooks/useNews";
 import { resolveHeadline, type PublicNewsArticle } from "../features/news/models/publicNewsArticle";
-import AdUnit from "../Components/ads/AdUnit";
-import { AD_SLOTS, IN_FEED_AD_INTERVAL } from "../config/ads";
+import NewsCountryPicker from "../features/news/components/NewsCountryPicker";
+import {
+    NEWS_COUNTRY_BY_KEY,
+    getStoredNewsCountry,
+    storeNewsCountry,
+} from "../features/news/utils/newsCountries";
+import { detectVisitorNewsCountry, toNewsApiCountryKey } from "../features/news/utils/countryHelper";
+
+/*
+ * News front page, laid out like a newspaper site (Dawn): lead story with
+ * secondary stories, section links, a story list with "Most read", and
+ * numbered pages. Country, section and page live in the URL
+ * (/news?country=Pakistan&topic=tech&page=2) so every page can be shared.
+ */
+
+const PAGE_SIZE = 20;
+const LEAD_COUNT = 4; // lead + 3 secondary stories on page 1
 
 // ── Helpers ───────────────────────────────────────────────────────────
 
+const articleHref = (a: PublicNewsArticle) =>
+    `/news/${a.id}?collection=${encodeURIComponent(a.collection || "News")}`;
 
+const titleCase = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
-// ── Helpers ───────────────────────────────────────────────────────────
+function timeAgo(iso: string, lang: string): string {
+    const then = new Date(iso).getTime();
+    if (Number.isNaN(then)) return "";
+    const diff = (then - Date.now()) / 1000;
+    const rtf = new Intl.RelativeTimeFormat(lang, { numeric: "auto" });
+    const abs = Math.abs(diff);
+    if (abs < 3600) return rtf.format(Math.round(diff / 60), "minute");
+    if (abs < 86400) return rtf.format(Math.round(diff / 3600), "hour");
+    if (abs < 86400 * 7) return rtf.format(Math.round(diff / 86400), "day");
+    return new Date(iso).toLocaleDateString(lang, { day: "numeric", month: "short", year: "numeric" });
+}
 
-// ── Tab Types ─────────────────────────────────────────────────────────
+/** 1 … 4 5 [6] 7 8 … 12 */
+function pageNumbers(current: number, total: number): Array<number | "gap"> {
+    const pages = new Set([1, total, current - 1, current, current + 1]);
+    if (current <= 3) [2, 3, 4].forEach((p) => pages.add(p));
+    if (current >= total - 2) [total - 1, total - 2, total - 3].forEach((p) => pages.add(p));
+    const sorted = [...pages].filter((p) => p >= 1 && p <= total).sort((a, b) => a - b);
+    const out: Array<number | "gap"> = [];
+    sorted.forEach((p, i) => {
+        if (i > 0 && p - sorted[i - 1] > 1) out.push("gap");
+        out.push(p);
+    });
+    return out;
+}
 
-type TabType = "news" | "articles";
+// ── Pieces ────────────────────────────────────────────────────────────
 
-// ── Featured Article ──────────────────────────────────────────────────
-
-const FeaturedArticle: React.FC<{
-    article: PublicNewsArticle;
-    isDark: boolean;
-    lang: string;
-    type: TabType;
-}> = ({ article, isDark, lang, type }) => (
-    <Link
-        to={type === "news" ? `/news/${article.id}?collection=${encodeURIComponent(article.collection || "News")}` : `/articles/${article.id}?collection=${encodeURIComponent(article.collection || "News")}`}
-        state={{ collection: article.collection }}
-        className="block group"
-        id={`featured-${type}-${article.id}`}
-    >
-        <motion.article
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className={cn(
-                "flex flex-col md:flex-row gap-0 rounded-2xl overflow-hidden transition-all duration-300",
-                isDark
-                    ? "bg-[#0a0a0a] hover:bg-[#111] border border-white/5"
-                    : "bg-white hover:bg-gray-50/80 shadow-sm hover:shadow-lg",
-            )}
-        >
-            {/* Image */}
-            <div className="md:w-[48%] aspect-[16/10] md:aspect-auto overflow-hidden flex-shrink-0 relative">
-                <img
-                    src={article.coverImage}
-                    alt={resolveHeadline(article.headline, lang)}
-                    loading="eager"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className={cn(
-                    "absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider backdrop-blur-md",
-                    isDark ? "bg-white/15 text-white" : "bg-black/10 text-white",
-                )}>
-                    <TrendingUp size={10} />
-                    Featured
-                </div>
-            </div>
-
-            {/* Content */}
-            <div className="flex-1 flex flex-col justify-center py-5 px-5 md:px-6 gap-3">
-                {/* Title */}
-                <h2
-                    className={cn(
-                        "text-xl sm:text-2xl md:text-3xl font-bold leading-tight tracking-tight group-hover:underline decoration-2 underline-offset-4",
-                        isDark ? "text-white" : "text-gray-900",
-                    )}
-                >
-                    {resolveHeadline(article.headline, lang)}
-                </h2>
-
-                {/* Category */}
-                <div className="flex items-center gap-3 mt-1">
-                    <span
-                        className={cn(
-                            "text-[11px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full",
-                            isDark ? "bg-white/10 text-gray-300" : "bg-gray-100 text-gray-700",
-                        )}
-                    >
-                        {article.topic}
-                    </span>
-                </div>
-            </div>
-        </motion.article>
-    </Link>
+const Meta: React.FC<{ article: PublicNewsArticle; lang: string; className?: string }> = ({ article, lang, className }) => (
+    <p className={cn("flex items-center gap-2 text-[11px] font-medium uppercase tracking-wider", className)}>
+        <span className="text-(--integri-accent-600)">{article.topic}</span>
+        <span aria-hidden className="opacity-40">·</span>
+        <time dateTime={article.date} className="text-zinc-500 dark:text-zinc-400">{timeAgo(article.date, lang)}</time>
+    </p>
 );
 
-// ── News Card ─────────────────────────────────────────────────────────
-
-const NewsCard: React.FC<{
-    article: PublicNewsArticle;
-    isDark: boolean;
-    lang: string;
-    index: number;
-    type: TabType;
-}> = ({ article, isDark, lang, index, type }) => (
-    <Link
-        to={type === "news" ? `/news/${article.id}?collection=${encodeURIComponent(article.collection || "News")}` : `/articles/${article.id}?collection=${encodeURIComponent(article.collection || "News")}`}
-        state={{ collection: article.collection }}
-        className="block group"
-        id={`${type}-card-${article.id}`}
-    >
-        <motion.article
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: Math.min(0.1 * index, 0.8) }}
-            className={cn(
-                "rounded-xl overflow-hidden transition-all duration-300 h-full flex flex-col",
-                isDark
-                    ? "bg-[#0a0a0a] hover:bg-[#111] border border-white/5"
-                    : "bg-white hover:bg-gray-50 shadow-sm hover:shadow-md",
-            )}
-        >
-            {/* Image */}
-            <div className="aspect-[16/10] overflow-hidden relative">
-                <img
-                    src={article.coverImage}
-                    alt={resolveHeadline(article.headline, lang)}
-                    loading="lazy"
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-            </div>
-
-            {/* Content */}
-            <div className="flex flex-col gap-2 p-4 flex-1">
-                {/* Title */}
-                <h3
-                    className={cn(
-                        "text-sm font-bold leading-snug line-clamp-2 group-hover:underline decoration-1 underline-offset-2 flex-1",
-                        isDark ? "text-white" : "text-gray-900",
-                    )}
-                >
-                    {resolveHeadline(article.headline, lang)}
-                </h3>
-
-                {/* Category */}
-                <div className="flex items-center gap-3 mt-auto pt-2">
-                    <span
-                        className={cn(
-                            "text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded",
-                            isDark ? "bg-white/10 text-gray-400" : "bg-gray-100 text-gray-600",
-                        )}
-                    >
-                        {article.topic}
-                    </span>
-                </div>
-            </div>
-        </motion.article>
-    </Link>
-);
-
-// ── Compact Side Card (for sidebar lists) ─────────────────────────────
-
-const CompactCard: React.FC<{
-    article: PublicNewsArticle;
-    isDark: boolean;
-    lang: string;
-    type: TabType;
-}> = ({ article, isDark, lang, type }) => (
-    <Link
-        to={type === "news" ? `/news/${article.id}?collection=${encodeURIComponent(article.collection || "News")}` : `/articles/${article.id}?collection=${encodeURIComponent(article.collection || "News")}`}
-        state={{ collection: article.collection }}
-        className="block group"
-    >
-        <div className={cn(
-            "flex gap-3 p-3 rounded-xl transition-all duration-200",
-            isDark ? "hover:bg-[#111]" : "hover:bg-gray-50",
-        )}>
+const Thumb: React.FC<{ article: PublicNewsArticle; lang: string; className?: string; eager?: boolean }> = ({
+    article,
+    lang,
+    className,
+    eager,
+}) => (
+    <div className={cn("overflow-hidden rounded-lg bg-zinc-200 dark:bg-zinc-900", className)}>
+        {article.coverImage && (
             <img
                 src={article.coverImage}
                 alt={resolveHeadline(article.headline, lang)}
-                loading="lazy"
-                className="w-20 h-14 rounded-lg object-cover flex-shrink-0"
+                loading={eager ? "eager" : "lazy"}
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             />
-            <div className="flex flex-col justify-center gap-1 min-w-0">
-                <h4 className={cn(
-                    "text-xs font-semibold leading-snug line-clamp-2 group-hover:underline",
-                    isDark ? "text-gray-200" : "text-gray-900",
-                )}>
-                    {resolveHeadline(article.headline, lang)}
-                </h4>
-            </div>
-        </div>
+        )}
+    </div>
+);
+
+const LeadStory: React.FC<{ article: PublicNewsArticle; lang: string }> = ({ article, lang }) => (
+    <Link to={articleHref(article)} state={{ collection: article.collection }} className="group block">
+        <Thumb article={article} lang={lang} eager className="aspect-[16/9]" />
+        <Meta article={article} lang={lang} className="mt-4" />
+        <h2 className="mt-2 text-2xl font-bold leading-tight tracking-tight text-zinc-900 group-hover:underline decoration-2 underline-offset-4 dark:text-white sm:text-[32px]">
+            {resolveHeadline(article.headline, lang)}
+        </h2>
     </Link>
 );
 
-// ── Loading Skeleton ──────────────────────────────────────────────────
-
-const CardSkeleton: React.FC<{ isDark: boolean }> = ({ isDark }) => (
-    <div
-        className={cn(
-            "rounded-xl overflow-hidden animate-pulse",
-            isDark ? "bg-[#0a0a0a] border border-white/5" : "bg-white shadow-sm",
-        )}
-    >
-        <div
-            className={cn(
-                "aspect-[16/10]",
-                isDark ? "bg-[#1a1a1a]" : "bg-gray-200",
-            )}
-        />
-        <div className="p-4 space-y-3">
-            <div
-                className={cn(
-                    "h-3 w-24 rounded",
-                    isDark ? "bg-[#1a1a1a]" : "bg-gray-200",
-                )}
-            />
-            <div
-                className={cn(
-                    "h-4 w-full rounded",
-                    isDark ? "bg-[#1a1a1a]" : "bg-gray-200",
-                )}
-            />
-            <div
-                className={cn(
-                    "h-3 w-3/4 rounded",
-                    isDark ? "bg-[#1a1a1a]" : "bg-gray-200",
-                )}
-            />
+const SecondaryStory: React.FC<{ article: PublicNewsArticle; lang: string }> = ({ article, lang }) => (
+    <Link to={articleHref(article)} state={{ collection: article.collection }} className="group flex gap-4 py-4 first:pt-0">
+        <div className="min-w-0 flex-1">
+            <Meta article={article} lang={lang} />
+            <h3 className="mt-1.5 text-base font-semibold leading-snug text-zinc-900 group-hover:underline underline-offset-2 dark:text-zinc-100">
+                {resolveHeadline(article.headline, lang)}
+            </h3>
         </div>
-    </div>
+        <Thumb article={article} lang={lang} className="aspect-[4/3] w-28 shrink-0" />
+    </Link>
 );
 
-const CompactSkeleton: React.FC<{ isDark: boolean }> = ({ isDark }) => (
-    <div className="flex gap-3 p-3 animate-pulse">
-        <div className={cn(
-            "w-20 h-14 rounded-lg flex-shrink-0",
-            isDark ? "bg-[#1a1a1a]" : "bg-gray-200",
-        )} />
-        <div className="flex flex-col justify-center gap-2 flex-1">
-            <div className={cn(
-                "h-3 w-full rounded",
-                isDark ? "bg-[#1a1a1a]" : "bg-gray-200",
-            )} />
-            <div className={cn(
-                "h-2.5 w-16 rounded",
-                isDark ? "bg-[#1a1a1a]" : "bg-gray-200",
-            )} />
-        </div>
-    </div>
-);
-
-// ── Load More Button ──────────────────────────────────────────────────
-
-const LoadMoreButton: React.FC<{
-    onClick: () => void;
-    loading: boolean;
-    isDark: boolean;
-}> = ({ onClick, loading, isDark }) => (
-    <motion.button
-        onClick={onClick}
-        disabled={loading}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        className={cn(
-            "mx-auto flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold transition-all duration-300",
-            loading && "opacity-70 cursor-not-allowed",
-            isDark
-                ? "bg-white/10 text-white hover:bg-white/15 border border-white/10"
-                : "bg-gray-900 text-white hover:bg-gray-800 shadow-sm hover:shadow-md",
-        )}
-        id="load-more-button"
-    >
-        {loading ? (
-            <>
-                <Loader2 size={16} className="animate-spin" />
-                Loading…
-            </>
-        ) : (
-            <>
-                <ChevronDown size={16} />
-                Load More
-            </>
-        )}
-    </motion.button>
-);
-
-// ── Main Page ─────────────────────────────────────────────────────────
-
-const NewsPage: React.FC = () => {
-    const isDark = useAppSelector((state: any) => state.theme.isDark);
-    const user = useAppSelector((state: any) => state.auth.user);
-    const { i18n } = useTranslation();
-    const lang = i18n.language;
-
-    const [activeTab, setActiveTab] = useState<TabType>("news");
-
-    // News data
-    const {
-        articles: newsArticles,
-        loading: newsLoading,
-        loadingMore: newsLoadingMore,
-        error: newsError,
-        hasMore: newsHasMore,
-        loadMore: loadMoreNews,
-    } = useNewsList(12, user?.country);
-
-    // Articles data
-    const {
-        articles: articlesData,
-        loading: articlesLoading,
-        loadingMore: articlesLoadingMore,
-        error: articlesError,
-        hasMore: articlesHasMore,
-        loadMore: loadMoreArticles,
-    } = useArticlesList(12, user?.country);
-
-    // Pick the active data set
-    const articles = activeTab === "news" ? newsArticles : articlesData;
-    const loading = activeTab === "news" ? newsLoading : articlesLoading;
-    const loadingMore = activeTab === "news" ? newsLoadingMore : articlesLoadingMore;
-    const error = activeTab === "news" ? newsError : articlesError;
-    const hasMore = activeTab === "news" ? newsHasMore : articlesHasMore;
-    const loadMore = activeTab === "news" ? loadMoreNews : loadMoreArticles;
-
-    const featured = articles[0];
-    const grid = articles.slice(1);
-
-    // Cross-content: show articles in the news tab sidebar, and vice versa
-    const crossContent = activeTab === "news" ? articlesData.slice(0, 5) : newsArticles.slice(0, 5);
-    const crossLabel = activeTab === "news" ? "Latest Articles" : "Latest News";
-    const crossType: TabType = activeTab === "news" ? "articles" : "news";
-    const crossLoading = activeTab === "news" ? articlesLoading : newsLoading;
-
-    if (!user) {
-        return (
-            <div
-                className={cn(
-                    "h-full w-full flex flex-col items-center justify-center p-6 text-center",
-                    isDark ? "bg-[#000]" : "bg-gray-50",
-                )}
-            >
-                <div className={cn(
-                    "max-w-md w-full p-8 rounded-2xl flex flex-col items-center gap-6",
-                    isDark ? "bg-[#0a0a0a] border border-white/10 shadow-2xl" : "bg-white shadow-xl border border-gray-100"
-                )}>
-                    <div className={cn(
-                        "w-16 h-16 rounded-full flex items-center justify-center",
-                        isDark ? "bg-white/5 text-gray-400" : "bg-gray-50 text-gray-400"
-                    )}>
-                        <Lock size={32} />
-                    </div>
-                    <div className="space-y-2">
-                        <h2 className={cn("text-2xl font-bold", isDark ? "text-white" : "text-gray-900")}>
-                            Personalized News
-                        </h2>
-                        <p className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-500")}>
-                            Sign in to read the latest global news and updates tailored to your country and language preferences.
-                        </p>
-                    </div>
-                    <Link
-                        to="/login"
-                        className={cn(
-                            "w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold transition-all",
-                            isDark ? "bg-white text-black hover:bg-gray-200" : "bg-black text-white hover:bg-gray-800"
-                        )}
-                    >
-                        <LogIn size={18} />
-                        Sign In Now
-                    </Link>
-                </div>
+const StoryRow: React.FC<{ article: PublicNewsArticle; lang: string }> = ({ article, lang }) => (
+    <li>
+        <Link to={articleHref(article)} state={{ collection: article.collection }} className="group flex gap-4 py-5 sm:gap-5">
+            <Thumb article={article} lang={lang} className="aspect-[16/10] w-32 shrink-0 sm:w-48" />
+            <div className="min-w-0 flex-1">
+                <Meta article={article} lang={lang} />
+                <h3 className="mt-1.5 text-base font-semibold leading-snug text-zinc-900 group-hover:underline underline-offset-2 dark:text-zinc-100 sm:text-lg">
+                    {resolveHeadline(article.headline, lang)}
+                </h3>
             </div>
-        );
-    }
+        </Link>
+    </li>
+);
 
+const MostRead: React.FC<{ articles: PublicNewsArticle[]; lang: string }> = ({ articles, lang }) => (
+    <section aria-labelledby="most-read">
+        <h2 id="most-read" className="border-b-2 border-zinc-900 pb-2 text-xs font-bold uppercase tracking-[0.15em] text-zinc-900 dark:border-zinc-100 dark:text-zinc-100">
+            Most read
+        </h2>
+        <ol className="divide-y divide-zinc-200 dark:divide-zinc-800">
+            {articles.map((a, i) => (
+                <li key={a.id}>
+                    <Link to={articleHref(a)} state={{ collection: a.collection }} className="group flex gap-3 py-3.5">
+                        <span className="w-6 shrink-0 text-2xl font-bold leading-none text-zinc-300 dark:text-zinc-700">{i + 1}</span>
+                        <span className="text-sm font-medium leading-snug text-zinc-800 group-hover:underline underline-offset-2 dark:text-zinc-200">
+                            {resolveHeadline(a.headline, lang)}
+                        </span>
+                    </Link>
+                </li>
+            ))}
+        </ol>
+    </section>
+);
+
+const Pagination: React.FC<{ page: number; total: number; hrefFor: (p: number) => string }> = ({ page, total, hrefFor }) => {
+    if (total <= 1) return null;
+    const base =
+        "flex h-10 min-w-10 items-center justify-center rounded-lg px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--integri-accent-600)";
+    const idle = "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-white/[0.06]";
+    const disabled = "pointer-events-none text-zinc-300 dark:text-zinc-700";
     return (
-        <div
-            className={cn(
-                "h-full w-full overflow-y-auto",
-                isDark ? "bg-[#000]" : "bg-gray-50",
-            )}
-            id="news-page-root"
-        >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
-
-                {/* ── Page Header ── */}
-                <header className="space-y-4">
-                    <h1 className={cn(
-                        "text-3xl sm:text-4xl font-bold tracking-tight",
-                        isDark ? "text-white" : "text-gray-900",
-                    )}>
-                        {activeTab === "news" ? "Latest News" : "Articles"}
-                    </h1>
-                    <p className={cn(
-                        "text-sm max-w-2xl leading-relaxed",
-                        isDark ? "text-gray-400" : "text-gray-600",
-                    )}>
-                        {activeTab === "news"
-                            ? "Stay updated with the latest AI news, technology breakthroughs, and industry insights from around the world."
-                            : "In-depth articles, tutorials, and guides on AI, technology, and innovation."
-                        }
-                    </p>
-                </header>
-
-                {/* ── Tab Navigation ── */}
-                <nav
-                    className={cn(
-                        "flex gap-1 p-1 rounded-xl w-fit",
-                        isDark ? "bg-[#111] border border-white/5" : "bg-gray-100",
-                    )}
-                    aria-label="Content type"
-                    id="content-tabs"
+        <nav aria-label="News pages" className="flex flex-col items-center gap-3 pt-8">
+            <div className="flex flex-wrap items-center justify-center gap-1">
+                <Link
+                    to={hrefFor(Math.max(1, page - 1))}
+                    aria-disabled={page === 1}
+                    tabIndex={page === 1 ? -1 : undefined}
+                    className={cn(base, "gap-1", page === 1 ? disabled : idle)}
                 >
-                    <button
-                        onClick={() => setActiveTab("news")}
-                        className={cn(
-                            "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
-                            activeTab === "news"
-                                ? isDark
-                                    ? "bg-white text-black shadow-sm"
-                                    : "bg-white text-gray-900 shadow-sm"
-                                : isDark
-                                    ? "text-gray-400 hover:text-white hover:bg-white/5"
-                                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50",
-                        )}
-                        id="tab-news"
-                    >
-                        <Newspaper size={15} />
-                        News
-                    </button>
-                    <button
-                        onClick={() => setActiveTab("articles")}
-                        className={cn(
-                            "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
-                            activeTab === "articles"
-                                ? isDark
-                                    ? "bg-white text-black shadow-sm"
-                                    : "bg-white text-gray-900 shadow-sm"
-                                : isDark
-                                    ? "text-gray-400 hover:text-white hover:bg-white/5"
-                                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50",
-                        )}
-                        id="tab-articles"
-                    >
-                        <BookOpen size={15} />
-                        Articles
-                    </button>
-                </nav>
-
-                {/* ── Loading State ── */}
-                <AnimatePresence mode="wait">
-                    {loading && (
-                        <motion.div
-                            key="loading"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="flex flex-col items-center justify-center py-24 gap-3"
-                        >
-                            <Loader2
-                                size={32}
-                                className={cn(
-                                    "animate-spin",
-                                    isDark ? "text-gray-500" : "text-gray-400",
-                                )}
-                            />
-                            <span
-                                className={cn(
-                                    "text-sm",
-                                    isDark ? "text-gray-500" : "text-gray-400",
-                                )}
-                            >
-                                Loading {activeTab}…
-                            </span>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
-                {/* ── Error State ── */}
-                {error && !loading && (
-                    <div className="flex flex-col items-center justify-center py-24 gap-3">
-                        <span className="text-red-500 text-sm font-medium">{error}</span>
-                    </div>
-                )}
-
-                {/* ── Empty State ── */}
-                {!loading && !error && articles.length === 0 && (
-                    <div className="flex flex-col items-center justify-center py-24 gap-3">
-                        <span
+                    <ChevronLeft size={16} aria-hidden /> Previous
+                </Link>
+                {pageNumbers(page, total).map((p, i) =>
+                    p === "gap" ? (
+                        <span key={`gap-${i}`} className="px-1 text-zinc-400">…</span>
+                    ) : (
+                        <Link
+                            key={p}
+                            to={hrefFor(p)}
+                            aria-current={p === page ? "page" : undefined}
                             className={cn(
-                                "text-sm",
-                                isDark ? "text-gray-500" : "text-gray-400",
+                                base,
+                                p === page
+                                    ? "bg-zinc-900 text-white dark:bg-[#F2F4F7] dark:text-[#07060A]"
+                                    : idle
                             )}
                         >
-                            No {activeTab} found.
-                        </span>
-                    </div>
+                            {p}
+                        </Link>
+                    )
                 )}
+                <Link
+                    to={hrefFor(Math.min(total, page + 1))}
+                    aria-disabled={page === total}
+                    tabIndex={page === total ? -1 : undefined}
+                    className={cn(base, "gap-1", page === total ? disabled : idle)}
+                >
+                    Next <ChevronRight size={16} aria-hidden />
+                </Link>
+            </div>
+            <p className="text-xs text-zinc-500">
+                Page {page} of {total}
+            </p>
+        </nav>
+    );
+};
 
-                {/* ── Content Layout ── */}
-                {!loading && !error && articles.length > 0 && (
-                    <motion.div
-                        key={activeTab}
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="space-y-8"
-                    >
-                        {/* Featured Article */}
-                        <FeaturedArticle
-                            article={featured}
-                            isDark={isDark}
-                            lang={lang}
-                            type={activeTab}
-                        />
+const Skeleton: React.FC = () => (
+    <div className="animate-pulse space-y-8" aria-hidden>
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+            <div className="space-y-4">
+                <div className="aspect-[16/9] rounded-lg bg-zinc-200 dark:bg-zinc-900" />
+                <div className="h-7 w-3/4 rounded bg-zinc-200 dark:bg-zinc-900" />
+            </div>
+            <div className="space-y-6">
+                {[0, 1, 2].map((i) => (
+                    <div key={i} className="flex gap-4">
+                        <div className="flex-1 space-y-2">
+                            <div className="h-3 w-24 rounded bg-zinc-200 dark:bg-zinc-900" />
+                            <div className="h-4 w-full rounded bg-zinc-200 dark:bg-zinc-900" />
+                        </div>
+                        <div className="aspect-[4/3] w-28 rounded-lg bg-zinc-200 dark:bg-zinc-900" />
+                    </div>
+                ))}
+            </div>
+        </div>
+    </div>
+);
 
-                        {/* ── Ad: Top Banner (below featured) ── */}
-                        <AdUnit
-                            slot={AD_SLOTS.NEWS_LIST_TOP}
-                            format="auto"
-                            responsive
-                            isDark={isDark}
-                            testId="ad-news-list-top"
-                        />
+// ── Page ──────────────────────────────────────────────────────────────
 
-                        {/* Main Content + Sidebar */}
-                        {grid.length > 0 && (
-                            <div className="flex flex-col lg:flex-row gap-8">
-                                {/* Main Grid */}
-                                <div className="flex-1 space-y-6">
-                                    <div className="flex items-center justify-between">
-                                        <h2
-                                            className={cn(
-                                                "text-xl font-bold",
-                                                isDark ? "text-white" : "text-gray-900",
-                                            )}
-                                        >
-                                            {activeTab === "news" ? "Latest News" : "More Articles"}
-                                        </h2>
-                                    </div>
+const NewsPage: React.FC = () => {
+    const user = useAppSelector((state) => state.auth.user);
+    const isDark = useAppSelector((state) => state.theme.isDark);
+    const { i18n } = useTranslation();
+    const lang = i18n.language;
+    const [params, setParams] = useSearchParams();
+    const rootRef = useRef<HTMLDivElement>(null);
 
-                                    {/* Card Grid with In-Feed Ads */}
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                                        {grid.map((article, i) => (
-                                            <React.Fragment key={article.id}>
-                                                <NewsCard
-                                                    article={article}
-                                                    isDark={isDark}
-                                                    lang={lang}
-                                                    index={i}
-                                                    type={activeTab}
-                                                />
-                                                {/* Insert in-feed ad after every N cards */}
-                                                {(i + 1) % IN_FEED_AD_INTERVAL === 0 && (
-                                                    <div className="sm:col-span-2 xl:col-span-3">
-                                                        <AdUnit
-                                                            slot={AD_SLOTS.NEWS_LIST_IN_FEED}
-                                                            format="fluid"
-                                                            layout="in-feed"
-                                                            isDark={isDark}
-                                                            testId={`ad-in-feed-${i}`}
-                                                        />
-                                                    </div>
-                                                )}
-                                            </React.Fragment>
-                                        ))}
-                                    </div>
+    // Country: URL, then the visitor's saved pick, then profile, then a guess.
+    const urlCountry = params.get("country");
+    const country =
+        (urlCountry && NEWS_COUNTRY_BY_KEY[urlCountry] ? urlCountry : null) ??
+        getStoredNewsCountry() ??
+        (user?.country ? toNewsApiCountryKey(user.country) : detectVisitorNewsCountry() ?? "Germany");
+    const topic = params.get("topic");
 
-                                    {/* Load More */}
-                                    {hasMore && (
-                                        <div className="flex justify-center pt-4 pb-4">
-                                            <LoadMoreButton
-                                                onClick={loadMore}
-                                                loading={loadingMore}
-                                                isDark={isDark}
-                                            />
+    const { articles, loading, error } = useNewsFeed(country);
+
+    const topics = useMemo(() => [...new Set(articles.map((a) => a.topic).filter(Boolean))].sort(), [articles]);
+    const filtered = useMemo(() => (topic ? articles.filter((a) => a.topic === topic) : articles), [articles, topic]);
+    const mostRead = useMemo(() => {
+        const viewed = articles.filter((a) => a.views > 0);
+        return viewed.length >= 3 ? [...viewed].sort((a, b) => b.views - a.views).slice(0, 5) : [];
+    }, [articles]);
+
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    const requested = parseInt(params.get("page") ?? "1", 10);
+    const page = Number.isFinite(requested) ? Math.min(Math.max(requested, 1), totalPages) : 1;
+    const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+    const lead = page === 1 ? pageItems.slice(0, LEAD_COUNT) : [];
+    const rows = page === 1 ? pageItems.slice(LEAD_COUNT) : pageItems;
+
+    // Build a URL keeping the other params; page 1 / no topic stay out of the URL.
+    const hrefWith = (changes: Record<string, string | null>) => {
+        const next = new URLSearchParams(params);
+        Object.entries(changes).forEach(([k, v]) => (v ? next.set(k, v) : next.delete(k)));
+        if (next.get("page") === "1") next.delete("page");
+        const qs = next.toString();
+        return qs ? `/news?${qs}` : "/news";
+    };
+
+    const pickCountry = (key: string) => {
+        storeNewsCountry(key);
+        const next = new URLSearchParams(params);
+        next.set("country", key);
+        next.delete("page");
+        next.delete("topic");
+        setParams(next);
+    };
+
+    // New page / section / country → back to the top of the scroll area.
+    useEffect(() => {
+        rootRef.current?.scrollTo({ top: 0 });
+    }, [page, topic, country]);
+
+    const today = new Date().toLocaleDateString(lang, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    const countryName = NEWS_COUNTRY_BY_KEY[country]?.name ?? country;
+
+    const sectionLink = (value: string | null, label: string) => {
+        const active = (topic ?? null) === value;
+        return (
+            <Link
+                key={label}
+                to={hrefWith({ topic: value, page: null })}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                    "relative whitespace-nowrap py-3 text-xs font-semibold uppercase tracking-[0.12em] transition-colors",
+                    active
+                        ? "text-zinc-900 dark:text-white after:absolute after:inset-x-0 after:-bottom-px after:h-0.5 after:bg-(--integri-accent-600)"
+                        : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+                )}
+            >
+                {label}
+            </Link>
+        );
+    };
+
+    return (
+        <div ref={rootRef} id="news-page-root" className="h-full w-full overflow-y-auto bg-white dark:bg-[#07060A]">
+            <div className="mx-auto max-w-6xl px-4 pb-16 pt-8 sm:px-6">
+                {/* Masthead */}
+                <header className="flex flex-wrap items-end justify-between gap-4">
+                    <div>
+                        <h1 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-white sm:text-5xl">News</h1>
+                        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+                            {today} · {countryName} edition
+                        </p>
+                    </div>
+                    <NewsCountryPicker value={country} onChange={pickCountry} isDark={isDark} />
+                </header>
+
+                {/* Sections */}
+                <nav aria-label="Sections" className="mt-6 flex gap-6 overflow-x-auto border-y border-zinc-200 dark:border-zinc-800">
+                    {sectionLink(null, "Latest")}
+                    {topics.map((t) => sectionLink(t, titleCase(t)))}
+                </nav>
+
+                <div className="mt-8">
+                    {loading && <Skeleton />}
+
+                    {!loading && error && (
+                        <p className="py-24 text-center text-sm font-medium text-red-500">{error}</p>
+                    )}
+
+                    {!loading && !error && filtered.length === 0 && (
+                        <p className="py-24 text-center text-sm text-zinc-500">
+                            No news for {countryName} in the last 30 days. Try another country.
+                        </p>
+                    )}
+
+                    {!loading && !error && filtered.length > 0 && (
+                        <>
+                            {/* Lead + secondary stories (page 1) */}
+                            {lead.length > 0 && (
+                                <section className="grid gap-8 border-b border-zinc-200 pb-8 dark:border-zinc-800 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+                                    <LeadStory article={lead[0]} lang={lang} />
+                                    {lead.length > 1 && (
+                                        <div className="divide-y divide-zinc-200 dark:divide-zinc-800 lg:border-l lg:border-zinc-200 lg:pl-8 dark:lg:border-zinc-800">
+                                            {lead.slice(1).map((a) => (
+                                                <SecondaryStory key={a.id} article={a} lang={lang} />
+                                            ))}
                                         </div>
                                     )}
+                                </section>
+                            )}
 
-                                    {/* End of content indicator */}
-                                    {!hasMore && grid.length > 0 && (
-                                        <p className={cn(
-                                            "text-center text-xs py-6",
-                                            isDark ? "text-gray-600" : "text-gray-400",
-                                        )}>
-                                            You've reached the end. Check back later for more!
-                                        </p>
+                            {/* Story list + most read */}
+                            <div className={cn("grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]", lead.length > 0 && "mt-8")}>
+                                <div>
+                                    {rows.length > 0 && (
+                                        <>
+                                            <h2 className="border-b-2 border-zinc-900 pb-2 text-xs font-bold uppercase tracking-[0.15em] text-zinc-900 dark:border-zinc-100 dark:text-zinc-100">
+                                                {topic ? titleCase(topic) : "Latest stories"}
+                                            </h2>
+                                            <ul className="divide-y divide-zinc-200 dark:divide-zinc-800">
+                                                {rows.map((a) => (
+                                                    <StoryRow key={a.id} article={a} lang={lang} />
+                                                ))}
+                                            </ul>
+                                        </>
                                     )}
+                                    <Pagination page={page} total={totalPages} hrefFor={(p) => hrefWith({ page: String(p) })} />
                                 </div>
 
-                                {/* Sidebar - Cross Content */}
-                                <aside className="lg:w-72 xl:w-80 flex-shrink-0 space-y-4">
-                                    <div className={cn(
-                                        "rounded-2xl overflow-hidden",
-                                        isDark ? "bg-[#0a0a0a] border border-white/5" : "bg-white shadow-sm",
-                                    )}>
-                                        <div className={cn(
-                                            "px-4 py-3 flex items-center justify-between",
-                                            isDark ? "border-b border-white/5" : "border-b border-gray-100",
-                                        )}>
-                                            <h3 className={cn(
-                                                "text-sm font-bold",
-                                                isDark ? "text-white" : "text-gray-900",
-                                            )}>
-                                                {crossLabel}
-                                            </h3>
-                                            <button
-                                                onClick={() => setActiveTab(crossType)}
-                                                className={cn(
-                                                    "flex items-center gap-1 text-xs font-medium transition-colors",
-                                                    isDark ? "text-gray-400 hover:text-white" : "text-gray-500 hover:text-gray-900",
-                                                )}
-                                            >
-                                                See all <ArrowRight size={12} />
-                                            </button>
-                                        </div>
-
-                                        {crossLoading ? (
-                                            <div className="p-1">
-                                                {[0, 1, 2, 3].map((i) => (
-                                                    <CompactSkeleton key={i} isDark={isDark} />
-                                                ))}
-                                            </div>
-                                        ) : crossContent.length > 0 ? (
-                                            <div className="p-1">
-                                                {crossContent.map((article) => (
-                                                    <CompactCard
-                                                        key={article.id}
-                                                        article={article}
-                                                        isDark={isDark}
-                                                        lang={lang}
-                                                        type={crossType}
-                                                    />
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <p className={cn(
-                                                "text-xs p-4",
-                                                isDark ? "text-gray-500" : "text-gray-400",
-                                            )}>
-                                                No {crossType} available yet.
-                                            </p>
-                                        )}
-                                    </div>
-
-                                    {/* ── Ad: Sidebar ── */}
-                                    <AdUnit
-                                        slot={AD_SLOTS.NEWS_LIST_SIDEBAR}
-                                        format="auto"
-                                        responsive
-                                        isDark={isDark}
-                                        testId="ad-news-sidebar"
-                                    />
-
-
-                                </aside>
+                                {mostRead.length > 0 && (
+                                    <aside className="lg:sticky lg:top-6 lg:self-start">
+                                        <MostRead articles={mostRead} lang={lang} />
+                                    </aside>
+                                )}
                             </div>
-                        )}
-                    </motion.div>
-                )}
-
-                {/* ── Skeleton while loading ── */}
-                {loading && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 pb-8">
-                        {[0, 1, 2, 3, 4, 5].map((i) => (
-                            <CardSkeleton key={i} isDark={isDark} />
-                        ))}
-                    </div>
-                )}
+                        </>
+                    )}
+                </div>
             </div>
         </div>
     );

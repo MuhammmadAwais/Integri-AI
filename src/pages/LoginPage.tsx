@@ -85,7 +85,7 @@ const Login: React.FC = () => {
           <div className="flex justify-end">
             <Link
               to="/forgot-password"
-              className="text-sm text-gray-400 hover:text-red-500 transition-colors"
+              className="text-sm text-gray-400 hover:text-[#5EEAD4] transition-colors"
             >
               {t("auth.forgotPassword")}
             </Link>
@@ -104,10 +104,10 @@ const Login: React.FC = () => {
 
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-[#3F3F46]"></div>
+            <div className="w-full border-t border-[#3A3845]"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-[#18181B] text-gray-500">
+            <span className="px-2 bg-[#07060A] text-gray-500">
               {t("login.orContinueWith")}
             </span>
           </div>
@@ -139,7 +139,7 @@ const Login: React.FC = () => {
           {t("login.dontHaveAccount")}{" "}
           <Link
             to="/signup"
-            className="text-red-500 hover:text-red-400 font-semibold transition-colors hover:cursor-pointer"
+            className="text-[#5EEAD4] hover:text-[#8FF0E0] font-semibold transition-colors hover:cursor-pointer"
           >
             {t("login.signUpLink")}
           </Link>

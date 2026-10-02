@@ -16,7 +16,7 @@ const LinkItem: React.FC<LinkItemProps> = ({ icon: Icon, label, onClick, isDark 
     onClick={onClick}
     className={cn(
       "w-full flex items-center justify-between p-3 rounded-xl transition-colors group hover:cursor-pointer",
-      isDark ? "hover:bg-[#222]" : "hover:bg-gray-50"
+      isDark ? "hover:bg-[#1F1D25]" : "hover:bg-gray-50"
     )}
   >
     <div className="flex items-center gap-3">
@@ -52,7 +52,7 @@ const HelpAndAbout: React.FC = () => {
       className={cn(
         "rounded-xl border divide-y",
         isDark
-          ? "border-[#333] divide-[#333] bg-[#1a1a1a]"
+          ? "border-[#2A2830] divide-[#2A2830] bg-[#18161C]"
           : "border-gray-200 divide-gray-100 bg-white"
       )}
     >

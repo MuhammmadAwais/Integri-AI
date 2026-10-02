@@ -1,10 +1,12 @@
 # Integri AI - Custom agents, chatbots, and all AI models in one place
-# https://integri.app
+# https://www.integri.app
 
 User-agent: *
 Allow: /
 
 # Block junk / duplicate URLs (not real app routes) — fixes "Duplicate without user-selected canonical"
+# Private routes (/login, /settings, ...) are deliberately NOT disallowed here:
+# a Disallow stops Google reading their noindex meta tag.
 Disallow: /*.htm
 Disallow: /*.shtml
 Disallow: /siteinfo/
@@ -12,5 +14,5 @@ Disallow: /contact/
 Disallow: /recruit
 Disallow: /qsave
 
-# Sitemap
-Sitemap: https://integri.app/sitemap.xml
+# Sitemap index (generated at build time by scripts/generate-sitemaps.mjs)
+Sitemap: https://www.integri.app/sitemap.xml

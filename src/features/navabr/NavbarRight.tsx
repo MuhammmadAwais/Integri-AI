@@ -1,11 +1,9 @@
 import React from "react";
-import { Moon, Sun, MessageSquarePlus } from "lucide-react";
-import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
-import { toggleTheme } from "../theme/themeSlice";
-import { useNavigate } from "react-router-dom";
+import { MessageSquarePlus } from "lucide-react";
+import { useAppSelector } from "../../hooks/useRedux";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { cn } from "../../lib/utils";
-import LanguageSwitcher from "../../Components/ui/LanguageSwitcher";
 
 const NavActionBtn = ({ icon: Icon, onClick, label, active = false }: any) => {
   const isDark = useAppSelector((state) => state.theme.isDark);
@@ -27,31 +25,22 @@ const NavActionBtn = ({ icon: Icon, onClick, label, active = false }: any) => {
 };
 
 const NavbarRight: React.FC = () => {
-  const isDark = useAppSelector((state) => state.theme.isDark);
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { t } = useTranslation();
 
   return (
     <div className="flex items-center gap-1 sm:gap-2 relative">
-      {/* New Chat Button */}
-      <NavActionBtn
-        icon={MessageSquarePlus}
-        label={t("nav.newChat")}
-        onClick={() => navigate("/")}
-      />
-
-      <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1" />
-
-      {/* Language Switcher */}
-      <LanguageSwitcher />
-
-      {/* Theme Toggle */}
-      <NavActionBtn
-        icon={isDark ? Sun : Moon}
-        label={t("nav.toggleTheme")}
-        onClick={() => dispatch(toggleTheme())}
-      />
+      {/* New chat is the only top-bar action; theme and language moved to
+          the profile menu (ProfilePreferences). Hidden on the welcome screen,
+          where it would do nothing. */}
+      {pathname !== "/" && (
+        <NavActionBtn
+          icon={MessageSquarePlus}
+          label={t("nav.newChat")}
+          onClick={() => navigate("/")}
+        />
+      )}
     </div>
   );
 };

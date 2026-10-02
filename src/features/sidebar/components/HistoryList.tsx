@@ -32,7 +32,7 @@ const HistoryList: React.FC<Props> = ({
     <div
       className={cn(
         "flex-col h-full border-r shrink-0 transition-all md:w-[350px]",
-        isDark ? "border-[#2A2B32] bg-[#141414]" : "border-gray-200 bg-gray-50",
+        isDark ? "border-[#2A2830] bg-[#141414]" : "border-gray-200 bg-gray-50",
         mobileView === "detail" ? "hidden md:flex" : "flex w-full"
       )}
     >
@@ -58,7 +58,7 @@ const HistoryList: React.FC<Props> = ({
           className={cn(
             "flex items-center gap-2 px-3 py-2.5 rounded-xl border",
             isDark
-              ? "bg-[#1F1F1F] border-transparent"
+              ? "bg-[#1F1D25] border-transparent"
               : "bg-white border-gray-200"
           )}
         >
@@ -87,10 +87,10 @@ const HistoryList: React.FC<Props> = ({
                 "hover:cursor-pointer w-full text-left p-3.5 rounded-xl transition-all group relative",
                 isActive
                   ? isDark
-                    ? "bg-[#2A2B32]"
+                    ? "bg-[#1F1D25]"
                     : "bg-white ring-1 ring-black/5"
                   : isDark
-                  ? "hover:bg-[#1A1A1A]"
+                  ? "hover:bg-[#18161C]"
                   : "hover:bg-gray-100"
               )}
             >

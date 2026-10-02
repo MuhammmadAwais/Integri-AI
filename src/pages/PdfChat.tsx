@@ -16,7 +16,7 @@ import ChatInterface from "../features/chat/components/ChatInterface";
 import { useAppSelector } from "../hooks/useRedux";
 import { ChatService } from "../features/chat/services/chatService";
 import Button from "../Components/ui/Button";
-import ParticleBackground from "../Components/ui/ParticleBackground";
+import AmbientBackground from "../Components/ui/AmbientBackground";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import LoginModal from "../features/auth/components/LoginModal";
 import SubscribeModal from "../features/subscriptions/components/SubscribeModal";
@@ -275,7 +275,7 @@ const PdfChatPage: React.FC = () => {
           isOpen={showSubscriptionModal}
           onClose={() => setShowSubscriptionModal(false)}
         />
-        <ParticleBackground />
+        <AmbientBackground />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -391,7 +391,7 @@ const PdfChatPage: React.FC = () => {
                 h-12 flex items-center justify-between px-4 border-b z-30
                 ${
                   isDark
-                    ? "bg-[#1a1a1a] border-gray-800"
+                    ? "bg-[#18161C] border-gray-800"
                     : "bg-white border-gray-200"
                 }
               `}

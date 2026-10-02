@@ -48,13 +48,13 @@ const PricingCard: React.FC<PricingCardProps> = ({
         isDark ? "bg-white/5 border-white/10" : "bg-white border-gray-200",
         plan.isPopular &&
           (isDark
-            ? "border-[#00A9A4]/50 shadow-[0_0_30px_rgba(0,169,164,0.1)]"
-            : "border-[#00A9A4] shadow-lg"),
+            ? "border-[#3BB8A0]/50 shadow-[0_0_30px_rgba(59,184,160,0.1)]"
+            : "border-[#3BB8A0] shadow-lg"),
       )}
     >
       {plan.isPopular && (
         <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-          <div className="bg-[#00A9A4] text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">
+          <div className="bg-[#3BB8A0] text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">
             Most Popular
           </div>
         </div>
@@ -99,7 +99,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
               className={cn(
                 "mt-0.5 min-w-[20px] h-5 rounded-full flex items-center justify-center",
                 plan.isPopular
-                  ? "bg-[#00A9A4]/10"
+                  ? "bg-[#3BB8A0]/10"
                   : isDark
                     ? "bg-white/10"
                     : "bg-gray-100",
@@ -109,7 +109,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
                 className={cn(
                   "w-3 h-3",
                   plan.isPopular
-                    ? "text-[#00A9A4]"
+                    ? "text-[#3BB8A0]"
                     : isDark
                       ? "text-gray-300"
                       : "text-gray-600",
@@ -139,7 +139,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
               ? "bg-white/10 text-gray-400 cursor-default"
               : "bg-gray-100 text-gray-400 cursor-default"
             : plan.isPopular
-              ? "bg-[#00A9A4] text-white hover:bg-[#008f8b] shadow-[0_0_15px_rgba(0,169,164,0.3)]"
+              ? "bg-[#3BB8A0] text-white hover:bg-[#008f8b] shadow-[0_0_15px_rgba(59,184,160,0.3)]"
               : isDark
                 ? "bg-white text-black hover:bg-gray-200"
                 : "bg-black text-white hover:bg-gray-800",

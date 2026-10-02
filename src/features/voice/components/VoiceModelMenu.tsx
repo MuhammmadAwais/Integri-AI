@@ -96,7 +96,7 @@ const VoiceModelMenu: React.FC<VoiceModelMenuProps> = ({
         ref={menuRef}
         className={cn(
           "fixed z-9999 w-60 rounded-xl border p-1.5 shadow-xl animate-in fade-in zoom-in-95 duration-100",
-          isDark ? "bg-[#121212] border-zinc-800" : "bg-white border-zinc-200"
+          isDark ? "bg-[#18161C] border-zinc-800" : "bg-white border-zinc-200"
         )}
         style={{
           top: coords?.top,
@@ -121,7 +121,7 @@ const VoiceModelMenu: React.FC<VoiceModelMenuProps> = ({
                       ? "bg-indigo-500/10 text-indigo-400"
                       : "bg-indigo-50 text-indigo-600"
                     : isDark
-                    ? "text-gray-300 hover:bg-[#27272a]"
+                    ? "text-gray-300 hover:bg-[#1F1D25]"
                     : "text-gray-700 hover:bg-gray-100"
                 )}
               >

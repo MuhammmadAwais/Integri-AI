@@ -32,7 +32,7 @@ export const showLimitReachedToast = ({ feature, limit, resetTime }: LimitReache
     draggable: false,
     toastId: `limit-${feature}`, // Prevent duplicate toasts
     style: {
-      background: "#18181b",
+      background: "#18161C",
       border: "1px solid #3f3f46",
       color: "#fafafa",
       fontSize: "13px",
@@ -57,7 +57,7 @@ export const showRemainingToast = ({ feature, remaining, unit = "" }: RemainingO
     closeOnClick: true,
     toastId: `remaining-${feature}`,
     style: {
-      background: "#18181b",
+      background: "#18161C",
       border: "1px solid #3f3f46",
       color: "#a1a1aa",
       fontSize: "13px",

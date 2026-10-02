@@ -6,7 +6,7 @@ import { useOfferings } from "../features/subscriptions/hooks/useOfferings";
 import PricingCard from "../features/subscriptions/components/PricingCard";
 import PricingHeader from "../features/subscriptions/components/PricingHeader";
 import SubscriptionSuccessModal from "../features/subscriptions/components/SubscriptionSuccessModal";
-import ParticleBackground from "../Components/ui/ParticleBackground";
+import AmbientBackground from "../Components/ui/AmbientBackground";
 import { cn } from "../lib/utils";
 import { ChevronDown, ChevronUp, ShieldCheck, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -82,7 +82,7 @@ const SubscriptionPage: React.FC = () => {
         "scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent",
       )}
     >
-      <ParticleBackground />
+      <AmbientBackground />
 
       <div className="relative z-10 container mx-auto px-4 py-20 lg:py-32">
         <PricingHeader />
@@ -138,7 +138,7 @@ const SubscriptionPage: React.FC = () => {
               )}
             >
               Yearly
-              <span className="text-[10px] bg-[#00A9A4] text-white px-1.5 py-0.5 rounded-full ml-1">
+              <span className="text-[10px] bg-[#3BB8A0] text-white px-1.5 py-0.5 rounded-full ml-1">
                 -17%
               </span>
             </button>
@@ -149,7 +149,7 @@ const SubscriptionPage: React.FC = () => {
         <div className="max-w-5xl mx-auto min-h-[500px]">
           {isLoadingOfferings ? (
             <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-8 h-8 animate-spin text-[#00A9A4]" />
+              <Loader2 className="w-8 h-8 animate-spin text-[#3BB8A0]" />
               <span className="ml-3 text-gray-500">Loading subscription plans...</span>
             </div>
           ) : offeringsError ? (

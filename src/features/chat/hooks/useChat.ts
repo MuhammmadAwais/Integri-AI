@@ -11,7 +11,7 @@ import {
   removeSession,
   updateSessionTitle, 
 } from "../../chat/chatSlice";
-import AVAILABLE_MODELS from "../../../../Constants";
+import { resolveModel } from "../../../../Constants";
 
 export interface Message {
   id?: string;
@@ -318,6 +318,34 @@ export const useChat = (sessionId: string | undefined, initialMessage?: string, 
         return;
       }
 
+      // Server-side failure (expired token, limit reached, model/agent error).
+      // Same message shape the mobile app handles: { type: "error", message }.
+      if (data.type === "error") {
+        setIsThinking(false);
+        setIsStreaming(false);
+        const reason = data.message || data.content || data.detail || "Something went wrong. Please try again.";
+        setMessages((prev) => {
+          const last = prev[prev.length - 1];
+          const base = last?.role === "assistant" && (last.isGeneratingImage || !last.content) ? prev.slice(0, -1) : prev;
+          return [...base, { role: "assistant", content: `⚠️ ${reason}` }];
+        });
+        return;
+      }
+
+      // Generated document (PDF/DOCX) — the app shows it as a downloadable file.
+      if (data.type === "file_generated") {
+        setIsThinking(false);
+        setIsStreaming(false);
+        const url = data.file_url || "";
+        const name = data.file_name || (data.file_type === "pdf" ? "Generated PDF" : "Generated file");
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: data.content || "", attachment: { name, type: "file", url } },
+        ]);
+        triggerChatUpdate();
+        return;
+      }
+
       // A. Text Stream
       if (data.type === "stream") {
         setIsThinking(false);
@@ -425,6 +453,18 @@ export const useChat = (sessionId: string | undefined, initialMessage?: string, 
         triggerChatUpdate();
       }
     });
+
+    // Connection dropped mid-reply: stop the typing dots and say so, instead
+    // of waiting forever for a response that will not arrive.
+    socketService.onClose(() => {
+      setIsThinking(false);
+      setIsStreaming(false);
+      setMessages((prev) =>
+        prev[prev.length - 1]?.role === "user"
+          ? [...prev, { role: "assistant", content: "⚠️ Connection lost before a reply arrived. Please send your message again." }]
+          : prev
+      );
+    });
   }, [dispatch, sessionId]); // Added dispatch and sessionId dependencies
 
   // 4. Send Message — S3 4-Step Pipeline
@@ -461,7 +501,7 @@ export const useChat = (sessionId: string | undefined, initialMessage?: string, 
           (sessionId && activeConfig ? activeConfig.modelId : newChatPref.id);
 
         // Find provider for the model
-        const modelData = AVAILABLE_MODELS.find((m) => m.id === model);
+        const modelData = model ? resolveModel(model) : undefined;
         const provider =
           modelData?.provider ||
           (sessionId && activeConfig

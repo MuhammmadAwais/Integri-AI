@@ -10,7 +10,7 @@ const SkeletonLoader: React.FC<SkeletonProps> = ({ count = 1, className }) => {
   return (
     <>
       {Array.from({ length: count }).map((_, index) => (
-        <div key={index} className={cn("animate-pulse bg-gray-200 dark:bg-[#2A2B32] rounded-md", className)} />
+        <div key={index} className={cn("animate-pulse bg-gray-200 dark:bg-[#1F1D25] rounded-md", className)} />
       ))}
     </>
 

@@ -86,7 +86,7 @@ const ActionButton = ({
       active
         ? "text-green-500 bg-green-500/10"
         : isDark
-        ? "text-[#71767B] hover:text-[#1D9BF0] hover:bg-[#1D9BF0]/10"
+        ? "text-[#999999] hover:text-[#1D9BF0] hover:bg-[#1D9BF0]/10"
         : "text-gray-400 hover:text-[#1D9BF0] hover:bg-blue-50",
       className
     )}

@@ -54,7 +54,7 @@ const HistoryPreview: React.FC<Props> = ({
       <div
         className={cn(
           "h-[60px] flex items-center justify-between px-4 border-b shrink-0",
-          isDark ? "border-[#2A2B32]" : "border-gray-200"
+          isDark ? "border-[#2A2830]" : "border-gray-200"
         )}
       >
         <div className="flex items-center gap-3 overflow-hidden">
@@ -157,7 +157,7 @@ const HistoryPreview: React.FC<Props> = ({
                         "px-4 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-normal wrap-break-words line-clamp-none block overflow-visible max-h-none[webkit-line-clamp:unset] [webkit-box-orient:unset]",
                         msg.role === "user"
                           ? isDark
-                            ? "bg-[#2F3336] text-gray-100"
+                            ? "bg-[#2A2830] text-gray-100"
                             : "bg-gray-200 text-gray-900"
                           : isDark? "bg-transparent text-gray-800 dark:text-gray-200" : "bg-gray-100 text-gray-900"
                       )}

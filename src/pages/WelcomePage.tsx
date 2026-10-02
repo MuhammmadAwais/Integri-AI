@@ -2,10 +2,10 @@ import React, { useRef, useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppSelector } from "../hooks/useRedux";
 import { cn } from "../lib/utils";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ChatService } from "../features/chat/services/chatService";
 import gsap from "gsap";
-import ParticleBackground from "../Components/ui/ParticleBackground";
+import AmbientBackground from "../Components/ui/AmbientBackground";
 import SubscriptionOfferingCard from "../features/subscriptions/components/SubscriptionOfferingCard";
 import WelcomeChatInput from "../features/chat/components/WelcomeChatInput";
 import AdUnit from "../Components/ads/AdUnit";
@@ -113,11 +113,11 @@ const WelcomePage: React.FC = () => {
       className={cn(
         "flex flex-col items-center justify-center h-dvh w-full relative overflow-hidden transition-colors duration-300 font-sans",
         isDark
-          ? "bg-[#000000] selection:bg-zinc-800 selection:text-white"
+          ? "bg-[#07060A] selection:bg-zinc-800 selection:text-white"
           : "bg-white selection:bg-blue-100 selection:text-blue-900"
       )}
     >
-      <ParticleBackground />
+      <AmbientBackground />
 
      {user && ( <SubscriptionOfferingCard />)}
 
@@ -137,28 +137,16 @@ const WelcomePage: React.FC = () => {
 
       {/* CENTER CONTENT - Original centered layout preserved */}
       <div className="w-full max-w-[720px] px-6 flex flex-col items-center -mt-12 z-10 relative">
-        <div
-          ref={logoRef}
-          className="mb-10 flex flex-col items-center justify-center text-center gap-4"
-        >
-          <Link to="/">
-            <h1
-              className={cn(
-                "text-6xl sm:text-7xl font-bold tracking-tighter hover:cursor-pointer transition-opacity hover:opacity-90",
-                isDark ? "text-white" : "text-black"
-              )}
-            >
-              Integri
-            </h1>
-          </Link>
-          <h2
+        {/* One greeting line, like Gemini / ChatGPT (the logo is in the sidebar) */}
+        <div ref={logoRef} className="mb-8 text-center">
+          <h1
             className={cn(
-              "text-lg sm:text-xl font-semibold tracking-widest mt-2",
-              isDark ? "text-zinc-400" : "text-zinc-500"
+              "text-[28px] sm:text-[32px] font-medium tracking-tight",
+              isDark ? "text-zinc-100" : "text-zinc-900"
             )}
           >
-{t("welcome.greeting", { name: firstName })}
-          </h2>
+            {t("welcome.greeting", { name: firstName })}
+          </h1>
         </div>
 
         {/* REUSABLE INPUT COMPONENT */}
@@ -169,9 +157,6 @@ const WelcomePage: React.FC = () => {
           onStartChat={handleStartChat}
         />
 
-        <div className="mt-6 text-xs font-medium text-zinc-400/60 dark:text-zinc-600/60 select-none">
-          {t("chat.llmDisclaimer")}
-        </div>
       </div>
 
       {/* RIGHT SKYSCRAPER AD — fixed to right margin, freemium only */}

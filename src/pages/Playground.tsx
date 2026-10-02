@@ -44,7 +44,7 @@ const Playground: React.FC = () => {
     <div
       className={cn(
         "flex flex-col h-[calc(100dvh-64px)] w-full overflow-hidden transition-colors duration-300",
-        isDark ? "bg-[#09090b]" : "bg-white"
+        isDark ? "bg-[#07060A]" : "bg-white"
       )}
     >
    
@@ -77,7 +77,7 @@ const Playground: React.FC = () => {
       <div
         className={cn(
           "p-4 border-t z-20 shrink-0",
-          isDark ? "border-zinc-800 bg-[#09090b]" : "border-zinc-200 bg-white"
+          isDark ? "border-zinc-800 bg-[#07060A]" : "border-zinc-200 bg-white"
         )}
       >
         <div className="max-w-4xl mx-auto">

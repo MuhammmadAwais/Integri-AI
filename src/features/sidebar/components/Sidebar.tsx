@@ -146,7 +146,7 @@ const Sidebar: React.FC = () => {
           "flex flex-col h-full border-e transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] relative z-40 select-none",
           isExpanded ? "w-60" : "w-[68px]",
           isDark
-            ? "bg-[#000000] border-[#1F1F1F] text-[#E7E9EA]"
+            ? "bg-[#07060A] border-[#2A2830] text-[#F2F4F7]"
             : "bg-white border-gray-200 text-gray-900",
         )}
       >
@@ -178,7 +178,7 @@ const Sidebar: React.FC = () => {
               className={cn(
                 "flex items-center gap-2.5 ps-3 pe-3 py-1.5 rounded-full border transition-all group",
                 isDark
-                  ? "bg-[#101010] border-[#1F1F1F] focus-within:border-gray-700 focus-within:bg-black"
+                  ? "bg-[#101010] border-[#2A2830] focus-within:border-gray-700 focus-within:bg-black"
                   : "bg-gray-50 border-gray-200 focus-within:bg-white focus-within:border-gray-300",
               )}
             >
@@ -205,7 +205,7 @@ const Sidebar: React.FC = () => {
               className={cn(
                 "w-9 h-9 rounded-full flex items-center hover:cursor-pointer hover:scale-115 hover:bg-gray-100 justify-center transition-colors duration-100 ease-in-out pr-0.5",
                 isDark
-                  ? "hover:bg-[#1A1A1A] text-gray-400"
+                  ? "hover:bg-[#18161C] text-gray-400"
                   : "hover:bg-gray-100",
               )}
             >
@@ -235,7 +235,7 @@ const Sidebar: React.FC = () => {
             <div className="animate-in fade-in duration-300">
               <button
                 className={cn(
-                  "flex justify-between items-center w-full ps-2 pe-2 py-2 text-[#71767B]  transition-colors group mb-1",
+                  "flex justify-between items-center w-full ps-2 pe-2 py-2 text-[#999999]  transition-colors group mb-1",
                   isDark ? "hover:text-white" : "hover:text-black",
                 )}
               >
@@ -283,10 +283,10 @@ const Sidebar: React.FC = () => {
                               className={cn(
                                 "block ps-2 pe-8 py-1 rounded text-[13px] truncate transition-colors",
                                 isDark
-                                  ? "text-[#E7E9EA] hover:bg-[#1A1A1A]"
+                                  ? "text-[#F2F4F7] hover:bg-[#18161C]"
                                   : "text-gray-700 hover:bg-gray-100",
                                 location.pathname.includes(sessionId) &&
-                                (isDark ? "bg-[#1A1A1A]" : "bg-gray-100"),
+                                (isDark ? "bg-[#18161C]" : "bg-gray-100"),
                               )}
                             >
                               {chat.title || t("common.newConversation")}
@@ -312,7 +312,7 @@ const Sidebar: React.FC = () => {
                   <button
                     onClick={() => setShowHistoryModal(true)}
                     className={cn(
-                      "text-[12px] text-[#71767B] ps-2 pe-2 py-1 hover:underline text-start block w-full hover:cursor-pointer mt-2",
+                      "text-[12px] text-[#999999] ps-2 pe-2 py-1 hover:underline text-start block w-full hover:cursor-pointer mt-2",
                       isDark ? "hover:text-white" : "hover:text-black",
                     )}
                   >
@@ -328,7 +328,7 @@ const Sidebar: React.FC = () => {
               className={cn(
                 "w-9 h-9 mx-auto rounded-lg flex items-center justify-center transition-colors mt-2",
                 isDark
-                  ? "hover:bg-[#1A1A1A] text-gray-500"
+                  ? "hover:bg-[#18161C] text-gray-500"
                   : "hover:bg-gray-100",
               )}
             >
@@ -341,7 +341,7 @@ const Sidebar: React.FC = () => {
         <div
           className={cn(
             "ps-4 pe-4 py-3 mt-auto relative z-50",
-            isDark ? "border-t border-[#1F1F1F]" : "border-t border-gray-200",
+            isDark ? "border-t border-[#2A2830]" : "border-t border-gray-200",
           )}
         >
           <UserProfile
@@ -369,10 +369,10 @@ const NavItem = ({
       isExpanded ? "ps-4 pe-4" : "justify-center ps-0 pe-0",
       isActive
         ? isDark
-          ? "bg-[#1A1A1A] text-white"
+          ? "bg-[#18161C] text-white"
           : "bg-gray-100 text-black"
         : isDark
-          ? "text-[#999] hover:bg-[#111] hover:text-[#E7E9EA]"
+          ? "text-[#999] hover:bg-[#18161C] hover:text-[#F2F4F7]"
           : "text-gray-600 hover:bg-gray-50",
     )}
   >

@@ -1,0 +1,126 @@
+{
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "previews",
+      "runtime": "nodejs22",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ]
+    }
+  ],
+  "hosting": {
+    "public": "dist",
+    "trailingSlash": false,
+    "trailingSlash": false,
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/news/**",
+        "function": {
+          "functionId": "ssrPreview",
+          "region": "us-central1"
+        }
+      },
+      {
+        "source": "/articles/**",
+        "function": {
+          "functionId": "ssrPreview",
+          "region": "us-central1"
+        }
+      },
+      {
+        "source": "/blog/**",
+        "function": {
+          "functionId": "ssrPreview",
+          "region": "us-central1"
+        }
+      },
+      {
+        "source": "/News/**",
+        "function": {
+          "functionId": "ssrPreview",
+          "region": "us-central1"
+        }
+      },
+      {
+        "source": "/Article/**",
+        "function": {
+          "functionId": "ssrPreview",
+          "region": "us-central1"
+        }
+      },
+      {
+        "source": "/Articles/**",
+        "function": {
+          "functionId": "ssrPreview",
+          "region": "us-central1"
+        }
+      },
+      {
+        "source": "/share/news/**",
+        "function": {
+          "functionId": "ssrPreview",
+          "region": "us-central1"
+        }
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "/.well-known/apple-app-site-association",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=3600"
+          }
+        ]
+      },
+      {
+        "source": "/assets/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=31536000, immutable"
+          }
+        ]
+      },
+      {
+        "source": "/index.html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
+      },
+      {
+        "source": "/**/index.html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
+      }
+    ]
+  }
+}

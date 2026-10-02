@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "../../lib/utils";
-import AVAILABLE_MODELS from "../../../Constants";
 import { Bot} from "lucide-react";
 import { useSubscription } from "../../features/subscriptions/hooks/useSubscription";
 
@@ -43,7 +42,7 @@ const ModelMenu: React.FC<ModelMenuProps> = ({
 
   // We use this ref to find the location of the trigger in the DOM
   const anchorRef = useRef<HTMLDivElement>(null);
-  const { availableModels } = useSubscription();
+  const { availableModels, pickerModels } = useSubscription();
 
   useEffect(() => {
     if (isOpen && anchorRef.current) {
@@ -126,7 +125,7 @@ const ModelMenu: React.FC<ModelMenuProps> = ({
 
               // Theme Colors
               isDark
-                ? "bg-[#18181b] border-[#27272a] shadow-black/50"
+                ? "bg-[#18161C] border-[#2A2830] shadow-black/50"
                 : "bg-white border-gray-200 shadow-xl"
             )}
           >
@@ -135,16 +134,14 @@ const ModelMenu: React.FC<ModelMenuProps> = ({
                 className={cn(
                   "px-2 py-2 text-[11px] font-bold uppercase tracking-wider sticky top-0 z-10 mb-1 backdrop-blur-md",
                   isDark
-                    ? "bg-[#18181b]/95 text-gray-500 border-b border-[#27272a]"
+                    ? "bg-[#18161C]/95 text-gray-500 border-b border-[#2A2830]"
                     : "bg-white/95 text-gray-400 border-b border-gray-100"
                 )}
               >
                 Available Models
               </div>
 
-              {AVAILABLE_MODELS.filter(
-                (m) => m.id !== "gpt-4o-mini-search-preview" && m.id !== "gpt-4o-mini-deep-research"
-              ).map((m) => {
+              {pickerModels.map((m) => {
                 const isSelected = m.id === selected;
                 const isLocked = !availableModels.some((am) => am.id === m.id);
                 return (
@@ -163,7 +160,7 @@ const ModelMenu: React.FC<ModelMenuProps> = ({
                           ? "bg-indigo-500/10 text-indigo-400"
                           : "bg-indigo-50 text-indigo-600"
                         : isDark
-                        ? "text-gray-300 hover:bg-[#27272a]"
+                        ? "text-gray-300 hover:bg-[#1F1D25]"
                         : "text-gray-700 hover:bg-gray-100"
                     )}
                   >

@@ -45,12 +45,12 @@ const SubscriptionSuccessModal: React.FC = () => {
               )}
             >
               {/* Animated Border/Glow Effect */}
-              <div className="absolute inset-0 bg-linear-to-r from-[#00A9A4] via-purple-500 to-[#00A9A4] opacity-20 animate-spin-slow" />
+              <div className="absolute inset-0 bg-linear-to-r from-[#3BB8A0] via-purple-500 to-[#3BB8A0] opacity-20 animate-spin-slow" />
 
               <div
                 className={cn(
                   "relative z-10 flex flex-col items-center p-8 rounded-[22px]",
-                  isDark ? "bg-[#121212]" : "bg-white"
+                  isDark ? "bg-[#18161C]" : "bg-white"
                 )}
               >
                 {/* Close Button */}

@@ -52,7 +52,7 @@ const PlaygroundLane: React.FC<PlaygroundLaneProps> = ({
       className={cn(
         "flex flex-col border rounded-xl relative overflow-hidden transition-all duration-300 h-full",
         isDark
-          ? "bg-[#121212] border-zinc-800 shadow-xl"
+          ? "bg-[#18161C] border-zinc-800 shadow-xl"
           : "bg-white border-zinc-200 shadow-sm"
       )}
     >
@@ -61,7 +61,7 @@ const PlaygroundLane: React.FC<PlaygroundLaneProps> = ({
         className={cn(
           "px-4 py-3 border-b flex justify-between items-center backdrop-blur-md z-10 shrink-0",
           isDark
-            ? "bg-[#121212]/95 border-zinc-800"
+            ? "bg-[#18161C]/95 border-zinc-800"
             : "bg-white/95 border-zinc-100"
         )}
       >

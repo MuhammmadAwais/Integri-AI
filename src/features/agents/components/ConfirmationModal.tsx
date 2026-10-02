@@ -53,7 +53,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             className={cn(
               "relative w-full max-w-md overflow-hidden rounded-2xl border shadow-2xl",
               isDark
-                ? "bg-[#121212] border-zinc-800"
+                ? "bg-[#18161C] border-zinc-800"
                 : "bg-white border-zinc-200"
             )}
           >

@@ -39,11 +39,8 @@ const limitsSlice = createSlice({
     // without a network round-trip
     incrementImageCount(state) {
       if (state.limits) {
+        // Remaining is derived as limit - used, so only the used count moves.
         state.limits.images_generated_this_month += 1;
-        state.limits.image_generation_limit = Math.max(
-          0,
-          state.limits.image_generation_limit - 1
-        );
       }
     },
     // Optimistic decrement of daily messages remaining

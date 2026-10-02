@@ -275,7 +275,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                   isImage ? "w-12 h-12 rounded-xl overflow-hidden" : "h-12 px-3 gap-3 rounded-xl min-w-[140px] max-w-[200px]",
                   fileUploadStage === "error"
                     ? isDark ? "bg-red-900/20 border-red-900/40" : "bg-red-50 border-red-200"
-                    : isDark ? "bg-[#2A2B32] border-[#3A3B42]" : "bg-white border-gray-200 shadow-sm"
+                    : isDark ? "bg-[#1F1D25] border-[#3A3845]" : "bg-white border-gray-200 shadow-sm"
                 )}
               >
                 {/* Remove Button (Floating for images, absolute right otherwise) */}
@@ -343,7 +343,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           "relative flex flex-col overflow-visible transition-all duration-200",
           features ? "rounded-3xl border shadow-sm" : "rounded-2xl border",
           isDark
-            ? "bg-[#1a1a1a] border-gray-800 focus-within:border-gray-700"
+            ? "bg-[#18161C] border-gray-800 focus-within:border-gray-700"
             : "bg-[#f4f4f4] border-transparent focus-within:bg-white focus-within:border-gray-200 focus-within:shadow-md"
         )}
       >
@@ -405,7 +405,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                     className={cn(
                       "absolute bottom-full left-0 mb-2 w-48 rounded-xl border p-1 shadow-xl z-50",
                       isDark
-                        ? "bg-[#1a1a1a] border-gray-700"
+                        ? "bg-[#18161C] border-gray-700"
                         : "bg-white border-gray-200"
                     )}
                   >

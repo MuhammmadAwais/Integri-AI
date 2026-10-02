@@ -94,7 +94,7 @@ const MessageMarkdown: React.FC<{
               </div>
             );
           }
-          return <hr className={cn("my-6 border-t", isDark ? "border-[#333]" : "border-gray-200")} {...props} />;
+          return <hr className={cn("my-6 border-t", isDark ? "border-[#2A2830]" : "border-gray-200")} {...props} />;
         },
 
         // 1. HEADINGS
@@ -102,7 +102,7 @@ const MessageMarkdown: React.FC<{
           <h1
             className={cn(
               "text-2xl font-bold mb-4 mt-6 pb-2 border-b",
-              isDark ? "border-[#333] text-white" : "border-gray-300 text-black"
+              isDark ? "border-[#2A2830] text-white" : "border-gray-300 text-black"
             )}
           >
             {children}
@@ -124,7 +124,7 @@ const MessageMarkdown: React.FC<{
           <p
             className={cn(
               "mb-4 last:mb-0 leading-relaxed font-normal whitespace-pre-wrap",
-              isDark ? "text-[#E7E9EA]" : "text-[#0F1419]"
+              isDark ? "text-[#F2F4F7]" : "text-[#0F1419]"
             )}
           >
             {children}
@@ -163,7 +163,7 @@ const MessageMarkdown: React.FC<{
               className={cn(
                 "px-1.5 py-0.5 rounded text-[13px] font-mono border mx-0.5",
                 isDark
-                  ? "bg-[#16181C] text-[#E7E9EA] border-[#333]"
+                  ? "bg-[#18161C] text-[#F2F4F7] border-[#2A2830]"
                   : "bg-white text-[#C7254E] border-gray-300" // Standard Red for inline code in light mode
               )}
               {...props}
@@ -174,14 +174,14 @@ const MessageMarkdown: React.FC<{
             <div
               className={cn(
                 "relative my-5 rounded-xl overflow-hidden border shadow-sm group/code",
-                isDark ? "border-[#333]" : "border-gray-300"
+                isDark ? "border-[#2A2830]" : "border-gray-300"
               )}
             >
               <div
                 className={cn(
                   "flex items-center justify-between px-4 py-2 border-b",
                   isDark
-                    ? "bg-[#16181C] border-[#333]"
+                    ? "bg-[#18161C] border-[#2A2830]"
                     : "bg-[#F9FAFB] border-gray-300"
                 )}
               >
@@ -228,7 +228,7 @@ const MessageMarkdown: React.FC<{
             className={cn(
               "border-l-4 pl-4 py-1 my-4 italic rounded-r-lg",
               isDark
-                ? "border-gray-600 bg-[#16181C] text-gray-300"
+                ? "border-gray-600 bg-[#18161C] text-gray-300"
                 : "border-gray-300 bg-[#F9FAFB] text-gray-700"
             )}
           >
@@ -253,7 +253,7 @@ const MessageMarkdown: React.FC<{
           <div
             className={cn(
               "overflow-x-auto my-6 border rounded-lg shadow-sm",
-              isDark ? "border-[#333]" : "border-gray-300"
+              isDark ? "border-[#2A2830]" : "border-gray-300"
             )}
           >
             <table
@@ -273,7 +273,7 @@ const MessageMarkdown: React.FC<{
             className={cn(
               "px-4 py-3 font-semibold border-b",
               isDark
-                ? "border-[#333] text-gray-200"
+                ? "border-[#2A2830] text-gray-200"
                 : "border-gray-300 text-gray-900"
             )}
           >
@@ -284,7 +284,7 @@ const MessageMarkdown: React.FC<{
           <tr
             className={cn(
               "border-b last:border-0 hover:bg-black/5 dark:hover:bg-white/5 transition-colors",
-              isDark ? "border-[#333]" : "border-gray-200"
+              isDark ? "border-[#2A2830]" : "border-gray-200"
             )}
           >
             {children}

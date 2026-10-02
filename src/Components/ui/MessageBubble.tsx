@@ -169,12 +169,12 @@ const MessageBubble: React.FC<MessageProps> = ({
                           ? cn(
                               "px-5 py-3 rounded-2xl rounded-tr-sm shadow-sm",
                               isDark
-                                ? "bg-[#2F3336] text-[#E7E9EA]"
+                                ? "bg-[#2A2830] text-[#F2F4F7]"
                                 : "bg-[#F3F4F6] text-[#111827]"
                             )
                           : cn(
                               "px-1 py-0 bg-transparent",
-                              isDark ? "text-[#E7E9EA]" : "text-[#0F1419]"
+                              isDark ? "text-[#F2F4F7]" : "text-[#0F1419]"
                             )
                       )}
                     >

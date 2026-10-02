@@ -1,13 +1,12 @@
 import React from "react";
-import { Helmet } from "react-v19-helmet-async";
 import { useLocation } from "react-router-dom";
 import {
   getSEOForPath,
   SITE_NAME,
   SITE_DEFAULT_DESCRIPTION,
-  SITE_TWITTER_HANDLE,
   BASE_URL,
 } from "../../config/seo";
+import Seo from "./Seo";
 
 const SITE_URL = BASE_URL.replace(/\/$/, "");
 
@@ -34,50 +33,37 @@ const HOME_JSON_LD = {
 };
 
 /**
- * Per-page SEO: title, meta description, canonical, Open Graph, Twitter Card.
- * Renders inside HelmetProvider; use useLocation() for current path.
+ * Route-level SEO from src/config/seo.ts.
+ *
+ * Article routes (/blog/:id, /news/:id, /articles/:id) are left alone: the
+ * page renders its own <Seo> once the article loads, and until then the
+ * per-article tags the ssrPreview function put in the HTML stay in place.
+ * Rendering route defaults there would overwrite every article with the
+ * same generic title.
  */
 const PageSEO: React.FC = () => {
   const { pathname } = useLocation();
   const seo = getSEOForPath(pathname);
-  const canonical = seo.canonicalUrl;
-  const ogImage = seo.ogImageUrl;
-  const title = seo.title;
-  const description = seo.description || SITE_DEFAULT_DESCRIPTION;
-  const keywords = seo.keywords;
-  const noindex = !!seo.noindex;
+  if (seo.isArticle) return null;
+
   const isHome = pathname === "/" || pathname === "";
 
   return (
-    <Helmet>
-      <title>{title}</title>
-      {description && <meta name="description" content={description} />}
-      {keywords && <meta name="keywords" content={keywords} />}
-      {noindex && <meta name="robots" content="noindex, nofollow" />}
-      <link rel="canonical" href={canonical} />
-
-      {/* Open Graph */}
-      <meta property="og:type" content="website" />
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
-      <meta property="og:url" content={canonical} />
-      <meta property="og:image" content={ogImage} />
-      <meta property="og:site_name" content={SITE_NAME} />
-      <meta property="og:locale" content="en_US" />
-
-      {/* Twitter Card */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:site" content={SITE_TWITTER_HANDLE} />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={ogImage} />
+    <Seo
+      title={seo.title}
+      description={seo.description || SITE_DEFAULT_DESCRIPTION}
+      canonicalPath={seo.canonicalPath}
+      noindex={!!seo.noindex}
+      keywords={seo.keywords}
+      image={seo.ogImage}
+    >
       {isHome && (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(HOME_JSON_LD) }}
         />
       )}
-    </Helmet>
+    </Seo>
   );
 };
 

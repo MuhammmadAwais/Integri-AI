@@ -39,7 +39,7 @@ const SubscribeModal: React.FC<SubscribeModalProps> = ({
             transform transition-all scale-100 opacity-100 animate-in zoom-in-95 duration-200
             ${
               isDark
-                ? "bg-[#09090b] border-[#27272a] text-white"
+                ? "bg-[#07060A] border-[#2A2830] text-white"
                 : "bg-white border-gray-200 text-gray-900"
             }
           `}
@@ -53,7 +53,7 @@ const SubscribeModal: React.FC<SubscribeModalProps> = ({
               absolute right-4 top-4 p-1 rounded-md transition-colors z-10 hover:cursor-pointer
               ${
                 isDark
-                  ? "hover:bg-[#27272a] text-gray-400"
+                  ? "hover:bg-[#1F1D25] text-gray-400"
                   : "hover:bg-gray-100 text-gray-500"
               }
             `}
@@ -110,7 +110,7 @@ const SubscribeModal: React.FC<SubscribeModalProps> = ({
               flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium border
               ${
                 isDark
-                  ? "bg-[#18181b] border-[#27272a] text-gray-300"
+                  ? "bg-[#18161C] border-[#2A2830] text-gray-300"
                   : "bg-gray-50 border-gray-200 text-gray-600"
               }
             `}
@@ -143,7 +143,7 @@ const SubscribeModal: React.FC<SubscribeModalProps> = ({
                 w-full py-2.5 px-4 rounded-lg font-medium transition-colors text-sm hover:cursor-pointer
                 ${
                   isDark
-                    ? "text-gray-400 hover:text-white hover:bg-[#27272a]"
+                    ? "text-gray-400 hover:text-white hover:bg-[#1F1D25]"
                     : "text-gray-500 hover:text-black hover:bg-gray-100"
                 }
               `}

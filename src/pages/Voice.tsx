@@ -4,7 +4,7 @@ import ParticleSphere from "../Components/ui/ParticleSphere";
 import { Mic, PhoneOff } from "lucide-react";
 import { useVoiceChat } from "../features/voice/hooks/useVoiceChat";
 import { useAppSelector } from "../hooks/useRedux";
-import ParticleBackground from "../Components/ui/ParticleBackground";
+import AmbientBackground from "../Components/ui/AmbientBackground";
 import { cn } from "../lib/utils";
 import Captions from "../features/voice/components/Captions";
 import LoginModal from "../features/auth/components/LoginModal";
@@ -55,7 +55,7 @@ const Voice: React.FC<VoiceProps> = ({ overrideToken }) => {
 
   return (
     <div className="relative w-full h-screen overflow-hidden flex flex-col items-center justify-center">
-      <ParticleBackground />
+      <AmbientBackground />
 
       {/* 5. Hide Login Modal in Mobile Mode just in case */}
       {!isMobileMode && (

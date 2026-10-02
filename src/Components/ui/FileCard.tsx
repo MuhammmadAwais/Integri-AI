@@ -33,7 +33,7 @@ export const FileCard: React.FC<FileCardProps> = ({ attachment }) => {
     return (
        <div className={cn(
          "flex items-center gap-3 p-3 rounded-xl border shadow-sm transition-transform duration-300 hover:scale-[1.02]",
-         isDark ? "bg-[#2A2B32]/80 border-white/5" : "bg-white border-gray-200/60"
+         isDark ? "bg-[#1F1D25]/80 border-white/5" : "bg-white border-gray-200/60"
        )}>
           <div className={cn("p-2.5 rounded-lg shrink-0 flex items-center justify-center", isDark ? "bg-black/30" : "bg-gray-100")}>
             <FileText size={20} className="text-indigo-500" />
@@ -50,7 +50,7 @@ export const FileCard: React.FC<FileCardProps> = ({ attachment }) => {
   return (
     <div className={cn(
       "flex items-center gap-3 p-3 rounded-xl border shadow-sm animate-pulse",
-      isDark ? "bg-[#2A2B32]/80 border-white/5" : "bg-white border-gray-200/60"
+      isDark ? "bg-[#1F1D25]/80 border-white/5" : "bg-white border-gray-200/60"
     )}>
        <div className={cn("p-2.5 rounded-lg shrink-0 flex items-center justify-center", isDark ? "bg-black/30" : "bg-gray-100")}>
          <FileText size={20} className="text-gray-400" />
