@@ -52,6 +52,12 @@ export interface NewsArticleDetail {
     caption?: Record<string, string>;
   }>;
   markAsTrending: boolean;
+  /** Writer's SEO title / meta description (localised), when the pipeline provides them. */
+  seo_title?: Record<string, string> | string;
+  meta_description?: Record<string, string> | string;
+  /** Last real content change (ISO 8601). */
+  updatedAt?: string;
+  compiledAt?: string;
   sources?: Array<{
     title: string;
     image: string;

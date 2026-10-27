@@ -1,17 +1,20 @@
 import React, { useState } from "react";
-import { useParams, useNavigate, Link, useLocation, useSearchParams } from "react-router-dom";
+import { useParams, useNavigate, Link, useLocation, useSearchParams, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Clock, Share2, Loader2, Newspaper } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import { useAppSelector } from "../hooks/useRedux";
 import { cn } from "../lib/utils";
-import { useNewsArticle, useArticlesList } from "../features/news/hooks/useNews";
+import { useNewsArticle, useArticlesList, useNewsFeed } from "../features/news/hooks/useNews";
 import {
     type NewsArticleDetail,
     type PublicNewsArticle,
     localised,
 } from "../features/news/models/publicNewsArticle";
 import ShareModal from "../Components/ui/ShareModal";
+import { NEWS_COUNTRY_BY_COLLECTION, TOPIC_MIN_ARTICLES, countryBySlug, newsPath } from "../features/news/utils/newsCountries";
+import { getCanonicalUrl } from "../config/seo";
+import NewsLanguagePicker from "../features/news/components/NewsLanguagePicker";
+import { articleLanguages, isRtl, pickLanguage, sortLanguages, useNewsLanguage } from "../features/news/utils/newsLanguage";
 import Seo, { toMetaDescription } from "../Components/seo/Seo";
 
 // ── Helpers ───────────────────────────────────────────────────────────
@@ -94,6 +97,50 @@ const ContentBlock: React.FC<{
 
 // ── Related Card ──────────────────────────────────────────────────────
 
+/** Country stories go to their /news/<country>/<id> page; legacy Articles keep /articles/<id>. */
+/** Same check as functions/src/seo.ts: ISO 639 language, optional region, never "-UK". */
+const HREFLANG_RE = /^[a-z]{2,3}(-(?!UK$)[A-Z]{2}|-[A-Z][a-z]{3})?$/;
+
+const OG_REGIONS: Record<string, string> = {
+    en: "US", de: "DE", fr: "FR", es: "ES", it: "IT", pt: "PT", nl: "NL", ar: "SA",
+    ur: "PK", ja: "JP", ko: "KR", zh: "CN", ru: "RU", tr: "TR", pl: "PL", sv: "SE",
+};
+
+function ogLocale(lang: string): string {
+    const [language, region] = lang.split("-");
+    const r = region ?? OG_REGIONS[language];
+    return r ? `${language}_${r.toUpperCase()}` : language;
+}
+
+const titleCase = (s: string) => s.charAt(0).toUpperCase() + s.slice(1); // as on the news page
+
+/**
+ * Links for the "Related topics" block: the story's topic section and its
+ * country edition, each only when that page is a real, filled section.
+ */
+function topicLinks(
+    topic: string | undefined,
+    edition: { key: string; name: string } | undefined,
+    feed: PublicNewsArticle[],
+): Array<{ label: string; href: string }> {
+    if (!edition || feed.length < TOPIC_MIN_ARTICLES) return [];
+    // Same encoding as the news page's own section links (URLSearchParams).
+    const href = (q: Record<string, string>) => `/news?${new URLSearchParams(q)}`;
+    const links = [{ label: `${edition.name} news`, href: href({ country: edition.key }) }];
+    if (topic && feed.filter((a) => a.topic === topic).length >= TOPIC_MIN_ARTICLES) {
+        links.unshift({ label: `${titleCase(topic)} in ${edition.name}`, href: href({ country: edition.key, topic }) });
+    }
+    return links;
+}
+
+function relatedHref(article: PublicNewsArticle, linkPrefix: string, lang: string): string {
+    const q = `lang=${encodeURIComponent(lang)}`;
+    if (linkPrefix === "/articles" && !NEWS_COUNTRY_BY_COLLECTION[article.collection]) {
+        return `/articles/${article.id}?collection=${encodeURIComponent(article.collection || "Articles")}&${q}`;
+    }
+    return `${newsPath(article.id, article.collection)}?${q}`;
+}
+
 const RelatedCard: React.FC<{
     article: PublicNewsArticle;
     isDark: boolean;
@@ -101,7 +148,7 @@ const RelatedCard: React.FC<{
     linkPrefix: string;
 }> = ({ article, isDark, lang, linkPrefix }) => (
     <Link
-        to={`${linkPrefix}/${article.id}?collection=${encodeURIComponent(article.collection || "News")}`}
+        to={relatedHref(article, linkPrefix, lang)}
         state={{ collection: article.collection }}
         className="block group"
     >
@@ -116,7 +163,7 @@ const RelatedCard: React.FC<{
                 className="w-20 h-14 rounded-lg object-cover shrink-0"
             />
             <div className="flex flex-col justify-center gap-1 min-w-0">
-                <h4 className={cn(
+                <h4 dir="auto" className={cn(
                     "text-xs font-semibold leading-snug line-clamp-2 group-hover:underline",
                     isDark ? "text-gray-200" : "text-gray-900",
                 )}>
@@ -130,22 +177,37 @@ const RelatedCard: React.FC<{
 // ── Main Detail Page ──────────────────────────────────────────────────
 
 const NewsDetailPage: React.FC = () => {
-    const { id } = useParams<{ id: string }>();
+    const { id, country } = useParams<{ id: string; country?: string }>();
     const navigate = useNavigate();
     const location = useLocation();
     const [searchParams] = useSearchParams();
     const isDark = useAppSelector((state: any) => state.theme.isDark);
-    const { i18n } = useTranslation();
-    const lang = i18n.language;
+    const { preferred: preferredLangs, setLanguage } = useNewsLanguage();
     
-    // Get collection from query params or route state, defaulting to "News"
-    const collection = searchParams.get("collection") || location.state?.collection || "News";
+    // /news/<country>/<id> names the collection; older links carry ?collection=.
+    const countryCollection = countryBySlug(country)?.collection;
+    const legacyCollection = searchParams.get("collection") || location.state?.collection;
+    const collection = countryCollection || legacyCollection || "News";
+    // Old /news/<id>?collection=NewsGermany links move to /news/germany/<id>.
+    const redirectTo =
+        !country && id && legacyCollection && newsPath(id, legacyCollection) !== `/news/${id}`
+            ? newsPath(id, legacyCollection)
+            : null;
     const { article, loading, error } = useNewsArticle(id, collection);
 
     // Fetch related articles for cross-content sidebar
-    const { articles: relatedArticles, loading: relatedLoading } = useArticlesList(6);
+    const { articles: relatedArticles, loading: relatedLoading } = useArticlesList(7, article?.country ?? null);
+
+    // The edition's 30-day feed: tells which topic sections are real pages.
+    const edition = NEWS_COUNTRY_BY_COLLECTION[collection];
+    const { articles: editionArticles } = useNewsFeed(edition?.key ?? "");
 
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
+    if (redirectTo) {
+        const lang = searchParams.get("lang");
+        return <Navigate to={lang ? `${redirectTo}?lang=${encodeURIComponent(lang)}` : redirectTo} replace />;
+    }
 
     // ── Loading ──
     if (loading) {
@@ -177,6 +239,9 @@ const NewsDetailPage: React.FC = () => {
 
     // ── Error / Not found ──
     if (error || !article) {
+        // Deleted story (API 404): keep it out of the index. A network error
+        // must not, or a hiccup would de-index a live story.
+        const notFound = !error || /not found/i.test(error);
         return (
             <div
                 className={cn(
@@ -184,6 +249,7 @@ const NewsDetailPage: React.FC = () => {
                     isDark ? "bg-black text-white" : "bg-gray-50 text-gray-900",
                 )}
             >
+                {notFound && <Seo title="Article not found | Integri News" description="This article is no longer available." noindex />}
                 <h2 className="text-2xl font-bold">
                     {error ?? "Article not found"}
                 </h2>
@@ -197,7 +263,29 @@ const NewsDetailPage: React.FC = () => {
         );
     }
 
+    // Show the story in the reader's language when it has that translation.
+    const languages = sortLanguages(articleLanguages(article));
+    const lang = pickLanguage(languages, ...preferredLangs);
     const headline = localised(article.headline, lang);
+    const field = (v: Record<string, string> | string | undefined) =>
+        typeof v === "string" ? v : localised(v, lang);
+
+    // One URL per language, matching the ssrPreview function: the default
+    // language (English, else the first code) at the bare path, the others
+    // at ?lang=. Each is its own canonical and lists all the others.
+    const path = newsPath(id!, collection);
+    const codes = languages.filter((c) => HREFLANG_RE.test(c)).sort();
+    const defaultLang = codes.includes("en") ? "en" : codes[0] ?? "en";
+    const versionUrl = (code: string) =>
+        getCanonicalUrl(code === defaultLang ? path : `${path}?lang=${encodeURIComponent(code)}`);
+    const canonicalUrl = codes.includes(lang) ? versionUrl(lang) : getCanonicalUrl(path);
+    const alternates = codes.length > 1
+        ? [...codes.map((c) => ({ hreflang: c, href: versionUrl(c) })), { hreflang: "x-default", href: versionUrl(defaultLang) }]
+        : undefined;
+
+    const published = article.date;
+    const modified = article.updatedAt ?? article.compiledAt;
+    const relatedTopics = topicLinks(article.topic, edition, editionArticles);
 
     const content = article.content || [];
     // Separate first description block for the excerpt pull-quote
@@ -206,9 +294,11 @@ const NewsDetailPage: React.FC = () => {
         ? content.filter((c) => c !== firstDesc)
         : content;
     const tags = article.tags || [];
-    const summary = toMetaDescription(
-        (firstDesc && localised(firstDesc.value, lang)) || headline,
-    );
+    // Same title and description the ssrPreview function serves.
+    const summary =
+        field(article.meta_description) ||
+        toMetaDescription((firstDesc && localised(firstDesc.value, lang)) || headline);
+    const seoTitle = field(article.seo_title) || headline;
 
     return (
         <div
@@ -218,9 +308,11 @@ const NewsDetailPage: React.FC = () => {
             )}
         >
             <Seo
-                title={`${headline} | Integri`}
+                title={`${seoTitle} | Integri News`}
                 description={summary}
-                canonicalPath={`/news/${id}`}
+                canonicalUrl={canonicalUrl}
+                alternates={alternates}
+                locale={ogLocale(lang)}
                 type="article"
                 image={article.coverImage || undefined}
             />
@@ -231,6 +323,8 @@ const NewsDetailPage: React.FC = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.4 }}
+                        lang={lang}
+                        dir={isRtl(lang) ? "rtl" : "ltr"}
                         className="flex-1 max-w-3xl space-y-6"
                     >
                         {/* ── Back button ── */}
@@ -283,6 +377,15 @@ const NewsDetailPage: React.FC = () => {
                                     #{tag}
                                 </span>
                             ))}
+                            <div className="ms-auto">
+                                <NewsLanguagePicker
+                                    languages={languages}
+                                    value={lang}
+                                    onChange={setLanguage}
+                                    isDark={isDark}
+                                    align={isRtl(lang) ? "left" : "right"}
+                                />
+                            </div>
                         </div>
 
                         {/* ── Title ── */}
@@ -332,6 +435,14 @@ const NewsDetailPage: React.FC = () => {
                                 <Clock size={13} />
                                 {readTime(content, lang)}
                             </span>
+                            {published && (
+                                <span className={isDark ? "text-gray-400" : "text-gray-600"}>
+                                    Published <time dateTime={published}>{published.slice(0, 10)}</time>
+                                    {modified && modified.slice(0, 10) !== published.slice(0, 10) && (
+                                        <> · Updated <time dateTime={modified}>{modified.slice(0, 10)}</time></>
+                                    )}
+                                </span>
+                            )}
                             <button
                                 onClick={() => setIsShareModalOpen(true)}
                                 className={cn(
@@ -387,6 +498,35 @@ const NewsDetailPage: React.FC = () => {
                                 </React.Fragment>
                             ))}
                         </div>
+
+                        {/* ── Related topics: real section pages only ── */}
+                        {relatedTopics.length > 0 && (
+                            <nav aria-labelledby="related-topics" className="pb-12">
+                                <h2
+                                    id="related-topics"
+                                    className={cn("text-base font-bold mb-3", isDark ? "text-white" : "text-gray-900")}
+                                >
+                                    Related topics
+                                </h2>
+                                <ul className="flex flex-wrap gap-2">
+                                    {relatedTopics.map((t) => (
+                                        <li key={t.href}>
+                                            <Link
+                                                to={t.href}
+                                                className={cn(
+                                                    "inline-block text-sm px-3 py-1.5 rounded-full transition-colors",
+                                                    isDark
+                                                        ? "bg-[#18161C] text-gray-200 hover:bg-[#252525]"
+                                                        : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+                                                )}
+                                            >
+                                                {t.label}
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </nav>
+                        )}
                     </motion.article>
 
                     {/* Sidebar - Related Articles */}
@@ -438,7 +578,7 @@ const NewsDetailPage: React.FC = () => {
                                 </div>
                             ) : (
                                 <div className="p-1">
-                                    {relatedArticles.slice(0, 5).map((a) => (
+                                    {relatedArticles.filter((a) => a.id !== id).slice(0, 5).map((a) => (
                                         <RelatedCard
                                             key={a.id}
                                             article={a}

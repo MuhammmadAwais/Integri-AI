@@ -231,6 +231,7 @@ export function useNewsFeed(country: string) {
     const [result, setResult] = useState<{ country: string; error: string | null } | null>(null);
 
     useEffect(() => {
+        if (!country) return; // Legacy stories belong to no country edition.
         let cancelled = false;
         NewsService.getPublicFeed({ country, days: FEED_DAYS, limit: FEED_LIMIT }, token ?? undefined)
             .then((data) => {

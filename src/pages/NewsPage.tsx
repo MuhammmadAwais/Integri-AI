@@ -5,12 +5,17 @@ import { useTranslation } from "react-i18next";
 import { useAppSelector } from "../hooks/useRedux";
 import { cn } from "../lib/utils";
 import { useNewsFeed } from "../features/news/hooks/useNews";
+import Seo from "../Components/seo/Seo";
 import { resolveHeadline, type PublicNewsArticle } from "../features/news/models/publicNewsArticle";
 import NewsCountryPicker from "../features/news/components/NewsCountryPicker";
+import NewsLanguagePicker from "../features/news/components/NewsLanguagePicker";
+import { articleLanguages, pickLanguage, sortLanguages, useNewsLanguage } from "../features/news/utils/newsLanguage";
 import {
     NEWS_COUNTRY_BY_KEY,
+    newsPath,
     getStoredNewsCountry,
     storeNewsCountry,
+    TOPIC_MIN_ARTICLES,
 } from "../features/news/utils/newsCountries";
 import { detectVisitorNewsCountry, toNewsApiCountryKey } from "../features/news/utils/countryHelper";
 
@@ -26,15 +31,16 @@ const LEAD_COUNT = 4; // lead + 3 secondary stories on page 1
 
 // ── Helpers ───────────────────────────────────────────────────────────
 
-const articleHref = (a: PublicNewsArticle) =>
-    `/news/${a.id}?collection=${encodeURIComponent(a.collection || "News")}`;
+const articleHref = (a: PublicNewsArticle, lang: string) =>
+    `${newsPath(a.id, a.collection)}?lang=${encodeURIComponent(lang)}`;
 
 const titleCase = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 function timeAgo(iso: string, lang: string): string {
     const then = new Date(iso).getTime();
     if (Number.isNaN(then)) return "";
-    const diff = (then - Date.now()) / 1000;
+    // Some stories are stamped slightly ahead of now; show those as "now".
+    const diff = Math.min(0, (then - Date.now()) / 1000);
     const rtf = new Intl.RelativeTimeFormat(lang, { numeric: "auto" });
     const abs = Math.abs(diff);
     if (abs < 3600) return rtf.format(Math.round(diff / 60), "minute");
@@ -86,20 +92,20 @@ const Thumb: React.FC<{ article: PublicNewsArticle; lang: string; className?: st
 );
 
 const LeadStory: React.FC<{ article: PublicNewsArticle; lang: string }> = ({ article, lang }) => (
-    <Link to={articleHref(article)} state={{ collection: article.collection }} className="group block">
+    <Link to={articleHref(article, lang)} state={{ collection: article.collection }} className="group block">
         <Thumb article={article} lang={lang} eager className="aspect-[16/9]" />
         <Meta article={article} lang={lang} className="mt-4" />
-        <h2 className="mt-2 text-2xl font-bold leading-tight tracking-tight text-zinc-900 group-hover:underline decoration-2 underline-offset-4 dark:text-white sm:text-[32px]">
+        <h2 dir="auto" className="mt-2 text-2xl font-bold leading-tight tracking-tight text-zinc-900 group-hover:underline decoration-2 underline-offset-4 dark:text-white sm:text-[32px]">
             {resolveHeadline(article.headline, lang)}
         </h2>
     </Link>
 );
 
 const SecondaryStory: React.FC<{ article: PublicNewsArticle; lang: string }> = ({ article, lang }) => (
-    <Link to={articleHref(article)} state={{ collection: article.collection }} className="group flex gap-4 py-4 first:pt-0">
+    <Link to={articleHref(article, lang)} state={{ collection: article.collection }} className="group flex gap-4 py-4 first:pt-0">
         <div className="min-w-0 flex-1">
             <Meta article={article} lang={lang} />
-            <h3 className="mt-1.5 text-base font-semibold leading-snug text-zinc-900 group-hover:underline underline-offset-2 dark:text-zinc-100">
+            <h3 dir="auto" className="mt-1.5 text-base font-semibold leading-snug text-zinc-900 group-hover:underline underline-offset-2 dark:text-zinc-100">
                 {resolveHeadline(article.headline, lang)}
             </h3>
         </div>
@@ -109,11 +115,11 @@ const SecondaryStory: React.FC<{ article: PublicNewsArticle; lang: string }> = (
 
 const StoryRow: React.FC<{ article: PublicNewsArticle; lang: string }> = ({ article, lang }) => (
     <li>
-        <Link to={articleHref(article)} state={{ collection: article.collection }} className="group flex gap-4 py-5 sm:gap-5">
+        <Link to={articleHref(article, lang)} state={{ collection: article.collection }} className="group flex gap-4 py-5 sm:gap-5">
             <Thumb article={article} lang={lang} className="aspect-[16/10] w-32 shrink-0 sm:w-48" />
             <div className="min-w-0 flex-1">
                 <Meta article={article} lang={lang} />
-                <h3 className="mt-1.5 text-base font-semibold leading-snug text-zinc-900 group-hover:underline underline-offset-2 dark:text-zinc-100 sm:text-lg">
+                <h3 dir="auto" className="mt-1.5 text-base font-semibold leading-snug text-zinc-900 group-hover:underline underline-offset-2 dark:text-zinc-100 sm:text-lg">
                     {resolveHeadline(article.headline, lang)}
                 </h3>
             </div>
@@ -129,9 +135,9 @@ const MostRead: React.FC<{ articles: PublicNewsArticle[]; lang: string }> = ({ a
         <ol className="divide-y divide-zinc-200 dark:divide-zinc-800">
             {articles.map((a, i) => (
                 <li key={a.id}>
-                    <Link to={articleHref(a)} state={{ collection: a.collection }} className="group flex gap-3 py-3.5">
+                    <Link to={articleHref(a, lang)} state={{ collection: a.collection }} className="group flex gap-3 py-3.5">
                         <span className="w-6 shrink-0 text-2xl font-bold leading-none text-zinc-300 dark:text-zinc-700">{i + 1}</span>
-                        <span className="text-sm font-medium leading-snug text-zinc-800 group-hover:underline underline-offset-2 dark:text-zinc-200">
+                        <span dir="auto" className="text-sm font-medium leading-snug text-zinc-800 group-hover:underline underline-offset-2 dark:text-zinc-200">
                             {resolveHeadline(a.headline, lang)}
                         </span>
                     </Link>
@@ -221,8 +227,9 @@ const NewsPage: React.FC = () => {
     const user = useAppSelector((state) => state.auth.user);
     const isDark = useAppSelector((state) => state.theme.isDark);
     const { i18n } = useTranslation();
-    const lang = i18n.language;
+    const uiLang = i18n.language;
     const [params, setParams] = useSearchParams();
+    const { preferred: preferredLangs, setLanguage } = useNewsLanguage();
     const rootRef = useRef<HTMLDivElement>(null);
 
     // Country: URL, then the visitor's saved pick, then profile, then a guess.
@@ -234,6 +241,14 @@ const NewsPage: React.FC = () => {
     const topic = params.get("topic");
 
     const { articles, loading, error } = useNewsFeed(country);
+
+    // Languages this country's stories are published in, A–Z by English name.
+    const feedLanguages = useMemo(() => {
+        const codes = new Set<string>();
+        articles.forEach((a) => articleLanguages(a).forEach((l) => codes.add(l)));
+        return sortLanguages([...codes]);
+    }, [articles]);
+    const lang = pickLanguage(feedLanguages, ...preferredLangs);
 
     const topics = useMemo(() => [...new Set(articles.map((a) => a.topic).filter(Boolean))].sort(), [articles]);
     const filtered = useMemo(() => (topic ? articles.filter((a) => a.topic === topic) : articles), [articles, topic]);
@@ -272,7 +287,7 @@ const NewsPage: React.FC = () => {
         rootRef.current?.scrollTo({ top: 0 });
     }, [page, topic, country]);
 
-    const today = new Date().toLocaleDateString(lang, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    const today = new Date().toLocaleDateString(uiLang, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
     const countryName = NEWS_COUNTRY_BY_KEY[country]?.name ?? country;
 
     const sectionLink = (value: string | null, label: string) => {
@@ -294,8 +309,20 @@ const NewsPage: React.FC = () => {
         );
     };
 
+    // A country edition or topic section is its own page once it holds enough
+    // stories; until then it stays out of the index (thin tag pages).
+    const sectionSeo = urlCountry && !loading && (
+        <Seo
+            title={`${topic ? `${titleCase(topic)} news` : "News"} in ${countryName} | Integri News`}
+            description={`The latest ${topic ? `${topic} ` : ""}stories from ${countryName}, updated daily on Integri News.`}
+            canonicalPath={hrefWith({})}
+            noindex={filtered.length < TOPIC_MIN_ARTICLES}
+        />
+    );
+
     return (
         <div ref={rootRef} id="news-page-root" className="h-full w-full overflow-y-auto bg-white dark:bg-[#07060A]">
+            {sectionSeo}
             <div className="mx-auto max-w-6xl px-4 pb-16 pt-8 sm:px-6">
                 {/* Masthead */}
                 <header className="flex flex-wrap items-end justify-between gap-4">
@@ -305,7 +332,10 @@ const NewsPage: React.FC = () => {
                             {today} · {countryName} edition
                         </p>
                     </div>
-                    <NewsCountryPicker value={country} onChange={pickCountry} isDark={isDark} />
+                    <div className="flex flex-wrap items-center gap-2">
+                        <NewsLanguagePicker languages={feedLanguages} value={lang} onChange={setLanguage} isDark={isDark} align="right" />
+                        <NewsCountryPicker value={country} onChange={pickCountry} isDark={isDark} />
+                    </div>
                 </header>
 
                 {/* Sections */}

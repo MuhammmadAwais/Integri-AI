@@ -16,6 +16,12 @@ export type SeoProps = {
   type?: "website" | "article";
   image?: string;
   keywords?: string;
+  /** og:locale, e.g. "de_DE". */
+  locale?: string;
+  /** hreflang → absolute URL; include the page itself and "x-default". */
+  alternates?: Array<{ hreflang: string; href: string }>;
+  /** Absolute canonical URL, when it carries a query (?lang=) the path form can't. */
+  canonicalUrl?: string;
   children?: React.ReactNode;
 };
 
@@ -30,6 +36,7 @@ export type SeoProps = {
 const STATIC_DUPLICATE_SELECTORS = [
   'meta[name="robots"]',
   'link[rel="canonical"]',
+  'link[rel="alternate"][hreflang]',
   'meta[name="description"]',
   'meta[name="keywords"]',
   'meta[property^="og:"]',
@@ -55,13 +62,16 @@ const Seo: React.FC<SeoProps> = ({
   type = "website",
   image,
   keywords,
+  locale = "en_US",
+  alternates,
+  canonicalUrl,
   children,
 }) => {
   useEffect(() => {
     removeStaticHeadTags();
   }, []);
 
-  const canonical = !noindex && canonicalPath ? getCanonicalUrl(canonicalPath) : null;
+  const canonical = noindex ? null : canonicalUrl ?? (canonicalPath ? getCanonicalUrl(canonicalPath) : null);
   const ogImage = getOgImageUrl(image);
 
   return (
@@ -69,8 +79,10 @@ const Seo: React.FC<SeoProps> = ({
       <title>{title}</title>
       <meta name="description" content={description} />
       {keywords && <meta name="keywords" content={keywords} />}
-      <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow"} />
+      <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow, max-image-preview:large, max-snippet:-1"} />
       {canonical && <link rel="canonical" href={canonical} />}
+      {canonical &&
+        alternates?.map((a) => <link key={a.hreflang} rel="alternate" hrefLang={a.hreflang} href={a.href} />)}
 
       <meta property="og:type" content={type} />
       <meta property="og:title" content={title} />
@@ -78,7 +90,7 @@ const Seo: React.FC<SeoProps> = ({
       {canonical && <meta property="og:url" content={canonical} />}
       <meta property="og:image" content={ogImage} />
       <meta property="og:site_name" content={SITE_NAME} />
-      <meta property="og:locale" content="en_US" />
+      <meta property="og:locale" content={locale} />
 
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:site" content={SITE_TWITTER_HANDLE} />
