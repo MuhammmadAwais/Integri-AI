@@ -145,7 +145,10 @@ const WelcomePage: React.FC = () => {
               isDark ? "text-zinc-100" : "text-zinc-900"
             )}
           >
-            {t("welcome.greeting", { name: firstName })}
+            {/* Signed out, this is the homepage search engines see: its H1 says what Integri is. */}
+            {user
+              ? t("welcome.greeting", { name: firstName })
+              : t("welcome.guestHeadline", "Free AI chat with 30+ models in one app")}
           </h1>
         </div>
 

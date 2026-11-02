@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { Suspense, lazy, useEffect } from "react";
 import {
   createBrowserRouter,
   RouterProvider,
@@ -17,39 +17,46 @@ import { AuthService } from "../features/auth/services/authService";
 
 // --- SEO ---
 import PageSEO from "../Components/seo/PageSEO";
+import RouteLoading from "../Components/ui/RouteLoading";
 
 // --- Components & Pages ---
+// Only the homepage shell (Home layout + Welcome) is in the main bundle; every
+// other page is loaded when it is first visited, so the homepage no longer
+// downloads the whole app (PDF tools, Markdown/maths, blog, news, …) to paint.
 import Home from "../pages/Home";
-import Login from "../pages/LoginPage";
-import Signup from "../pages/SignupPage";
-import ForgotPasswordPage from "../pages/ForgotPasswordPage";
-import SignupQRPage from "../pages/SignupQRPage";
+const Login = lazy(() => import("../pages/LoginPage"));
+const Signup = lazy(() => import("../pages/SignupPage"));
+const ForgotPasswordPage = lazy(() => import("../pages/ForgotPasswordPage"));
+const SignupQRPage = lazy(() => import("../pages/SignupQRPage"));
 import Welcome from "../pages/WelcomePage";
-import ChatInterface from "../features/chat/components/ChatInterface";
-import GettingStarted from "../pages/GettingStarted";
-import HistoryPage from "../pages/HistoryPage";
-import Playground from "../pages/Playground";
-import Voice from "../pages/Voice";
-import PdfChatPage from "../pages/PdfChat";
-import NewsPage from "../pages/NewsPage";
-import NewsDetailPage from "../pages/NewsDetailPage";
-import ArticleDetailPage from "../pages/ArticleDetailPage";
-import BlogPage from "../pages/BlogPage";
-import BlogDetailPage from "../pages/BlogDetailPage";
-import SettingsPage from "../pages/SettingsPage";
-import SendFeedbackPage from "../pages/SendFeedbackPage";
-import HelpPage from "../pages/HelpPage";
-import Agents from "../pages/Agents";
-import AgentDetailsPage from "../features/agents/components/AgentDetailsPage";
-import EmailCrafterWorkspace from "../features/systemTools/components/EmailCrafterWorkspace";
-import DocumentExplainerWorkspace from "../features/systemTools/components/DocumentExplainerWorkspace";
-import CostOfLivingWorkspace from "../features/systemTools/components/CostOfLivingWorkspace";
-import SubscriptionPage from "../pages/SubscriptionPage";
-import ImageGenPage from "../pages/ImageGenPage";
-import ContactUs from "../pages/ContactUs";
-import MobileVoiceWrapper from "../pages/MobileVoiceWrapper"; // <--- IMPORT ADDED
-import PrivacyPolicy from "../pages/PrivacyPolicy";
-import PersonalizationPage from "../pages/PersonalizationPage";
+const ChatInterface = lazy(() => import("../features/chat/components/ChatInterface"));
+const GettingStarted = lazy(() => import("../pages/GettingStarted"));
+const HistoryPage = lazy(() => import("../pages/HistoryPage"));
+const Playground = lazy(() => import("../pages/Playground"));
+const Voice = lazy(() => import("../pages/Voice"));
+const PdfChatPage = lazy(() => import("../pages/PdfChat"));
+const NewsPage = lazy(() => import("../pages/NewsPage"));
+const NewsDetailPage = lazy(() => import("../pages/NewsDetailPage"));
+const ArticleDetailPage = lazy(() => import("../pages/ArticleDetailPage"));
+const BlogPage = lazy(() => import("../pages/BlogPage"));
+const BlogDetailPage = lazy(() => import("../pages/BlogDetailPage"));
+const SettingsPage = lazy(() => import("../pages/SettingsPage"));
+const SendFeedbackPage = lazy(() => import("../pages/SendFeedbackPage"));
+const HelpPage = lazy(() => import("../pages/HelpPage"));
+const Agents = lazy(() => import("../pages/Agents"));
+const AgentDetailsPage = lazy(() => import("../features/agents/components/AgentDetailsPage"));
+const EmailCrafterWorkspace = lazy(() => import("../features/systemTools/components/EmailCrafterWorkspace"));
+const DocumentExplainerWorkspace = lazy(() => import("../features/systemTools/components/DocumentExplainerWorkspace"));
+const CostOfLivingWorkspace = lazy(() => import("../features/systemTools/components/CostOfLivingWorkspace"));
+const SubscriptionPage = lazy(() => import("../pages/SubscriptionPage"));
+const ImageGenPage = lazy(() => import("../pages/ImageGenPage"));
+const ContactUs = lazy(() => import("../pages/ContactUs"));
+const MobileVoiceWrapper = lazy(() => import("../pages/MobileVoiceWrapper"));
+const PrivacyPolicy = lazy(() => import("../pages/PrivacyPolicy"));
+const TermsOfUse = lazy(() => import("../pages/TermsOfUse"));
+const MobileTopUpPage = lazy(() => import("../pages/MobileTopUpPage"));
+const MobileTopUpIndexPage = lazy(() => import("../pages/MobileTopUpIndexPage"));
+const PersonalizationPage = lazy(() => import("../pages/PersonalizationPage"));
 import { fetchAgents, fetchPublicAgents } from "../features/agents/agentsSlice";
 import AppDownloadSheet from "../Components/ui/AppDownloadSheet";
 import AdBlockGuard from "../features/subscriptions/components/AdBlockGuard";
@@ -104,7 +111,9 @@ const PublicRoute = () => {
 const SEOLayout = () => (
   <AdBlockGuard>
     <PageSEO />
-    <Outlet />
+    <Suspense fallback={<RouteLoading />}>
+      <Outlet />
+    </Suspense>
   </AdBlockGuard>
 );
 
@@ -128,6 +137,12 @@ const router = createBrowserRouter([
         ],
       },
       { path: "/getting-started", element: <GettingStarted /> },
+      // Standalone (no sidebar) so the mobile app can show it in a web view.
+      { path: "/terms", element: <TermsOfUse /> },
+      // Mobile top-up shop: /shopping/mobile-top-up/{country}/{lang} (standalone, no sidebar)
+      { path: "/shopping/mobile-top-up", element: <MobileTopUpIndexPage /> },
+      { path: "/shopping/mobile-top-up/:country", element: <MobileTopUpPage /> },
+      { path: "/shopping/mobile-top-up/:country/:lang", element: <MobileTopUpPage /> },
       {
         path: "/voice/mobile-popup/:token",
         element: <MobileVoiceWrapper />,
@@ -150,6 +165,7 @@ const router = createBrowserRouter([
               { path: "pdf/:id", element: <PdfChatPage /> },
               { path: "news", element: <NewsPage /> },
               { path: "news/:id", element: <NewsDetailPage /> },
+              { path: "news/:country/:id", element: <NewsDetailPage /> },
               { path: "articles/:id", element: <ArticleDetailPage /> },
               { path: "blog", element: <BlogPage /> },
               { path: "blog/:slug", element: <BlogDetailPage /> },
@@ -181,11 +197,14 @@ const App: React.FC = () => {
   const dispatch = useAppDispatch();
   const token = useAppSelector((state) => state.auth.accessToken);
   const isDark = useAppSelector((state) => state.theme.isDark);
+  const embedded = new URLSearchParams(window.location.search).get("embed") === "1";
 
   // `.dark` on <html> switches the brand palette in index.css for every
   // route, including the ones outside the Home layout (login, signup, …).
+  // ?theme=light|dark (pages shown inside the mobile app) wins over the site setting.
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", isDark);
+    const forced = new URLSearchParams(window.location.search).get("theme");
+    document.documentElement.classList.toggle("dark", forced === "dark" || (forced !== "light" && isDark));
   }, [isDark]);
 
   // Fetch agents and public agents whenever we have a valid token
@@ -241,8 +260,13 @@ const App: React.FC = () => {
       <div>
         <RouterProvider router={router} />
       </div>
-      <AppDownloadSheet />
-      <CookieConsentBanner />
+      {/* ?embed=1: page shown inside the mobile app, no site popups */}
+      {!embedded && (
+        <>
+          <AppDownloadSheet />
+          <CookieConsentBanner />
+        </>
+      )}
     </>
   );
 }

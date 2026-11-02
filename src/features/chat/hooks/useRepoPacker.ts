@@ -16,7 +16,6 @@ import { useState, useCallback, useRef } from "react";
 import { useAppDispatch } from "../../../hooks/useRedux";
 import { setAttachedRepo } from "../chatSlice";
 import { repoBlobStore } from "../services/repoBlobStore";
-import { jsPDF } from "jspdf";
 import PackWorker from "../services/repoPackerWorker?worker";
 
 const MAX_ZIP_BYTES = 50 * 1024 * 1024; // 50MB
@@ -222,8 +221,10 @@ export function useRepoPacker() {
     [dispatch]
   );
 
-  const compilePdfAndDispatch = (payload: any, owner: string, repo: string, branch: string) => {
+  const compilePdfAndDispatch = async (payload: any, owner: string, repo: string, branch: string) => {
     try {
+      // jsPDF (+ PNG and zip helpers, ~700 KB) loads only when a repo is packed.
+      const { jsPDF } = await import("jspdf");
       const { compiledXml, totalTokens, fileCount, isOverLimit } = payload;
       
       const doc = new jsPDF({

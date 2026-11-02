@@ -3,6 +3,47 @@ import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react-swc'
 import tailwindcss from '@tailwindcss/vite'
 import type { IncomingMessage, ServerResponse } from 'http'
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
+import { extname, join, normalize, resolve } from 'node:path'
+
+/**
+ * Dev-only: serves the enterprise landing site (landing/) at /enterprise,
+ * /enterprise/de, … and its images under /enterprise/assets, the way Hosting
+ * does after `npm run build` (scripts/install-landing.mjs), with the same URL
+ * rewriting. Absolute https://www.integri.app links are made relative so
+ * they stay on localhost. Everything else falls through to the React app.
+ */
+function devLandingPlugin() {
+  const landing = resolve(__dirname, 'landing')
+  const types: Record<string, string> = {
+    '.html': 'text/html; charset=utf-8', '.xml': 'application/xml', '.webp': 'image/webp',
+    '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml',
+  }
+  const langs = () =>
+    readdirSync(landing, { withFileTypes: true })
+      .filter((e) => e.isDirectory() && existsSync(join(landing, e.name, 'index.html')))
+      .map((e) => e.name)
+  return {
+    name: 'dev-landing',
+    apply: 'serve' as const,
+    configureServer(server: any) {
+      server.middlewares.use(async (req: IncomingMessage, res: ServerResponse, next: () => void) => {
+        const path = decodeURIComponent((req.url ?? '/').split('?')[0])
+        if (path !== '/enterprise' && !path.startsWith('/enterprise/')) return next()
+        const rest = path.slice('/enterprise'.length).replace(/^\/+|\/+$/g, '')
+        const file = normalize(join(landing, rest, extname(rest) ? '' : 'index.html'))
+        if (!file.startsWith(landing) || !existsSync(file) || !statSync(file).isFile()) return next()
+
+        const { transformLanding } = await import('./scripts/landing-transform.mjs')
+        const type = types[extname(file)] ?? 'application/octet-stream'
+        res.writeHead(200, { 'Content-Type': type, 'Cache-Control': 'no-cache' })
+        if (!type.startsWith('text/html') && type !== 'application/xml') return res.end(readFileSync(file))
+        const text = transformLanding(readFileSync(file, 'utf8'), langs())
+        res.end(type.startsWith('text/html') ? text.replace(/https:\/\/www\.integri\.app\//g, '/') : text)
+      })
+    },
+  }
+}
 
 /**
  * Dev-only Vite middleware that replicates api/proxy-repo.ts for local development.
@@ -147,7 +188,7 @@ function devRepoProxyPlugin() {
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss(), devRepoProxyPlugin()],
+  plugins: [devLandingPlugin(), react(), tailwindcss(), devRepoProxyPlugin()],
   test: {
     environment: 'jsdom',
   },
@@ -158,6 +199,12 @@ export default defineConfig({
         ws: true,
         changeOrigin: true,
         secure: false,
+      },
+      // Top-up shop catalogue (dev only; checkout itself stays restricted to integri.app)
+      '/recharge/web': {
+        target: 'https://www.integri.app',
+        changeOrigin: true,
+        secure: true,
       },
       '/api/v1': {
         target: 'https://integri.cloud',

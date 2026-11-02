@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<script>
+/* Integri: page settings + language routing (added on top of the client's page).
+   - Live checkout against this site's own backend; the Stripe PUBLISHABLE key
+     (public by design) is set here so the page can never run its silent demo mode.
+   - Arabic browsers get the Arabic page, everyone else the English one. A choice
+     made with the language link is remembered and always wins. Crawlers and
+     link-preview bots are never redirected, so both pages get indexed. */
+window.TOPUP_CONFIG = { apiBase: location.origin, stripeKey: 'pk_live_51SeaBJLcuakDeWVjMTh998y5snfDTEvOfERcgOVN4TCwHnUl7Og1tp1oanEraHDn629fW9jKTTEURNfukShNkgPS00ejUxXmnB' };
+(function(){
+  try {
+    var PAGE = 'ar', BASE = '/sudan';
+    if (/bot|crawl|spider|slurp|lighthouse|facebookexternalhit|whatsapp|telegram|preview/i.test(navigator.userAgent)) return;
+    var KEY = 'integri_landing_lang', pref = null;
+    try { pref = localStorage.getItem(KEY); } catch (e) {}
+    var q = new URLSearchParams(location.search).get('lang');
+    if (q === 'ar' || q === 'en') { pref = q; try { localStorage.setItem(KEY, q); } catch (e) {} }
+    var langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
+    var browserAr = false;
+    for (var i = 0; i < langs.length; i++) { if (String(langs[i]).toLowerCase().indexOf('ar') === 0) { browserAr = true; break; } }
+    var want = pref || (browserAr ? 'ar' : 'en');
+    if (want !== PAGE) {
+      var params = new URLSearchParams(location.search); params.delete('lang');
+      var qs = params.toString();
+      location.replace((want === 'ar' ? BASE : BASE + '/en') + (qs ? '?' + qs : '') + location.hash);
+      return;
+    }
+    document.addEventListener('click', function(ev){
+      var a = ev.target && ev.target.closest && ev.target.closest('a[hreflang]');
+      if (a) {
+        try { localStorage.setItem(KEY, a.getAttribute('hreflang')); } catch (e) {}
+        // keep the campaign (utm_*, gclid) across the language switch
+        var keep = new URLSearchParams(location.search); keep.delete('lang'); keep.delete('order'); keep.delete('payment_intent'); keep.delete('payment_intent_client_secret'); keep.delete('redirect_status');
+        if (keep.toString()) a.href = a.getAttribute('href').split('?')[0] + '?' + keep.toString();
+      }
+    });
+  } catch (e) {}
+})();
+</script>
+<script src="/tracking/integri-tracking.js"></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>شحن رصيد زين وإم تي إن وسوداني في السودان من الخارج | Integri</title>
+<meta name="description" content="شحن رصيد السودان وتحويل رصيد إلى زين وإم تي إن وسوداني من أوروبا وأي مكان خارج السودان. اختر الشبكة والمبلغ وادفع بالبطاقة أو Apple Pay أو Google Pay.">
+<meta name="keywords" content="شحن رصيد السودان, تحويل رصيد الى السودان, شحن رصيد زين السودان, شحن رصيد زين, شحن رصيد سوداني, شحن رصيد mtn السودان, شحن رصيد ام تي ان السودان, تحويل رصيد زين, تحويل رصيد سوداني, تعبئة رصيد زين السودان, تعبئة رصيد سوداني, تحويل رصيد من اوروبا الى السودان, رصيد زين, رصيد سوداني, رصيد mtn السودان, طريقة تحويل الرصيد زين السودان, تحويل رصيد زين السودان, تحويل رصيد mtn السودان, رصيد زين السودان, شحن رصيد زين اون لاين">
+<meta property="og:title" content="شحن رصيد السودان من الخارج: زين وإم تي إن وسوداني">
+<meta property="og:description" content="أرسل رصيداً لأهلك في السودان فوراً عبر Integri.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.integri.app/sudan">
+<link rel="canonical" href="https://www.integri.app/sudan">
+<link rel="alternate" hreflang="ar" href="https://www.integri.app/sudan">
+<link rel="alternate" hreflang="en" href="https://www.integri.app/sudan/en">
+<link rel="alternate" hreflang="x-default" href="https://www.integri.app/sudan">
+<meta name="theme-color" content="#0A0A0A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<script src="https://js.stripe.com/v3/"></script>
+<style>
+:root{
+  --bg:#0A0A0A; --surface:#141414; --card:#1A1A1A; --line:#2A2A2A;
+  --text:#F5F5F5; --muted:#A3A3A3; --dim:#737373;
+  --mint:#5EEAD4; --mint2:#6EE7C7; --violet:#8B5CF6; --violet2:#A78BFA;
+  --radius:22px; --danger:#F87171;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:Cairo,Inter,system-ui,sans-serif;
+  background:var(--bg); color:var(--text); line-height:1.6;
+  min-height:100vh;
+  background-image:radial-gradient(60% 380px at 50% 0%,rgba(139,92,246,.12),transparent 70%);
+  background-repeat:no-repeat;
+}
+a{color:inherit}
+button,input{font-family:inherit}
+:focus-visible{outline:2px solid var(--mint);outline-offset:2px}
+
+/* header */
+.top{border-bottom:1px solid var(--line);background:rgba(10,10,10,.8);backdrop-filter:blur(8px)}
+.top-in{max-width:560px;margin:0 auto;padding:0 20px;height:60px;display:flex;align-items:center}
+.logo{font-weight:900;font-size:22px;letter-spacing:-.5px;text-decoration:none;direction:ltr}
+
+/* layout */
+main{max-width:560px;margin:0 auto;padding:36px 20px 40px}
+.hero{text-align:center;margin-bottom:28px}
+.chip{display:inline-block;font-size:13px;color:var(--mint);border:1px solid var(--line);border-radius:999px;padding:3px 14px;margin-bottom:16px}
+h1{font-size:clamp(28px,7.5vw,38px);font-weight:900;line-height:1.35;text-wrap:balance}
+h1 .g{background:linear-gradient(90deg,var(--violet2),var(--mint));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--muted);margin-top:10px;font-size:17px}
+
+/* checkout card */
+.co{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px 20px}
+.lbl{display:block;font-weight:700;font-size:15px;margin-bottom:10px}
+.field{margin-top:22px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opt{
+  background:var(--surface);border:1px solid var(--line);border-radius:16px;color:var(--text);
+  padding:12px 14px;min-height:72px;cursor:pointer;text-align:start;
+  display:flex;flex-direction:column;justify-content:center;gap:2px;transition:border-color .15s,background .15s;
+}
+.opt:hover{border-color:#3a3a3a}
+.opt[aria-pressed="true"]{border-color:var(--mint);background:rgba(94,234,212,.08)}
+.opt .n{font-size:22px;font-weight:900;line-height:1.2}
+.opt .n small{font-size:13px;font-weight:400;color:var(--muted);margin-inline-start:4px}
+.opt .p{font-size:14px;color:var(--mint);font-weight:600;direction:ltr;text-align:right}
+.opt .tag{font-size:11px;color:var(--dim);font-weight:400}
+.inp{
+  width:100%;background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  color:var(--text);font-size:17px;padding:0 14px;height:52px;
+}
+.inp::placeholder{color:#5a5a5a}
+.inp:focus{outline:none;border-color:var(--mint)}
+.inp.bad{border-color:var(--danger)}
+.phone{display:flex;direction:ltr;align-items:stretch;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.phone:focus-within{border-color:var(--mint)}
+.phone.bad{border-color:var(--danger)}
+.phone .cc{display:flex;align-items:center;padding:0 14px;font-weight:700;border-inline-end:1px solid var(--line);color:var(--muted)}
+.phone input{flex:1;min-width:0;background:transparent;border:0;color:var(--text);font-size:17px;padding:0 14px;height:50px;direction:ltr;text-align:left}
+.phone input:focus{outline:none}
+.phone input::placeholder{color:#5a5a5a}
+.hint{font-size:13px;color:var(--dim);margin-top:6px}
+.err{font-size:13px;color:var(--danger);margin-top:6px;min-height:0}
+.consent{display:flex;gap:10px;align-items:flex-start;margin-top:20px;font-size:13px;color:var(--muted);line-height:1.7}
+.consent input{margin-top:5px;width:18px;height:18px;accent-color:var(--mint);flex:none}
+.consent a{color:var(--text);text-decoration:underline;text-underline-offset:3px}
+.btn{
+  width:100%;margin-top:22px;height:56px;border:0;border-radius:999px;cursor:pointer;
+  background:var(--mint);color:#0A0A0A;font-weight:900;font-size:18px;transition:filter .15s,opacity .15s;
+}
+.btn:hover{filter:brightness(1.06)}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line);font-weight:700;font-size:16px;margin-top:12px;height:48px}
+.safe{text-align:center;font-size:13px;color:var(--dim);margin-top:14px}
+
+/* pay step */
+.sum{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px}
+.sum b{font-size:18px}
+.sum .amt{color:var(--mint);font-weight:900;font-size:20px;direction:ltr}
+.sum .to{font-size:13px;color:var(--muted);direction:ltr}
+#pe{min-height:120px}
+.back{background:none;border:0;color:var(--muted);font-size:14px;cursor:pointer;margin-top:14px;text-decoration:underline;text-underline-offset:3px;display:block;margin-inline:auto}
+.hide{display:none!important}
+
+/* result */
+.res{text-align:center;padding:14px 4px 4px}
+.res .ic{width:64px;height:64px;border-radius:50%;margin:0 auto 16px;display:grid;place-items:center;background:rgba(94,234,212,.12);color:var(--mint)}
+.res.wait .ic{background:rgba(139,92,246,.14);color:var(--violet2)}
+.res.fail .ic{background:rgba(248,113,113,.12);color:var(--danger)}
+.res h2{font-size:24px;font-weight:900}
+.res p{color:var(--muted);margin-top:8px}
+.res .ord{display:inline-block;margin-top:14px;font-size:13px;color:var(--dim);direction:ltr}
+.spin{width:28px;height:28px;border:3px solid rgba(167,139,250,.25);border-top-color:var(--violet2);border-radius:50%;animation:sp 0.9s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* below card */
+.note{text-align:center;color:var(--dim);font-size:13px;margin-top:18px}
+.note a{color:var(--muted)}
+section.faq{margin-top:56px}
+h2.t{font-size:24px;font-weight:900;margin-bottom:16px}
+details{border-bottom:1px solid var(--line)}
+summary{list-style:none;cursor:pointer;padding:16px 0;font-weight:600;display:flex;justify-content:space-between;gap:12px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--muted);font-size:22px;line-height:1;flex:none}
+details[open] summary::after{content:"–"}
+details p{color:var(--muted);padding:0 0 16px}
+.seo{margin-top:40px;color:var(--dim);font-size:13px;line-height:1.9}
+footer{border-top:1px solid var(--line);margin-top:48px}
+footer div{max-width:560px;margin:0 auto;padding:20px;display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:center;font-size:13px;color:var(--dim)}
+footer a{color:var(--dim)}
+@media (min-width:520px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation-duration:2s!important}}
+
+/* additions */
+.opt .u{font-size:12.5px;color:var(--muted);direction:ltr;text-align:right;line-height:1.3}
+html[dir=ltr] .opt .u{text-align:left}
+.sum .amt small{display:block;font-size:12px;color:var(--muted);font-weight:400;margin-top:2px}
+.top-in{justify-content:space-between}
+.grid{grid-template-columns:repeat(2,1fr)!important}
+.lang{font-size:14px;color:var(--muted);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:5px 14px}
+.lang:hover{color:var(--text)}
+html[dir=ltr] .opt .p{text-align:left}
+html[dir=ltr] .consent{text-align:left}
+/* MTN logo slot. To show the real logo set --mtn-logo, for example:
+   .mtn{--mtn-logo:url("mtn.png")} and add class has-img to the span. */
+.mtn{width:60px;height:60px;border-radius:15px;margin:0 auto 14px;display:grid;place-items:center;background:#FFCC00 var(--mtn-logo,none) center/cover no-repeat;color:#00338D;font-weight:900;font-size:16px;letter-spacing:.5px;direction:ltr}
+.mtn::before{content:"MTN"}
+.mtn.has-img::before{content:none}
+.stores{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.store{display:flex;align-items:center;gap:10px;min-width:158px;height:54px;padding:0 18px;border:1px solid #3a3a3a;border-radius:14px;background:#000;color:#fff;text-decoration:none;direction:ltr;text-align:left;transition:border-color .15s,transform .15s}
+.store:hover{border-color:var(--mint);transform:translateY(-1px)}
+.store svg{flex:none;width:26px;height:26px}
+.store .st{display:flex;flex-direction:column;line-height:1.15}
+.store small{font-size:10.5px;color:#d4d4d4;letter-spacing:.2px}
+.store b{font-size:17px;font-weight:700;letter-spacing:-.2px}
+.stores.col{flex-direction:column;align-items:stretch}
+.stores.col .store{justify-content:center}
+/* download sheet */
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;opacity:0;pointer-events:none;transition:opacity .25s}
+.sheet-bg.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:51;max-width:520px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-bottom:0;border-radius:26px 26px 0 0;padding:14px 22px calc(26px + env(safe-area-inset-bottom));transform:translateY(105%);transition:transform .3s cubic-bezier(.2,.8,.2,1);text-align:center}
+.sheet.on{transform:none}
+.sheet .grab{width:42px;height:4px;border-radius:4px;background:#3a3a3a;margin:0 auto 18px}
+.sheet .appic{width:64px;height:64px;border-radius:16px;background:#1E1E1E;border:1px solid var(--line);display:grid;place-items:center;margin:0 auto 14px;font-weight:900;font-size:13px;letter-spacing:-.3px;direction:ltr}
+.sheet h3{font-size:22px;font-weight:900;line-height:1.4;text-wrap:balance}
+.sheet .pts{list-style:none;margin:14px auto 20px;display:inline-flex;flex-direction:column;gap:8px;color:var(--muted);font-size:15px;text-align:start}
+.sheet .pts li{display:flex;gap:10px;align-items:center}
+.sheet .pts li::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--mint);flex:none}
+.sheet .later{background:none;border:0;color:var(--muted);font-size:15px;cursor:pointer;margin-top:14px;padding:8px 16px}
+@media (min-width:560px){.sheet{bottom:24px;border-radius:26px;border-bottom:1px solid var(--line)}}
+.how{margin-top:48px}
+.how ol{padding-inline-start:22px;color:var(--muted)}
+.how li{padding:6px 0}
+.how li b{color:var(--text);font-weight:600}
+.seo h3{font-size:14px;color:var(--muted);font-weight:600;margin-bottom:6px}
+.seo p+p{margin-top:8px}
+
+/* sudan additions */
+.opt .e{font-size:22px;font-weight:900;line-height:1.2;direction:ltr;text-align:right}
+html[dir=ltr] .opt .e{text-align:left}
+.opt .e.o{font-size:17px;font-weight:700;direction:inherit;text-align:start}
+.grid.three{grid-template-columns:repeat(3,1fr)!important}
+.opt.op{align-items:center;text-align:center;min-height:0;padding:8px;gap:6px}
+.opl{width:100%;height:44px;border-radius:10px;display:grid;place-items:center;overflow:hidden;font-weight:900;font-size:15px;letter-spacing:-.2px}
+.opl img{max-width:82%;object-fit:contain;display:block}
+.opt.op .n{font-size:19px;font-weight:900}
+.opt.op .u2{font-size:12px;color:var(--muted);direction:ltr}
+.custom{margin-top:12px}
+.custom .inp{text-align:start}
+.custom .pv{font-size:13px;color:var(--muted);margin-top:6px;direction:ltr;text-align:start;min-height:18px}
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل أحتاج إلى تحميل التطبيق؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، يمكنك الشحن مباشرة من هذه الصفحة. التطبيق اختياري لمن يريد حفظ الأرقام وتكرار الشحن بسهولة."}}, {"@type": "Question", "name": "ما هي الشبكات المتاحة؟", "acceptedAnswer": {"@type": "Answer", "text": "نوفر الشحن لأرقام زين وإم تي إن وسوداني في السودان."}}, {"@type": "Question", "name": "كم يستغرق وصول الرصيد؟", "acceptedAnswer": {"@type": "Answer", "text": "يصل الرصيد فوراً بعد تأكيد الدفع، ويمكنك متابعة حالة الطلب من سجل التطبيق."}}, {"@type": "Question", "name": "ما هي المبالغ المتاحة؟", "acceptedAnswer": {"@type": "Answer", "text": "يمكنك اختيار مبلغ بين 2 و6.20 يورو. يظهر بجانب كل مبلغ عدد الوحدات التي يستلمها الرقم والسعر بالدولار، وكلاهما تقريبي، ويظهر السعر النهائي بوضوح قبل الدفع."}}, {"@type": "Question", "name": "ما طرق الدفع المتاحة؟", "acceptedAnswer": {"@type": "Answer", "text": "الدفع بالبطاقة البنكية أو الائتمانية مع تحقق 3D Secure، وApple Pay وGoogle Pay، وطرق أخرى تظهر حسب بلدك عند الدفع."}}, {"@type": "Question", "name": "من أين يمكنني الشحن؟", "acceptedAnswer": {"@type": "Answer", "text": "من أي دولة خارج السودان، والرصيد يصل إلى الرقم في السودان."}}, {"@type": "Question", "name": "ماذا لو أدخلت رقماً خاطئاً؟", "acceptedAnswer": {"@type": "Answer", "text": "الرصيد يُرسل فوراً إلى الرقم المُدخل ولا يمكن استرجاعه بعد التسليم، لذلك تأكد من الرقم والشبكة قبل الدفع. إذا فشلت العملية ولم يصل الرصيد، تواصل معنا على support@integri.app."}}, {"@type": "Question", "name": "ما هي طريقة تحويل الرصيد إلى زين السودان من الخارج؟", "acceptedAnswer": {"@type": "Answer", "text": "اختر زين، ثم المبلغ، واكتب رقم زين في السودان وبريدك وادفع. يصل الرصيد فوراً، وبالطريقة نفسها يمكنك تحويل رصيد mtn السودان أو رصيد سوداني."}}, {"@type": "Question", "name": "هل يمكنني شحن رصيد زين أو سوداني من أوروبا؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكنك شحن رصيد زين أو إم تي إن أو سوداني في السودان من أوروبا أو من أي مكان خارج السودان، ويصل الرصيد فوراً."}}]}</script>
+</head>
+<body>
+<header class="top"><div class="top-in"><a class="logo" href="/enterprise/ar" aria-label="Integri">integri</a><a class="lang" href="/sudan/en" hreflang="en">English</a></div></header>
+
+<main>
+  <div class="hero">
+    <div><span class="chip">متوفر الآن</span></div>
+    <h1>شحن رصيد <span class="g">السودان</span> لأهلك</h1>
+    <p class="sub">زين وإم تي إن وسوداني. يصل الرصيد إلى الرقم في السودان</p>
+  </div>
+
+  <div class="co" id="co">
+    <form id="form" novalidate>
+      <span class="lbl" id="l0">الشبكة</span>
+      <div class="grid three" id="ops" role="group" aria-labelledby="l0"></div>
+      <div class="err" id="eO"></div>
+
+      <div class="field">
+        <span class="lbl" id="l1">المبلغ</span>
+        <div class="grid" id="amts" role="group" aria-labelledby="l1"></div>
+        <div class="custom hide" id="customBox">
+          <input class="inp" id="customAmt" inputmode="decimal" autocomplete="off" placeholder="مبلغ بين 2 و6.20 €" dir="ltr" aria-label="مبلغ آخر">
+          <div class="pv" id="pv"></div>
+        </div>
+        <div class="err" id="eA"></div>
+        <p class="hint" style="margin-top:10px">الدفع يتم باليورو. عدد الوحدات والسعر بالدولار تقريبيان حسب سعر الصرف الحالي</p>
+      </div>
+
+      <div class="field">
+        <label class="lbl" for="msisdn">رقم الهاتف في السودان</label>
+        <div class="phone" id="phoneBox"><span class="cc">+249</span><input id="msisdn" inputmode="numeric" autocomplete="tel-national" placeholder="xxx xxx xxx"></div>
+        <div class="err" id="eN"></div>
+      </div>
+
+      <div class="field" style="margin-top:16px">
+        <label class="lbl" for="email">بريدك الإلكتروني</label>
+        <input class="inp" id="email" type="email" inputmode="email" autocomplete="email" placeholder="name@example.com" dir="ltr" style="text-align:left">
+        <div class="hint">يصلك عليه الإيصال وتأكيد الشحن</div>
+        <div class="err" id="eE"></div>
+      </div>
+
+      <label class="consent">
+        <input type="checkbox" id="ok">
+        <span>أوافق على <a href="https://sites.google.com/view/integriterms" target="_blank" rel="noopener">شروط الاستخدام</a> و<a href="https://sites.google.com/view/integriapps" target="_blank" rel="noopener">سياسة الخصوصية</a>، وأطلب التسليم الفوري وأعلم أن الطلب لا يمكن إلغاؤه بعد التسليم.</span>
+      </label>
+      <div class="err" id="eC"></div>
+
+      <button class="btn" id="go" type="submit">المتابعة إلى الدفع</button>
+      <div class="err" id="eG" style="text-align:center"></div>
+      <p class="safe">دفع آمن عبر Stripe مع 3D Secure</p>
+    </form>
+
+    <div id="pay" class="hide">
+      <div class="sum"><div><b id="sSyp"></b><div class="to" id="sTo"></div></div><div class="amt" id="sAmt"></div></div>
+      <div id="pe"></div>
+      <div class="err" id="eP"></div>
+      <button class="btn" id="payBtn" type="button">ادفع الآن</button>
+      <button class="back" id="back" type="button">تعديل الطلب</button>
+    </div>
+
+    <div id="result" class="res hide" aria-live="polite"></div>
+  </div>
+
+  <p class="note">تطبيق Integri · أكثر من 100 ألف تحميل</p>
+  <div class="stores"><a class="store" data-store="apple" href="https://apps.apple.com/app/integri/id6737592364" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M18.71,19.5C17.88,20.74 17,21.95 15.66,21.97C14.32,22 13.89,21.18 12.37,21.18C10.84,21.18 10.37,21.95 9.1,22C7.79,22.05 6.8,20.68 5.96,19.47C4.25,17 2.94,12.45 4.7,9.39C5.57,7.87 7.13,6.91 8.82,6.88C10.1,6.86 11.32,7.75 12.11,7.75C12.89,7.75 14.37,6.68 15.92,6.84C16.57,6.87 18.39,7.1 19.56,8.82C19.47,8.88 17.39,10.1 17.41,12.63C17.44,15.65 20.06,16.66 20.09,16.67C20.06,16.74 19.67,18.11 18.71,19.5M13,3.5C13.73,2.67 14.94,2.04 15.94,2C16.07,3.17 15.6,4.35 14.9,5.19C14.21,6.04 13.07,6.7 11.95,6.61C11.8,5.46 12.36,4.26 13,3.5Z"/></svg><span class="st"><small>Download on the</small><b>App Store</b></span></a><a class="store" data-store="google" href="https://play.google.com/store/apps/details?id=com.integri.integri" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#00A0FF" d="M3.6 1.9 L14 12 L3.6 22.1 Z"/><path fill="#00E176" d="M3.6 1.9 L14 12 L17.2 8.8 Z"/><path fill="#FF3A44" d="M3.6 22.1 L14 12 L17.2 15.2 Z"/><path fill="#FFD400" d="M17.2 8.8 L21.3 11.1 Q22.1 12 21.3 12.9 L17.2 15.2 L14 12 Z"/></svg><span class="st"><small>GET IT ON</small><b>Google Play</b></span></a></div>
+
+  <section class="how">
+    <h2 class="t">كيف تشحن رصيد السودان من الخارج؟</h2>
+    <ol><li><b>اختر الشبكة</b> زين أو إم تي إن أو سوداني.</li><li><b>اختر المبلغ</b> من 2 إلى 6.20 يورو.</li><li><b>أدخل الرقم</b> اكتب رقم أهلك في السودان وبريدك لاستلام الإيصال.</li><li><b>ادفع بأمان</b> بالبطاقة أو Apple Pay أو Google Pay، ويصل الرصيد فوراً.</li></ol>
+  </section>
+
+  <section class="faq">
+    <h2 class="t">أسئلة شائعة</h2>
+    <details><summary>هل أحتاج إلى تحميل التطبيق؟</summary><p>لا، يمكنك الشحن مباشرة من هذه الصفحة. التطبيق اختياري لمن يريد حفظ الأرقام وتكرار الشحن بسهولة.</p></details>
+    <details><summary>ما هي الشبكات المتاحة؟</summary><p>نوفر الشحن لأرقام زين وإم تي إن وسوداني في السودان.</p></details>
+    <details><summary>كم يستغرق وصول الرصيد؟</summary><p>يصل الرصيد فوراً بعد تأكيد الدفع، ويمكنك متابعة حالة الطلب من سجل التطبيق.</p></details>
+    <details><summary>ما هي المبالغ المتاحة؟</summary><p>يمكنك اختيار مبلغ بين 2 و6.20 يورو. يظهر بجانب كل مبلغ عدد الوحدات التي يستلمها الرقم والسعر بالدولار، وكلاهما تقريبي، ويظهر السعر النهائي بوضوح قبل الدفع.</p></details>
+    <details><summary>ما طرق الدفع المتاحة؟</summary><p>الدفع بالبطاقة البنكية أو الائتمانية مع تحقق 3D Secure، وApple Pay وGoogle Pay، وطرق أخرى تظهر حسب بلدك عند الدفع.</p></details>
+    <details><summary>من أين يمكنني الشحن؟</summary><p>من أي دولة خارج السودان، والرصيد يصل إلى الرقم في السودان.</p></details>
+    <details><summary>ماذا لو أدخلت رقماً خاطئاً؟</summary><p>الرصيد يُرسل فوراً إلى الرقم المُدخل ولا يمكن استرجاعه بعد التسليم، لذلك تأكد من الرقم والشبكة قبل الدفع. إذا فشلت العملية ولم يصل الرصيد، تواصل معنا على support@integri.app.</p></details>
+    <details><summary>ما هي طريقة تحويل الرصيد إلى زين السودان من الخارج؟</summary><p>اختر زين، ثم المبلغ، واكتب رقم زين في السودان وبريدك وادفع. يصل الرصيد فوراً، وبالطريقة نفسها يمكنك تحويل رصيد mtn السودان أو رصيد سوداني.</p></details>
+    <details><summary>هل يمكنني شحن رصيد زين أو سوداني من أوروبا؟</summary><p>نعم، يمكنك شحن رصيد زين أو إم تي إن أو سوداني في السودان من أوروبا أو من أي مكان خارج السودان، ويصل الرصيد فوراً.</p></details>
+    
+  </section>
+
+  <div class="seo">
+    <h3>شحن رصيد السودان من الخارج</h3>
+    <p>مع Integri يمكنك شحن رصيد السودان وتحويل رصيد إلى زين وإم تي إن وسوداني لأهلك وأصدقائك من أي مكان في العالم. اختر الشبكة والمبلغ، أدخل الرقم، وادفع بأمان، فيصل الرصيد فوراً إلى الرقم في السودان.</p><p>سواء كنت تبحث عن شحن رصيد زين السودان أو شحن رصيد سوداني أو شحن رصيد ام تي ان السودان، أو تحويل رصيد الى السودان من أوروبا، نوفر لك أسعاراً واضحة مع دعم الدفع بالبطاقة وApple Pay وGoogle Pay، وإيصال لكل عملية.</p><p>تعبئة رصيد زين السودان وتعبئة رصيد سوداني وتحويل رصيد زين وتحويل رصيد سوداني في مكان واحد. رصيد زين، رصيد سوداني ورصيد MTN السودان من أي دولة، وتحويل رصيد من اوروبا الى السودان في خطوات بسيطة.</p><p>تبحث عن طريقة تحويل الرصيد زين السودان من الخارج؟ تحويل رصيد زين السودان وتحويل رصيد mtn السودان وتحويل رصيد سوداني يتم هنا بخطوات قصيرة، وتستطيع شحن رصيد زين اون لاين وشحن رصيد السودان من هاتفك في أي وقت.</p>
+  </div>
+</main>
+
+<div class="sheet-bg" id="sheetBg"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetT" aria-hidden="true">
+  <div class="grab"></div>
+  <div class="appic">integri</div>
+  <h3 id="sheetT">حمّل التطبيق لشحن أسرع في المرة القادمة</h3>
+  <ul class="pts"><li>احفظ أرقام أهلك</li><li>كرر الشحن بسهولة</li><li>سجل كل عملية في مكان واحد</li></ul>
+  <div class="stores col"><a class="store" data-store="apple" href="https://apps.apple.com/app/integri/id6737592364" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M18.71,19.5C17.88,20.74 17,21.95 15.66,21.97C14.32,22 13.89,21.18 12.37,21.18C10.84,21.18 10.37,21.95 9.1,22C7.79,22.05 6.8,20.68 5.96,19.47C4.25,17 2.94,12.45 4.7,9.39C5.57,7.87 7.13,6.91 8.82,6.88C10.1,6.86 11.32,7.75 12.11,7.75C12.89,7.75 14.37,6.68 15.92,6.84C16.57,6.87 18.39,7.1 19.56,8.82C19.47,8.88 17.39,10.1 17.41,12.63C17.44,15.65 20.06,16.66 20.09,16.67C20.06,16.74 19.67,18.11 18.71,19.5M13,3.5C13.73,2.67 14.94,2.04 15.94,2C16.07,3.17 15.6,4.35 14.9,5.19C14.21,6.04 13.07,6.7 11.95,6.61C11.8,5.46 12.36,4.26 13,3.5Z"/></svg><span class="st"><small>Download on the</small><b>App Store</b></span></a><a class="store" data-store="google" href="https://play.google.com/store/apps/details?id=com.integri.integri" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#00A0FF" d="M3.6 1.9 L14 12 L3.6 22.1 Z"/><path fill="#00E176" d="M3.6 1.9 L14 12 L17.2 8.8 Z"/><path fill="#FF3A44" d="M3.6 22.1 L14 12 L17.2 15.2 Z"/><path fill="#FFD400" d="M17.2 8.8 L21.3 11.1 Q22.1 12 21.3 12.9 L17.2 15.2 L14 12 Z"/></svg><span class="st"><small>GET IT ON</small><b>Google Play</b></span></a></div>
+  <button class="later" id="sheetLater" type="button">ليس الآن</button>
+</div>
+
+<footer><div><a href="https://sites.google.com/view/integriterms">الشروط</a><a href="https://sites.google.com/view/integriapps">الخصوصية</a><a href="mailto:support@integri.app">support@integri.app</a></div></footer>
+
+<script>
+window.TOPUP_CONFIG = window.TOPUP_CONFIG || { apiBase: 'https://www.integri.app', stripeKey: '' };
+(function(){
+  var T = {"unit": "وحدة", "proceed": "المتابعة إلى الدفع", "other": "مبلغ آخر", "otherPh": "مبلغ بين 2 و6.20 €", "eOp": "اختر الشبكة", "eAmt": "أدخل مبلغاً بين 2 و6.20 يورو", "eEmail": "أدخل بريداً إلكترونياً صحيحاً", "eConsent": "يلزم الموافقة للمتابعة", "startErr": "تعذر بدء الدفع. حاول مرة أخرى.", "payErr": "تعذر إتمام الدفع", "payNow": "ادفع الآن", "demoPe": "هنا تظهر طرق الدفع من Stripe", "waitH": "جارٍ شحن الرقم", "waitP": "لا تغلق الصفحة", "okH": "وصل الرصيد", "okP1": "تم شحن الرقم ", "okP2": "أرسلنا الإيصال إلى بريدك", "again": "شحن رقم آخر", "failH": "تعذر شحن الرقم", "failP": "سنعيد المبلغ تلقائياً إلى وسيلة الدفع.", "lateH": "الطلب قيد المعالجة", "lateP": "سيصلك تأكيد على بريدك عند اكتمال الشحن.", "help": "للمساعدة: support@integri.app"}, OPS = [{"brand": "Zain", "logo": "https://www.sd.zain.com/Style%20Library/zainWebsite/img/zain%20logo.png", "bg": "linear-gradient(270deg,#29062d,#2b0e6e)", "fg": "#ffffff", "h": 22, "id": "zain_sd", "name": "زين", "latin": "Zain"}, {"brand": "MTN", "logo": "https://upload.wikimedia.org/wikipedia/commons/2/2a/MTN_2022_logo.svg", "bg": "#FFCC00", "fg": "#000000", "h": 28, "id": "mtn_sd", "name": "إم تي إن", "latin": "MTN"}, {"brand": "Sudani", "logo": "https://sudani.sd/wp-content/uploads/2025/04/Sudani-Logo.png", "bg": "#FFFFFF", "fg": "#1b3a9c", "h": 34, "id": "sudani_sd", "name": "سوداني", "latin": "Sudani"}], LANG = 'ar';
+  var MIN = 2, MAX = 6.2, PRESETS = [2,3,4,5,6.2];
+  var C = window.TOPUP_CONFIG, API = C.apiBase || '';
+  var DEMO = !C.stripeKey;
+  var op = null, amt = 5, custom = false, stripe = null, elements = null, order = null;
+  var $ = function(id){return document.getElementById(id)};
+  var eur = function(n){ var v = Number(n); return (v % 1 === 0 ? String(v) : v.toFixed(2)) + ' €'; };
+  var fmt = function(n){ return Number(n).toLocaleString('en-US'); };
+  // Units the receiver gets per 1 EUR. From the DingConnect Sudan products on 16 Oct 2026 (2.00 EUR gives 15911, 6.20 EUR gives 49326).
+  // The backend should send the live value as sdgPerEur, see loadUnits().
+  var SDG = 7955.94;
+  var units = function(n){ return Math.floor(Number(n) * SDG); };
+  function loadUnits(o){
+    fetch(API+'/recharge/web/prices?operator='+encodeURIComponent(o.id)).then(function(r){return r.json()}).then(function(d){
+      var x = d && Number(d.sdgPerEur);
+      if (x > 1000 && x < 100000){ SDG = x; renderAmts(); preview(); }
+    }).catch(function(){});
+  }
+
+  // EUR to USD, display only, payment is in euro. Fallback is the ECB rate of 14 Oct 2026, refreshed live.
+  var RATE = 1.1195, rateAt = 0, serverRate = false;
+  var usd = function(n){ return '≈ $' + (Number(n) * RATE).toFixed(2); };
+  function setAmt(v){ $('sAmt').innerHTML = eur(v)+'<small>'+usd(v)+'</small>'+(order && order.fee ? '<small>'+'يشمل رسوم خدمة {fee}'.replace('{fee}', Number(order.fee).toFixed(2)+' €')+'</small>' : ''); }
+  function loadRate(){
+    if (serverRate) return;
+    rateAt = Date.now();
+    fetch('https://api.frankfurter.dev/v1/latest?base=EUR&symbols=USD').then(function(r){return r.json()}).then(function(d){
+      var x = d && d.rates && Number(d.rates.USD);
+      if (!serverRate && x > 0.5 && x < 2){ RATE = x; renderAmts(); preview(); if (order && order.amount) setAmt(order.amount/100); }
+    }).catch(function(){});
+  }
+  loadRate();
+  setInterval(loadRate, 30*60*1000);
+  document.addEventListener('visibilitychange', function(){ if (!document.hidden && Date.now()-rateAt > 10*60*1000) loadRate(); });
+
+  // The create-intent body for Sudan. Developer: match this to the real backend contract.
+  function intentBody(o, amount, msisdn, email){
+    return Object.assign({operator:o.id, amount:String(amount), msisdn:msisdn, email:email, lang:LANG},
+      window.IntegriTracking ? window.IntegriTracking.checkoutPayload('sudan', LANG) : {attribution:null, page_country:'sudan', page_language:LANG});
+  }
+
+  function getAmount(){
+    if (!custom) return amt;
+    var s = $('customAmt').value.trim().replace(',', '.'), n = Number(s);
+    return (s !== '' && isFinite(n)) ? n : NaN;
+  }
+  function renderOps(){
+    var h = '';
+    OPS.forEach(function(o){
+      h += '<button type="button" class="opt op" data-o="'+o.id+'" aria-pressed="'+(!!op && op.id===o.id)+'">'
+        + '<span class="opl" style="background:'+o.bg+';color:'+o.fg+'"><img src="'+o.logo+'" alt="" referrerpolicy="no-referrer" style="height:'+o.h+'px" data-fb="'+o.brand+'"></span>'
+        + '<span class="n">'+o.name+'</span><span class="u2">'+o.latin+'</span></button>';
+    });
+    $('ops').innerHTML = h;
+  }
+  function renderAmts(){
+    var h = '';
+    PRESETS.forEach(function(v){
+      h += '<button type="button" class="opt" data-a="'+v+'" aria-pressed="'+(!custom && amt===v)+'">'
+        + '<span class="n">'+fmt(units(v))+'<small>'+T.unit+'</small></span><span class="p">'+eur(v)+'</span><span class="u">'+usd(v)+'</span></button>';
+    });
+    h += '<button type="button" class="opt" data-a="other" aria-pressed="'+custom+'"><span class="e o">'+T.other+'</span></button>';
+    $('amts').innerHTML = h;
+    $('customBox').classList.toggle('hide', !custom);
+    updateBtn();
+  }
+  function preview(){ var n = getAmount(); $('pv').textContent = (custom && n > 0) ? '≈ '+fmt(units(n))+' '+T.unit+' · '+usd(n) : ''; }
+  function updateBtn(){ var n = getAmount(); $('go').textContent = (n > 0 && isFinite(n)) ? T.proceed+' · '+eur(n) : T.proceed; }
+
+  $('ops').addEventListener('click', function(e){
+    var t = e.target.closest('.opt'); if (!t) return;
+    op = OPS.filter(function(o){return o.id===t.dataset.o})[0]; $('eO').textContent=''; renderOps(); loadUnits(op);
+    if (op) track('select_item', funnel());
+  });
+  $('ops').addEventListener('error', function(e){
+    var t = e.target; if (!t || t.tagName !== 'IMG') return;
+    var p = t.parentNode; p.textContent = t.getAttribute('data-fb');
+  }, true);
+  $('amts').addEventListener('click', function(e){
+    var t = e.target.closest('.opt'); if (!t) return;
+    $('eA').textContent = '';
+    if (t.dataset.a === 'other'){ custom = true; renderAmts(); $('customAmt').focus(); }
+    else { custom = false; amt = Number(t.dataset.a); renderAmts(); if (op) track('add_to_cart', funnel(), ecom(amt)); }
+    preview();
+  });
+  $('customAmt').addEventListener('input', function(){ this.classList.remove('bad'); $('eA').textContent=''; updateBtn(); preview(); });
+
+  // the number is sent exactly as typed, the provider validates it
+  var ph = $('msisdn');
+  ph.addEventListener('input', function(){ $('phoneBox').classList.remove('bad'); $('eN').textContent=''; });
+  $('email').addEventListener('input', function(){ this.classList.remove('bad'); $('eE').textContent=''; });
+  $('ok').addEventListener('change', function(){ $('eC').textContent=''; });
+
+  function validate(){
+    var ok = true, n = getAmount();
+    if (!op){ $('eO').textContent = T.eOp; ok = false; }
+    if (!(n >= MIN && n <= MAX)){ $('eA').textContent = T.eAmt; if (custom) $('customAmt').classList.add('bad'); ok = false; }
+    var em = $('email').value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){ $('email').classList.add('bad'); $('eE').textContent = T.eEmail; ok = false; }
+    if (!$('ok').checked){ $('eC').textContent = T.eConsent; ok = false; }
+    return ok;
+  }
+
+  function show(which){
+    ['form','pay','result'].forEach(function(id){ $(id).classList.toggle('hide', id!==which); });
+    $('co').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  function funnel(){ return {country:'SD', operator_code:op ? op.id : null, operator_group:op ? op.brand.toLowerCase() : null, page_language:LANG}; }
+  function ecom(n){ return {currency:'EUR', value:n, items:[{item_id:op.id+'_'+n, item_name:op.brand+' Sudan', item_brand:op.brand, item_category:'SD', price:n, quantity:1}]}; }
+  track('view_item_list', {country:'SD', page_language:LANG, item_list_id:'sudan'});
+  function track(name, data, ecom){ try{ if(window.IntegriTracking) window.IntegriTracking.event(name, data||{}, ecom); }catch(e){} }
+
+  $('form').addEventListener('submit', function(e){
+    e.preventDefault(); $('eG').textContent = '';
+    if (!validate()) return;
+    var n = getAmount(), msisdn = '+249' + ph.value.trim(), email = $('email').value.trim();
+    var btn = $('go'); btn.disabled = true; btn.textContent = '...';
+    track('begin_checkout', funnel(), ecom(n));
+
+    $('sSyp').textContent = fmt(units(n)) + ' ' + T.unit + ' · ' + op.name;
+    $('sTo').textContent = msisdn;
+    setAmt(n);
+
+    if (DEMO){
+      order = {orderId:'demo_'+Date.now().toString().slice(-6), amount:Math.round(n*100), msisdn:msisdn};
+      $('pe').innerHTML = '<p style="color:var(--muted);text-align:center;padding:30px 0">'+T.demoPe+'</p>';
+      show('pay'); btn.disabled = false; updateBtn(); return;
+    }
+
+    fetch(API+'/recharge/web/create-intent', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(intentBody(op, n, msisdn, email))
+    }).then(function(r){
+      return r.json().catch(function(){return {};}).then(function(d){
+        if (!r.ok){ var er = new Error('create'); er.msg = d.message || d.error; throw er; }
+        return d;
+      });
+    }).then(function(d){
+      order = {orderId:d.orderId, amount:d.amount, msisdn:msisdn, fee:d.feeEur};
+      setAmt(d.amount/100);
+      stripe = stripe || Stripe(d.publishableKey || C.stripeKey);
+      elements = stripe.elements({clientSecret:d.clientSecret, appearance:{theme:'night', variables:{
+        colorPrimary:'#5EEAD4', colorBackground:'#141414', colorText:'#F5F5F5', colorDanger:'#F87171',
+        fontFamily:'Cairo, system-ui, sans-serif', borderRadius:'14px'}}});
+      $('pe').innerHTML = '';
+      elements.create('payment',{layout:'tabs'}).mount('#pe');
+      show('pay');
+    }).catch(function(er){
+      $('eG').textContent = (er && er.msg) ? er.msg : T.startErr;
+    }).finally(function(){ btn.disabled = false; updateBtn(); });
+  });
+
+  $('back').addEventListener('click', function(){ show('form'); });
+
+  $('payBtn').addEventListener('click', function(){
+    $('eP').textContent = '';
+    if (DEMO){ finish('delivered'); return; }
+    var btn = this; btn.disabled = true; btn.textContent = '...';
+    stripe.confirmPayment({
+      elements:elements,
+      confirmParams:{return_url: location.origin+location.pathname+'?order='+encodeURIComponent(order.orderId)},
+      redirect:'if_required'
+    }).then(function(r){
+      if (r.error){ $('eP').textContent = r.error.message || T.payErr; btn.disabled = false; btn.textContent = T.payNow; return; }
+      waiting(); poll(order.orderId, 0);
+    });
+  });
+
+  function waiting(){
+    show('result'); var r = $('result'); r.className = 'res wait';
+    r.innerHTML = '<div class="ic"><div class="spin"></div></div><h2>'+T.waitH+'</h2><p>'+T.waitP+'</p>';
+  }
+  function poll(id, n){
+    fetch(API+'/recharge/web/order/'+encodeURIComponent(id)).then(function(r){return r.json()}).then(function(d){
+      if (d.status==='delivered'){ if (d.msisdn && order) order.msisdn = d.msisdn; finish('delivered'); }
+      else if (d.status==='failed'){ finish('failed'); }
+      else if (n>=30){ finish('late'); }
+      else setTimeout(function(){ poll(id,n+1); }, 2000);
+    }).catch(function(){ if (n>=30) finish('late'); else setTimeout(function(){ poll(id,n+1); }, 2000); });
+  }
+  function finish(state){
+    show('result'); var r = $('result'), id = order && order.orderId, to = order && order.msisdn || '';
+    var tick = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+    var warn = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 7v6M12 17h.01"/></svg>';
+    if (state==='delivered'){
+      r.className = 'res';
+      r.innerHTML = '<div class="ic">'+tick+'</div><h2>'+T.okH+'</h2><p>'+T.okP1+'<span dir="ltr">'+to+'</span><br>'+T.okP2+'</p><span class="ord">'+id+'</span><button class="btn ghost" id="again" type="button">'+T.again+'</button>';
+      var val = order && order.amount ? order.amount/100 : getAmount();
+      // purchase: sent by the server once the payment succeeds (no double counting)
+      $('again').addEventListener('click', function(){ history.replaceState(null,'',location.pathname); show('form'); });
+      setTimeout(openSheet, 1000);
+    } else if (state==='failed'){
+      r.className = 'res fail';
+      r.innerHTML = '<div class="ic">'+warn+'</div><h2>'+T.failH+'</h2><p>'+T.failP+'<br>'+T.help+'</p><span class="ord">'+(id||'')+'</span>';
+    } else {
+      r.className = 'res wait';
+      r.innerHTML = '<div class="ic">'+warn+'</div><h2>'+T.lateH+'</h2><p>'+T.lateP+'<br>'+T.help+'</p><span class="ord">'+(id||'')+'</span>';
+    }
+  }
+
+  // app download sheet, shown after a delivered order
+  var sheet = $('sheet'), sheetBg = $('sheetBg'), shown = {};
+  function openSheet(){
+    var id = order && order.orderId; if (id && shown[id]) return; if (id) shown[id] = 1;
+    sheet.classList.add('on'); sheetBg.classList.add('on'); sheet.setAttribute('aria-hidden','false');
+    track('app_sheet_view', {});
+    var f = sheet.querySelector('.store'); if (f) f.focus({preventScroll:true});
+  }
+  function closeSheet(){ sheet.classList.remove('on'); sheetBg.classList.remove('on'); sheet.setAttribute('aria-hidden','true'); }
+  $('sheetLater').addEventListener('click', closeSheet);
+  sheetBg.addEventListener('click', closeSheet);
+  document.addEventListener('keydown', function(e){ if (e.key==='Escape') closeSheet(); });
+  [].forEach.call(document.querySelectorAll('.store'), function(a){
+    a.addEventListener('click', function(){ track('app_download_click', {store:a.getAttribute('data-store')}); });
+  });
+
+  renderOps(); renderAmts();
+
+  var qs = new URLSearchParams(location.search), back = qs.get('order');
+  if (back && !DEMO){ order = {orderId:back}; waiting(); poll(back,0); }
+})();
+</script>
+</body>
+</html>

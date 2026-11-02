@@ -4,7 +4,7 @@
  */
 
 export const SITE_NAME = "Integri AI";
-export const SITE_DEFAULT_TITLE = "Integri AI – Custom AI Agents, Chatbots & All Models in One Place";
+export const SITE_DEFAULT_TITLE = "Integri: Free AI Chat with GPT, Claude, Gemini & DeepSeek";
 export const SITE_DEFAULT_DESCRIPTION =
   "Unified AI platform: GPT, Claude, Gemini, Grok, DeepSeek & more. Build custom agents and chatbots, chat with any model, voice, image gen, and PDF analysis—all in one place.";
 export const SITE_DEFAULT_OG_IMAGE = "/dark-theme-logo.png";
@@ -49,8 +49,8 @@ export type PageSEOConfig = {
  */
 const PAGE_SEO: Record<string, PageSEOConfig> = {
   "/": {
-    title: `${SITE_NAME} – Custom AI Agents, Chatbots & All Models in One Place`,
-    description: SITE_DEFAULT_DESCRIPTION,
+    title: SITE_DEFAULT_TITLE,
+    description: "Chat free with 30+ AI models in one app: GPT, Claude, Gemini, DeepSeek and Grok. Personal news, voice chat, image generation and your own AI agents.",
     canonicalPath: "/",
     keywords: SITE_KEYWORDS,
     breadcrumbLabel: "Home",
@@ -153,6 +153,12 @@ const PAGE_SEO: Record<string, PageSEOConfig> = {
     keywords: "AI blog, AI guides, GPT vs Claude, AI model comparison, prompt engineering, Integri AI",
     breadcrumbLabel: "Blog",
   },
+  "/terms": {
+    title: `Terms of Use | ${SITE_NAME}`,
+    description: "The terms that apply to the Integri apps, integri.app and related services, provided by INTIGRI LTD.",
+    canonicalPath: "/terms",
+    breadcrumbLabel: "Terms of Use",
+  },
   "/privacy-policy": {
     title: `Privacy Policy | ${SITE_NAME}`,
     description: "How Integri AI collects, uses, and protects your personal data.",
@@ -226,7 +232,8 @@ const DYNAMIC_PATTERNS: { pattern: RegExp; config: PageSEOConfig; basePath: stri
     basePath: "/voice",
   },
   {
-    pattern: /^\/news\/[^/]+$/,
+    // /news/<id> (legacy collection) and /news/<country>/<id>
+    pattern: /^\/news\/[^/]+(\/[^/]+)?$/,
     config: {
       title: `News | ${SITE_NAME}`,
       description: "Read the latest AI news and technology updates on Integri AI.",
@@ -246,6 +253,17 @@ const DYNAMIC_PATTERNS: { pattern: RegExp; config: PageSEOConfig; basePath: stri
       isArticle: true,
     },
     basePath: "/news",
+  },
+  {
+    // Mobile top-up shop: the page sets its own title, canonical and hreflang.
+    pattern: /^\/shopping\/mobile-top-up(\/[^/]+){0,2}$/,
+    config: {
+      title: `Mobile Top-Up | ${SITE_NAME}`,
+      description: "Send mobile credit to family and friends abroad.",
+      canonicalPath: "/shopping/mobile-top-up",
+      isArticle: true,
+    },
+    basePath: "/shopping/mobile-top-up",
   },
   {
     pattern: /^\/blog\/[^/]+$/,
@@ -312,6 +330,7 @@ export const SITEMAP_PATHS: { path: string; changefreq?: "always" | "hourly" | "
   { path: "/help", changefreq: "monthly", priority: 0.6 },
   { path: "/contactUs", changefreq: "monthly", priority: 0.5 },
   { path: "/privacy-policy", changefreq: "yearly", priority: 0.3 },
+  { path: "/terms", changefreq: "yearly", priority: 0.3 },
 ];
 
 export { BASE_URL };

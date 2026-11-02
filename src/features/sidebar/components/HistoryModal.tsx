@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Suspense, lazy, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Portal from "../../../Components/ui/Portal";
@@ -9,7 +9,8 @@ import { useAppSelector } from "../../../hooks/useRedux";
 import { SessionService } from "../../../api/backendApi";
 
 import HistoryList from "./HistoryList";
-import HistoryPreview from "./HistoryPreview";
+// The preview renders Markdown (~300 KB of parser) and opens only on demand.
+const HistoryPreview = lazy(() => import("./HistoryPreview"));
 
 /* ================= UTIL ================= */
 
@@ -162,24 +163,26 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose }) => {
             onClose={onClose}
           />
 
-          <HistoryPreview
-            chats={chats}
-            selectedChatId={selectedChatId}
-            messages={previewMessages}
-            loading={isPreviewLoading}
-            isDark={isDark}
-            mobileView={mobileView}
-            onBack={() => {
-              setSelectedChatId(null);
-              setMobileView("list");
-            }}
-            onDelete={(id) => {
-              setChatToDelete(id);
-              setIsDeleteModalOpen(true);
-            }}
-            onOpenChat={handleOpenChat}
-            onClose={onClose}
-          />
+          <Suspense fallback={null}>
+            <HistoryPreview
+              chats={chats}
+              selectedChatId={selectedChatId}
+              messages={previewMessages}
+              loading={isPreviewLoading}
+              isDark={isDark}
+              mobileView={mobileView}
+              onBack={() => {
+                setSelectedChatId(null);
+                setMobileView("list");
+              }}
+              onDelete={(id) => {
+                setChatToDelete(id);
+                setIsDeleteModalOpen(true);
+              }}
+              onOpenChat={handleOpenChat}
+              onClose={onClose}
+            />
+          </Suspense>
         </div>
       </div>
     </Portal>

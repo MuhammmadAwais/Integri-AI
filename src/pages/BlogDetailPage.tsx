@@ -252,8 +252,10 @@ const BlogDetailPage: React.FC = () => {
           isDark ? "bg-[#07060A] text-white" : "bg-gray-50/50 text-gray-900"
         )}
       >
-        {/* Missing post: a soft 404, so keep it out of the index */}
-        <Seo title="Post not found | Integri" description="This blog post could not be found." noindex />
+        {/* Only a post that really doesn't exist is kept out of the index. A
+            failed load (network, or a crawler that can't run Firestore) must
+            not tell Google to drop a published post. */}
+        {!error && <Seo title="Post not found | Integri" description="This blog post could not be found." noindex />}
         <h2 className="text-xl font-bold">{error ?? "Blueprint not found"}</h2>
         <button
           onClick={() => navigate("/blog")}

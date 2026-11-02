@@ -5,10 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && npm run prerender && npm run sitemaps",
+    "build": "npm run topup-data && tsc -b && vite build && npm run prerender && npm run landing && npm run sitemaps",
     "lint": "eslint .",
     "preview": "vite preview",
     "prerender": "node scripts/prerender-seo.mjs",
+    "landing": "node scripts/install-landing.mjs",
+    "topup-data": "node scripts/refresh-topup-data.mjs",
     "sitemaps": "node scripts/generate-sitemaps.mjs"
   },
   "dependencies": {

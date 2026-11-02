@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "katex/dist/katex.min.css";
+/* KaTeX CSS is imported by MessageMarkdown (loaded with the chat), not by every page. */
 
 /* `dark:` follows the in-app theme toggle (App.tsx sets .dark on <html>),
    not the OS preference. */

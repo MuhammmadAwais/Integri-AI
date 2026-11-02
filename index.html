@@ -2,14 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="/dark-theme-logo.png" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- ── Primary SEO ─────────────────────────────────────── -->
-    <title>Integri AI – Custom AI Agents, Chatbots &amp; All Models in One Place</title>
-    <meta name="description" content="Integri AI – All AI models in one place. Chat with GPT-4o, Claude, Gemini, Grok, DeepSeek, Mistral and more. Build custom AI agents, analyze PDFs, generate images, use voice AI, and read AI news — all in one unified platform." />
+    <title>Integri: Free AI Chat with GPT, Claude, Gemini &amp; DeepSeek</title>
+    <meta name="description" content="Chat free with 30+ AI models in one app: GPT, Claude, Gemini, DeepSeek and Grok. Personal news, voice chat, image generation and your own AI agents." />
     <meta name="keywords" content="AI chatbot, GPT-4o, Claude, Gemini, Grok, DeepSeek, Mistral, custom AI agents, PDF analysis, voice AI, image generation, AI platform" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
     <link rel="canonical" href="https://www.integri.app/" />
     <meta name="theme-color" content="#000000" />
 
@@ -17,17 +20,17 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.integri.app/" />
     <meta property="og:site_name" content="Integri AI" />
-    <meta property="og:title" content="Integri AI – Custom AI Agents, Chatbots &amp; All Models in One Place" />
-    <meta property="og:description" content="Chat with GPT-4o, Claude, Gemini, Grok, DeepSeek, Mistral and more. Build custom AI agents, analyze PDFs, generate images, use voice AI. One platform for all AI models." />
+    <meta property="og:title" content="Integri: Free AI Chat with GPT, Claude, Gemini &amp; DeepSeek" />
+    <meta property="og:description" content="Chat free with 30+ AI models in one app: GPT, Claude, Gemini, DeepSeek and Grok." />
     <meta property="og:image" content="https://www.integri.app/dark-theme-logo.png" />
     <meta property="og:image:alt" content="Integri AI logo" />
     <meta property="og:locale" content="en_US" />
 
     <!-- ── Twitter / X Card ───────────────────────────────── -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@integri_ai" />
-    <meta name="twitter:title" content="Integri AI – All AI Models in One Place" />
-    <meta name="twitter:description" content="Chat with GPT-4o, Claude, Gemini, Grok, DeepSeek and more. Build custom AI agents, analyze PDFs, generate images, voice AI — all in one unified platform." />
+    <meta name="twitter:site" content="@IntegriAI" />
+    <meta name="twitter:title" content="Integri: Free AI Chat with GPT, Claude, Gemini &amp; DeepSeek" />
+    <meta name="twitter:description" content="Chat free with 30+ AI models in one app: GPT, Claude, Gemini, DeepSeek and Grok." />
     <meta name="twitter:image" content="https://www.integri.app/dark-theme-logo.png" />
 
     <!-- ── Performance hints ──────────────────────────────── -->
@@ -37,7 +40,10 @@
     <!-- ── AdSense ─────────────────────────────────────────── -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2692304161225754"
      crossorigin="anonymous"></script>
-    <script src="/system-check.js"></script>
+    <!-- Ad-block probe: deferred so it never delays the first paint (useAdBlockDetector loads it itself if needed). -->
+    <script src="/system-check.js" defer></script>
+    <!-- Top-up pages: campaign attribution, GTM + consent (only acts on /shopping, /syria, /sudan). Deferred, so it runs before the app. -->
+    <script src="/tracking/integri-tracking.js" defer></script>
   </head>
   <body>
     <!--

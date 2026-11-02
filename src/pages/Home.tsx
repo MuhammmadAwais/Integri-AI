@@ -1,7 +1,8 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "../features/navabr/Navbar";
 import Layout from "../Components/layout/Layout";
+import RouteLoading from "../Components/ui/RouteLoading";
 
 const Home: React.FC = () => {
   return (
@@ -12,7 +13,10 @@ const Home: React.FC = () => {
             <Navbar />
           </div>
           <main className="flex-1 w-full h-full overflow-hidden relative">
-            <Outlet />
+            {/* Pages load on demand; the sidebar stays while they do. */}
+            <Suspense fallback={<RouteLoading />}>
+              <Outlet />
+            </Suspense>
           </main>
         </div>
       </Layout>

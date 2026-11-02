@@ -1,25 +1,24 @@
 // src/features/subscriptions/services/subscriptionService.ts
-import { Purchases, type Package, PeriodUnit } from "@revenuecat/purchases-js";
+// RevenueCat (~750 KB) is loaded on first use, not with the homepage.
+import type { Package, Purchases as PurchasesClass } from "@revenuecat/purchases-js";
 import type { SubscriptionTier } from "../../../../Constants";
 
 // Cache for the configured Purchases instance per user
-let configuredPurchasesInstance: ReturnType<typeof Purchases.configure> | null =
-  null;
+let configuredPurchasesInstance: PurchasesClass | null = null;
 let configuredUserId: string | null = null;
 
 /**
  * Gets or configures the RevenueCat Purchases instance for a user.
  * Reuses the instance if already configured for the same user.
  */
-const getPurchasesInstance = (
-  userId: string,
-): ReturnType<typeof Purchases.configure> => {
+const getPurchasesInstance = async (userId: string): Promise<PurchasesClass> => {
   // If already configured for this user, return the instance
   if (configuredPurchasesInstance && configuredUserId === userId) {
     return configuredPurchasesInstance;
   }
 
   // Configure for the first time or for a different user
+  const { Purchases } = await import("@revenuecat/purchases-js");
   const purchases = Purchases.configure(
     import.meta.env.VITE_REVENUECAT_WEB_API_KEY,
     // "9gFbPzHpfMR9pI33sCr7n23ZndI3",
@@ -124,7 +123,7 @@ export const SubscriptionService = {
   getOfferings: async (userId: string): Promise<PlanData[]> => {
     try {
       const REVENUECAT_ID = import.meta.env.VITE_REVENUECAT_ID;
-      const purchases = getPurchasesInstance(userId);
+      const purchases = await getPurchasesInstance(userId);
 
       const offerings = await purchases.getOfferings();
       console.log("Fetched Offerings:", offerings);
@@ -187,8 +186,8 @@ export const SubscriptionService = {
           const period = product.period;
           // Period has number and unit properties (unit is PeriodUnit enum)
           const periodUnit = period?.unit;
-          const isAnnualByPeriod = periodUnit === PeriodUnit.Year;
-          const isMonthlyByPeriod = periodUnit === PeriodUnit.Month;
+          const isAnnualByPeriod = periodUnit === "year"; // PeriodUnit.Year
+          const isMonthlyByPeriod = periodUnit === "month"; // PeriodUnit.Month
 
           // Final determination
           const finalIsAnnual = isAnnual || isAnnualByPeriod;
@@ -281,7 +280,7 @@ export const SubscriptionService = {
     userId: string,
   ): Promise<SubscriptionTier> => {
     try {
-      const purchases = getPurchasesInstance(userId);
+      const purchases = await getPurchasesInstance(userId);
 
       // Ensure user is logged in (equivalent to Purchases.logIn in Flutter)
       // In JS SDK, configure already handles this, but we can use identifyUser if needed
@@ -367,7 +366,7 @@ export const SubscriptionService = {
   ): Promise<SubscriptionTier> => {
     try {
       const REVENUECAT_ID = import.meta.env.VITE_REVENUECAT_ID;
-      const purchases = getPurchasesInstance(userId);
+      const purchases = await getPurchasesInstance(userId);
 
       const offerings = await purchases.getOfferings();
       console.log("Offerings:", offerings);

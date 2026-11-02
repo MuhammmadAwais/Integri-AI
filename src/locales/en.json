@@ -143,7 +143,8 @@
     "signInLink": "Sign in"
   },
   "welcome": {
-    "greeting": "Hey {{name}}, how can I help you today?"
+    "greeting": "Hey {{name}}, how can I help you today?",
+    "guestHeadline": "Free AI chat with 30+ models in one app"
   },
   "adBlockGuard": {
     "systemRecoveryGuide": "SYSTEM RECOVERY GUIDE",

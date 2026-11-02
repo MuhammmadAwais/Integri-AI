@@ -1,36 +1,9 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import {
-  getSEOForPath,
-  SITE_NAME,
-  SITE_DEFAULT_DESCRIPTION,
-  BASE_URL,
-} from "../../config/seo";
+import { getSEOForPath, SITE_DEFAULT_DESCRIPTION } from "../../config/seo";
+// Same graph the prerendered homepage carries (scripts/prerender-seo.mjs).
+import { HOME_JSON_LD } from "../../../scripts/home-jsonld.mjs";
 import Seo from "./Seo";
-
-const SITE_URL = BASE_URL.replace(/\/$/, "");
-
-const HOME_JSON_LD = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Organization",
-      "@id": `${SITE_URL}/#organization`,
-      name: SITE_NAME,
-      url: SITE_URL,
-      logo: { "@type": "ImageObject", url: `${SITE_URL}/dark-theme-logo.png` },
-    },
-    {
-      "@type": "WebSite",
-      "@id": `${SITE_URL}/#website`,
-      url: SITE_URL,
-      name: SITE_NAME,
-      description: SITE_DEFAULT_DESCRIPTION,
-      publisher: { "@id": `${SITE_URL}/#organization` },
-      inLanguage: "en-US",
-    },
-  ],
-};
 
 /**
  * Route-level SEO from src/config/seo.ts.

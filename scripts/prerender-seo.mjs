@@ -16,6 +16,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join, resolve } from "node:path";
 
 import { pages, CANONICAL_ORIGIN } from "./seo-pages.mjs";
+import { HOME_JSON_LD } from "./home-jsonld.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const dist = join(root, "dist");
@@ -71,15 +72,19 @@ function bodyCopy(page) {
  * mount, so none of this is ever shown to a visitor whose JS runs.
  */
 function applyShells(html, page) {
+  // The page's H1 and copy go in ONE shell only (the hidden one crawlers
+  // render); the <noscript> shell gets a one-line summary. Filling both put
+  // two H1s and every paragraph twice into each page.
   const copy = bodyCopy(page);
+  const summary = `\n            <p>${escapeHtml(page.description)}</p>\n          `;
   let out = html;
   let replaced = 0;
 
   out = out.replace(
-    /(<main data-seo-main="(?:noscript|shell)">)[\s\S]*?(<\/main>)/g,
-    (_, open, close) => {
+    /(<main data-seo-main="(noscript|shell)">)[\s\S]*?(<\/main>)/g,
+    (_, open, kind, close) => {
       replaced += 1;
-      return `${open}${copy}${close}`;
+      return `${open}${kind === "shell" ? copy : summary}${close}`;
     }
   );
 
@@ -96,7 +101,12 @@ async function main() {
   const template = await readFile(templatePath, "utf8");
 
   for (const page of pages) {
-    const html = applyShells(applyHead(template, page), page);
+    let html = applyShells(applyHead(template, page), page);
+    if (!page.route) {
+      // Homepage: Organization / WebSite / MobileApplication structured data.
+      const ld = JSON.stringify(HOME_JSON_LD).replace(/</g, "\\u003c");
+      html = html.replace("</head>", `    <script type="application/ld+json">${ld}</script>\n  </head>`);
+    }
     const outPath = page.route ? join(dist, page.route, "index.html") : templatePath;
     await mkdir(dirname(outPath), { recursive: true });
     await writeFile(outPath, html, "utf8");

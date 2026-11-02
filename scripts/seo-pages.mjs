@@ -16,10 +16,10 @@ export const CANONICAL_ORIGIN = "https://www.integri.app";
 export const pages = [
   {
     route: "",
-    title: "Integri AI - Custom AI Agents, Chatbots & All Models in One Place",
+    title: "Integri: Free AI Chat with GPT, Claude, Gemini & DeepSeek",
     description:
-      "Chat with GPT-4o, Claude 3.5, Gemini 1.5, Grok, DeepSeek, Mistral and more. Build custom AI agents, analyze PDFs, generate images, use voice AI - all in one unified AI platform.",
-    h1: "Integri AI - All AI Models in One Place",
+      "Chat free with 30+ AI models in one app: GPT, Claude, Gemini, DeepSeek and Grok. Personal news, voice chat, image generation and your own AI agents.",
+    h1: "Free AI chat with 30+ models in one app",
     sections: [
       { heading: "Chat with Any AI Model", body: "Switch seamlessly between OpenAI GPT-4o, Anthropic Claude 3.5 Sonnet, Google Gemini 1.5 Pro, xAI Grok, DeepSeek, and Mistral. Compare responses and manage all your AI conversations in one place." },
       { heading: "Custom AI Agents", body: "Build and deploy custom AI agents tailored to your workflow. Create specialized assistants for email crafting, document analysis, cost-of-living calculations, and more." },

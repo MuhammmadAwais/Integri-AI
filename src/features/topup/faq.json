@@ -1,0 +1,1118 @@
+{
+ "faqTitle": {
+  "en": "Frequently asked questions",
+  "ar": "الأسئلة الشائعة",
+  "de": "Häufig gestellte Fragen",
+  "fr": "Questions fréquentes",
+  "es": "Preguntas frecuentes",
+  "tr": "Sık sorulan sorular",
+  "ur": "اکثر پوچھے جانے والے سوالات",
+  "fa": "پرسش‌های متداول",
+  "ru": "Часто задаваемые вопросы",
+  "uk": "Поширені запитання"
+ },
+ "faqs": {
+  "en": [
+   [
+    "How do I send a top up to {country} from abroad?",
+    "Choose the amount, enter the number in {country} and your email, and pay by card, Apple Pay or Google Pay. The credit arrives instantly on the number."
+   ],
+   [
+    "Do I need to download the app?",
+    "No, you can top up directly from this page. The app is optional if you want to save numbers and repeat top ups easily."
+   ],
+   [
+    "How long does the credit take to arrive?",
+    "The credit arrives instantly after the payment is confirmed, and you can follow the order status in the app history."
+   ],
+   [
+    "Which payment methods are available?",
+    "Bank or credit card with 3D Secure, Apple Pay, Google Pay and other methods shown for your country at payment."
+   ],
+   [
+    "Where can I top up from?",
+    "From anywhere in the world. The credit arrives on the mobile number in {country}."
+   ],
+   [
+    "What if I enter a wrong number?",
+    "The credit is sent instantly to the number you entered and cannot be recovered after delivery, so check the number before paying. If the top up fails and the credit does not arrive, contact us at support@integri.app."
+   ],
+   [
+    "Which operators are available in {country}?",
+    "You can top up {operators} in {country}."
+   ],
+   [
+    "How much does a top up to {country} cost?",
+    "The final price is shown clearly before you pay."
+   ]
+  ],
+  "ar": [
+   [
+    "كيف أرسل رصيدًا إلى {country} من الخارج؟",
+    "اختر المبلغ، وأدخل الرقم في {country} وبريدك الإلكتروني، ثم ادفع بالبطاقة أو Apple Pay أو Google Pay. يصل الرصيد فورًا إلى الرقم."
+   ],
+   [
+    "هل أحتاج إلى تنزيل التطبيق؟",
+    "لا، يمكنك الشحن مباشرة من هذه الصفحة. التطبيق اختياري إذا أردت حفظ الأرقام وتكرار الشحن بسهولة."
+   ],
+   [
+    "كم يستغرق وصول الرصيد؟",
+    "يصل الرصيد فورًا بعد تأكيد الدفع، ويمكنك متابعة حالة الطلب في سجل التطبيق."
+   ],
+   [
+    "ما طرق الدفع المتاحة؟",
+    "البطاقة المصرفية أو بطاقة الائتمان مع 3D Secure، وApple Pay، وGoogle Pay، وطرق أخرى تظهر لبلدك عند الدفع."
+   ],
+   [
+    "من أين يمكنني الشحن؟",
+    "من أي مكان في العالم. يصل الرصيد إلى رقم الجوال في {country}."
+   ],
+   [
+    "ماذا لو أدخلت رقمًا خاطئًا؟",
+    "يُرسل الرصيد فورًا إلى الرقم الذي أدخلته ولا يمكن استرداده بعد التسليم، لذا تحقق من الرقم قبل الدفع. إذا فشل الشحن ولم يصل الرصيد، تواصل معنا على support@integri.app."
+   ],
+   [
+    "ما المشغّلون المتاحون في {country}؟",
+    "يمكنك شحن رصيد {operators} في {country}."
+   ],
+   [
+    "كم تبلغ تكلفة الشحن إلى {country}؟",
+    "يظهر السعر النهائي بوضوح قبل أن تدفع."
+   ]
+  ],
+  "de": [
+   [
+    "Wie sende ich eine Aufladung aus dem Ausland nach {country}?",
+    "Wählen Sie den Betrag, geben Sie die Nummer in {country} und Ihre E-Mail ein und zahlen Sie per Karte, Apple Pay oder Google Pay. Das Guthaben kommt sofort auf der Nummer an."
+   ],
+   [
+    "Muss ich die App herunterladen?",
+    "Nein, Sie können direkt auf dieser Seite aufladen. Die App ist optional, wenn Sie Nummern speichern und Aufladungen einfach wiederholen möchten."
+   ],
+   [
+    "Wie lange dauert es, bis das Guthaben ankommt?",
+    "Das Guthaben kommt sofort nach der Bestätigung der Zahlung an. Den Status der Bestellung sehen Sie im Verlauf der App."
+   ],
+   [
+    "Welche Zahlungsmethoden gibt es?",
+    "Bank- oder Kreditkarte mit 3D Secure, Apple Pay, Google Pay und weitere Methoden, die bei der Zahlung für Ihr Land angezeigt werden."
+   ],
+   [
+    "Von wo aus kann ich aufladen?",
+    "Von überall auf der Welt. Das Guthaben kommt auf der Handynummer in {country} an."
+   ],
+   [
+    "Was passiert, wenn ich eine falsche Nummer eingebe?",
+    "Das Guthaben wird sofort an die eingegebene Nummer gesendet und kann nach der Zustellung nicht zurückgeholt werden. Prüfen Sie die Nummer daher vor der Zahlung. Wenn die Aufladung fehlschlägt und das Guthaben nicht ankommt, kontaktieren Sie uns unter support@integri.app."
+   ],
+   [
+    "Welche Anbieter gibt es in {country}?",
+    "In {country} können Sie {operators} aufladen."
+   ],
+   [
+    "Was kostet eine Aufladung nach {country}?",
+    "Der Endpreis wird vor der Zahlung klar angezeigt."
+   ]
+  ],
+  "fr": [
+   [
+    "Comment envoyer une recharge en {country} depuis l'étranger ?",
+    "Choisissez le montant, saisissez le numéro en {country} et votre e-mail, puis payez par carte, Apple Pay ou Google Pay. Le crédit arrive instantanément sur le numéro."
+   ],
+   [
+    "Dois-je télécharger l'application ?",
+    "Non, vous pouvez recharger directement depuis cette page. L'application est facultative si vous souhaitez enregistrer des numéros et répéter vos recharges facilement."
+   ],
+   [
+    "Combien de temps le crédit met-il à arriver ?",
+    "Le crédit arrive instantanément après la confirmation du paiement, et vous pouvez suivre l'état de la commande dans l'historique de l'application."
+   ],
+   [
+    "Quels moyens de paiement sont disponibles ?",
+    "Carte bancaire ou de crédit avec 3D Secure, Apple Pay, Google Pay et d'autres moyens affichés pour votre pays au moment du paiement."
+   ],
+   [
+    "D'où puis-je recharger ?",
+    "De n'importe où dans le monde. Le crédit arrive sur le numéro de mobile en {country}."
+   ],
+   [
+    "Que se passe-t-il si je saisis un mauvais numéro ?",
+    "Le crédit est envoyé instantanément au numéro saisi et ne peut pas être récupéré après la livraison, vérifiez donc le numéro avant de payer. Si la recharge échoue et que le crédit n'arrive pas, contactez-nous à support@integri.app."
+   ],
+   [
+    "Quels opérateurs sont disponibles en {country} ?",
+    "Vous pouvez recharger {operators} en {country}."
+   ],
+   [
+    "Combien coûte une recharge vers {country} ?",
+    "Le prix final est affiché clairement avant le paiement."
+   ]
+  ],
+  "es": [
+   [
+    "¿Cómo envío una recarga a {country} desde el extranjero?",
+    "Elige el importe, introduce el número en {country} y tu correo electrónico, y paga con tarjeta, Apple Pay o Google Pay. El saldo llega al instante al número."
+   ],
+   [
+    "¿Necesito descargar la app?",
+    "No, puedes recargar directamente desde esta página. La app es opcional si quieres guardar números y repetir recargas fácilmente."
+   ],
+   [
+    "¿Cuánto tarda en llegar el saldo?",
+    "El saldo llega al instante una vez confirmado el pago, y puedes seguir el estado del pedido en el historial de la app."
+   ],
+   [
+    "¿Qué métodos de pago hay disponibles?",
+    "Tarjeta bancaria o de crédito con 3D Secure, Apple Pay, Google Pay y otros métodos que se muestran para tu país al pagar."
+   ],
+   [
+    "¿Desde dónde puedo recargar?",
+    "Desde cualquier lugar del mundo. El saldo llega al número de móvil en {country}."
+   ],
+   [
+    "¿Qué pasa si introduzco un número equivocado?",
+    "El saldo se envía al instante al número que introdujiste y no se puede recuperar tras la entrega, así que revisa el número antes de pagar. Si la recarga falla y el saldo no llega, contáctanos en support@integri.app."
+   ],
+   [
+    "¿Qué operadores hay disponibles en {country}?",
+    "Puedes recargar {operators} en {country}."
+   ],
+   [
+    "¿Cuánto cuesta una recarga a {country}?",
+    "El precio final se muestra con claridad antes de pagar."
+   ]
+  ],
+  "tr": [
+   [
+    "Yurt dışından {country} ülkesine nasıl kontör gönderirim?",
+    "Tutarı seçin, {country} ülkesindeki numarayı ve e-posta adresinizi girin, ardından kart, Apple Pay veya Google Pay ile ödeyin. Kontör numaraya anında ulaşır."
+   ],
+   [
+    "Uygulamayı indirmem gerekiyor mu?",
+    "Hayır, doğrudan bu sayfadan kontör yükleyebilirsiniz. Numaraları kaydetmek ve yüklemeyi kolayca tekrarlamak isterseniz uygulama isteğe bağlıdır."
+   ],
+   [
+    "Kontörün ulaşması ne kadar sürer?",
+    "Kontör, ödeme onaylandıktan hemen sonra ulaşır ve sipariş durumunu uygulamadaki geçmişten takip edebilirsiniz."
+   ],
+   [
+    "Hangi ödeme yöntemleri kullanılabilir?",
+    "3D Secure ile banka veya kredi kartı, Apple Pay, Google Pay ve ödeme sırasında ülkeniz için gösterilen diğer yöntemler."
+   ],
+   [
+    "Nereden kontör yükleyebilirim?",
+    "Dünyanın her yerinden. Kontör, {country} ülkesindeki mobil numaraya ulaşır."
+   ],
+   [
+    "Yanlış numara girersem ne olur?",
+    "Kontör girdiğiniz numaraya anında gönderilir ve teslimattan sonra geri alınamaz, bu yüzden ödemeden önce numarayı kontrol edin. Yükleme başarısız olursa ve kontör ulaşmazsa support@integri.app adresinden bize ulaşın."
+   ],
+   [
+    "{country} ülkesinde hangi operatörler kullanılabilir?",
+    "{country} ülkesinde {operators} için kontör yükleyebilirsiniz."
+   ],
+   [
+    "{country} ülkesine kontör yüklemek ne kadar tutar?",
+    "Nihai fiyat, ödemeden önce net olarak gösterilir."
+   ]
+  ],
+  "ur": [
+   [
+    "میں بیرون ملک سے {country} میں ٹاپ اپ کیسے بھیجوں؟",
+    "رقم منتخب کریں، {country} کا نمبر اور اپنا ای میل درج کریں، اور کارڈ، Apple Pay یا Google Pay سے ادائیگی کریں۔ کریڈٹ نمبر پر فوراً پہنچ جاتا ہے۔"
+   ],
+   [
+    "کیا مجھے ایپ ڈاؤن لوڈ کرنی ہوگی؟",
+    "نہیں، آپ اسی صفحے سے براہ راست ٹاپ اپ کر سکتے ہیں۔ اگر آپ نمبر محفوظ کرنا اور ٹاپ اپ آسانی سے دہرانا چاہتے ہیں تو ایپ اختیاری ہے۔"
+   ],
+   [
+    "کریڈٹ پہنچنے میں کتنا وقت لگتا ہے؟",
+    "ادائیگی کی تصدیق کے بعد کریڈٹ فوراً پہنچ جاتا ہے، اور آپ ایپ کی ہسٹری میں آرڈر کی حالت دیکھ سکتے ہیں۔"
+   ],
+   [
+    "ادائیگی کے کون سے طریقے دستیاب ہیں؟",
+    "3D Secure کے ساتھ بینک یا کریڈٹ کارڈ، Apple Pay، Google Pay اور دیگر طریقے جو ادائیگی کے وقت آپ کے ملک کے لیے دکھائے جاتے ہیں۔"
+   ],
+   [
+    "میں کہاں سے ٹاپ اپ کر سکتا ہوں؟",
+    "دنیا میں کہیں سے بھی۔ کریڈٹ {country} میں موجود موبائل نمبر پر پہنچتا ہے۔"
+   ],
+   [
+    "اگر میں غلط نمبر درج کر دوں تو کیا ہوگا؟",
+    "کریڈٹ آپ کے درج کردہ نمبر پر فوراً بھیج دیا جاتا ہے اور ڈیلیوری کے بعد واپس نہیں لیا جا سکتا، اس لیے ادائیگی سے پہلے نمبر چیک کریں۔ اگر ٹاپ اپ ناکام ہو جائے اور کریڈٹ نہ پہنچے تو support@integri.app پر ہم سے رابطہ کریں۔"
+   ],
+   [
+    "{country} میں کون سے آپریٹرز دستیاب ہیں؟",
+    "آپ {country} میں {operators} کا ٹاپ اپ کر سکتے ہیں۔"
+   ],
+   [
+    "{country} میں ٹاپ اپ کی لاگت کتنی ہے؟",
+    "حتمی قیمت ادائیگی سے پہلے واضح طور پر دکھائی جاتی ہے۔"
+   ]
+  ],
+  "fa": [
+   [
+    "چطور از خارج از کشور به {country} شارژ بفرستم؟",
+    "مبلغ را انتخاب کنید، شماره در {country} و ایمیل خود را وارد کنید و با کارت، Apple Pay یا Google Pay پرداخت کنید. اعتبار فوری به شماره می‌رسد."
+   ],
+   [
+    "آیا باید اپلیکیشن را دانلود کنم؟",
+    "نه، می‌توانید مستقیم از همین صفحه شارژ کنید. اگر می‌خواهید شماره‌ها را ذخیره کنید و شارژ را به‌راحتی تکرار کنید، اپلیکیشن اختیاری است."
+   ],
+   [
+    "رسیدن اعتبار چقدر طول می‌کشد؟",
+    "اعتبار بعد از تأیید پرداخت فوری می‌رسد و می‌توانید وضعیت سفارش را در تاریخچه اپلیکیشن دنبال کنید."
+   ],
+   [
+    "چه روش‌های پرداختی در دسترس است؟",
+    "کارت بانکی یا اعتباری با 3D Secure، Apple Pay، Google Pay و روش‌های دیگری که هنگام پرداخت برای کشور شما نمایش داده می‌شود."
+   ],
+   [
+    "از کجا می‌توانم شارژ کنم؟",
+    "از هر نقطه جهان. اعتبار به شماره موبایل در {country} می‌رسد."
+   ],
+   [
+    "اگر شماره را اشتباه وارد کنم چه می‌شود؟",
+    "اعتبار فوری به شماره‌ای که وارد کرده‌اید ارسال می‌شود و پس از تحویل قابل بازگشت نیست، پس پیش از پرداخت شماره را بررسی کنید. اگر شارژ ناموفق بود و اعتبار نرسید، از طریق support@integri.app با ما تماس بگیرید."
+   ],
+   [
+    "چه اپراتورهایی در {country} در دسترس هستند؟",
+    "می‌توانید {operators} را در {country} شارژ کنید."
+   ],
+   [
+    "شارژ به {country} چقدر هزینه دارد؟",
+    "قیمت نهایی پیش از پرداخت به‌روشنی نمایش داده می‌شود."
+   ]
+  ],
+  "ru": [
+   [
+    "Как отправить пополнение в {country} из-за границы?",
+    "Выберите сумму, введите номер в {country} и свою почту, затем оплатите картой, через Apple Pay или Google Pay. Средства мгновенно поступят на номер."
+   ],
+   [
+    "Нужно ли скачивать приложение?",
+    "Нет, пополнить счёт можно прямо на этой странице. Приложение нужно только по желанию, если вы хотите сохранять номера и легко повторять пополнения."
+   ],
+   [
+    "Как быстро поступят средства?",
+    "Средства поступают мгновенно после подтверждения оплаты, а статус заказа можно отслеживать в истории в приложении."
+   ],
+   [
+    "Какие способы оплаты доступны?",
+    "Банковская или кредитная карта с 3D Secure, Apple Pay, Google Pay и другие способы, которые отображаются для вашей страны при оплате."
+   ],
+   [
+    "Откуда можно пополнить счёт?",
+    "Из любой точки мира. Средства поступят на мобильный номер в {country}."
+   ],
+   [
+    "Что делать, если я ввёл неверный номер?",
+    "Средства мгновенно отправляются на введённый вами номер и не могут быть возвращены после доставки, поэтому проверьте номер перед оплатой. Если пополнение не удалось и средства не поступили, напишите нам на support@integri.app."
+   ],
+   [
+    "Какие операторы доступны в {country}?",
+    "В {country} вы можете пополнить {operators}."
+   ],
+   [
+    "Сколько стоит пополнение в {country}?",
+    "Итоговая цена чётко показана до оплаты."
+   ]
+  ],
+  "uk": [
+   [
+    "Як надіслати поповнення до країни {country} із за кордону?",
+    "Оберіть суму, введіть номер у країні {country} і свою електронну пошту та сплатіть карткою, через Apple Pay або Google Pay. Кошти миттєво надійдуть на номер."
+   ],
+   [
+    "Чи потрібно завантажувати застосунок?",
+    "Ні, поповнити можна прямо на цій сторінці. Застосунок необов'язковий, він потрібен, якщо ви хочете зберігати номери та легко повторювати поповнення."
+   ],
+   [
+    "Скільки часу йде надходження коштів?",
+    "Кошти надходять миттєво після підтвердження оплати, а статус замовлення можна відстежувати в історії в застосунку."
+   ],
+   [
+    "Які способи оплати доступні?",
+    "Банківська або кредитна картка з 3D Secure, Apple Pay, Google Pay та інші способи, які відображаються для вашої країни під час оплати."
+   ],
+   [
+    "Звідки можна поповнювати?",
+    "З будь якого місця у світі. Кошти надходять на мобільний номер у країні {country}."
+   ],
+   [
+    "Що буде, якщо я введу неправильний номер?",
+    "Кошти миттєво надсилаються на введений вами номер і після доставки їх неможливо повернути, тому перевірте номер перед оплатою. Якщо поповнення не вдалося і кошти не надійшли, напишіть нам на support@integri.app."
+   ],
+   [
+    "Які оператори доступні у країні {country}?",
+    "У країні {country} ви можете поповнити: {operators}."
+   ],
+   [
+    "Скільки коштує поповнення у країні {country}?",
+    "Остаточна ціна чітко відображається перед оплатою."
+   ]
+  ]
+ },
+ "overrides": {
+  "DE": {
+   "de": {
+    "faq7_a": "In {country} können Sie {operators} aufladen. Wählen Sie den Anbieter, dann den Betrag, und das Guthaben wird sofort gutgeschrieben."
+   }
+  }
+ },
+ "operators": {
+  "AF": [
+   "ATOMA",
+   "AWCC",
+   "Etisalat",
+   "Roshan",
+   "Salaam"
+  ],
+  "DZ": [
+   "Djezzy",
+   "Mobilis",
+   "Ooredoo"
+  ],
+  "AS": [
+   "BlueSky"
+  ],
+  "AO": [
+   "Africell",
+   "Movicel",
+   "Unitel"
+  ],
+  "AI": [
+   "Digicel",
+   "Flow"
+  ],
+  "AG": [
+   "Digicel",
+   "Flow"
+  ],
+  "AR": [
+   "Claro",
+   "Movistar",
+   "Personal"
+  ],
+  "AM": [
+   "Ucom",
+   "Viva"
+  ],
+  "AW": [
+   "Digicel"
+  ],
+  "AZ": [
+   "Azercell",
+   "Bakcell",
+   "Nar",
+   "Naxtel4G"
+  ],
+  "BS": [
+   "ALIV",
+   "BTC"
+  ],
+  "BH": [
+   "Zain"
+  ],
+  "BD": [
+   "Banglalink",
+   "Cirkle",
+   "Grameenphone",
+   "Robi",
+   "Teletalk"
+  ],
+  "BB": [
+   "Digicel",
+   "Flow"
+  ],
+  "BZ": [
+   "Digi",
+   "Smart"
+  ],
+  "BJ": [
+   "MTN",
+   "Moov"
+  ],
+  "BM": [
+   "Digicel"
+  ],
+  "BT": [
+   "Telecom"
+  ],
+  "BO": [
+   "Entel",
+   "Tigo",
+   "VIVA"
+  ],
+  "BQ": [
+   "Chippie Bonaire"
+  ],
+  "BW": [
+   "BeMobile",
+   "Mascom",
+   "Orange"
+  ],
+  "BR": [
+   "Claro",
+   "Tim",
+   "Vivo"
+  ],
+  "VG": [
+   "Digicel British Virgin Island",
+   "Flow BVI"
+  ],
+  "BF": [
+   "Moov Africa",
+   "Orange",
+   "Telecel"
+  ],
+  "BI": [
+   "Econet Leo"
+  ],
+  "KH": [
+   "Cellcard",
+   "Metfone",
+   "Smart"
+  ],
+  "CM": [
+   "Camtel",
+   "MTN",
+   "Orange"
+  ],
+  "CV": [
+   "Alou",
+   "Unitel T+"
+  ],
+  "KY": [
+   "Digicel Cayman",
+   "Flow Cayman"
+  ],
+  "CF": [
+   "Moov",
+   "Orange"
+  ],
+  "TD": [
+   "Airtel",
+   "Moov"
+  ],
+  "CL": [
+   "Claro",
+   "Entel",
+   "Movistar",
+   "Simple Moviles",
+   "Telsur",
+   "VTR",
+   "Virgin Mobile",
+   "WOM"
+  ],
+  "CN": [
+   "China Mobile",
+   "China Telecom",
+   "China Unicom"
+  ],
+  "CO": [
+   "Claro",
+   "ETB",
+   "Movistar",
+   "Tigo",
+   "Virgin Mobile",
+   "Wom"
+  ],
+  "KM": [
+   "YAS Comores"
+  ],
+  "CG": [
+   "MTN Congo Brazzaville"
+  ],
+  "CD": [
+   "Africell Democratic Republic of the Congo",
+   "Airtel Democratic Republic of the Congo",
+   "Orange Democratic Republic of the Congo",
+   "Vodacom Democratic Republic of the Congo"
+  ],
+  "CR": [
+   "Claro",
+   "Kolbi",
+   "Liberty"
+  ],
+  "CU": [
+   "Cubacel",
+   "NAUTA",
+   "Nauta Plus",
+   "Telefonia Fija Pospago ETECSA",
+   "Telefonia Propia ETECSA"
+  ],
+  "CW": [
+   "Chippie",
+   "Digicel Curacao XCG"
+  ],
+  "CY": [
+   "Epic"
+  ],
+  "CZ": [
+   "O2",
+   "T-Mobile",
+   "Vodafone"
+  ],
+  "DM": [
+   "Digicel",
+   "Flow"
+  ],
+  "DO": [
+   "Altice",
+   "Claro",
+   "Viva"
+  ],
+  "EC": [
+   "CNT",
+   "Claro",
+   "Movistar",
+   "Tuenti"
+  ],
+  "EG": [
+   "Etisalat",
+   "Orange",
+   "Vodafone",
+   "WE Telecom"
+  ],
+  "SV": [
+   "Claro",
+   "Digicel",
+   "Movistar",
+   "RED",
+   "Tigo"
+  ],
+  "ET": [
+   "Ethio Telecom",
+   "Safaricom"
+  ],
+  "FJ": [
+   "Digicel",
+   "Vodafone"
+  ],
+  "FR": [
+   "Talk360"
+  ],
+  "GF": [
+   "Digicel"
+  ],
+  "GA": [
+   "Airtel"
+  ],
+  "GM": [
+   "Africell",
+   "Comium",
+   "Gamcel",
+   "QCell"
+  ],
+  "GE": [
+   "Cellfie",
+   "GPhone",
+   "Geocell",
+   "Magticom",
+   "Magtifix",
+   "MyPhone"
+  ],
+  "DE": [
+   "Ay Yildiz",
+   "Base",
+   "CallMobile",
+   "Congstar Ebay",
+   "Congstar",
+   "E-Plus",
+   "Fyve",
+   "MTV",
+   "O2",
+   "Ortel",
+   "Otelo",
+   "RTL Mobile",
+   "T-Mobile",
+   "Vodafone",
+   "Vybemobil"
+  ],
+  "GH": [
+   "AirtelTigo",
+   "Glo Mobile",
+   "MTN",
+   "Telecel"
+  ],
+  "GD": [
+   "Digicel",
+   "Flow"
+  ],
+  "GP": [
+   "Digicel"
+  ],
+  "GT": [
+   "Claro",
+   "Tigo"
+  ],
+  "GN": [
+   "Cellcom",
+   "MTN Guinea Conakry",
+   "Orange Guinea Conakry"
+  ],
+  "GW": [
+   "MTN Guinea Bissau",
+   "Orange Guinea Bissau"
+  ],
+  "GY": [
+   "Digicel",
+   "GT&T"
+  ],
+  "HT": [
+   "Digicel",
+   "Digicel Haiti Plans",
+   "Natcom"
+  ],
+  "HN": [
+   "Claro",
+   "Tigo"
+  ],
+  "IN": [
+   "Airtel",
+   "Jio",
+   "MTNL",
+   "Vi"
+  ],
+  "ID": [
+   "Axis",
+   "Hutchison Three",
+   "Indosat",
+   "Smartfren",
+   "Telkomsel",
+   "XL Axiata"
+  ],
+  "IQ": [
+   "Asia Cell Telecom",
+   "Korek"
+  ],
+  "IT": [
+   "Coop Voce",
+   "DigiMobil",
+   "Fastweb",
+   "Ho Mobile",
+   "Lyca",
+   "Poste",
+   "TIM",
+   "Tiscali",
+   "Vodafone",
+   "WindTre"
+  ],
+  "CI": [
+   "MTN",
+   "Moov",
+   "Orange"
+  ],
+  "JM": [
+   "Digicel",
+   "Digicel Jamaica Plans",
+   "Flow"
+  ],
+  "JO": [
+   "Zain"
+  ],
+  "KZ": [
+   "Activ",
+   "Altel",
+   "Beeline",
+   "Kcell",
+   "Tele2"
+  ],
+  "KE": [
+   "Airtel",
+   "Safaricom",
+   "Telkom"
+  ],
+  "KI": [
+   "Vodafone"
+  ],
+  "XK": [
+   "IPKO",
+   "Vala Mobile"
+  ],
+  "KW": [
+   "Ooredoo",
+   "STC",
+   "Zain"
+  ],
+  "KG": [
+   "Beeline",
+   "Megacom",
+   "O!",
+   "Salam"
+  ],
+  "LA": [
+   "Etl",
+   "LTC",
+   "TPlus",
+   "Unitel"
+  ],
+  "LR": [
+   "MTN",
+   "Orange"
+  ],
+  "LT": [
+   "Tele2"
+  ],
+  "MG": [
+   "Airtel",
+   "Orange"
+  ],
+  "MW": [
+   "Airtel",
+   "TNM"
+  ],
+  "MY": [
+   "Celcom",
+   "DiGi",
+   "Halo Telco",
+   "HelloSIM",
+   "Hotlink",
+   "Maxis",
+   "OneCALL",
+   "RedOne Malyasia",
+   "TuneTalk",
+   "U Mobile",
+   "Yes"
+  ],
+  "ML": [
+   "Moov",
+   "Orange",
+   "Telecel"
+  ],
+  "MQ": [
+   "Digicel"
+  ],
+  "MR": [
+   "Chinguitel",
+   "Mattel",
+   "Mauritel"
+  ],
+  "MX": [
+   "AT&T",
+   "AT&T/Iusacell",
+   "Axios Mobile",
+   "Bait",
+   "Big Sur",
+   "Flash Mobile",
+   "FreedomPOP",
+   "MiMovil",
+   "Movistar",
+   "Telcel Amigo Sin Limite",
+   "Telcel",
+   "Unefon",
+   "Virgin Mobile",
+   "Wimo"
+  ],
+  "MD": [
+   "Moldcell",
+   "Orange",
+   "Unite"
+  ],
+  "MS": [
+   "Digicel",
+   "Flow"
+  ],
+  "MA": [
+   "Inwi",
+   "Maroc Telecom",
+   "Orange"
+  ],
+  "MZ": [
+   "MCel",
+   "Movitel",
+   "Vodacom"
+  ],
+  "MM": [
+   "ATOM",
+   "MPT",
+   "Mectel",
+   "MyTel",
+   "U9"
+  ],
+  "NP": [
+   "Ncell",
+   "Nepal Telecom"
+  ],
+  "NI": [
+   "Claro",
+   "Tigo"
+  ],
+  "NE": [
+   "Airtel",
+   "Moov",
+   "Zamani Telecom"
+  ],
+  "NG": [
+   "9Mobile",
+   "Airtel",
+   "Glo",
+   "MTN"
+  ],
+  "PK": [
+   "Jazz",
+   "Telenor",
+   "Ufone",
+   "Zong"
+  ],
+  "PA": [
+   "Mas Movil Cable & Wireless",
+   "Tigo"
+  ],
+  "PG": [
+   "Digicel",
+   "Vodafone"
+  ],
+  "PY": [
+   "Claro",
+   "Personal",
+   "Tigo",
+   "Vox"
+  ],
+  "PE": [
+   "Bitel",
+   "Claro",
+   "Entel",
+   "Movistar"
+  ],
+  "PH": [
+   "BS_Globe",
+   "Cherry Mobile",
+   "Dito",
+   "Smart",
+   "Smart Bro",
+   "SmartTalk n Text",
+   "Touch Mobile"
+  ],
+  "PL": [
+   "Heyah",
+   "Lycamobile",
+   "Orange",
+   "Play",
+   "Plus",
+   "T-Mobile",
+   "Virgin Mobile"
+  ],
+  "PT": [
+   "Lycamobile",
+   "MEO",
+   "Moche",
+   "NOS",
+   "UZO",
+   "Vodafone"
+  ],
+  "PR": [
+   "Claro",
+   "Liberty RTR"
+  ],
+  "RO": [
+   "Digi",
+   "Orange",
+   "Telekom",
+   "Vodafone"
+  ],
+  "RW": [
+   "MTN",
+   "Tigo"
+  ],
+  "MF": [
+   "Chippie French St Martin"
+  ],
+  "WS": [
+   "Digicel",
+   "Vodafone"
+  ],
+  "ST": [
+   "CST"
+  ],
+  "SA": [
+   "Stc-Sawa"
+  ],
+  "SN": [
+   "Expresso",
+   "Free",
+   "Orange"
+  ],
+  "SL": [
+   "Africell",
+   "Orange",
+   "QCell",
+   "Sierratel"
+  ],
+  "SG": [
+   "M1",
+   "SingTel"
+  ],
+  "ZA": [
+   "CellC",
+   "MTN",
+   "Telkom",
+   "Vodacom"
+  ],
+  "ES": [
+   "Digimobil",
+   "Euskaltel",
+   "Hablafacil",
+   "Hablapp",
+   "Lebara",
+   "Llamaya",
+   "Lyca",
+   "MasMovil",
+   "Movistar",
+   "Orange",
+   "Simyo",
+   "Vodafone",
+   "Yoigo",
+   "YouMobile"
+  ],
+  "LK": [
+   "Dialog",
+   "Hutch",
+   "Mobitel"
+  ],
+  "KN": [
+   "Digicel St. Kitts",
+   "Flow St Kitts"
+  ],
+  "LC": [
+   "Digicel",
+   "Flow St Lucia"
+  ],
+  "VC": [
+   "Digicel St. Vincent",
+   "Flow St Vincent"
+  ],
+  "SD": [
+   "MTN",
+   "Sudani",
+   "Zain"
+  ],
+  "SR": [
+   "Digicel",
+   "Telesur"
+  ],
+  "SZ": [
+   "MTN"
+  ],
+  "SE": [
+   "3 Kontant",
+   "Halebop"
+  ],
+  "SY": [
+   "MTN"
+  ],
+  "TJ": [
+   "Babilon Mobile",
+   "Megafon",
+   "Tcell",
+   "ZET-Mobile"
+  ],
+  "TZ": [
+   "Airtel",
+   "Halotel",
+   "TTCL",
+   "Vodacom",
+   "Yas"
+  ],
+  "TH": [
+   "DTAC",
+   "NT",
+   "True Move"
+  ],
+  "TG": [
+   "Moov",
+   "Togocel"
+  ],
+  "TO": [
+   "Digicel",
+   "TCC"
+  ],
+  "TT": [
+   "Digicel Bundles Trinidad",
+   "Digicel Trinidad Tobago",
+   "bMobile Trinidad"
+  ],
+  "TN": [
+   "Ooredoo",
+   "Orange",
+   "Tunisie Telecom"
+  ],
+  "TR": [
+   "Avea",
+   "Turkcell",
+   "Vodafone"
+  ],
+  "TC": [
+   "Digicel TCI",
+   "Flow TCI"
+  ],
+  "US": [
+   "AT&T",
+   "Boost Mobile",
+   "Cricket Paygo",
+   "H2O Paygo",
+   "Lycamobile",
+   "Metro by T-Mobile US - Service Fee Applied",
+   "Mobile X",
+   "Net10 RTR",
+   "Simple Mobile Unlimited Nationwide",
+   "T-Mobile",
+   "TracFone RTR",
+   "Verizon Wireless"
+  ],
+  "UG": [
+   "Airtel",
+   "MTN"
+  ],
+  "AE": [
+   "DU UAE",
+   "Etisalat UAE"
+  ],
+  "GB": [
+   "Vodafone"
+  ],
+  "UY": [
+   "Antel",
+   "Claro",
+   "Movistar"
+  ],
+  "UZ": [
+   "Beeline",
+   "Perfectum Mobile",
+   "UMS",
+   "Ucell",
+   "UzMobile"
+  ],
+  "VU": [
+   "Digicel",
+   "Vodafone"
+  ],
+  "VE": [
+   "Digitel",
+   "Movilnet",
+   "Movistar"
+  ],
+  "VN": [
+   "Gmobile",
+   "MobiFone",
+   "Vietnammobile",
+   "Viettel Mobile",
+   "Vinaphone"
+  ],
+  "YE": [
+   "Sabafon",
+   "Yemen Mobile",
+   "You"
+  ],
+  "ZM": [
+   "Airtel",
+   "MTN",
+   "Zamtel"
+  ],
+  "ZW": [
+   "Econet",
+   "Netone"
+  ]
+ }
+}

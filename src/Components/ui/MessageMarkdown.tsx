@@ -7,6 +7,7 @@ import { cn } from "../../lib/utils";
 import { Copy } from "lucide-react";
 import AdUnit from "../ads/AdUnit";
 import { AD_SLOTS } from "../../config/ads";
+import "katex/dist/katex.min.css";
 // import { useAppSelector } from "../../hooks/useRedux";
 // import { useSubscription } from "../../features/subscriptions/hooks/useSubscription";
 

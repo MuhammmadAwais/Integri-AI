@@ -21,6 +21,19 @@
         "--strictPort"
       ],
       "port": 4173
+    },
+    {
+      "name": "hosting",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "firebase-tools",
+        "emulators:start",
+        "--only",
+        "hosting",
+        "--project",
+        "integri-957a2"
+      ],
+      "port": 5002
     }
   ]
 }

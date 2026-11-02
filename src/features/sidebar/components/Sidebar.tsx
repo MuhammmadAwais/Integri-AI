@@ -158,16 +158,17 @@ const Sidebar: React.FC = () => {
           )}
         >
           <Link to="/" className="hover:opacity-80 transition-opacity">
-            <h1
+            {/* A logo, not a heading: each page's own title is its single H1. */}
+            <span
               className={cn(
-                "",
+                "block",
                 isExpanded
                   ? "text-2xl font-extrabold"
                   : "text xs font-semibold",
               )}
             >
               {t("sidebar.integri")}
-            </h1>
+            </span>
           </Link>
         </div>
 

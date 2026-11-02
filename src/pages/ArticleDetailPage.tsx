@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { useParams, useNavigate, Link, useLocation, useSearchParams } from "react-router-dom";
+import { useParams, useNavigate, Link, useLocation, useSearchParams, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Clock, Share2, Loader2, BookOpen } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import { useAppSelector } from "../hooks/useRedux";
 import { cn } from "../lib/utils";
 import { useArticle, useNewsList } from "../features/news/hooks/useNews";
@@ -12,6 +11,9 @@ import {
     localised,
 } from "../features/news/models/publicNewsArticle";
 import ShareModal from "../Components/ui/ShareModal";
+import { NEWS_COUNTRY_BY_COLLECTION, newsPath } from "../features/news/utils/newsCountries";
+import NewsLanguagePicker from "../features/news/components/NewsLanguagePicker";
+import { articleLanguages, isRtl, pickLanguage, sortLanguages, useNewsLanguage } from "../features/news/utils/newsLanguage";
 import Seo, { toMetaDescription } from "../Components/seo/Seo";
 
 // ── Helpers ───────────────────────────────────────────────────────────
@@ -100,7 +102,7 @@ const RelatedCard: React.FC<{
     lang: string;
 }> = ({ article, isDark, lang }) => (
     <Link
-        to={`/news/${article.id}?collection=${encodeURIComponent(article.collection || "News")}`}
+        to={`${newsPath(article.id, article.collection)}?lang=${encodeURIComponent(lang)}`}
         state={{ collection: article.collection }}
         className="block group"
     >
@@ -115,7 +117,7 @@ const RelatedCard: React.FC<{
                 className="w-20 h-14 rounded-lg object-cover shrink-0"
             />
             <div className="flex flex-col justify-center gap-1 min-w-0">
-                <h4 className={cn(
+                <h4 dir="auto" className={cn(
                     "text-xs font-semibold leading-snug line-clamp-2 group-hover:underline",
                     isDark ? "text-gray-200" : "text-gray-900",
                 )}>
@@ -134,17 +136,24 @@ const ArticleDetailPage: React.FC = () => {
     const location = useLocation();
     const [searchParams] = useSearchParams();
     const isDark = useAppSelector((state: any) => state.theme.isDark);
-    const { i18n } = useTranslation();
-    const lang = i18n.language;
+    const { preferred: preferredLangs, setLanguage } = useNewsLanguage();
     
     // Get collection from query params or route state, defaulting to "Articles"
     const collection = searchParams.get("collection") || location.state?.collection || "Articles";
     const { article, loading, error } = useArticle(id, collection);
 
     // Fetch related news to show in sidebar
-    const { articles: relatedNews, loading: relatedLoading } = useNewsList(6);
+    const { articles: relatedNews, loading: relatedLoading } = useNewsList(7, article?.country ?? null);
 
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
+    // Country stories are news: /articles/<id>?collection=NewsGermany is the
+    // same story as /news/germany/<id>, so send it there (one URL per story).
+    if (id && NEWS_COUNTRY_BY_COLLECTION[collection]) {
+        const lang = searchParams.get("lang");
+        const to = newsPath(id, collection);
+        return <Navigate to={lang ? `${to}?lang=${encodeURIComponent(lang)}` : to} replace />;
+    }
 
     // ── Loading ──
     if (loading) {
@@ -176,6 +185,9 @@ const ArticleDetailPage: React.FC = () => {
 
     // ── Error / Not found ──
     if (error || !article) {
+        // Deleted story (API 404): keep it out of the index. A network error
+        // must not, or a hiccup would de-index a live story.
+        const notFound = !error || /not found/i.test(error);
         return (
             <div
                 className={cn(
@@ -183,6 +195,7 @@ const ArticleDetailPage: React.FC = () => {
                     isDark ? "bg-black text-white" : "bg-gray-50 text-gray-900",
                 )}
             >
+                {notFound && <Seo title="Article not found | Integri News" description="This article is no longer available." noindex />}
                 <h2 className="text-2xl font-bold">
                     {error ?? "Article not found"}
                 </h2>
@@ -196,6 +209,9 @@ const ArticleDetailPage: React.FC = () => {
         );
     }
 
+    // Show the story in the reader's language when it has that translation.
+    const languages = sortLanguages(articleLanguages(article));
+    const lang = pickLanguage(languages, ...preferredLangs);
     const headline = localised(article.headline, lang);
 
     const content = article.content || [];
@@ -217,7 +233,7 @@ const ArticleDetailPage: React.FC = () => {
             )}
         >
             <Seo
-                title={`${headline} | Integri`}
+                title={`${headline} | Integri News`}
                 description={summary}
                 canonicalPath={`/articles/${id}`}
                 type="article"
@@ -230,6 +246,8 @@ const ArticleDetailPage: React.FC = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.4 }}
+                        lang={lang}
+                        dir={isRtl(lang) ? "rtl" : "ltr"}
                         className="flex-1 max-w-3xl space-y-6"
                     >
                         {/* ── Back button ── */}
@@ -282,6 +300,15 @@ const ArticleDetailPage: React.FC = () => {
                                     #{tag}
                                 </span>
                             ))}
+                            <div className="ms-auto">
+                                <NewsLanguagePicker
+                                    languages={languages}
+                                    value={lang}
+                                    onChange={setLanguage}
+                                    isDark={isDark}
+                                    align={isRtl(lang) ? "left" : "right"}
+                                />
+                            </div>
                         </div>
 
                         {/* ── Title ── */}
@@ -436,7 +463,7 @@ const ArticleDetailPage: React.FC = () => {
                                 </div>
                             ) : (
                                 <div className="p-1">
-                                    {relatedNews.slice(0, 5).map((n) => (
+                                    {relatedNews.filter((a) => a.id !== id).slice(0, 5).map((n) => (
                                         <RelatedCard
                                             key={n.id}
                                             article={n}
