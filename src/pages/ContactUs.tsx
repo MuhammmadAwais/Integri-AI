@@ -142,15 +142,6 @@ const AbstractAurora = ({ isDark }: { isDark: boolean }) => {
       />
       {/* Noise Texture */}
       <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] brightness-100 contrast-150 mix-blend-overlay" />
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover"
-      >
-        <source src="/globeAnimation.mp4" type="video/mp4" />
-      </video>
     </div>
   );
 };
