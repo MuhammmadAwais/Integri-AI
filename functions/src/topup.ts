@@ -65,11 +65,25 @@ function countryName(iso: string, lang: string, fallback: string): string {
   }
 }
 
+/** Maps a browser language tag ("pt-br", "zh-Hant-TW", "de-AT") onto a page language, if any. */
+function matchLang(tag: string, langs: string[]): string | undefined {
+  const lower = tag.trim().toLowerCase();
+  const exact = langs.find((l) => l.toLowerCase() === lower);
+  if (exact) return exact;
+  const base = lower.split("-")[0];
+  if (base === "zh") {
+    const trad = /-(tw|hk|mo|hant)\b/.test(lower);
+    return langs.find((l) => l === (trad ? "zh-TW" : "zh-CN"));
+  }
+  if (base === "pt") return langs.find((l) => l === "pt");
+  return langs.find((l) => l === base);
+}
+
 /** First page language in Accept-Language, else English. */
 function preferredLang(acceptLanguage: string | undefined, langs: string[]): string {
   for (const part of (acceptLanguage ?? "").split(",")) {
-    const base = part.split(";")[0].trim().toLowerCase().split("-")[0];
-    if (langs.includes(base)) return base;
+    const hit = matchLang(part.split(";")[0], langs);
+    if (hit) return hit;
   }
   return "en";
 }

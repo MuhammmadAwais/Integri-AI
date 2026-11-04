@@ -5,11 +5,22 @@ export const TOPUP_BASE = "/shopping/mobile-top-up";
 export type TopUpLang = keyof typeof STRINGS;
 export const TOPUP_LANGS = Object.keys(STRINGS) as TopUpLang[];
 
+/** Maps a browser language tag ("pt-BR", "zh-Hant-TW", "de-AT") onto a page language, if any. */
+function matchLang(tag: string): TopUpLang | undefined {
+  const lower = tag.toLowerCase();
+  const exact = TOPUP_LANGS.find((l) => l.toLowerCase() === lower);
+  if (exact) return exact;
+  const base = lower.split("-")[0];
+  if (base === "zh") return /-(tw|hk|mo|hant)\b/.test(lower) ? "zh-TW" : "zh-CN";
+  if (base === "pt") return "pt";
+  return TOPUP_LANGS.find((l) => l === base);
+}
+
 /** First supported page language among the browser's languages, else English. */
 export function preferredTopUpLang(): TopUpLang {
   for (const l of navigator.languages ?? [navigator.language]) {
-    const base = String(l).toLowerCase().split("-")[0] as TopUpLang;
-    if (TOPUP_LANGS.includes(base)) return base;
+    const hit = matchLang(String(l));
+    if (hit) return hit;
   }
   return "en";
 }
