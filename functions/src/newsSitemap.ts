@@ -182,7 +182,8 @@ function defaultHeadline(value: unknown): { title: string; lang: string } {
 }
 
 async function renderNewsSitemap(): Promise<string> {
-  const since = Timestamp.fromMillis(Date.now() - WINDOW_MS);
+  const now = Date.now();
+  const since = Timestamp.fromMillis(now - WINDOW_MS);
   const db = getFirestore();
 
   const perCountry = await Promise.all(
@@ -201,7 +202,9 @@ async function renderNewsSitemap(): Promise<string> {
           date: (d.get("date") as Timestamp).toDate(),
           ...defaultHeadline(d.get("headline")),
         }))
-        .filter((e) => e.title);
+        // Some manual stories carry a date ahead of now. Google rejects a future
+        // publication date, so such a story joins the sitemap once its time passes.
+        .filter((e) => e.title && e.date.getTime() <= now);
     })
   );
 
