@@ -285,22 +285,21 @@ async function main() {
   }
   console.log(`  country    ${storyTimes.length} stories over ${Object.keys(days).length} past day(s) from ${countries.length} collections`);
 
-  // ── Mobile top-up shop: every country x page language, hreflang-linked ──
+  // ── Mobile top-up shop: every country x page language ──
+  // The hreflang alternates are in each page's <head> (React page and the ssrPreview function). They are
+  // not repeated here: with 100+ page languages every <url> would carry 100+ <xhtml:link>s, about 180 MB for
+  // the whole shop against the 50 MB limit of a sitemap file.
   const topupPath = join(dist, "shopping/mobile-top-up/data.json");
   if (existsSync(topupPath)) {
     const { langs, countries } = JSON.parse(await readFile(topupPath, "utf8"));
     const base = `${ORIGIN}/shopping/mobile-top-up`;
-    const urls = countries.flatMap((c) => {
-      const alternates = [...langs.map((l) => [l, `${base}/${c.slug}/${l}`]), ["x-default", `${base}/${c.slug}/en`]]
-        .map(([l, href]) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${escapeXml(href)}"/>`)
-        .join("\n");
-      return langs.map((l) =>
-        ["  <url>", `    <loc>${escapeXml(`${base}/${c.slug}/${l}`)}</loc>`, `    <lastmod>${today.slice(0, 10)}</lastmod>`, "    <changefreq>weekly</changefreq>", alternates, "  </url>"].join("\n")
-      );
-    });
+    const urls = countries.flatMap((c) =>
+      langs.map((l) => ["  <url>", `    <loc>${escapeXml(`${base}/${c.slug}/${l}`)}</loc>`, `    <lastmod>${today.slice(0, 10)}</lastmod>`, "  </url>"].join("\n"))
+    );
     // The overview of all countries.
-    urls.unshift(["  <url>", `    <loc>${escapeXml(base)}</loc>`, `    <lastmod>${today.slice(0, 10)}</lastmod>`, "    <changefreq>weekly</changefreq>", "  </url>"].join("\n"));
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.join("\n")}\n</urlset>\n`;
+    urls.unshift(["  <url>", `    <loc>${escapeXml(base)}</loc>`, `    <lastmod>${today.slice(0, 10)}</lastmod>`, "  </url>"].join("\n"));
+    if (urls.length > MAX_URLS_PER_FILE) throw new Error(`top-up sitemap has ${urls.length} URLs, over the ${MAX_URLS_PER_FILE} limit: split it`);
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join("\n")}\n</urlset>\n`;
     await writeFile(join(outDir, "mobile-top-up.xml"), xml, "utf8");
     children.push({ loc: `${ORIGIN}/sitemaps/mobile-top-up.xml`, lastmod: today });
     console.log(`  top-up     ${urls.length} URL(s) (${countries.length} countries x ${langs.length} languages)`);

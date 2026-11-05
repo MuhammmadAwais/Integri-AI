@@ -3,9 +3,9 @@ import { Link, useSearchParams } from "react-router-dom";
 import { ChevronDown, Search } from "lucide-react";
 import Seo from "../Components/seo/Seo";
 import COUNTRIES from "../features/topup/countries.json";
-import STRINGS from "../features/topup/strings.json";
-import FAQ from "../features/topup/faq.json";
 import ALIASES from "../features/topup/aliases.json";
+import PageLoading from "../features/topup/PageLoading";
+import { LANG_NAMES, OPERATORS, useLangPack } from "../features/topup/i18n";
 import { TOPUP_BASE, TOPUP_LANGS, countryName, fill, flag, initTracking, preferredTopUpLang, type TopUpLang } from "../features/topup/shop";
 
 /*
@@ -33,15 +33,18 @@ const MobileTopUpIndexPage: React.FC = () => {
   const [params, setParams] = useSearchParams();
   const fromUrl = params.get("lang") as TopUpLang | null;
   const lang: TopUpLang = fromUrl && TOPUP_LANGS.includes(fromUrl) ? fromUrl : preferredTopUpLang();
-  const t = STRINGS[lang];
+  const { pack, failed } = useLangPack(lang);
   const [query, setQuery] = useState("");
 
   // Campaign capture (and GTM) when the hub is reached inside the app.
   useEffect(() => initTracking(), []);
 
+  if (!pack) return <PageLoading failed={failed} />;
+  const t = pack.t;
+
   const count = new Intl.NumberFormat(lang).format(countries.length);
   const operatorsOf = (c: Country) =>
-    ((FAQ.operators as Record<string, string[]>)[c.iso] ?? c.operators.split(", ")).slice(0, 3).join(", ");
+    (OPERATORS[c.iso] ?? c.operators.split(", ")).slice(0, 3).join(", ");
 
   // Localized names, sorted the way the language sorts.
   const list = countries
@@ -99,7 +102,7 @@ const MobileTopUpIndexPage: React.FC = () => {
               onChange={(e) => setParams({ lang: e.target.value }, { replace: true })}
               className="appearance-none rounded-full border border-white/15 bg-transparent py-1.5 pe-8 ps-3 hover:cursor-pointer focus:outline-none"
             >
-              {TOPUP_LANGS.map((l) => <option key={l} value={l} className="bg-[#141414]">{STRINGS[l].langName}</option>)}
+              {TOPUP_LANGS.map((l) => <option key={l} value={l} className="bg-[#141414]">{LANG_NAMES[l]}</option>)}
             </select>
             <ChevronDown size={14} className="pointer-events-none absolute end-3" />
           </label>
@@ -148,7 +151,7 @@ const MobileTopUpIndexPage: React.FC = () => {
         </section>
 
         <footer className="mt-14 text-center text-xs text-zinc-500">
-          <a href="/terms" className="hover:text-zinc-300">{t.terms}</a> · <a href="/privacy-policy" className="hover:text-zinc-300">{t.privacy}</a> · support@integri.app
+          <a href="/terms" className="hover:text-zinc-300">{t.footerTerms}</a> · <a href="/privacy-policy" className="hover:text-zinc-300">{t.footerPrivacy}</a> · support@integri.app
         </footer>
       </main>
     </div>

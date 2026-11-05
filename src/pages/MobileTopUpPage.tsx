@@ -4,12 +4,12 @@ import { Check, ChevronDown, Loader2, Lock } from "lucide-react";
 import Seo from "../Components/seo/Seo";
 import { cn } from "../lib/utils";
 import COUNTRIES from "../features/topup/countries.json";
-import STRINGS from "../features/topup/strings.json";
 import ALIASES from "../features/topup/aliases.json";
-import FAQ from "../features/topup/faq.json";
+import PageLoading from "../features/topup/PageLoading";
+import { LANG_NAMES, OPERATORS, useLangPack, type LangPack } from "../features/topup/i18n";
 import {
-  TOPUP_BASE, TOPUP_LANGS, checkoutAttribution, cookieSettingsAvailable, countryName, fill, flag, initTracking, loadStripe,
-  openCookieSettings, operatorGroup, preferredTopUpLang, trackEvent, type StripeClient, type StripeElements, type TopUpLang,
+  TOPUP_BASE, TOPUP_LANGS, checkoutAttribution, cookieSettingsAvailable, countryName, declineKey, fill, flag, initTracking, loadStripe,
+  openCookieSettings, operatorGroup, preferredTopUpLang, stripeLocale, trackEvent, type StripeClient, type StripeElements, type TopUpLang,
 } from "../features/topup/shop";
 
 /*
@@ -24,17 +24,26 @@ import {
  */
 
 type Lang = TopUpLang;
-type Strings = (typeof STRINGS)["en"];
 interface Country { iso: string; slug: string; name: string; dial: string; operators: string }
 interface Operator { provider_code: string; name: string; logo: string | null }
 interface Credit { sku_code: string; min: number; max: number; suggested_chips: number[]; currency: string; receive_rate: number | null }
-interface Bundle { sku_code: string; name: string; description: string; price: number }
+interface Bundle { sku_code: string; name: string; description: string; price: number; receive_value?: number | null; receive_currency?: string | null }
 interface Products { credit: Credit | null; bundles: Bundle[]; serviceFeeEur: number }
 type Choice = { kind: "credit"; sku: string; amount: number } | { kind: "bundle"; sku: string; price: number; name: string };
 interface Intent { orderId: string; clientSecret: string; publishableKey: string; bundleEur: number; feeEur: number; totalEur: number }
 
 const countries = COUNTRIES as Country[];
 const API = "/recharge/web";
+
+/** Arabic-Indic, Persian, Devanagari, Bengali, fullwidth etc. digits → 0-9. */
+const DIGIT_ZEROS = [0x660, 0x6f0, 0x7c0, 0x966, 0x9e6, 0xa66, 0xae6, 0xb66, 0xbe6, 0xc66, 0xce6, 0xd66, 0xde6, 0xe50, 0xed0, 0xf20, 0x1040, 0x1090, 0x17e0, 0x1810, 0xa9d0, 0xff10];
+function toEnglishDigits(s: string): string {
+  return s.replace(/\p{Nd}/gu, (c) => {
+    const cp = c.codePointAt(0)!;
+    const z = DIGIT_ZEROS.find((zero) => cp >= zero && cp <= zero + 9);
+    return z === undefined ? c : String(cp - z);
+  });
+}
 
 
 
@@ -71,11 +80,18 @@ const NotFound: React.FC = () => (
   </div>
 );
 
+/** Loads the page language's texts (its own small chunk), then shows the shop. */
 const CountryShop: React.FC<{ country: Country; lang: Lang }> = ({ country, lang }) => {
-  const t = STRINGS[lang] as Strings;
+  const { pack, failed } = useLangPack(lang);
+  if (!pack) return <PageLoading failed={failed} />;
+  return <CountryShopView country={country} lang={lang} pack={pack} />;
+};
+
+const CountryShopView: React.FC<{ country: Country; lang: Lang; pack: LangPack }> = ({ country, lang, pack }) => {
+  const t = pack.t;
   const name = countryName(country.iso, lang, country.name);
   // The client's operator names (cleaner than Ding's), first six, else the catalogue's.
-  const opNames = (FAQ.operators as Record<string, string[]>)[country.iso] ?? country.operators.split(", ");
+  const opNames = OPERATORS[country.iso] ?? country.operators.split(", ");
   const vars = { country: name, operator: opNames[0] ?? "", operators: opNames.slice(0, 6).join(", ") };
   const money = useMemo(() => new Intl.NumberFormat(lang, { style: "currency", currency: "EUR" }), [lang]);
   const eur = (n: number) => money.format(n);
@@ -159,19 +175,20 @@ const CountryShop: React.FC<{ country: Country; lang: Lang }> = ({ country, lang
   const credit = products?.credit ?? null;
   const fee = products?.serviceFeeEur ?? 0.29;
   const price = choice ? (choice.kind === "credit" ? choice.amount : choice.price) : 0;
+  const fmtReceive = (n: number, cur: string) => new Intl.NumberFormat(lang, { style: "currency", currency: cur, maximumFractionDigits: 0 }).format(n);
   const receive = choice?.kind === "credit" && credit?.receive_rate
     ? new Intl.NumberFormat(lang, { style: "currency", currency: credit.currency, maximumFractionDigits: 0 }).format(choice.amount * credit.receive_rate)
     : null;
 
   function pickCustom(v: string) {
     setCustomAmt(v);
-    const n = Math.round(Number(v.replace(",", ".")) * 100) / 100;
+    const n = Math.round(Number(toEnglishDigits(v).replace(/[,٫]/g, ".")) * 100) / 100;
     if (credit && Number.isFinite(n)) setChoice({ kind: "credit", sku: credit.sku_code, amount: n });
   }
 
   function msisdn() {
     const dial = country.dial.replace(/\D/g, "");
-    let d = number.replace(/\D/g, "");
+    let d = toEnglishDigits(number).replace(/\D/g, "");
     if (d.startsWith("00" + dial)) d = d.slice(2 + dial.length);
     else if (d.startsWith(dial) && d.length > dial.length + 6) d = d.slice(dial.length);
     d = d.replace(/^0+/, "");
@@ -216,7 +233,7 @@ const CountryShop: React.FC<{ country: Country; lang: Lang }> = ({ country, lang
       }
       setIntent(d);
       const Stripe = await loadStripe();
-      const stripe = Stripe(d.publishableKey, { locale: lang });
+      const stripe = Stripe(d.publishableKey, { locale: stripeLocale(lang) });
       const elements = stripe.elements({
         clientSecret: d.clientSecret,
         appearance: { theme: "night", variables: { colorPrimary: "#5EEAD4", colorBackground: "#161616", colorText: "#F4F4F5", borderRadius: "12px" } },
@@ -248,7 +265,8 @@ const CountryShop: React.FC<{ country: Country; lang: Lang }> = ({ country, lang
     });
     if (res.error) {
       setBusy(false);
-      setFormError(res.error.message || t.errGeneric);
+      const key = declineKey(res.error);
+      setFormError(key ? t[key] : res.error.message || t.errGeneric);
       return;
     }
     setStep("result");
@@ -277,8 +295,8 @@ const CountryShop: React.FC<{ country: Country; lang: Lang }> = ({ country, lang
 
   const canonical = `${TOPUP_BASE}/${country.slug}/${lang}`;
   // The client's FAQ (8 questions per language), with country-specific overrides.
-  const faqOverride = ((FAQ.overrides as Record<string, Record<string, Record<string, string>>>)[country.iso] ?? {})[lang] ?? {};
-  const faq = (FAQ.faqs as Record<string, string[][]>)[lang].map(([q, a], i) => ({
+  const faqOverride = pack.overrides[country.iso] ?? {};
+  const faq = pack.faqs.map(([q, a], i) => ({
     q: fill(faqOverride[`faq${i + 1}_q`] ?? q, vars),
     a: fill(faqOverride[`faq${i + 1}_a`] ?? a, vars),
   }));
@@ -374,7 +392,8 @@ const CountryShop: React.FC<{ country: Country; lang: Lang }> = ({ country, lang
                           <button key={v} type="button" aria-pressed={on}
                             onClick={() => { setCustomAmt(""); setChoice({ kind: "credit", sku: credit.sku_code, amount: v }); trackAmount(credit.sku_code, v); }}
                             className={cn("rounded-full border px-4 py-2 text-sm font-semibold hover:cursor-pointer", on ? "border-[#5EEAD4] bg-[#5EEAD4]/10 text-white" : "border-white/15 text-zinc-300 hover:border-white/30")}>
-                            {eur(v)}
+                            {credit.receive_rate ? fmtReceive(v * credit.receive_rate, credit.currency) : eur(v)}
+                            {credit.receive_rate ? <span className="ms-1.5 text-xs font-normal text-zinc-500">· {eur(v)}</span> : null}
                           </button>
                         );
                       })}
@@ -410,7 +429,11 @@ const CountryShop: React.FC<{ country: Country; lang: Lang }> = ({ country, lang
                               <span className="block truncate text-sm font-semibold" dir="auto">{b.name}</span>
                               {b.description && <span className="block truncate text-xs text-zinc-500" dir="auto">{b.description}</span>}
                             </span>
-                            <span className="shrink-0 text-sm font-bold text-[#5EEAD4]" dir="ltr">{eur(b.price)}</span>
+                            <span className="shrink-0 text-end" dir="ltr">
+                              {b.receive_value && b.receive_currency
+                                ? <><span className="block text-sm font-bold text-[#5EEAD4]">{fmtReceive(b.receive_value, b.receive_currency)}</span><span className="block text-xs text-zinc-500">{eur(b.price)}</span></>
+                                : <span className="text-sm font-bold text-[#5EEAD4]">{eur(b.price)}</span>}
+                            </span>
                           </button>
                         );
                       })}
@@ -513,7 +536,7 @@ const CountryShop: React.FC<{ country: Country; lang: Lang }> = ({ country, lang
 
         {/* FAQ + text */}
         <section className="mt-12">
-          <h2 className="mb-4 text-xl font-bold">{(FAQ.faqTitle as Record<string, string>)[lang]}</h2>
+          <h2 className="mb-4 text-xl font-bold">{pack.faqTitle}</h2>
           <div className="divide-y divide-white/10 rounded-2xl border border-white/10">
             {faq.map((f) => (
               <details key={f.q} className="group p-4">
@@ -545,7 +568,7 @@ const CountryShop: React.FC<{ country: Country; lang: Lang }> = ({ country, lang
         </details>
 
         <footer className="mt-10 text-center text-xs text-zinc-500">
-          <a href="/terms" className="hover:text-zinc-300">{t.terms}</a> · <a href="/privacy-policy" className="hover:text-zinc-300">{t.privacy}</a> · support@integri.app
+          <a href="/terms" className="hover:text-zinc-300">{t.footerTerms}</a> · <a href="/privacy-policy" className="hover:text-zinc-300">{t.footerPrivacy}</a> · support@integri.app
           {cookieSettingsAvailable() && (
             <> · <button type="button" onClick={openCookieSettings} className="hover:cursor-pointer hover:text-zinc-300">Cookies</button></>
           )}
@@ -585,7 +608,7 @@ const LanguageMenu: React.FC<{ country: Country; lang: Lang; label: string }> = 
       onChange={(e) => { window.location.href = `${TOPUP_BASE}/${country.slug}/${e.target.value}${window.location.search}`; }}
       className="appearance-none rounded-full border border-white/15 bg-transparent py-1.5 pe-8 ps-3 hover:cursor-pointer focus:outline-none"
     >
-      {TOPUP_LANGS.map((l) => <option key={l} value={l} className="bg-[#141414]">{STRINGS[l].langName}</option>)}
+      {TOPUP_LANGS.map((l) => <option key={l} value={l} className="bg-[#141414]">{LANG_NAMES[l]}</option>)}
     </select>
     <ChevronDown size={14} className="pointer-events-none absolute end-3" />
   </label>

@@ -65,7 +65,10 @@ function countryName(iso: string, lang: string, fallback: string): string {
   }
 }
 
-/** Maps a browser language tag ("pt-br", "zh-Hant-TW", "de-AT") onto a page language, if any. */
+/** Other codes browsers send for a page language: Norwegian Bokmål/Nynorsk, Filipino, old Hebrew/Indonesian/Javanese codes. */
+const LANG_ALIASES: Record<string, string> = { nb: "no", nn: "no", fil: "tl", iw: "he", in: "id", jw: "jv" };
+
+/** Maps a browser language tag ("pt-br", "zh-Hant-TW", "de-AT", "nb-NO") onto a page language, if any. */
 function matchLang(tag: string, langs: string[]): string | undefined {
   const lower = tag.trim().toLowerCase();
   const exact = langs.find((l) => l.toLowerCase() === lower);
@@ -76,7 +79,8 @@ function matchLang(tag: string, langs: string[]): string | undefined {
     return langs.find((l) => l === (trad ? "zh-TW" : "zh-CN"));
   }
   if (base === "pt") return langs.find((l) => l === "pt");
-  return langs.find((l) => l === base);
+  const code = LANG_ALIASES[base] ?? base;
+  return langs.find((l) => l === code);
 }
 
 /** First page language in Accept-Language, else English. */

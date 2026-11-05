@@ -28,7 +28,80 @@
   "sr": "Често постављана питања",
   "sv": "Vanliga frågor",
   "zh-CN": "常见问题",
-  "zh-TW": "常見問題"
+  "zh-TW": "常見問題",
+  "af": "Gereelde vrae",
+  "am": "በተደጋጋሚ የሚጠየቁ ጥያቄዎች",
+  "as": "সঘনাই সোধা প্ৰশ্ন",
+  "az": "Tez-tez verilən suallar",
+  "bn": "সচরাচর জিজ্ঞাসিত প্রশ্ন",
+  "eu": "Maiz egiten diren galderak",
+  "be": "Частыя пытанні",
+  "bs": "Često postavljana pitanja",
+  "my": "မေးလေ့ရှိသော မေးခွန်းများ",
+  "ca": "Preguntes freqüents",
+  "ceb": "Kanunay nga mga pangutana",
+  "hr": "Često postavljana pitanja",
+  "cs": "Často kladené otázky",
+  "da": "Ofte stillede spørgsmål",
+  "et": "Korduma kippuvad küsimused",
+  "tl": "Mga madalas itanong",
+  "fi": "Usein kysytyt kysymykset",
+  "gl": "Preguntas frecuentes",
+  "gu": "વારંવાર પૂછાતા પ્રશ્નો",
+  "ht": "Kesyon yo poze souvan",
+  "ha": "Tambayoyin da ake yawan yi",
+  "he": "שאלות נפוצות",
+  "hi": "अक्सर पूछे जाने वाले सवाल",
+  "is": "Algengar spurningar",
+  "ig": "Ajụjụ a na-ajụkarị",
+  "id": "Pertanyaan yang sering diajukan",
+  "ga": "Ceisteanna coitianta",
+  "jv": "Pitakon sing kerep ditakokake",
+  "kn": "ಪದೇ ಪದೇ ಕೇಳುವ ಪ್ರಶ್ನೆಗಳು",
+  "kk": "Жиі қойылатын сұрақтар",
+  "km": "សំណួរដែលគេសួរញឹកញាប់",
+  "rw": "Ibibazo bikunze kubazwa",
+  "ku": "Pirsên pir tên pirsîn",
+  "ky": "Көп берилүүчү суроолор",
+  "lo": "ຄຳຖາມທີ່ພົບເລື້ອຍ",
+  "lv": "Biežāk uzdotie jautājumi",
+  "lt": "Dažniausiai užduodami klausimai",
+  "lb": "Heefeg gestallte Froen",
+  "mk": "Често поставувани прашања",
+  "mg": "Fanontaniana mahazatra",
+  "ms": "Soalan lazim",
+  "ml": "പതിവായി ചോദിക്കുന്ന ചോദ്യങ്ങൾ",
+  "mt": "Mistoqsijiet frekwenti",
+  "mr": "वारंवार विचारले जाणारे प्रश्न",
+  "mn": "Түгээмэл асуултууд",
+  "ne": "बारम्बार सोधिने प्रश्नहरू",
+  "no": "Vanlige spørsmål",
+  "ny": "Mafunso omwe amafunsidwa kawirikawiri",
+  "or": "ବାରମ୍ବାର ପଚରାଯାଉଥିବା ପ୍ରଶ୍ନ",
+  "pl": "Najczęściej zadawane pytania",
+  "pa": "ਅਕਸਰ ਪੁੱਛੇ ਜਾਂਦੇ ਸਵਾਲ",
+  "gd": "Ceistean cumanta",
+  "sn": "Mibvunzo inowanzobvunzwa",
+  "sd": "اڪثر پڇيا ويندڙ سوال",
+  "si": "නිතර අසන ප්‍රශ්න",
+  "sk": "Často kladené otázky",
+  "sl": "Pogosta vprašanja",
+  "st": "Lipotso tse botsoang khafetsa",
+  "su": "Patarosan anu sering ditanyakeun",
+  "sw": "Maswali yanayoulizwa mara kwa mara",
+  "tg": "Саволҳои зуд додашаванда",
+  "ta": "அடிக்கடி கேட்கப்படும் கேள்விகள்",
+  "te": "తరచుగా అడిగే ప్రశ్నలు",
+  "th": "คำถามที่พบบ่อย",
+  "tk": "Köp berilýän soraglar",
+  "ug": "كۆپ سورىلىدىغان سوئاللار",
+  "uz": "Ko'p beriladigan savollar",
+  "vi": "Câu hỏi thường gặp",
+  "cy": "Cwestiynau cyffredin",
+  "fy": "Faak stelde fragen",
+  "xh": "Imibuzo ebuzwa rhoqo",
+  "yo": "Àwọn ìbéèrè tí a máa ń béèrè",
+  "zu": "Imibuzo ebuzwa kaningi"
  },
  "faqs": {
   "en": [
@@ -1015,6 +1088,2488 @@
    [
     "為{country}儲值要多少錢？",
     "最終價格會在付款前清楚顯示。"
+   ]
+  ],
+  "af": [
+   [
+    "Hoe stuur ek 'n oplaai na {country} uit die buiteland?",
+    "Kies die bedrag, voer die nommer in {country} en jou e-pos in, en betaal met kaart, Apple Pay of Google Pay. Die krediet kom onmiddellik op die nommer aan."
+   ],
+   [
+    "Moet ek die toep aflaai?",
+    "Nee, jy kan direk vanaf hierdie bladsy oplaai. Die toep is opsioneel as jy nommers wil stoor en oplaaie maklik wil herhaal."
+   ],
+   [
+    "Hoe lank neem dit voordat die krediet aankom?",
+    "Die krediet kom onmiddellik aan nadat die betaling bevestig is, en jy kan die bestellingstatus in die toep se geskiedenis volg."
+   ],
+   [
+    "Watter betaalmetodes is beskikbaar?",
+    "Bank of kredietkaart met 3D Secure, Apple Pay, Google Pay en ander metodes wat vir jou land by betaling gewys word."
+   ],
+   [
+    "Van waar af kan ek oplaai?",
+    "Van enige plek ter wêreld. Die krediet kom op die selfoonnommer in {country} aan."
+   ],
+   [
+    "Wat as ek 'n verkeerde nommer invoer?",
+    "Die krediet word onmiddellik na die nommer wat jy ingevoer het gestuur en kan nie na aflewering teruggekry word nie, so kontroleer die nommer voordat jy betaal. As die oplaai misluk en die krediet nie aankom nie, kontak ons by support@integri.app."
+   ],
+   [
+    "Watter netwerke is in {country} beskikbaar?",
+    "Jy kan {operators} in {country} oplaai."
+   ],
+   [
+    "Hoeveel kos 'n oplaai na {country}?",
+    "Die finale prys word duidelik gewys voordat jy betaal."
+   ]
+  ],
+  "am": [
+   [
+    "ከውጭ አገር ወደ {country} ሙሌት እንዴት እልካለሁ?",
+    "መጠኑን ይምረጡ፣ በ{country} ያለውን ቁጥር እና ኢሜይልዎን ያስገቡ፣ ከዚያ በካርድ፣ በApple Pay ወይም በGoogle Pay ይክፈሉ። ክሬዲቱ በቁጥሩ ላይ ወዲያውኑ ይደርሳል።"
+   ],
+   [
+    "መተግበሪያውን ማውረድ ያስፈልገኛል?",
+    "አያስፈልግም፣ ከዚህ ገጽ በቀጥታ መሙላት ይችላሉ። ቁጥሮችን ማስቀመጥ እና ሙሌትን በቀላሉ መድገም ከፈለጉ መተግበሪያው አማራጭ ነው።"
+   ],
+   [
+    "ክሬዲቱ ለመድረስ ምን ያህል ጊዜ ይወስዳል?",
+    "ክፍያው ከተረጋገጠ በኋላ ክሬዲቱ ወዲያውኑ ይደርሳል፣ የትዕዛዙንም ሁኔታ በመተግበሪያው ታሪክ ውስጥ መከታተል ይችላሉ።"
+   ],
+   [
+    "ምን ምን የክፍያ ዘዴዎች አሉ?",
+    "በ3D Secure የባንክ ወይም የክሬዲት ካርድ፣ Apple Pay፣ Google Pay እንዲሁም በክፍያ ጊዜ ለአገርዎ የሚታዩ ሌሎች ዘዴዎች።"
+   ],
+   [
+    "ከየት ሆኜ መሙላት እችላለሁ?",
+    "ከዓለም ላይ ከማንኛውም ቦታ። ክሬዲቱ በ{country} ባለው የሞባይል ቁጥር ላይ ይደርሳል።"
+   ],
+   [
+    "የተሳሳተ ቁጥር ባስገባስ?",
+    "ክሬዲቱ ባስገቡት ቁጥር ላይ ወዲያውኑ ይላካል፣ ከደረሰ በኋላም መመለስ አይቻልም፤ ስለዚህ ከመክፈልዎ በፊት ቁጥሩን ያረጋግጡ። ሙሌቱ ካልተሳካ እና ክሬዲቱ ካልደረሰ በsupport@integri.app ያነጋግሩን።"
+   ],
+   [
+    "በ{country} የትኞቹ ኦፕሬተሮች ይገኛሉ?",
+    "በ{country} {operators} መሙላት ይችላሉ።"
+   ],
+   [
+    "ወደ {country} ሙሌት ስንት ያስከፍላል?",
+    "የመጨረሻው ዋጋ ከመክፈልዎ በፊት በግልጽ ይታያል።"
+   ]
+  ],
+  "as": [
+   [
+    "বিদেশৰ পৰা {country}লৈ টপ আপ কেনেকৈ পঠাম?",
+    "পৰিমাণ বাছনি কৰক, {country}ৰ নম্বৰ আৰু আপোনাৰ ইমেইল লিখক, আৰু কাৰ্ড, Apple Pay বা Google Payৰে পেমেণ্ট কৰক। ক্ৰেডিট নম্বৰটোত তৎক্ষণাৎ পোৱা যায়।"
+   ],
+   [
+    "মই এপটো ডাউনলোড কৰিব লাগিবনে?",
+    "নালাগে, আপুনি পোনপটীয়াকৈ এই পৃষ্ঠাৰ পৰা টপ আপ কৰিব পাৰে। নম্বৰ সংৰক্ষণ কৰি সহজে টপ আপ পুনৰাবৃত্তি কৰিব বিচাৰিলে এপটো ঐচ্ছিক।"
+   ],
+   [
+    "ক্ৰেডিট পাবলৈ কিমান সময় লাগে?",
+    "পেমেণ্ট নিশ্চিত হোৱাৰ পাছত ক্ৰেডিট তৎক্ষণাৎ পোৱা যায়, আৰু আপুনি এপৰ ইতিহাসত অৰ্ডাৰৰ স্থিতি অনুসৰণ কৰিব পাৰিব।"
+   ],
+   [
+    "কোনবোৰ পেমেণ্ট পদ্ধতি উপলব্ধ?",
+    "3D Secureৰ সৈতে বেংক বা ক্ৰেডিট কাৰ্ড, Apple Pay, Google Pay আৰু পেমেণ্টৰ সময়ত আপোনাৰ দেশৰ বাবে দেখুওৱা অন্য পদ্ধতি।"
+   ],
+   [
+    "মই ক'ৰ পৰা টপ আপ কৰিব পাৰোঁ?",
+    "বিশ্বৰ যিকোনো ঠাইৰ পৰা। ক্ৰেডিট {country}ৰ মোবাইল নম্বৰত পোৱা যায়।"
+   ],
+   [
+    "ভুল নম্বৰ লিখিলে কি হ'ব?",
+    "আপুনি লিখা নম্বৰলৈ ক্ৰেডিট তৎক্ষণাৎ পঠোৱা হয় আৰু ডেলিভাৰীৰ পাছত উভতাই আনিব নোৱাৰি, সেয়ে পেমেণ্টৰ আগতে নম্বৰ পৰীক্ষা কৰক। যদি টপ আপ বিফল হয় আৰু ক্ৰেডিট নাপায়, তেন্তে support@integri.appত আমাৰ সৈতে যোগাযোগ কৰক।"
+   ],
+   [
+    "{country}ত কোনবোৰ অপাৰেটৰ উপলব্ধ?",
+    "আপুনি {country}ত {operators} টপ আপ কৰিব পাৰে।"
+   ],
+   [
+    "{country}লৈ টপ আপ কৰিবলৈ কিমান খৰচ হয়?",
+    "পেমেণ্টৰ আগতে চূড়ান্ত দাম স্পষ্টকৈ দেখুওৱা হয়।"
+   ]
+  ],
+  "az": [
+   [
+    "{country} ölkəsinə xaricdən balansı necə göndərim?",
+    "Məbləği seçin, {country} ölkəsindəki nömrəni və e-poçtunuzu daxil edin, kartla, Apple Pay və ya Google Pay ilə ödəyin. Balans nömrəyə ani çatır."
+   ],
+   [
+    "Tətbiqi yükləmək lazımdır?",
+    "Xeyr, balansı birbaşa bu səhifədən artıra bilərsiniz. Nömrələri yadda saxlamaq və balans artırmanı asanlıqla təkrarlamaq istəyirsinizsə, tətbiq istəyə bağlıdır."
+   ],
+   [
+    "Balansın çatması nə qədər vaxt aparır?",
+    "Balans ödəniş təsdiqləndikdən dərhal sonra çatır və sifarişin statusunu tətbiqin tarixçəsində izləyə bilərsiniz."
+   ],
+   [
+    "Hansı ödəniş üsulları mövcuddur?",
+    "3D Secure ilə bank və ya kredit kartı, Apple Pay, Google Pay və ödəniş zamanı ölkəniz üçün göstərilən digər üsullar."
+   ],
+   [
+    "Harada olsam balans artıra bilərəm?",
+    "Dünyanın istənilən yerindən. Balans {country} ölkəsindəki mobil nömrəyə çatır."
+   ],
+   [
+    "Nömrəni səhv daxil etsəm nə olacaq?",
+    "Balans daxil etdiyiniz nömrəyə ani göndərilir və çatdırıldıqdan sonra geri qaytarıla bilməz, ona görə ödəniş etməzdən əvvəl nömrəni yoxlayın. Balans artırılması alınmasa və balans çatmasa, bizimlə support@integri.app ünvanında əlaqə saxlayın."
+   ],
+   [
+    "{country} ölkəsində hansı operatorlar mövcuddur?",
+    "{country} ölkəsində {operators} balansını artıra bilərsiniz."
+   ],
+   [
+    "{country} ölkəsinə balans artırmaq nə qədərdir?",
+    "Yekun qiymət ödənişdən əvvəl aydın şəkildə göstərilir."
+   ]
+  ],
+  "bn": [
+   [
+    "বিদেশ থেকে {country} এ টপ আপ কীভাবে পাঠাব?",
+    "পরিমাণ বেছে নিন, {country} এর নম্বর ও আপনার ইমেইল দিন, তারপর কার্ড, Apple Pay বা Google Pay দিয়ে পেমেন্ট করুন। ক্রেডিট নম্বরে তাৎক্ষণিকভাবে পৌঁছে যায়।"
+   ],
+   [
+    "আমাকে কি অ্যাপ ডাউনলোড করতে হবে?",
+    "না, আপনি এই পেজ থেকেই সরাসরি টপ আপ করতে পারেন। নম্বর সংরক্ষণ করতে এবং সহজে টপ আপ পুনরায় করতে চাইলে অ্যাপটি ঐচ্ছিক।"
+   ],
+   [
+    "ক্রেডিট পৌঁছাতে কত সময় লাগে?",
+    "পেমেন্ট নিশ্চিত হওয়ার পর ক্রেডিট তাৎক্ষণিকভাবে পৌঁছে যায়, এবং আপনি অ্যাপের ইতিহাসে অর্ডারের অবস্থা দেখতে পারবেন।"
+   ],
+   [
+    "কোন কোন পেমেন্ট পদ্ধতি পাওয়া যায়?",
+    "3D Secure সহ ব্যাংক বা ক্রেডিট কার্ড, Apple Pay, Google Pay এবং পেমেন্টের সময় আপনার দেশের জন্য দেখানো অন্যান্য পদ্ধতি।"
+   ],
+   [
+    "আমি কোথা থেকে টপ আপ করতে পারি?",
+    "বিশ্বের যেকোনো জায়গা থেকে। ক্রেডিট {country} এর মোবাইল নম্বরে পৌঁছায়।"
+   ],
+   [
+    "ভুল নম্বর দিলে কী হবে?",
+    "আপনার দেওয়া নম্বরে ক্রেডিট তাৎক্ষণিকভাবে পাঠানো হয় এবং ডেলিভারির পর তা ফেরত পাওয়া যায় না, তাই পেমেন্টের আগে নম্বরটি যাচাই করুন। টপ আপ ব্যর্থ হলে এবং ক্রেডিট না পৌঁছালে support@integri.app এ আমাদের সাথে যোগাযোগ করুন।"
+   ],
+   [
+    "{country} এ কোন কোন অপারেটর পাওয়া যায়?",
+    "আপনি {country} এ {operators} টপ আপ করতে পারেন।"
+   ],
+   [
+    "{country} এ টপ আপ করতে কত খরচ হয়?",
+    "পেমেন্টের আগে চূড়ান্ত দাম স্পষ্টভাবে দেখানো হয়।"
+   ]
+  ],
+  "eu": [
+   [
+    "Nola bidal dezaket karga bat {country} atzerritik?",
+    "Aukeratu zenbatekoa, idatzi {country} dagoen zenbakia eta zure helbide elektronikoa, eta ordaindu txartelarekin, Apple Pay edo Google Payrekin. Saldoa berehala iristen da zenbakira."
+   ],
+   [
+    "Aplikazioa deskargatu behar dut?",
+    "Ez, orri honetatik zuzenean kargatu dezakezu. Aplikazioa aukerakoa da, zenbakiak gorde eta kargak erraz errepikatu nahi badituzu."
+   ],
+   [
+    "Zenbat denbora behar du saldoak iristeko?",
+    "Saldoa berehala iristen da ordainketa berretsi ondoren, eta eskaeraren egoera aplikazioaren historialean jarraitu dezakezu."
+   ],
+   [
+    "Zein ordainketa modu daude eskuragarri?",
+    "Banku txartela edo kreditu txartela 3D Secure bidez, Apple Pay, Google Pay eta zure herrialderako ordaintzean erakusten diren beste modu batzuk."
+   ],
+   [
+    "Nondik kargatu dezaket?",
+    "Munduko edozein tokitatik. Saldoa {country} dagoen mugikor zenbakira iristen da."
+   ],
+   [
+    "Zer gertatzen da zenbaki okerra idazten badut?",
+    "Saldoa berehala bidaltzen da idatzi duzun zenbakira eta ezin da berreskuratu bidali ondoren, beraz egiaztatu zenbakia ordaindu aurretik. Karga huts egiten badu eta saldoa iristen ez bada, jarri gurekin harremanetan support@integri.app helbidean."
+   ],
+   [
+    "Zein operadore daude eskuragarri {country}?",
+    "{country} kargatu ditzakezu: {operators}."
+   ],
+   [
+    "Zenbat kostatzen da {country} karga bat?",
+    "Azken prezioa argi erakusten da ordaindu aurretik."
+   ]
+  ],
+  "be": [
+   [
+    "Як адправіць папаўненне ў {country} з-за мяжы?",
+    "Выберыце суму, увядзіце нумар у краіне {country} і ваш адрас электроннай пошты, а потым заплаціце картай, праз Apple Pay або Google Pay. Грошы паступяць на нумар імгненна."
+   ],
+   [
+    "Ці трэба спампоўваць праграму?",
+    "Не, папоўніць можна прама з гэтай старонкі. Праграма неабавязковая, яна патрэбна, калі вы хочаце захоўваць нумары і лёгка паўтараць папаўненні."
+   ],
+   [
+    "Праз колькі грошы паступяць на нумар?",
+    "Грошы паступаюць імгненна пасля пацвярджэння аплаты, а статус заказу можна сачыць у гісторыі праграмы."
+   ],
+   [
+    "Якія спосабы аплаты даступныя?",
+    "Банкаўская або крэдытная картка з 3D Secure, Apple Pay, Google Pay і іншыя спосабы, якія паказваюцца для вашай краіны пры аплаце."
+   ],
+   [
+    "Адкуль можна папаўняць?",
+    "З любога месца свету. Грошы паступаюць на мабільны нумар у краіне {country}."
+   ],
+   [
+    "Што рабіць, калі я ўвёў няправільны нумар?",
+    "Грошы адпраўляюцца імгненна на ўведзены вамі нумар, і пасля дастаўкі іх нельга вярнуць, таму правярайце нумар перад аплатай. Калі папаўненне не атрымалася і грошы не паступілі, звярніцеся да нас па адрасе support@integri.app."
+   ],
+   [
+    "Якія аператары даступныя ў краіне {country}?",
+    "У краіне {country} можна папоўніць {operators}."
+   ],
+   [
+    "Колькі каштуе папаўненне ў {country}?",
+    "Канчатковая цана паказваецца дакладна перад аплатай."
+   ]
+  ],
+  "bs": [
+   [
+    "Kako da pošaljem dopunu u {country} iz inostranstva?",
+    "Odaberite iznos, unesite broj u zemlji {country} i svoju e-poštu, pa platite karticom, putem Apple Pay ili Google Pay. Kredit stiže odmah na broj."
+   ],
+   [
+    "Moram li preuzeti aplikaciju?",
+    "Ne, dopunu možete uraditi direktno s ove stranice. Aplikacija je opcionalna ako želite sačuvati brojeve i lako ponavljati dopune."
+   ],
+   [
+    "Koliko je potrebno da kredit stigne?",
+    "Kredit stiže odmah nakon potvrde plaćanja, a status narudžbe možete pratiti u historiji u aplikaciji."
+   ],
+   [
+    "Koji načini plaćanja su dostupni?",
+    "Bankovna ili kreditna kartica uz 3D Secure, Apple Pay, Google Pay i drugi načini prikazani za vašu zemlju pri plaćanju."
+   ],
+   [
+    "Odakle mogu dopuniti?",
+    "Sa bilo kojeg mjesta na svijetu. Kredit stiže na broj mobitela u zemlji {country}."
+   ],
+   [
+    "Šta ako unesem pogrešan broj?",
+    "Kredit se šalje odmah na broj koji ste unijeli i ne može se vratiti nakon isporuke, zato provjerite broj prije plaćanja. Ako dopuna ne uspije i kredit ne stigne, obratite nam se na support@integri.app."
+   ],
+   [
+    "Koji operateri su dostupni u zemlji {country}?",
+    "U zemlji {country} možete dopuniti {operators}."
+   ],
+   [
+    "Koliko košta dopuna u {country}?",
+    "Konačna cijena je jasno prikazana prije nego što platite."
+   ]
+  ],
+  "my": [
+   [
+    "ပြည်ပမှ {country} သို့ ငွေဖြည့်ခြင်းကို မည်သို့ ပို့ရမည်နည်း။",
+    "ပမာဏကို ရွေးပါ၊ {country} ရှိ နံပါတ်နှင့် သင့်အီးမေးလ်ကို ရိုက်ထည့်ပြီး ကတ်၊ Apple Pay သို့မဟုတ် Google Pay ဖြင့် ပေးချေပါ။ ခရက်ဒစ်သည် နံပါတ်သို့ ချက်ချင်း ရောက်ရှိပါမည်။"
+   ],
+   [
+    "အက်ပ်ကို ဒေါင်းလုဒ်လုပ်ရန် လိုအပ်ပါသလား။",
+    "မလိုပါ၊ ဤစာမျက်နှာမှ တိုက်ရိုက် ငွေဖြည့်နိုင်ပါသည်။ နံပါတ်များ သိမ်းထားလိုပါက သို့မဟုတ် ငွေဖြည့်ခြင်းကို လွယ်ကူစွာ ထပ်လုပ်လိုပါက အက်ပ်ကို ရွေးချယ်အသုံးပြုနိုင်ပါသည်။"
+   ],
+   [
+    "ခရက်ဒစ် ရောက်ရှိရန် အချိန်မည်မျှ ကြာသနည်း။",
+    "ငွေပေးချေမှု အတည်ပြုပြီးနောက် ခရက်ဒစ်သည် ချက်ချင်း ရောက်ရှိပြီး အက်ပ်ရှိ မှတ်တမ်းတွင် အော်ဒါအခြေအနေကို ကြည့်နိုင်ပါသည်။"
+   ],
+   [
+    "မည်သည့် ငွေပေးချေနည်းများ ရနိုင်သနည်း။",
+    "3D Secure ပါသော ဘဏ်ကတ် သို့မဟုတ် ခရက်ဒစ်ကတ်၊ Apple Pay၊ Google Pay နှင့် ငွေပေးချေချိန်တွင် သင့်နိုင်ငံအတွက် ပြသသော အခြားနည်းလမ်းများ။"
+   ],
+   [
+    "မည်သည့်နေရာမှ ငွေဖြည့်နိုင်သနည်း။",
+    "ကမ္ဘာ့မည်သည့်နေရာမှမဆို ဖြည့်နိုင်ပါသည်။ ခရက်ဒစ်သည် {country} ရှိ ဖုန်းနံပါတ်သို့ ရောက်ရှိပါမည်။"
+   ],
+   [
+    "နံပါတ်မှား ရိုက်မိပါက ဘာဖြစ်မည်နည်း။",
+    "ခရက်ဒစ်ကို သင်ရိုက်ထည့်သော နံပါတ်သို့ ချက်ချင်း ပို့ပြီး ပို့ဆောင်ပြီးနောက် ပြန်ရယူ၍ မရပါ၊ ထို့ကြောင့် မပေးချေမီ နံပါတ်ကို စစ်ဆေးပါ။ ငွေဖြည့်ခြင်း မအောင်မြင်ဘဲ ခရက်ဒစ် မရောက်ပါက support@integri.app သို့ ဆက်သွယ်ပါ။"
+   ],
+   [
+    "{country} တွင် မည်သည့် အော်ပရေတာများ ရနိုင်သနည်း။",
+    "{country} တွင် {operators} ကို ငွေဖြည့်နိုင်ပါသည်။"
+   ],
+   [
+    "{country} သို့ ငွေဖြည့်ရန် ကုန်ကျစရိတ် မည်မျှလဲ။",
+    "ပေးချေမီ နောက်ဆုံးဈေးနှုန်းကို ရှင်းလင်းစွာ ပြသပေးပါသည်။"
+   ]
+  ],
+  "ca": [
+   [
+    "Com envio una recàrrega a {country} des de l'estranger?",
+    "Tria l'import, introdueix el número de {country} i el teu correu electrònic, i paga amb targeta, Apple Pay o Google Pay. El saldo arriba a l'instant al número."
+   ],
+   [
+    "He de descarregar l'app?",
+    "No, pots recarregar directament des d'aquesta pàgina. L'app és opcional si vols desar números i repetir recàrregues fàcilment."
+   ],
+   [
+    "Quant triga a arribar el saldo?",
+    "El saldo arriba a l'instant un cop confirmat el pagament, i pots seguir l'estat de la comanda a l'historial de l'app."
+   ],
+   [
+    "Quins mètodes de pagament hi ha disponibles?",
+    "Targeta bancària o de crèdit amb 3D Secure, Apple Pay, Google Pay i altres mètodes que es mostren per al teu país en el moment del pagament."
+   ],
+   [
+    "Des d'on puc recarregar?",
+    "Des de qualsevol lloc del món. El saldo arriba al número de mòbil de {country}."
+   ],
+   [
+    "Què passa si introdueixo un número equivocat?",
+    "El saldo s'envia a l'instant al número que has introduït i no es pot recuperar un cop lliurat, així que comprova el número abans de pagar. Si la recàrrega falla i el saldo no arriba, contacta amb nosaltres a support@integri.app."
+   ],
+   [
+    "Quins operadors hi ha disponibles a {country}?",
+    "Pots recarregar {operators} a {country}."
+   ],
+   [
+    "Quant costa una recàrrega a {country}?",
+    "El preu final es mostra clarament abans de pagar."
+   ]
+  ],
+  "ceb": [
+   [
+    "Unsaon nako pagpadala og top up sa {country} gikan sa gawas sa nasud?",
+    "Pilia ang kantidad, ibutang ang numero sa {country} ug ang imong email, ug bayri gamit ang card, Apple Pay o Google Pay. Muabot dayon ang credit sa numero."
+   ],
+   [
+    "Kinahanglan ba nga i-download nako ang app?",
+    "Dili, makapa-top up ka direkta gikan niini nga panid. Opsyonal ang app kung gusto nimo nga mag-save og mga numero ug sayon nga balikon ang mga top up."
+   ],
+   [
+    "Unsa ka dugay muabot ang credit?",
+    "Muabot dayon ang credit human makompirma ang pagbayad, ug masubay nimo ang kahimtang sa order sa history sa app."
+   ],
+   [
+    "Unsang mga paagi sa pagbayad ang magamit?",
+    "Bank card o credit card nga naay 3D Secure, Apple Pay, Google Pay ug uban pang paagi nga ipakita para sa imong nasud sa pagbayad."
+   ],
+   [
+    "Asa ako makapa-top up?",
+    "Bisan asa sa kalibotan. Muabot ang credit sa mobile number sa {country}."
+   ],
+   [
+    "Unsa kung sayop ang numero nga akong gibutang?",
+    "Ang credit gipadala dayon sa numero nga imong gibutang ug dili na mabawi human madeliver, busa susiha ang numero sa wala pa mobayad. Kung napakyas ang top up ug wala muabot ang credit, kontaka mi sa support@integri.app."
+   ],
+   [
+    "Unsang mga operator ang magamit sa {country}?",
+    "Makapa-top up ka sa {operators} sa {country}."
+   ],
+   [
+    "Pila ang gasto sa top up sa {country}?",
+    "Klaro nga ipakita ang katapusang presyo sa dili pa ka mobayad."
+   ]
+  ],
+  "hr": [
+   [
+    "Kako poslati dopunu u {country} iz inozemstva?",
+    "Odaberite iznos, unesite broj u {country} i svoju e-poštu te platite karticom, Apple Pay ili Google Pay. Kredit stiže odmah na broj."
+   ],
+   [
+    "Moram li preuzeti aplikaciju?",
+    "Ne, možete dopuniti izravno s ove stranice. Aplikacija je neobavezna ako želite spremati brojeve i lako ponavljati dopune."
+   ],
+   [
+    "Koliko dugo kreditu treba da stigne?",
+    "Kredit stiže odmah nakon potvrde plaćanja, a status narudžbe možete pratiti u povijesti u aplikaciji."
+   ],
+   [
+    "Koji su načini plaćanja dostupni?",
+    "Bankovna ili kreditna kartica uz 3D Secure, Apple Pay, Google Pay i druge načine prikazane za vašu državu pri plaćanju."
+   ],
+   [
+    "Odakle mogu dopuniti?",
+    "Odakle god na svijetu. Kredit stiže na broj mobitela u {country}."
+   ],
+   [
+    "Što ako unesem pogrešan broj?",
+    "Kredit se odmah šalje na broj koji ste unijeli i ne može se vratiti nakon isporuke, zato provjerite broj prije plaćanja. Ako dopuna ne uspije i kredit ne stigne, obratite nam se na support@integri.app."
+   ],
+   [
+    "Koji su operateri dostupni u {country}?",
+    "U {country} možete dopuniti {operators}."
+   ],
+   [
+    "Koliko košta dopuna u {country}?",
+    "Konačna cijena jasno je prikazana prije plaćanja."
+   ]
+  ],
+  "cs": [
+   [
+    "Jak pošlu dobití do země {country} ze zahraničí?",
+    "Vyberte částku, zadejte číslo v zemi {country} a svůj e-mail a zaplaťte kartou, přes Apple Pay nebo Google Pay. Kredit dorazí na číslo okamžitě."
+   ],
+   [
+    "Musím si stáhnout aplikaci?",
+    "Ne, dobít můžete přímo na této stránce. Aplikace je volitelná, pokud si chcete ukládat čísla a snadno opakovat dobití."
+   ],
+   [
+    "Jak dlouho kredit putuje?",
+    "Kredit dorazí okamžitě po potvrzení platby a stav objednávky můžete sledovat v historii v aplikaci."
+   ],
+   [
+    "Jaké platební metody jsou dostupné?",
+    "Bankovní nebo kreditní karta s 3D Secure, Apple Pay, Google Pay a další metody zobrazené pro vaši zemi při platbě."
+   ],
+   [
+    "Odkud mohu dobíjet?",
+    "Odkudkoli na světě. Kredit dorazí na mobilní číslo v zemi {country}."
+   ],
+   [
+    "Co když zadám špatné číslo?",
+    "Kredit se okamžitě odešle na zadané číslo a po doručení jej nelze získat zpět, proto číslo před platbou zkontrolujte. Pokud dobití selže a kredit nedorazí, kontaktujte nás na support@integri.app."
+   ],
+   [
+    "Kteří operátoři jsou dostupní v zemi {country}?",
+    "V zemi {country} můžete dobít {operators}."
+   ],
+   [
+    "Kolik stojí dobití do země {country}?",
+    "Konečná cena je před platbou jasně zobrazena."
+   ]
+  ],
+  "da": [
+   [
+    "Hvordan sender jeg en optankning til {country} fra udlandet?",
+    "Vælg beløbet, indtast nummeret i {country} og din e-mail, og betal med kort, Apple Pay eller Google Pay. Kreditten ankommer med det samme på nummeret."
+   ],
+   [
+    "Skal jeg downloade appen?",
+    "Nej, du kan optanke direkte fra denne side. Appen er valgfri, hvis du vil gemme numre og gentage optankninger nemt."
+   ],
+   [
+    "Hvor hurtigt ankommer kreditten?",
+    "Kreditten ankommer med det samme, når betalingen er bekræftet, og du kan følge ordrens status i appens historik."
+   ],
+   [
+    "Hvilke betalingsmetoder er tilgængelige?",
+    "Bankkort eller kreditkort med 3D Secure, Apple Pay, Google Pay og andre metoder, der vises for dit land ved betaling."
+   ],
+   [
+    "Hvor kan jeg optanke fra?",
+    "Fra hvor som helst i verden. Kreditten ankommer på mobilnummeret i {country}."
+   ],
+   [
+    "Hvad hvis jeg indtaster et forkert nummer?",
+    "Kreditten sendes med det samme til det nummer, du har indtastet, og kan ikke hentes tilbage efter levering, så kontroller nummeret, før du betaler. Hvis optankningen mislykkes, og kreditten ikke ankommer, kan du kontakte os på support@integri.app."
+   ],
+   [
+    "Hvilke operatører er tilgængelige i {country}?",
+    "Du kan optanke {operators} i {country}."
+   ],
+   [
+    "Hvad koster en optankning til {country}?",
+    "Den endelige pris vises tydeligt, før du betaler."
+   ]
+  ],
+  "et": [
+   [
+    "Kuidas saata täiendust riiki {country} välismaalt?",
+    "Vali summa, sisesta number riigis {country} ja oma e-post ning maksa kaardi, Apple Pay või Google Payga. Kõneaeg jõuab kohe numbrile."
+   ],
+   [
+    "Kas pean rakenduse alla laadima?",
+    "Ei, saad täiendada otse sellelt lehelt. Rakendus on valikuline, kui soovid numbreid salvestada ja täiendusi lihtsalt korrata."
+   ],
+   [
+    "Kui kaua kõneaja kohalejõudmine aega võtab?",
+    "Kõneaeg jõuab kohale kohe pärast makse kinnitamist ning tellimuse olekut saad jälgida rakenduse ajaloos."
+   ],
+   [
+    "Millised makseviisid on saadaval?",
+    "Pangakaart või krediitkaart 3D Secure abil, Apple Pay, Google Pay ja muud sinu riigi jaoks makse juures kuvatavad viisid."
+   ],
+   [
+    "Kust saan täiendada?",
+    "Kus iganes maailmas. Kõneaeg jõuab mobiilinumbrile riigis {country}."
+   ],
+   [
+    "Mis juhtub, kui sisestan vale numbri?",
+    "Kõneaeg saadetakse kohe sisestatud numbrile ja seda ei saa pärast kohaletoimetamist tagasi nõuda, seega kontrolli number enne maksmist üle. Kui täiendus ebaõnnestub ja kõneaeg ei jõua kohale, võta meiega ühendust aadressil support@integri.app."
+   ],
+   [
+    "Millised operaatorid on riigis {country} saadaval?",
+    "Riigis {country} saad täiendada: {operators}."
+   ],
+   [
+    "Kui palju maksab täiendus riiki {country}?",
+    "Lõplik hind kuvatakse selgelt enne maksmist."
+   ]
+  ],
+  "tl": [
+   [
+    "Paano ako magpapadala ng top up sa {country} mula sa ibang bansa?",
+    "Piliin ang halaga, ilagay ang numero sa {country} at ang email mo, at magbayad gamit ang card, Apple Pay o Google Pay. Agad na darating ang credit sa numero."
+   ],
+   [
+    "Kailangan ko bang i-download ang app?",
+    "Hindi, puwede kang mag-top up nang direkta mula sa pahinang ito. Opsyonal ang app kung gusto mong mag-save ng mga numero at madaling umulit ng top up."
+   ],
+   [
+    "Gaano katagal bago dumating ang credit?",
+    "Agad na dumarating ang credit pagkatapos makumpirma ang bayad, at masusubaybayan mo ang status ng order sa kasaysayan ng app."
+   ],
+   [
+    "Anong mga paraan ng pagbabayad ang available?",
+    "Bank o credit card na may 3D Secure, Apple Pay, Google Pay at iba pang paraang ipinapakita para sa bansa mo sa pagbabayad."
+   ],
+   [
+    "Saan ako puwedeng mag-top up?",
+    "Saanman sa mundo. Darating ang credit sa mobile number sa {country}."
+   ],
+   [
+    "Paano kung mali ang nailagay kong numero?",
+    "Agad na ipinapadala ang credit sa numerong inilagay mo at hindi na ito mababawi pagkatapos maihatid, kaya tiyaking tama ang numero bago magbayad. Kung nabigo ang top up at hindi dumating ang credit, makipag-ugnayan sa amin sa support@integri.app."
+   ],
+   [
+    "Anong mga operator ang available sa {country}?",
+    "Puwede kang mag-top up ng {operators} sa {country}."
+   ],
+   [
+    "Magkano ang top up papuntang {country}?",
+    "Malinaw na ipinapakita ang pinal na presyo bago ka magbayad."
+   ]
+  ],
+  "fi": [
+   [
+    "Miten lähetän latauksen maahan {country} ulkomailta?",
+    "Valitse summa, anna numero maassa {country} ja sähköpostiosoitteesi ja maksa kortilla, Apple Paylla tai Google Paylla. Saldo saapuu heti numeroon."
+   ],
+   [
+    "Tarvitseeko minun ladata sovellus?",
+    "Ei, voit ladata suoraan tältä sivulta. Sovellus on valinnainen, jos haluat tallentaa numeroita ja toistaa latauksia helposti."
+   ],
+   [
+    "Kuinka nopeasti saldo saapuu perille?",
+    "Saldo saapuu heti, kun maksu on vahvistettu, ja voit seurata tilauksen tilaa sovelluksen historiasta."
+   ],
+   [
+    "Mitä maksutapoja on käytettävissä?",
+    "Pankki tai luottokortti 3D Securella, Apple Pay, Google Pay sekä muut maksun yhteydessä maallesi näytettävät tavat."
+   ],
+   [
+    "Mistä voin ladata?",
+    "Mistä päin maailmaa tahansa. Saldo saapuu matkapuhelinnumeroon maassa {country}."
+   ],
+   [
+    "Mitä jos annan väärän numeron?",
+    "Saldo lähetetään heti antamaasi numeroon, eikä sitä voi periä takaisin toimituksen jälkeen, joten tarkista numero ennen maksamista. Jos lataus epäonnistuu eikä saldo saavu, ota yhteyttä osoitteeseen support@integri.app."
+   ],
+   [
+    "Mitkä operaattorit ovat saatavilla maassa {country}?",
+    "Maassa {country} voit ladata seuraavat: {operators}."
+   ],
+   [
+    "Paljonko lataus maahan {country} maksaa?",
+    "Lopullinen hinta näytetään selkeästi ennen maksamista."
+   ]
+  ],
+  "gl": [
+   [
+    "Como envío unha recarga a {country} desde o estranxeiro?",
+    "Escolle o importe, introduce o número en {country} e o teu correo electrónico, e paga con tarxeta, Apple Pay ou Google Pay. O saldo chega ao instante ao número."
+   ],
+   [
+    "Necesito descargar a app?",
+    "Non, podes recargar directamente desde esta páxina. A app é opcional se queres gardar números e repetir recargas con facilidade."
+   ],
+   [
+    "Canto tarda en chegar o saldo?",
+    "O saldo chega ao instante despois de confirmarse o pagamento, e podes seguir o estado do pedido no historial da app."
+   ],
+   [
+    "Que métodos de pagamento hai dispoñibles?",
+    "Tarxeta bancaria ou de crédito con 3D Secure, Apple Pay, Google Pay e outros métodos que se mostran para o teu país ao pagar."
+   ],
+   [
+    "Desde onde podo recargar?",
+    "Desde calquera lugar do mundo. O saldo chega ao número de móbil en {country}."
+   ],
+   [
+    "Que pasa se introduzo un número incorrecto?",
+    "O saldo envíase ao instante ao número que introduciches e non se pode recuperar despois da entrega, así que comproba o número antes de pagar. Se a recarga falla e o saldo non chega, contacta connosco en support@integri.app."
+   ],
+   [
+    "Que operadores hai dispoñibles en {country}?",
+    "En {country} podes recargar: {operators}."
+   ],
+   [
+    "Canto custa unha recarga a {country}?",
+    "O prezo final móstrase con claridade antes de pagar."
+   ]
+  ],
+  "gu": [
+   [
+    "વિદેશથી {country} માં ટોપ અપ કેવી રીતે મોકલું?",
+    "રકમ પસંદ કરો, {country} નો નંબર અને તમારો ઇમેઇલ દાખલ કરો, અને કાર્ડ, Apple Pay અથવા Google Pay થી ચુકવણી કરો. ક્રેડિટ નંબર પર તરત પહોંચે છે."
+   ],
+   [
+    "શું મારે એપ ડાઉનલોડ કરવી પડશે?",
+    "ના, તમે સીધા આ પેજ પરથી ટોપ અપ કરી શકો છો. નંબર સાચવવા અને ટોપ અપ સરળતાથી ફરી કરવા માટે એપ વૈકલ્પિક છે."
+   ],
+   [
+    "ક્રેડિટ પહોંચતા કેટલો સમય લાગે છે?",
+    "ચુકવણીની પુષ્ટિ થયા પછી ક્રેડિટ તરત પહોંચે છે, અને તમે એપના ઇતિહાસમાં ઓર્ડરની સ્થિતિ જોઈ શકો છો."
+   ],
+   [
+    "કઈ ચુકવણી પદ્ધતિઓ ઉપલબ્ધ છે?",
+    "3D Secure સાથે બેંક અથવા ક્રેડિટ કાર્ડ, Apple Pay, Google Pay અને તમારા દેશ માટે ચુકવણી સમયે બતાવેલી અન્ય પદ્ધતિઓ."
+   ],
+   [
+    "હું ક્યાંથી ટોપ અપ કરી શકું?",
+    "દુનિયામાં ગમે ત્યાંથી. ક્રેડિટ {country} ના મોબાઇલ નંબર પર પહોંચે છે."
+   ],
+   [
+    "જો હું ખોટો નંબર દાખલ કરું તો?",
+    "તમે દાખલ કરેલા નંબર પર ક્રેડિટ તરત મોકલાય છે અને ડિલિવરી પછી પાછી મેળવી શકાતી નથી, તેથી ચૂકવતા પહેલાં નંબર તપાસો. જો ટોપ અપ નિષ્ફળ જાય અને ક્રેડિટ ન પહોંચે, તો support@integri.app પર અમારો સંપર્ક કરો."
+   ],
+   [
+    "{country} માં કયા ઓપરેટર ઉપલબ્ધ છે?",
+    "તમે {country} માં {operators} ટોપ અપ કરી શકો છો."
+   ],
+   [
+    "{country} માં ટોપ અપનો ખર્ચ કેટલો છે?",
+    "ચૂકવતા પહેલાં અંતિમ કિંમત સ્પષ્ટ રીતે બતાવવામાં આવે છે."
+   ]
+  ],
+  "ht": [
+   [
+    "Kijan pou m voye yon rechaj nan {country} depi aletranje?",
+    "Chwazi montan an, antre nimewo a nan {country} ak imèl ou, epi peye ak kat, Apple Pay oswa Google Pay. Kredi a rive touswit sou nimewo a."
+   ],
+   [
+    "Èske m bezwen telechaje aplikasyon an?",
+    "Non, ou ka rechaje dirèkteman nan paj sa a. Aplikasyon an opsyonèl si ou vle anrejistre nimewo yo epi repete rechaj fasilman."
+   ],
+   [
+    "Konbyen tan kredi a pran pou rive?",
+    "Kredi a rive touswit apre peman an konfime, epi ou ka swiv eta kòmand lan nan istwa aplikasyon an."
+   ],
+   [
+    "Ki mwayen peman ki disponib?",
+    "Kat labank oswa kat kredi ak 3D Secure, Apple Pay, Google Pay ak lòt metòd yo montre pou peyi w lè w ap peye."
+   ],
+   [
+    "Depi ki kote m ka rechaje?",
+    "Depi nenpòt kote nan mond lan. Kredi a rive sou nimewo telefòn nan {country}."
+   ],
+   [
+    "Kisa k rive si m antre yon move nimewo?",
+    "Kredi a voye touswit sou nimewo ou antre a e yo pa ka rekipere l apre livrezon, kidonk verifye nimewo a anvan ou peye. Si rechaj la echwe epi kredi a pa rive, kontakte nou nan support@integri.app."
+   ],
+   [
+    "Ki operatè ki disponib nan {country}?",
+    "Ou ka rechaje {operators} nan {country}."
+   ],
+   [
+    "Konbyen yon rechaj nan {country} koute?",
+    "Yo montre pri final la byen klè anvan ou peye."
+   ]
+  ],
+  "ha": [
+   [
+    "Ta yaya zan aika kudin waya zuwa {country} daga ƙasar waje?",
+    "Zaɓi adadi, shigar da lambar da ke {country} da imel ɗinka, sannan ka biya da kati, Apple Pay ko Google Pay. Kudin yana isa a lambar nan take."
+   ],
+   [
+    "Ina buƙatar sauke manhajar?",
+    "A'a, za ka iya cika kudi kai tsaye daga wannan shafin. Manhajar zaɓi ce idan kana son adana lambobi da maimaita cika kudi cikin sauƙi."
+   ],
+   [
+    "Har yaushe kudin yake ɗauka kafin ya isa?",
+    "Kudin yana isa nan take bayan an tabbatar da biyan kuɗi, kuma za ka iya bin diddigin yanayin oda a tarihin manhajar."
+   ],
+   [
+    "Waɗanne hanyoyin biyan kuɗi ake da su?",
+    "Katin banki ko katin bashi da 3D Secure, Apple Pay, Google Pay da sauran hanyoyin da ake nuna wa ƙasarka lokacin biyan kuɗi."
+   ],
+   [
+    "Daga ina zan iya cika kudi?",
+    "Daga ko ina a duniya. Kudin yana isa a lambar waya da ke {country}."
+   ],
+   [
+    "Me zai faru idan na shigar da lamba ba daidai ba?",
+    "Ana aika kudin nan take zuwa lambar da ka shigar kuma ba za a iya dawo da shi ba bayan an kai, don haka duba lambar kafin ka biya. Idan cika kudin ya gaza kuma kudin bai isa ba, tuntuɓe mu a support@integri.app."
+   ],
+   [
+    "Waɗanne kamfanonin sadarwa ake da su a {country}?",
+    "Za ka iya cika kudin {operators} a {country}."
+   ],
+   [
+    "Nawa ne kudin cika waya zuwa {country}?",
+    "Ana nuna farashin ƙarshe a fili kafin ka biya."
+   ]
+  ],
+  "he": [
+   [
+    "איך שולחים טעינה ל{country} מחו\"ל?",
+    "בחרו סכום, הזינו את המספר ב{country} ואת האימייל שלכם, ושלמו בכרטיס, ב-Apple Pay או ב-Google Pay. הקרדיט מגיע מיד למספר."
+   ],
+   [
+    "האם צריך להוריד את האפליקציה?",
+    "לא, אפשר לטעון ישירות מהדף הזה. האפליקציה היא אופציונלית, למי שרוצה לשמור מספרים ולחזור על טעינות בקלות."
+   ],
+   [
+    "כמה זמן לוקח לקרדיט להגיע?",
+    "הקרדיט מגיע מיד לאחר אישור התשלום, ואפשר לעקוב אחרי סטטוס ההזמנה בהיסטוריה באפליקציה."
+   ],
+   [
+    "אילו אמצעי תשלום זמינים?",
+    "כרטיס אשראי או חיוב עם 3D Secure, Apple Pay, Google Pay ואמצעים נוספים שמוצגים במדינה שלכם בעת התשלום."
+   ],
+   [
+    "מאיפה אפשר לטעון?",
+    "מכל מקום בעולם. הקרדיט מגיע למספר הנייד ב{country}."
+   ],
+   [
+    "מה אם הזנתי מספר שגוי?",
+    "הקרדיט נשלח מיד למספר שהזנתם ואי אפשר לשחזר אותו לאחר המסירה, לכן בדקו את המספר לפני התשלום. אם הטעינה נכשלת והקרדיט לא מגיע, פנו אלינו בכתובת support@integri.app."
+   ],
+   [
+    "אילו ספקים זמינים ב{country}?",
+    "אפשר לטעון {operators} ב{country}."
+   ],
+   [
+    "כמה עולה טעינה ל{country}?",
+    "המחיר הסופי מוצג בבירור לפני התשלום."
+   ]
+  ],
+  "hi": [
+   [
+    "मैं विदेश से {country} में रिचार्ज कैसे भेजूँ?",
+    "राशि चुनें, {country} का नंबर और अपना ईमेल दर्ज करें, और कार्ड, Apple Pay या Google Pay से भुगतान करें। क्रेडिट नंबर पर तुरंत पहुँच जाता है।"
+   ],
+   [
+    "क्या मुझे ऐप डाउनलोड करना ज़रूरी है?",
+    "नहीं, आप सीधे इसी पेज से रिचार्ज कर सकते हैं। अगर आप नंबर सेव करना और रिचार्ज आसानी से दोहराना चाहते हैं, तो ऐप वैकल्पिक है।"
+   ],
+   [
+    "क्रेडिट पहुँचने में कितना समय लगता है?",
+    "भुगतान की पुष्टि होने के बाद क्रेडिट तुरंत पहुँच जाता है, और आप ऐप की हिस्ट्री में ऑर्डर की स्थिति देख सकते हैं।"
+   ],
+   [
+    "भुगतान के कौन से तरीके उपलब्ध हैं?",
+    "3D Secure के साथ बैंक या क्रेडिट कार्ड, Apple Pay, Google Pay और अन्य तरीके, जो भुगतान के समय आपके देश के लिए दिखाए जाते हैं।"
+   ],
+   [
+    "मैं कहाँ से रिचार्ज कर सकता/सकती हूँ?",
+    "दुनिया में कहीं से भी। क्रेडिट {country} के मोबाइल नंबर पर पहुँचता है।"
+   ],
+   [
+    "अगर मैं गलत नंबर दर्ज कर दूँ तो क्या होगा?",
+    "क्रेडिट आपके दर्ज किए गए नंबर पर तुरंत भेज दिया जाता है और डिलीवरी के बाद वापस नहीं मिल सकता, इसलिए भुगतान से पहले नंबर जाँच लें। अगर रिचार्ज विफल हो जाए और क्रेडिट न पहुँचे, तो हमसे support@integri.app पर संपर्क करें।"
+   ],
+   [
+    "{country} में कौन से ऑपरेटर उपलब्ध हैं?",
+    "आप {country} में {operators} रिचार्ज कर सकते हैं।"
+   ],
+   [
+    "{country} में रिचार्ज की कीमत कितनी है?",
+    "भुगतान से पहले अंतिम कीमत साफ़ दिखाई जाती है।"
+   ]
+  ],
+  "is": [
+   [
+    "Hvernig sendi ég áfyllingu til {country} erlendis frá?",
+    "Veldu upphæð, sláðu inn númerið í {country} og netfangið þitt og greiddu með korti, Apple Pay eða Google Pay. Inneignin berst strax á númerið."
+   ],
+   [
+    "Þarf ég að sækja appið?",
+    "Nei, þú getur fyllt á beint af þessari síðu. Appið er valfrjálst ef þú vilt vista númer og endurtaka áfyllingar auðveldlega."
+   ],
+   [
+    "Hversu lengi er inneignin að berast?",
+    "Inneignin berst strax eftir að greiðslan hefur verið staðfest og þú getur fylgst með stöðu pöntunarinnar í sögunni í appinu."
+   ],
+   [
+    "Hvaða greiðsluleiðir eru í boði?",
+    "Debet- eða kreditkort með 3D Secure, Apple Pay, Google Pay og aðrar leiðir sem birtast fyrir þitt land við greiðslu."
+   ],
+   [
+    "Hvaðan get ég fyllt á?",
+    "Hvaðan sem er í heiminum. Inneignin berst á farsímanúmerið í {country}."
+   ],
+   [
+    "Hvað ef ég slæ inn rangt númer?",
+    "Inneignin er send strax á númerið sem þú slóst inn og ekki er hægt að sækja hana aftur eftir afhendingu, svo athugaðu númerið áður en þú greiðir. Ef áfyllingin mistekst og inneignin berst ekki skaltu hafa samband við okkur á support@integri.app."
+   ],
+   [
+    "Hvaða símafélög eru í boði í {country}?",
+    "Þú getur fyllt á {operators} í {country}."
+   ],
+   [
+    "Hvað kostar áfylling til {country}?",
+    "Lokaverðið er sýnt skýrt áður en þú greiðir."
+   ]
+  ],
+  "ig": [
+   [
+    "Kedu ka m ga-esi zipu top up gaa {country} site na mba ọzọ?",
+    "Họrọ ego ahụ, tinye nọmba dị na {country} na email gị, wee kwụọ ụgwọ site na kaadị, Apple Pay ma ọ bụ Google Pay. Kredit na-eru na nọmba ahụ ozugbo."
+   ],
+   [
+    "Ọ dị mkpa ka m budata ngwa ahụ?",
+    "Mba, ị nwere ike itinye kredit ozugbo site na peeji a. Ngwa ahụ bụ nhọrọ ma ọ bụrụ na ịchọrọ ichekwa nọmba na ime top up ọzọ n'ụzọ dị mfe."
+   ],
+   [
+    "Ogologo oge ole ka kredit na-ewe iru?",
+    "Kredit na-eru ozugbo e kwadoro ịkwụ ụgwọ, ị nwekwara ike soro ọnọdụ iwu ahụ na akụkọ ngwa ahụ."
+   ],
+   [
+    "Kedu ụzọ ịkwụ ụgwọ dị?",
+    "Kaadị ụlọ akụ ma ọ bụ kaadị kredit na 3D Secure, Apple Pay, Google Pay na ụzọ ndị ọzọ egosiri maka obodo gị mgbe ị na-akwụ ụgwọ."
+   ],
+   [
+    "Ebee ka m nwere ike itinye kredit si?",
+    "Site n'ebe ọ bụla n'ụwa. Kredit na-eru na nọmba ekwentị dị na {country}."
+   ],
+   [
+    "Gịnị ma ọ bụrụ na m tinye nọmba ezighi ezi?",
+    "A na-ezipu kredit ozugbo na nọmba ị tinyere, enweghịkwa ike ịlaghachi ya mgbe e nyechara ya, ya mere lelee nọmba ahụ tupu ịkwụọ ụgwọ. Ọ bụrụ na top up ada ma kredit adịghị eru, kpọtụrụ anyị na support@integri.app."
+   ],
+   [
+    "Kedu ụlọ ọrụ netwọk dị na {country}?",
+    "Ị nwere ike itinye kredit na {operators} na {country}."
+   ],
+   [
+    "Ego ole ka top up gaa {country} na-efu?",
+    "A na-egosi ọnụahịa ikpeazụ n'ụzọ doro anya tupu ịkwụọ ụgwọ."
+   ]
+  ],
+  "id": [
+   [
+    "Bagaimana cara mengirim pulsa ke {country} dari luar negeri?",
+    "Pilih jumlahnya, masukkan nomor di {country} dan email Anda, lalu bayar dengan kartu, Apple Pay atau Google Pay. Pulsa langsung masuk ke nomor tersebut."
+   ],
+   [
+    "Apakah saya perlu mengunduh aplikasinya?",
+    "Tidak, Anda bisa mengisi pulsa langsung dari halaman ini. Aplikasi bersifat opsional jika Anda ingin menyimpan nomor dan mengulang isi pulsa dengan mudah."
+   ],
+   [
+    "Berapa lama pulsa sampai?",
+    "Pulsa masuk seketika setelah pembayaran dikonfirmasi, dan Anda dapat memantau status pesanan di riwayat aplikasi."
+   ],
+   [
+    "Metode pembayaran apa saja yang tersedia?",
+    "Kartu debit atau kredit dengan 3D Secure, Apple Pay, Google Pay, dan metode lain yang ditampilkan untuk negara Anda saat pembayaran."
+   ],
+   [
+    "Dari mana saja saya bisa mengisi pulsa?",
+    "Dari mana saja di dunia. Pulsa akan masuk ke nomor ponsel di {country}."
+   ],
+   [
+    "Bagaimana jika saya salah memasukkan nomor?",
+    "Pulsa dikirim seketika ke nomor yang Anda masukkan dan tidak dapat diambil kembali setelah terkirim, jadi periksa nomornya sebelum membayar. Jika isi pulsa gagal dan pulsa tidak masuk, hubungi kami di support@integri.app."
+   ],
+   [
+    "Operator apa saja yang tersedia di {country}?",
+    "Anda dapat mengisi pulsa {operators} di {country}."
+   ],
+   [
+    "Berapa biaya isi pulsa ke {country}?",
+    "Harga akhir ditampilkan dengan jelas sebelum Anda membayar."
+   ]
+  ],
+  "ga": [
+   [
+    "Conas a sheolaim athluchtú chuig {country} ón gcoigríoch?",
+    "Roghnaigh an tsuim, cuir isteach an uimhir i {country} agus do ríomhphost, agus íoc le cárta, Apple Pay nó Google Pay. Shroicheann an creidmheas an uimhir láithreach."
+   ],
+   [
+    "An gá dom an aip a íoslódáil?",
+    "Ní gá, is féidir leat athluchtú go díreach ón leathanach seo. Tá an aip roghnach má theastaíonn uait uimhreacha a shábháil agus athluchtuithe a athdhéanamh go héasca."
+   ],
+   [
+    "Cá fhad a thógann sé ar an gcreidmheas teacht?",
+    "Shroicheann an creidmheas láithreach tar éis don íocaíocht a bheith deimhnithe, agus is féidir leat stádas an ordaithe a leanúint i stair na haipe."
+   ],
+   [
+    "Cad iad na modhanna íocaíochta atá ar fáil?",
+    "Cárta bainc nó cárta creidmheasa le 3D Secure, Apple Pay, Google Pay agus modhanna eile a thaispeántar do do thír ag am na híocaíochta."
+   ],
+   [
+    "Cá bhfuil sé indéanta athluchtú a dhéanamh?",
+    "Ó áit ar bith ar domhan. Shroicheann an creidmheas an uimhir shoghluaiste i {country}."
+   ],
+   [
+    "Cad a tharlóidh má chuirim uimhir mhícheart isteach?",
+    "Seoltar an creidmheas láithreach chuig an uimhir a chuir tú isteach agus ní féidir é a fháil ar ais tar éis a sheachadta, mar sin seiceáil an uimhir sula n-íocann tú. Má theipeann ar an athluchtú agus mura sroicheann an creidmheas, déan teagmháil linn ag support@integri.app."
+   ],
+   [
+    "Cad iad na hoibreoirí atá ar fáil i {country}?",
+    "Is féidir leat na hoibreoirí seo a athluchtú i {country}: {operators}."
+   ],
+   [
+    "Cé mhéad a chosnaíonn athluchtú chuig {country}?",
+    "Taispeántar an praghas deiridh go soiléir sula n-íocann tú."
+   ]
+  ],
+  "jv": [
+   [
+    "Kepiye carane ngirim pulsa menyang {country} saka luar negeri?",
+    "Pilih nominal, lebokna nomer ing {country} lan email sampeyan, banjur bayar nganggo kartu, Apple Pay utawa Google Pay. Pulsa langsung tekan ing nomer kasebut."
+   ],
+   [
+    "Apa aku kudu ngundhuh aplikasi?",
+    "Ora, sampeyan bisa isi pulsa langsung saka kaca iki. Aplikasi iku opsional yen sampeyan pengin nyimpen nomer lan baleni isi pulsa kanthi gampang."
+   ],
+   [
+    "Pulsa butuh wektu pira kanggo tekan?",
+    "Pulsa tekan langsung sawise pembayaran dikonfirmasi, lan sampeyan bisa ngetutake status pesenan ing riwayat aplikasi."
+   ],
+   [
+    "Cara pembayaran apa wae sing kasedhiya?",
+    "Kartu bank utawa kredit nganggo 3D Secure, Apple Pay, Google Pay lan cara liya sing katon kanggo negaramu nalika mbayar."
+   ],
+   [
+    "Aku bisa isi pulsa saka ngendi wae?",
+    "Saka ngendi wae ing donya. Pulsa tekan ing nomer hp ing {country}."
+   ],
+   [
+    "Yen aku salah nglebokake nomer piye?",
+    "Pulsa langsung dikirim menyang nomer sing sampeyan lebokake lan ora bisa dibalekake sawise tekan, mula priksa nomer sadurunge mbayar. Yen isi pulsa gagal lan pulsa ora tekan, hubungi kita ing support@integri.app."
+   ],
+   [
+    "Operator apa wae sing ana ing {country}?",
+    "Sampeyan bisa isi pulsa {operators} ing {country}."
+   ],
+   [
+    "Pira regane isi pulsa menyang {country}?",
+    "Rega pungkasan katon cetha sadurunge sampeyan mbayar."
+   ]
+  ],
+  "kn": [
+   [
+    "ವಿದೇಶದಿಂದ {country} ಗೆ ಟಾಪ್ ಅಪ್ ಕಳುಹಿಸುವುದು ಹೇಗೆ?",
+    "ಮೊತ್ತವನ್ನು ಆಯ್ಕೆಮಾಡಿ, {country} ನಲ್ಲಿರುವ ಸಂಖ್ಯೆ ಮತ್ತು ನಿಮ್ಮ ಇಮೇಲ್ ನಮೂದಿಸಿ, ಕಾರ್ಡ್, Apple Pay ಅಥವಾ Google Pay ಮೂಲಕ ಪಾವತಿಸಿ. ಕ್ರೆಡಿಟ್ ಸಂಖ್ಯೆಗೆ ತಕ್ಷಣ ತಲುಪುತ್ತದೆ."
+   ],
+   [
+    "ನಾನು ಆ್ಯಪ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಬೇಕೇ?",
+    "ಇಲ್ಲ, ನೀವು ಈ ಪುಟದಿಂದಲೇ ನೇರವಾಗಿ ಟಾಪ್ ಅಪ್ ಮಾಡಬಹುದು. ಸಂಖ್ಯೆಗಳನ್ನು ಉಳಿಸಲು ಮತ್ತು ಟಾಪ್ ಅಪ್ ಅನ್ನು ಸುಲಭವಾಗಿ ಪುನರಾವರ್ತಿಸಲು ಬಯಸಿದರೆ ಮಾತ್ರ ಆ್ಯಪ್ ಬಳಸಿ."
+   ],
+   [
+    "ಕ್ರೆಡಿಟ್ ತಲುಪಲು ಎಷ್ಟು ಸಮಯ ಬೇಕು?",
+    "ಪಾವತಿ ದೃಢೀಕರಣವಾದ ತಕ್ಷಣ ಕ್ರೆಡಿಟ್ ತಲುಪುತ್ತದೆ ಮತ್ತು ಆರ್ಡರ್ ಸ್ಥಿತಿಯನ್ನು ಆ್ಯಪ್ ಇತಿಹಾಸದಲ್ಲಿ ನೋಡಬಹುದು."
+   ],
+   [
+    "ಯಾವ ಪಾವತಿ ವಿಧಾನಗಳು ಲಭ್ಯವಿವೆ?",
+    "3D Secure ಇರುವ ಬ್ಯಾಂಕ್ ಅಥವಾ ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್, Apple Pay, Google Pay ಮತ್ತು ಪಾವತಿಯ ವೇಳೆ ನಿಮ್ಮ ದೇಶಕ್ಕೆ ತೋರಿಸುವ ಇತರ ವಿಧಾನಗಳು."
+   ],
+   [
+    "ನಾನು ಎಲ್ಲಿಂದ ಟಾಪ್ ಅಪ್ ಮಾಡಬಹುದು?",
+    "ಜಗತ್ತಿನ ಎಲ್ಲಿಂದಲಾದರೂ. ಕ್ರೆಡಿಟ್ {country} ನಲ್ಲಿರುವ ಮೊಬೈಲ್ ಸಂಖ್ಯೆಗೆ ತಲುಪುತ್ತದೆ."
+   ],
+   [
+    "ತಪ್ಪು ಸಂಖ್ಯೆ ನಮೂದಿಸಿದರೆ ಏನಾಗುತ್ತದೆ?",
+    "ನೀವು ನಮೂದಿಸಿದ ಸಂಖ್ಯೆಗೆ ಕ್ರೆಡಿಟ್ ತಕ್ಷಣ ಕಳುಹಿಸಲಾಗುತ್ತದೆ ಮತ್ತು ತಲುಪಿದ ನಂತರ ಅದನ್ನು ಹಿಂಪಡೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ, ಆದ್ದರಿಂದ ಪಾವತಿಸುವ ಮೊದಲು ಸಂಖ್ಯೆಯನ್ನು ಪರಿಶೀಲಿಸಿ. ಟಾಪ್ ಅಪ್ ವಿಫಲವಾಗಿ ಕ್ರೆಡಿಟ್ ತಲುಪದಿದ್ದರೆ, support@integri.app ನಲ್ಲಿ ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ."
+   ],
+   [
+    "{country} ನಲ್ಲಿ ಯಾವ ಆಪರೇಟರ್‌ಗಳು ಲಭ್ಯವಿವೆ?",
+    "ನೀವು {country} ನಲ್ಲಿ {operators} ಟಾಪ್ ಅಪ್ ಮಾಡಬಹುದು."
+   ],
+   [
+    "{country} ಗೆ ಟಾಪ್ ಅಪ್ ಮಾಡಲು ಎಷ್ಟು ವೆಚ್ಚವಾಗುತ್ತದೆ?",
+    "ಪಾವತಿಸುವ ಮೊದಲು ಅಂತಿಮ ಬೆಲೆಯನ್ನು ಸ್ಪಷ್ಟವಾಗಿ ತೋರಿಸಲಾಗುತ್ತದೆ."
+   ]
+  ],
+  "kk": [
+   [
+    "Шетелден {country} еліне қалай толықтыру жіберемін?",
+    "Соманы таңдаңыз, {country} еліндегі нөмірді және электрондық поштаңызды енгізіп, карта, Apple Pay немесе Google Pay арқылы төлеңіз. Қаражат нөмірге лезде түседі."
+   ],
+   [
+    "Қолданбаны жүктеу керек пе?",
+    "Жоқ, осы беттің өзінен толықтыра аласыз. Қолданба міндетті емес, нөмірлерді сақтап, толықтыруды оңай қайталағыңыз келсе ғана қажет."
+   ],
+   [
+    "Қаражат қанша уақытта түседі?",
+    "Төлем расталғаннан кейін қаражат лезде түседі, ал тапсырыс күйін қолданба тарихынан бақылай аласыз."
+   ],
+   [
+    "Қандай төлем әдістері қолжетімді?",
+    "3D Secure бар банк немесе несие картасы, Apple Pay, Google Pay және төлем кезінде еліңіз үшін көрсетілетін басқа әдістер."
+   ],
+   [
+    "Қайдан толықтыра аламын?",
+    "Дүниенің кез келген жерінен. Қаражат {country} еліндегі телефон нөміріне түседі."
+   ],
+   [
+    "Нөмірді қате енгізіп қойсам ше?",
+    "Қаражат сіз енгізген нөмірге лезде жіберіледі және жеткізілгеннен кейін қайтару мүмкін емес, сондықтан төлемнен бұрын нөмірді тексеріңіз. Егер толықтыру сәтсіз болып, қаражат түспесе, support@integri.app мекенжайына хабарласыңыз."
+   ],
+   [
+    "{country} елінде қандай операторлар қолжетімді?",
+    "{country} елінде {operators} нөмірлерін толықтыра аласыз."
+   ],
+   [
+    "{country} еліне толықтыру қанша тұрады?",
+    "Түпкілікті баға төлемге дейін нақты көрсетіледі."
+   ]
+  ],
+  "km": [
+   [
+    "តើខ្ញុំផ្ញើលុយទៅ {country} ពីបរទេសដោយរបៀបណា?",
+    "ជ្រើសរើសចំនួនទឹកប្រាក់ បញ្ចូលលេខនៅ {country} និងអ៊ីមែលរបស់អ្នក រួចបង់ប្រាក់ដោយប្រើកាត Apple Pay ឬ Google Pay។ លុយនឹងចូលទៅលេខនោះភ្លាមៗ។"
+   ],
+   [
+    "តើខ្ញុំត្រូវទាញយកកម្មវិធីឬទេ?",
+    "ទេ អ្នកអាចបញ្ចូលលុយបានដោយផ្ទាល់ពីទំព័រនេះ។ កម្មវិធីគឺជាជម្រើសប៉ុណ្ណោះ ប្រសិនបើអ្នកចង់រក្សាទុកលេខ និងបញ្ចូលលុយម្តងទៀតបានងាយស្រួល។"
+   ],
+   [
+    "តើលុយចូលប្រើពេលប៉ុន្មាន?",
+    "លុយនឹងចូលភ្លាមៗបន្ទាប់ពីការបង់ប្រាក់ត្រូវបានបញ្ជាក់ ហើយអ្នកអាចតាមដានស្ថានភាពការបញ្ជាទិញនៅក្នុងប្រវត្តិរបស់កម្មវិធី។"
+   ],
+   [
+    "តើមានវិធីបង់ប្រាក់អ្វីខ្លះ?",
+    "កាតធនាគារ ឬកាតឥណទានជាមួយ 3D Secure, Apple Pay, Google Pay និងវិធីផ្សេងទៀតដែលបង្ហាញសម្រាប់ប្រទេសរបស់អ្នកនៅពេលបង់ប្រាក់។"
+   ],
+   [
+    "តើខ្ញុំអាចបញ្ចូលលុយពីកន្លែងណាបាន?",
+    "ពីគ្រប់ទីកន្លែងក្នុងពិភពលោក។ លុយនឹងចូលទៅលេខទូរសព្ទនៅ {country}។"
+   ],
+   [
+    "ចុះបើខ្ញុំបញ្ចូលលេខខុសវិញ?",
+    "លុយត្រូវបានផ្ញើភ្លាមៗទៅលេខដែលអ្នកបានបញ្ចូល ហើយមិនអាចយកមកវិញបានទេបន្ទាប់ពីបានដឹកជញ្ជូនរួច ដូច្នេះសូមពិនិត្យលេខឲ្យច្បាស់មុនបង់ប្រាក់។ ប្រសិនបើការបញ្ចូលលុយបរាជ័យ ហើយលុយមិនបានចូល សូមទាក់ទងយើងតាម support@integri.app។"
+   ],
+   [
+    "តើមានប្រតិបត្តិករអ្វីខ្លះនៅ {country}?",
+    "អ្នកអាចបញ្ចូលលុយ {operators} នៅ {country}។"
+   ],
+   [
+    "តើការបញ្ចូលលុយទៅ {country} មានតម្លៃប៉ុន្មាន?",
+    "តម្លៃចុងក្រោយត្រូវបានបង្ហាញយ៉ាងច្បាស់មុនពេលអ្នកបង់ប្រាក់។"
+   ]
+  ],
+  "rw": [
+   [
+    "Nohereza nte amafaranga yo guhamagara muri {country} ndi hanze?",
+    "Hitamo umubare, andika nomero yo muri {country} n'imeli yawe, hanyuma wishyure ukoresheje ikarita, Apple Pay cyangwa Google Pay. Amafaranga ahita agera kuri nomero."
+   ],
+   [
+    "Ni ngombwa gukuramo porogaramu?",
+    "Oya, ushobora kohereza uhereye kuri uru rupapuro. Porogaramu ntiyategetswe, ni iyo ushaka kubika nomero no gusubiramo byoroshye."
+   ],
+   [
+    "Amafaranga afata igihe kingana iki ngo agere?",
+    "Amafaranga agera ako kanya ubwishyu bumaze kwemezwa, kandi ushobora gukurikirana uko itegeko rihagaze mu mateka ya porogaramu."
+   ],
+   [
+    "Ni ubuhe buryo bwo kwishyura buhari?",
+    "Ikarita ya banki cyangwa y'inguzanyo ifite 3D Secure, Apple Pay, Google Pay n'ubundi buryo bugaragara ku gihugu cyawe mu gihe cyo kwishyura."
+   ],
+   [
+    "Nshobora kohereza mvuye he?",
+    "Aho ariho hose ku isi. Amafaranga agera kuri nomero ya telefoni yo muri {country}."
+   ],
+   [
+    "Bigenda bite nandikishije nomero itari yo?",
+    "Amafaranga yoherezwa ako kanya kuri nomero wanditse kandi ntagaruka nyuma yo koherezwa, bityo reba nomero mbere yo kwishyura. Niba kohereza bitagenze neza kandi amafaranga atagezeyo, twandikire kuri support@integri.app."
+   ],
+   [
+    "Ni izihe sosiyete za telefoni zihari muri {country}?",
+    "Ushobora kohereza amafaranga kuri {operators} muri {country}."
+   ],
+   [
+    "Kohereza muri {country} bigura angahe?",
+    "Igiciro cya nyuma kigaragara neza mbere yo kwishyura."
+   ]
+  ],
+  "ku": [
+   [
+    "Ez çawa ji derveyî welêt krediyê ji bo {country} bişînim?",
+    "Mîqdarê hilbijêre, hejmara li {country} û e-peyama xwe binivîse û bi kart, Apple Pay an Google Pay bide. Kredî tavilê digihîje hejmarê."
+   ],
+   [
+    "Gelo pêdivî ye ez sepanê daxim?",
+    "Na, hûn dikarin rasterast ji vê rûpelê bar bikin. Sepan bijarte ye, heke hûn bixwazin hejmaran tomar bikin û barkirinan bi hêsanî dubare bikin."
+   ],
+   [
+    "Kredî çiqas dirêj dikişîne ku bigihîje?",
+    "Kredî piştî ku dayîn tê pejirandin tavilê digihîje û hûn dikarin rewşa sîparişê di dîroka sepanê de bişopînin."
+   ],
+   [
+    "Kîjan awayên dayînê hene?",
+    "Karta bankayê an krediyê bi 3D Secure, Apple Pay, Google Pay û awayên din ên ji bo welatê we di dema dayînê de tên nîşandan."
+   ],
+   [
+    "Ez dikarim ji ku bar bikim?",
+    "Ji her derê cîhanê. Kredî digihîje hejmara mobîlê ya li {country}."
+   ],
+   [
+    "Heke ez hejmara şaş binivîsim çi dibe?",
+    "Kredî tavilê ji bo hejmara ku we nivîsandiye tê şandin û piştî gihandinê nayê vegerandin, ji ber vê yekê berî dayînê hejmarê kontrol bike. Heke barkirin têk biçe û kredî negihîje, bi me re li support@integri.app têkilî daynin."
+   ],
+   [
+    "Li {country} kîjan operator hene?",
+    "Hûn dikarin li {country} {operators} bar bikin."
+   ],
+   [
+    "Barkirina ji bo {country} çiqas dibe?",
+    "Bihayê dawî berî dayînê bi zelalî tê nîşandan."
+   ]
+  ],
+  "ky": [
+   [
+    "Чет өлкөдөн {country} өлкөсүнө толуктоону кантип жөнөтөм?",
+    "Сумманы тандаңыз, {country} өлкөсүндөгү номерди жана электрондук почтаңызды киргизиңиз, картадан, Apple Pay же Google Pay аркылуу төлөңүз. Кредит номерге заматта түшөт."
+   ],
+   [
+    "Колдонмону жүктөп алышым керекпи?",
+    "Жок, бул беттен түз эле толуктасаңыз болот. Колдонмо номерлерди сактап, толуктоону оңой кайталагыңыз келсе гана керек."
+   ],
+   [
+    "Кредит качан түшөт?",
+    "Төлөм ырасталгандан кийин кредит заматта түшөт, буйрутманын абалын колдонмонун тарыхынан көрө аласыз."
+   ],
+   [
+    "Кандай төлөм ыкмалары бар?",
+    "3D Secure менен банк же кредит картасы, Apple Pay, Google Pay жана төлөм учурунда өлкөңүз үчүн көрсөтүлгөн башка ыкмалар."
+   ],
+   [
+    "Кайдан толуктасам болот?",
+    "Дүйнөнүн каалаган жеринен. Кредит {country} өлкөсүндөгү мобилдик номерге түшөт."
+   ],
+   [
+    "Номерди ката киргизсем эмне болот?",
+    "Кредит сиз киргизген номерге заматта жөнөтүлөт жана жеткирилгенден кийин кайтарууга мүмкүн эмес, ошондуктан төлөөдөн мурун номерди текшериңиз. Эгер толуктоо ишке ашпай, кредит түшпөсө, support@integri.app дареги боюнча бизге жазыңыз."
+   ],
+   [
+    "{country} өлкөсүндө кайсы операторлор бар?",
+    "{country} өлкөсүндө {operators} номерлерин толуктасаңыз болот."
+   ],
+   [
+    "{country} өлкөсүнө толуктоо канча турат?",
+    "Акыркы баа төлөөдөн мурун так көрсөтүлөт."
+   ]
+  ],
+  "lo": [
+   [
+    "ຂ້ອຍຈະສົ່ງເງິນເຕີມໄປ {country} ຈາກຕ່າງປະເທດໄດ້ແນວໃດ?",
+    "ເລືອກຈຳນວນເງິນ, ປ້ອນເບີໃນ {country} ແລະ ອີເມວຂອງທ່ານ, ແລ້ວຊຳລະດ້ວຍບັດ, Apple Pay ຫຼື Google Pay. ເງິນຈະເຂົ້າເບີນັ້ນທັນທີ."
+   ],
+   [
+    "ຂ້ອຍຕ້ອງດາວໂຫຼດແອັບບໍ?",
+    "ບໍ່ຕ້ອງ, ທ່ານສາມາດເຕີມເງິນໄດ້ໂດຍກົງຈາກໜ້ານີ້. ແອັບເປັນທາງເລືອກ ຖ້າທ່ານຢາກບັນທຶກເບີ ແລະ ເຕີມເງິນຊ້ຳໄດ້ງ່າຍ."
+   ],
+   [
+    "ເງິນໃຊ້ເວລາດົນປານໃດຈຶ່ງເຂົ້າ?",
+    "ເງິນຈະເຂົ້າທັນທີຫຼັງຈາກການຊຳລະເງິນຖືກຢືນຢັນ ແລະ ທ່ານສາມາດຕິດຕາມສະຖານະຄຳສັ່ງຊື້ໄດ້ໃນປະຫວັດຂອງແອັບ."
+   ],
+   [
+    "ມີວິທີຊຳລະເງິນແບບໃດແດ່?",
+    "ບັດທະນາຄານ ຫຼື ບັດເຄຣດິດພ້ອມ 3D Secure, Apple Pay, Google Pay ແລະ ວິທີອື່ນໆທີ່ສະແດງສຳລັບປະເທດຂອງທ່ານຕອນຊຳລະເງິນ."
+   ],
+   [
+    "ຂ້ອຍສາມາດເຕີມເງິນຈາກບ່ອນໃດໄດ້ແດ່?",
+    "ຈາກທຸກບ່ອນໃນໂລກ. ເງິນຈະເຂົ້າເບີມືຖືໃນ {country}."
+   ],
+   [
+    "ຖ້າຂ້ອຍປ້ອນເບີຜິດຈະເປັນແນວໃດ?",
+    "ເງິນຖືກສົ່ງທັນທີໄປຫາເບີທີ່ທ່ານປ້ອນ ແລະ ບໍ່ສາມາດເອົາຄືນໄດ້ຫຼັງຈາກຈັດສົ່ງແລ້ວ, ສະນັ້ນກະລຸນາກວດເບີໃຫ້ຖືກຕ້ອງກ່ອນຊຳລະເງິນ. ຖ້າການເຕີມເງິນບໍ່ສຳເລັດ ແລະ ເງິນບໍ່ເຂົ້າ, ກະລຸນາຕິດຕໍ່ພວກເຮົາທີ່ support@integri.app."
+   ],
+   [
+    "ມີຜູ້ໃຫ້ບໍລິການໃດແດ່ໃນ {country}?",
+    "ທ່ານສາມາດເຕີມເງິນ {operators} ໃນ {country} ໄດ້."
+   ],
+   [
+    "ການເຕີມເງິນໄປ {country} ມີຄ່າໃຊ້ຈ່າຍເທົ່າໃດ?",
+    "ລາຄາສຸດທ້າຍຈະສະແດງຢ່າງຊັດເຈນກ່ອນທ່ານຊຳລະເງິນ."
+   ]
+  ],
+  "lv": [
+   [
+    "Kā nosūtīt papildinājumu uz {country} no ārzemēm?",
+    "Izvēlieties summu, ievadiet numuru {country} un savu e-pastu, un maksājiet ar karti, Apple Pay vai Google Pay. Kredīts uz numuru pienāk uzreiz."
+   ],
+   [
+    "Vai man jālejupielādē lietotne?",
+    "Nē, papildināt var tieši šajā lapā. Lietotne ir neobligāta, ja vēlaties saglabāt numurus un viegli atkārtot papildinājumus."
+   ],
+   [
+    "Cik ilgi kredīts nonāk līdz adresātam?",
+    "Kredīts pienāk uzreiz pēc maksājuma apstiprināšanas, un pasūtījuma statusu varat sekot lietotnes vēsturē."
+   ],
+   [
+    "Kādi maksājumu veidi ir pieejami?",
+    "Bankas vai kredītkarte ar 3D Secure, Apple Pay, Google Pay un citi maksājuma brīdī jūsu valstij parādītie veidi."
+   ],
+   [
+    "No kurienes varu papildināt?",
+    "No jebkuras pasaules vietas. Kredīts pienāk uz mobilā tālruņa numuru {country}."
+   ],
+   [
+    "Kas notiek, ja ievadu nepareizu numuru?",
+    "Kredīts tiek uzreiz nosūtīts uz jūsu ievadīto numuru, un pēc piegādes to nevar atgūt, tāpēc pirms maksāšanas pārbaudiet numuru. Ja papildinājums neizdodas un kredīts nepienāk, sazinieties ar mums: support@integri.app."
+   ],
+   [
+    "Kādi operatori ir pieejami {country}?",
+    "{country} varat papildināt {operators}."
+   ],
+   [
+    "Cik maksā papildinājums uz {country}?",
+    "Galīgā cena tiek skaidri parādīta pirms maksājuma."
+   ]
+  ],
+  "lt": [
+   [
+    "Kaip iš užsienio papildyti numerį ({country})?",
+    "Pasirinkite sumą, įveskite numerį ({country}) ir savo el. paštą, o mokėkite kortele, Apple Pay arba Google Pay. Kreditas numerį pasiekia iškart."
+   ],
+   [
+    "Ar reikia atsisiųsti programėlę?",
+    "Ne, papildyti galite tiesiai šiame puslapyje. Programėlė nebūtina, ji patogi, jei norite išsaugoti numerius ir lengvai kartoti papildymus."
+   ],
+   [
+    "Per kiek laiko kreditas pasiekia numerį?",
+    "Kreditas pasiekia iškart, kai tik patvirtinamas mokėjimas, o užsakymo būseną matysite programėlės istorijoje."
+   ],
+   [
+    "Kokie mokėjimo būdai galimi?",
+    "Banko ar kredito kortelė su 3D Secure, Apple Pay, Google Pay ir kiti jūsų šaliai skirti būdai, rodomi mokėjimo metu."
+   ],
+   [
+    "Iš kur galiu papildyti?",
+    "Iš bet kurios pasaulio vietos. Kreditas pasiekia mobiliojo ryšio numerį ({country})."
+   ],
+   [
+    "Kas, jei įvesiu neteisingą numerį?",
+    "Kreditas iškart siunčiamas jūsų įvestu numeriu ir pristačius jo susigrąžinti neįmanoma, todėl prieš mokėdami patikrinkite numerį. Jei papildymas nepavyko ir kreditas nepasiekė, rašykite mums adresu support@integri.app."
+   ],
+   [
+    "Kokie operatoriai galimi ({country})?",
+    "Galite papildyti: {operators} ({country})."
+   ],
+   [
+    "Kiek kainuoja papildymas ({country})?",
+    "Galutinė kaina aiškiai parodoma prieš mokant."
+   ]
+  ],
+  "lb": [
+   [
+    "Wéi schécken ech eng Opluedung aus dem Ausland a(n) {country}?",
+    "Wielt de Betrag, gitt d'Nummer a(n) {country} an Är E-Mail an a bezuelt mat Kaart, Apple Pay oder Google Pay. De Kredit kënnt direkt op der Nummer un."
+   ],
+   [
+    "Muss ech d'App eroflueden?",
+    "Neen, Dir kënnt direkt op dëser Säit oplueden. D'App ass fakultativ, wann Dir Nummere wëllt späicheren an Opluedunge liicht widderhuelen."
+   ],
+   [
+    "Wéi laang dauert et, bis de Kredit ukënnt?",
+    "De Kredit kënnt direkt un, soubal d'Bezuelung confirméiert ass, an Dir kënnt de Status vun der Bestellung am Verlaf vun der App verfollegen."
+   ],
+   [
+    "Wéi eng Bezuelmethode sinn disponibel?",
+    "Bankkaart oder Kreditkaart mat 3D Secure, Apple Pay, Google Pay an aner Methoden, déi fir Äert Land bei der Bezuelung ugewise ginn."
+   ],
+   [
+    "Vu wou aus kann ech oplueden?",
+    "Vun iwwerall op der Welt. De Kredit kënnt op der Handysnummer a(n) {country} un."
+   ],
+   [
+    "Wat, wann ech eng falsch Nummer aginn?",
+    "De Kredit gëtt direkt un d'Nummer geschéckt, déi Dir aginn hutt, a kann no der Liwwerung net méi zréckgeholl ginn. Kontrolléiert d'Nummer also virum Bezuelen. Wann d'Opluedung feelschléit an de Kredit net unkënnt, kontaktéiert eis op support@integri.app."
+   ],
+   [
+    "Wéi eng Operateure si(n) a(n) {country} disponibel?",
+    "Dir kënnt {operators} a(n) {country} oplueden."
+   ],
+   [
+    "Wat kascht eng Opluedung a(n) {country}?",
+    "De leschte Präis gëtt Iech virum Bezuelen kloer ugewisen."
+   ]
+  ],
+  "mk": [
+   [
+    "Како да испратам дополнување во {country} од странство?",
+    "Изберете износ, внесете го бројот во {country} и вашата е-пошта и платете со картичка, Apple Pay или Google Pay. Кредитот пристигнува веднаш на бројот."
+   ],
+   [
+    "Дали треба да ја преземам апликацијата?",
+    "Не, можете да дополните директно од оваа страница. Апликацијата е по желба, ако сакате да ги зачувате броевите и лесно да ги повторувате дополнувањата."
+   ],
+   [
+    "Колку време е потребно кредитот да пристигне?",
+    "Кредитот пристигнува веднаш откако ќе се потврди плаќањето, а статусот на нарачката можете да го следите во историјата на апликацијата."
+   ],
+   [
+    "Кои начини на плаќање се достапни?",
+    "Банкарска или кредитна картичка со 3D Secure, Apple Pay, Google Pay и други начини прикажани за вашата земја при плаќањето."
+   ],
+   [
+    "Од каде можам да дополнувам?",
+    "Од каде било во светот. Кредитот пристигнува на мобилниот број во {country}."
+   ],
+   [
+    "Што ако внесам погрешен број?",
+    "Кредитот веднаш се испраќа на бројот што сте го внеле и не може да се врати по испораката, затоа проверете го бројот пред да платите. Ако дополнувањето не успее и кредитот не пристигне, контактирајте не на support@integri.app."
+   ],
+   [
+    "Кои оператори се достапни во {country}?",
+    "Можете да дополнувате {operators} во {country}."
+   ],
+   [
+    "Колку чини дополнување во {country}?",
+    "Конечната цена јасно се прикажува пред да платите."
+   ]
+  ],
+  "mg": [
+   [
+    "Ahoana no ahafahako mandefa famenoana any {country} avy any ivelany?",
+    "Tsafidio ny vola, ampidiro ny laharana any {country} sy ny mailakao, dia aloavy amin'ny karatra, Apple Pay na Google Pay. Tonga avy hatrany amin'ilay laharana ny fahana."
+   ],
+   [
+    "Tsy maintsy alaiko ve ny rindranasa?",
+    "Tsia, afaka mameno mivantana avy amin'ity pejy ity ianao. Safidy fotsiny ny rindranasa raha tianao ny mitahiry laharana sy mamerina famenoana mora."
+   ],
+   [
+    "Haritra ahoana ny fahatongavan'ny fahana?",
+    "Tonga avy hatrany ny fahana rehefa voamarina ny fandoavana, ary azonao arahina ny toetoetran'ny fangatahana ao amin'ny tantaran'ny rindranasa."
+   ],
+   [
+    "Inona avy ny fomba fandoavana misy?",
+    "Karatra banky na karatra trosa miaraka amin'ny 3D Secure, Apple Pay, Google Pay ary fomba hafa aseho ho an'ny firenenao rehefa mandoa."
+   ],
+   [
+    "Avy aiza no azoko ihamenoana?",
+    "Na aiza na aiza eto an-tany. Tonga amin'ny laharana finday any {country} ny fahana."
+   ],
+   [
+    "Ahoana raha diso ny laharana nampidirina?",
+    "Alefa avy hatrany any amin'ny laharana nampidirinao ny fahana ary tsy azo averina rehefa voatera, ka hamarino ny laharana alohan'ny handoavana. Raha tsy tafita ny famenoana ary tsy tonga ny fahana, mifandraisa aminay amin'ny support@integri.app."
+   ],
+   [
+    "Inona avy ny operatera misy any {country}?",
+    "Afaka mameno {operators} any {country} ianao."
+   ],
+   [
+    "Hoatrinona ny vidin'ny famenoana any {country}?",
+    "Aseho mazava ny vidiny farany alohan'ny handoavanao."
+   ]
+  ],
+  "ms": [
+   [
+    "Bagaimana cara menghantar tambah nilai ke {country} dari luar negara?",
+    "Pilih jumlah, masukkan nombor di {country} dan e-mel anda, kemudian bayar dengan kad, Apple Pay atau Google Pay. Kredit sampai dengan segera ke nombor tersebut."
+   ],
+   [
+    "Adakah saya perlu memuat turun aplikasi?",
+    "Tidak, anda boleh tambah nilai terus dari halaman ini. Aplikasi adalah pilihan jika anda mahu menyimpan nombor dan mengulang tambah nilai dengan mudah."
+   ],
+   [
+    "Berapa lama kredit mengambil masa untuk sampai?",
+    "Kredit sampai dengan segera selepas pembayaran disahkan, dan anda boleh mengikuti status pesanan dalam sejarah aplikasi."
+   ],
+   [
+    "Apakah kaedah pembayaran yang tersedia?",
+    "Kad bank atau kad kredit dengan 3D Secure, Apple Pay, Google Pay dan kaedah lain yang dipaparkan untuk negara anda semasa pembayaran."
+   ],
+   [
+    "Dari mana saya boleh tambah nilai?",
+    "Dari mana-mana sahaja di dunia. Kredit sampai ke nombor telefon di {country}."
+   ],
+   [
+    "Bagaimana jika saya tersilap memasukkan nombor?",
+    "Kredit dihantar dengan segera ke nombor yang anda masukkan dan tidak boleh diperoleh semula selepas dihantar, jadi semak nombor sebelum membayar. Jika tambah nilai gagal dan kredit tidak sampai, hubungi kami di support@integri.app."
+   ],
+   [
+    "Operator manakah yang tersedia di {country}?",
+    "Anda boleh tambah nilai {operators} di {country}."
+   ],
+   [
+    "Berapakah kos tambah nilai ke {country}?",
+    "Harga akhir dipaparkan dengan jelas sebelum anda membayar."
+   ]
+  ],
+  "ml": [
+   [
+    "വിദേശത്തുനിന്ന് {country} ലേക്ക് എങ്ങനെ ടോപ്പ് അപ്പ് അയയ്ക്കാം?",
+    "തുക തിരഞ്ഞെടുക്കുക, {country} ലെ നമ്പറും നിങ്ങളുടെ ഇമെയിലും നൽകുക, കാർഡ്, Apple Pay അല്ലെങ്കിൽ Google Pay വഴി പണമടയ്ക്കുക. ക്രെഡിറ്റ് നമ്പറിൽ തൽക്ഷണം എത്തും."
+   ],
+   [
+    "ആപ്പ് ഡൗൺലോഡ് ചെയ്യേണ്ടതുണ്ടോ?",
+    "വേണ്ട, ഈ പേജിൽനിന്ന് നേരിട്ട് ടോപ്പ് അപ്പ് ചെയ്യാം. നമ്പറുകൾ സേവ് ചെയ്യാനും ടോപ്പ് അപ്പ് എളുപ്പത്തിൽ ആവർത്തിക്കാനും ആഗ്രഹിക്കുന്നെങ്കിൽ മാത്രം ആപ്പ് ഉപയോഗിക്കാം."
+   ],
+   [
+    "ക്രെഡിറ്റ് എത്താൻ എത്ര സമയമെടുക്കും?",
+    "പേയ്മെന്റ് സ്ഥിരീകരിച്ച ഉടൻ ക്രെഡിറ്റ് എത്തും, ഓർഡറിന്റെ നില ആപ്പ് ഹിസ്റ്ററിയിൽ നിങ്ങൾക്ക് പിന്തുടരാം."
+   ],
+   [
+    "ഏതൊക്കെ പേയ്മെന്റ് രീതികൾ ലഭ്യമാണ്?",
+    "3D Secure ഉള്ള ബാങ്ക് അല്ലെങ്കിൽ ക്രെഡിറ്റ് കാർഡ്, Apple Pay, Google Pay, കൂടാതെ പേയ്മെന്റ് സമയത്ത് നിങ്ങളുടെ രാജ്യത്തിന് കാണിക്കുന്ന മറ്റ് രീതികളും."
+   ],
+   [
+    "എവിടെനിന്ന് ടോപ്പ് അപ്പ് ചെയ്യാം?",
+    "ലോകത്ത് എവിടെനിന്നും. ക്രെഡിറ്റ് {country} ലെ മൊബൈൽ നമ്പറിൽ എത്തും."
+   ],
+   [
+    "തെറ്റായ നമ്പർ നൽകിയാൽ എന്ത് സംഭവിക്കും?",
+    "നിങ്ങൾ നൽകിയ നമ്പറിലേക്ക് ക്രെഡിറ്റ് തൽക്ഷണം അയയ്ക്കപ്പെടും, ഡെലിവറിക്ക് ശേഷം അത് തിരിച്ചെടുക്കാൻ കഴിയില്ല, അതിനാൽ പണമടയ്ക്കുന്നതിന് മുമ്പ് നമ്പർ പരിശോധിക്കുക. ടോപ്പ് അപ്പ് പരാജയപ്പെടുകയും ക്രെഡിറ്റ് എത്താതിരിക്കുകയും ചെയ്താൽ support@integri.app ൽ ഞങ്ങളെ ബന്ധപ്പെടുക."
+   ],
+   [
+    "{country} ൽ ഏതൊക്കെ ഓപ്പറേറ്റർമാർ ലഭ്യമാണ്?",
+    "{country} ൽ നിങ്ങൾക്ക് {operators} ടോപ്പ് അപ്പ് ചെയ്യാം."
+   ],
+   [
+    "{country} ലേക്കുള്ള ടോപ്പ് അപ്പിന് എത്ര ചെലവാകും?",
+    "പണമടയ്ക്കുന്നതിന് മുമ്പ് അന്തിമ വില വ്യക്തമായി കാണിക്കും."
+   ]
+  ],
+  "mt": [
+   [
+    "Kif nibgħat top up lejn {country} minn barra?",
+    "Agħżel l-ammont, daħħal in-numru f'{country} u l-email tiegħek, u ħallas bil-karta, Apple Pay jew Google Pay. Il-kreditu jaslu minnufih fuq in-numru."
+   ],
+   [
+    "Għandi bżonn nniżżel l-app?",
+    "Le, tista' tagħmel top up direttament minn din il-paġna. L-app hija ta' għażla jekk trid issejvja n-numri u tirrepeti t-top ups faċilment."
+   ],
+   [
+    "Kemm idum biex jasal il-kreditu?",
+    "Il-kreditu jasal minnufih wara li l-ħlas jiġi kkonfermat, u tista' ssegwi l-istatus tal-ordni fl-istorja tal-app."
+   ],
+   [
+    "Liema metodi ta' ħlas huma disponibbli?",
+    "Karta tal-bank jew tal-kreditu bi 3D Secure, Apple Pay, Google Pay u metodi oħra murija għall-pajjiż tiegħek waqt il-ħlas."
+   ],
+   [
+    "Minn fejn nista' nagħmel top up?",
+    "Minn kullimkien fid-dinja. Il-kreditu jaslu fuq in-numru tal-mowbajl f'{country}."
+   ],
+   [
+    "Xi jiġri jekk nidħol numru ħażin?",
+    "Il-kreditu jintbagħat minnufih lin-numru li dħalt u ma jistax jinkiseb lura wara l-kunsinna, għalhekk iċċekkja n-numru qabel tħallas. Jekk it-top up jonqos u l-kreditu ma jaslux, ikkuntattjana fuq support@integri.app."
+   ],
+   [
+    "Liema operaturi huma disponibbli f'{country}?",
+    "Tista' tagħmel top up ta' {operators} f'{country}."
+   ],
+   [
+    "Kemm jiswa top up lejn {country}?",
+    "Il-prezz finali jintwera b'mod ċar qabel tħallas."
+   ]
+  ],
+  "mr": [
+   [
+    "परदेशातून {country} ला टॉप अप कसे पाठवावे?",
+    "रक्कम निवडा, {country} मधील नंबर आणि तुमचा ईमेल टाका, आणि कार्ड, Apple Pay किंवा Google Pay ने पैसे भरा. क्रेडिट नंबरवर त्वरित पोहोचते."
+   ],
+   [
+    "मला अॅप डाउनलोड करावे लागेल का?",
+    "नाही, तुम्ही या पेजवरूनच थेट टॉप अप करू शकता. नंबर सेव्ह करायचे असल्यास आणि टॉप अप सहज पुन्हा करायचे असल्यास अॅप पर्यायी आहे."
+   ],
+   [
+    "क्रेडिट पोहोचायला किती वेळ लागतो?",
+    "पेमेंटची पुष्टी झाल्यानंतर क्रेडिट त्वरित पोहोचते, आणि तुम्ही अॅपच्या हिस्ट्रीमध्ये ऑर्डरची स्थिती पाहू शकता."
+   ],
+   [
+    "कोणत्या पेमेंट पद्धती उपलब्ध आहेत?",
+    "3D Secure सह बँक किंवा क्रेडिट कार्ड, Apple Pay, Google Pay आणि पेमेंटच्या वेळी तुमच्या देशासाठी दाखवलेल्या इतर पद्धती."
+   ],
+   [
+    "मी कोठून टॉप अप करू शकतो?",
+    "जगात कोठूनही. क्रेडिट {country} मधील मोबाइल नंबरवर पोहोचते."
+   ],
+   [
+    "चुकीचा नंबर टाकल्यास काय होते?",
+    "तुम्ही टाकलेल्या नंबरवर क्रेडिट त्वरित पाठवले जाते आणि डिलिव्हरीनंतर ते परत मिळवता येत नाही, म्हणून पैसे भरण्यापूर्वी नंबर तपासा. टॉप अप अयशस्वी झाले आणि क्रेडिट पोहोचले नाही, तर support@integri.app वर आमच्याशी संपर्क साधा."
+   ],
+   [
+    "{country} मध्ये कोणते ऑपरेटर उपलब्ध आहेत?",
+    "तुम्ही {country} मध्ये {operators} टॉप अप करू शकता."
+   ],
+   [
+    "{country} ला टॉप अप करण्यासाठी किती खर्च येतो?",
+    "पैसे भरण्यापूर्वी अंतिम किंमत स्पष्टपणे दाखवली जाते."
+   ]
+  ],
+  "mn": [
+   [
+    "Гадаадаас {country} руу хэрхэн цэнэглэлт илгээх вэ?",
+    "Дүнгээ сонгоод, {country} дахь дугаар болон и-мэйл хаягаа оруулж, карт, Apple Pay эсвэл Google Pay-ээр төлнө. Кредит дугаарт шууд ирнэ."
+   ],
+   [
+    "Апп татаж авах шаардлагатай юу?",
+    "Үгүй, та энэ хуудаснаас шууд цэнэглэж болно. Дугаараа хадгалж, цэнэглэлтээ хялбар давтахыг хүсвэл апп нь сонголттой."
+   ],
+   [
+    "Кредит хэр хурдан ирэх вэ?",
+    "Төлбөр баталгаажсаны дараа кредит шууд ирнэ, мөн та захиалгын төлвийг аппын түүхээс хянах боломжтой."
+   ],
+   [
+    "Ямар төлбөрийн аргууд боломжтой вэ?",
+    "3D Secure бүхий банкны эсвэл кредит карт, Apple Pay, Google Pay болон төлбөр хийх үед таны улсад харагдах бусад аргууд."
+   ],
+   [
+    "Хаанаас цэнэглэж болох вэ?",
+    "Дэлхийн хаанаас ч болно. Кредит {country} дахь гар утасны дугаарт ирнэ."
+   ],
+   [
+    "Буруу дугаар оруулбал яах вэ?",
+    "Кредит таны оруулсан дугаарт шууд илгээгддэг бөгөөд хүргэгдсэний дараа буцааж авах боломжгүй тул төлөхөөсөө өмнө дугаараа шалгана уу. Цэнэглэлт амжилтгүй болж кредит ирээгүй бол support@integri.app хаягаар бидэнтэй холбогдоно уу."
+   ],
+   [
+    "{country} улсад ямар операторууд боломжтой вэ?",
+    "Та {country} улсад {operators} цэнэглэж болно."
+   ],
+   [
+    "{country} руу цэнэглэхэд хэд болох вэ?",
+    "Эцсийн үнийг төлөхөөс өмнө тодорхой харуулна."
+   ]
+  ],
+  "ne": [
+   [
+    "विदेशबाट {country} मा टपअप कसरी पठाउने?",
+    "रकम छान्नुहोस्, {country} को नम्बर र आफ्नो इमेल राख्नुहोस्, अनि कार्ड, Apple Pay वा Google Pay बाट भुक्तानी गर्नुहोस्। क्रेडिट नम्बरमा तुरुन्तै पुग्छ।"
+   ],
+   [
+    "के मैले एप डाउनलोड गर्नुपर्छ?",
+    "पर्दैन, तपाईं यही पेजबाट सिधै टपअप गर्न सक्नुहुन्छ। नम्बर सुरक्षित राख्न र टपअप सजिलै दोहोर्याउन चाहनुभयो भने एप वैकल्पिक हो।"
+   ],
+   [
+    "क्रेडिट पुग्न कति समय लाग्छ?",
+    "भुक्तानी पुष्टि भएपछि क्रेडिट तुरुन्तै पुग्छ, र तपाईं एपको इतिहासमा अर्डरको अवस्था हेर्न सक्नुहुन्छ।"
+   ],
+   [
+    "कुन कुन भुक्तानी विधि उपलब्ध छन्?",
+    "3D Secure सहितको बैंक वा क्रेडिट कार्ड, Apple Pay, Google Pay र भुक्तानीका बेला तपाईंको देशका लागि देखाइएका अन्य विधिहरू।"
+   ],
+   [
+    "म कहाँबाट टपअप गर्न सक्छु?",
+    "संसारको जुनसुकै ठाउँबाट। क्रेडिट {country} को मोबाइल नम्बरमा पुग्छ।"
+   ],
+   [
+    "गलत नम्बर हालेमा के हुन्छ?",
+    "तपाईंले राखेको नम्बरमा क्रेडिट तुरुन्तै पठाइन्छ र डेलिभरीपछि फिर्ता लिन सकिँदैन, त्यसैले भुक्तानी गर्नुअघि नम्बर जाँच्नुहोस्। टपअप असफल भई क्रेडिट नपुगेमा support@integri.app मा हामीलाई सम्पर्क गर्नुहोस्।"
+   ],
+   [
+    "{country} मा कुन कुन अपरेटर उपलब्ध छन्?",
+    "तपाईं {country} मा {operators} टपअप गर्न सक्नुहुन्छ।"
+   ],
+   [
+    "{country} मा टपअप गर्न कति पर्छ?",
+    "भुक्तानी गर्नुअघि अन्तिम मूल्य स्पष्ट रूपमा देखाइन्छ।"
+   ]
+  ],
+  "no": [
+   [
+    "Hvordan sender jeg et påfyll til {country} fra utlandet?",
+    "Velg beløp, skriv inn nummeret i {country} og e-postadressen din, og betal med kort, Apple Pay eller Google Pay. Saldoen kommer umiddelbart frem på nummeret."
+   ],
+   [
+    "Må jeg laste ned appen?",
+    "Nei, du kan fylle på direkte fra denne siden. Appen er valgfri hvis du vil lagre numre og gjenta påfyll enkelt."
+   ],
+   [
+    "Hvor lang tid tar det før saldoen kommer frem?",
+    "Saldoen kommer frem umiddelbart etter at betalingen er bekreftet, og du kan følge bestillingens status i apphistorikken."
+   ],
+   [
+    "Hvilke betalingsmåter er tilgjengelige?",
+    "Bank eller kredittkort med 3D Secure, Apple Pay, Google Pay og andre metoder som vises for ditt land ved betaling."
+   ],
+   [
+    "Hvor kan jeg fylle på fra?",
+    "Fra hvor som helst i verden. Saldoen kommer frem på mobilnummeret i {country}."
+   ],
+   [
+    "Hva om jeg skriver inn feil nummer?",
+    "Saldoen sendes umiddelbart til nummeret du skrev inn og kan ikke hentes tilbake etter levering, så kontroller nummeret før du betaler. Hvis påfyllet mislykkes og saldoen ikke kommer frem, kontakt oss på support@integri.app."
+   ],
+   [
+    "Hvilke operatører er tilgjengelige i {country}?",
+    "Du kan fylle på {operators} i {country}."
+   ],
+   [
+    "Hva koster et påfyll til {country}?",
+    "Sluttprisen vises tydelig før du betaler."
+   ]
+  ],
+  "ny": [
+   [
+    "Ndingatumize bwanji top up ku {country} kuchokera kunja?",
+    "Sankhani ndalama, lowetsani nambala ya ku {country} ndi imelo yanu, kenako lipirani ndi khadi, Apple Pay kapena Google Pay. Ndalamayo imafika nthawi yomweyo pa nambalayo."
+   ],
+   [
+    "Kodi ndiyenera kutsitsa app?",
+    "Ayi, mungathe kuonjezera ndalama mwachindunji pa tsamba lino. App ndi yosankha ngati mukufuna kusunga manambala ndi kubwereza top up mosavuta."
+   ],
+   [
+    "Kodi ndalamayo imatenga nthawi yaitali bwanji kufika?",
+    "Ndalamayo imafika nthawi yomweyo kulipira kukatsimikizika, ndipo mungathe kuona momwe oda ilili mu mbiri ya app."
+   ],
+   [
+    "Ndi njira ziti zolipirira zomwe zilipo?",
+    "Khadi la banki kapena la ngongole lokhala ndi 3D Secure, Apple Pay, Google Pay ndi njira zina zomwe zimaonetsedwa pa dziko lanu pamene mukulipira."
+   ],
+   [
+    "Ndingaonjezere ndalama kuchokera kuti?",
+    "Kuchokera kulikonse padziko lapansi. Ndalamayo imafika pa nambala ya foni ku {country}."
+   ],
+   [
+    "Nanga ndikalowetsa nambala yolakwika?",
+    "Ndalamayo imatumizidwa nthawi yomweyo ku nambala yomwe mwalowetsa ndipo siingabwezedwe itatumizidwa, choncho onani nambalayo musanalipire. Ngati top up yalephera ndipo ndalama sinafike, lemberani ife pa support@integri.app."
+   ],
+   [
+    "Ndi makampani ati a foni omwe alipo ku {country}?",
+    "Mungathe kuonjezera ndalama pa {operators} ku {country}."
+   ],
+   [
+    "Top up ku {country} imawononga ndalama zingati?",
+    "Mtengo womaliza umaonetsedwa momveka musanalipire."
+   ]
+  ],
+  "or": [
+   [
+    "ବିଦେଶରୁ {country} କୁ ଟପ ଅପ କିପରି ପଠାଇବି?",
+    "ରାଶି ବାଛନ୍ତୁ, {country} ର ନମ୍ବର ଓ ଆପଣଙ୍କ ଇମେଲ ଲେଖନ୍ତୁ, ଏବଂ କାର୍ଡ, Apple Pay କିମ୍ବା Google Pay ରେ ପେମେଣ୍ଟ କରନ୍ତୁ। କ୍ରେଡିଟ ନମ୍ବରରେ ତୁରନ୍ତ ପହଞ୍ଚିଯାଏ।"
+   ],
+   [
+    "ମୋତେ ଆପ ଡାଉନଲୋଡ କରିବାକୁ ପଡ଼ିବ କି?",
+    "ନା, ଆପଣ ସିଧାସଳଖ ଏହି ପୃଷ୍ଠାରୁ ଟପ ଅପ କରିପାରିବେ। ନମ୍ବର ସେଭ କରି ସହଜରେ ଟପ ଅପ ପୁନରାବୃତ୍ତି କରିବାକୁ ଚାହିଁଲେ ଆପ ଐଚ୍ଛିକ।"
+   ],
+   [
+    "କ୍ରେଡିଟ ପହଞ୍ଚିବାକୁ କେତେ ସମୟ ଲାଗେ?",
+    "ପେମେଣ୍ଟ ସୁନିଶ୍ଚିତ ହେବା ପରେ କ୍ରେଡିଟ ତୁରନ୍ତ ପହଞ୍ଚିଯାଏ, ଏବଂ ଆପଣ ଆପର ଇତିହାସରେ ଅର୍ଡରର ସ୍ଥିତି ଦେଖିପାରିବେ।"
+   ],
+   [
+    "କେଉଁ ପେମେଣ୍ଟ ପଦ୍ଧତି ଉପଲବ୍ଧ?",
+    "3D Secure ସହିତ ବ୍ୟାଙ୍କ କିମ୍ବା କ୍ରେଡିଟ କାର୍ଡ, Apple Pay, Google Pay ଏବଂ ପେମେଣ୍ଟ ସମୟରେ ଆପଣଙ୍କ ଦେଶ ପାଇଁ ଦେଖାଯାଉଥିବା ଅନ୍ୟ ପଦ୍ଧତି।"
+   ],
+   [
+    "ମୁଁ କେଉଁଠାରୁ ଟପ ଅପ କରିପାରିବି?",
+    "ବିଶ୍ୱର ଯେକୌଣସି ସ୍ଥାନରୁ। କ୍ରେଡିଟ {country} ର ମୋବାଇଲ ନମ୍ବରରେ ପହଞ୍ଚିଯାଏ।"
+   ],
+   [
+    "ଭୁଲ ନମ୍ବର ଲେଖିଦେଲେ କ'ଣ ହେବ?",
+    "ଆପଣ ଲେଖିଥିବା ନମ୍ବରକୁ କ୍ରେଡିଟ ତୁରନ୍ତ ପଠାଯାଏ ଏବଂ ଡେଲିଭରି ପରେ ଫେରାଇ ଆଣିହୁଏ ନାହିଁ, ତେଣୁ ପେମେଣ୍ଟ ପୂର୍ବରୁ ନମ୍ବର ଯାଞ୍ଚ କରନ୍ତୁ। ଯଦି ଟପ ଅପ ବିଫଳ ହୁଏ ଓ କ୍ରେଡିଟ ପହଞ୍ଚେ ନାହିଁ, ତେବେ support@integri.app ରେ ଆମ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।"
+   ],
+   [
+    "{country} ରେ କେଉଁ ଅପରେଟର ଉପଲବ୍ଧ?",
+    "ଆପଣ {country} ରେ {operators} ଟପ ଅପ କରିପାରିବେ।"
+   ],
+   [
+    "{country} କୁ ଟପ ଅପ କରିବାକୁ କେତେ ଖର୍ଚ୍ଚ ହୁଏ?",
+    "ପେମେଣ୍ଟ ପୂର୍ବରୁ ଅନ୍ତିମ ମୂଲ୍ୟ ସ୍ପଷ୍ଟ ଭାବରେ ଦେଖାଯାଏ।"
+   ]
+  ],
+  "pl": [
+   [
+    "Jak wysłać doładowanie z zagranicy do kraju: {country}?",
+    "Wybierz kwotę, wpisz numer w kraju: {country} oraz swój e-mail i zapłać kartą, Apple Pay lub Google Pay. Środki trafiają na numer natychmiast."
+   ],
+   [
+    "Czy muszę pobierać aplikację?",
+    "Nie, możesz doładować bezpośrednio z tej strony. Aplikacja jest opcjonalna, jeśli chcesz zapisywać numery i łatwo powtarzać doładowania."
+   ],
+   [
+    "Jak długo trwa dostarczenie środków?",
+    "Środki trafiają na numer natychmiast po potwierdzeniu płatności, a status zamówienia sprawdzisz w historii w aplikacji."
+   ],
+   [
+    "Jakie metody płatności są dostępne?",
+    "Karta bankowa lub kredytowa z 3D Secure, Apple Pay, Google Pay oraz inne metody wyświetlane dla Twojego kraju przy płatności."
+   ],
+   [
+    "Skąd mogę doładować?",
+    "Z dowolnego miejsca na świecie. Środki trafiają na numer telefonu w kraju: {country}."
+   ],
+   [
+    "Co jeśli wpiszę zły numer?",
+    "Środki są wysyłane natychmiast na wpisany numer i po realizacji nie można ich odzyskać, więc sprawdź numer przed zapłatą. Jeśli doładowanie się nie powiedzie i środki nie dotrą, napisz do nas na support@integri.app."
+   ],
+   [
+    "Którzy operatorzy są dostępni w kraju: {country}?",
+    "W kraju: {country} możesz doładować: {operators}."
+   ],
+   [
+    "Ile kosztuje doładowanie do kraju: {country}?",
+    "Ostateczna cena jest wyraźnie widoczna przed zapłatą."
+   ]
+  ],
+  "pa": [
+   [
+    "ਵਿਦੇਸ਼ ਤੋਂ {country} ਵਿੱਚ ਟਾਪ ਅੱਪ ਕਿਵੇਂ ਭੇਜਾਂ?",
+    "ਰਕਮ ਚੁਣੋ, {country} ਦਾ ਨੰਬਰ ਅਤੇ ਆਪਣੀ ਈਮੇਲ ਦਰਜ ਕਰੋ, ਅਤੇ ਕਾਰਡ, Apple Pay ਜਾਂ Google Pay ਨਾਲ ਭੁਗਤਾਨ ਕਰੋ। ਕ੍ਰੈਡਿਟ ਨੰਬਰ ਉੱਤੇ ਤੁਰੰਤ ਪਹੁੰਚ ਜਾਂਦਾ ਹੈ।"
+   ],
+   [
+    "ਕੀ ਮੈਨੂੰ ਐਪ ਡਾਊਨਲੋਡ ਕਰਨੀ ਪਵੇਗੀ?",
+    "ਨਹੀਂ, ਤੁਸੀਂ ਇਸ ਪੰਨੇ ਤੋਂ ਸਿੱਧਾ ਟਾਪ ਅੱਪ ਕਰ ਸਕਦੇ ਹੋ। ਜੇ ਤੁਸੀਂ ਨੰਬਰ ਸੰਭਾਲਣਾ ਅਤੇ ਟਾਪ ਅੱਪ ਆਸਾਨੀ ਨਾਲ ਦੁਹਰਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ ਤਾਂ ਐਪ ਵਿਕਲਪਿਕ ਹੈ।"
+   ],
+   [
+    "ਕ੍ਰੈਡਿਟ ਪਹੁੰਚਣ ਵਿੱਚ ਕਿੰਨਾ ਸਮਾਂ ਲੱਗਦਾ ਹੈ?",
+    "ਭੁਗਤਾਨ ਦੀ ਪੁਸ਼ਟੀ ਹੋਣ ਤੋਂ ਬਾਅਦ ਕ੍ਰੈਡਿਟ ਤੁਰੰਤ ਪਹੁੰਚ ਜਾਂਦਾ ਹੈ, ਅਤੇ ਤੁਸੀਂ ਐਪ ਦੇ ਇਤਿਹਾਸ ਵਿੱਚ ਆਰਡਰ ਦੀ ਸਥਿਤੀ ਵੇਖ ਸਕਦੇ ਹੋ।"
+   ],
+   [
+    "ਕਿਹੜੇ ਭੁਗਤਾਨ ਤਰੀਕੇ ਉਪਲਬਧ ਹਨ?",
+    "3D Secure ਵਾਲਾ ਬੈਂਕ ਜਾਂ ਕ੍ਰੈਡਿਟ ਕਾਰਡ, Apple Pay, Google Pay ਅਤੇ ਭੁਗਤਾਨ ਵੇਲੇ ਤੁਹਾਡੇ ਦੇਸ਼ ਲਈ ਦਿਖਾਏ ਗਏ ਹੋਰ ਤਰੀਕੇ।"
+   ],
+   [
+    "ਮੈਂ ਕਿੱਥੋਂ ਟਾਪ ਅੱਪ ਕਰ ਸਕਦਾ/ਸਕਦੀ ਹਾਂ?",
+    "ਦੁਨੀਆ ਵਿੱਚ ਕਿਤੋਂ ਵੀ। ਕ੍ਰੈਡਿਟ {country} ਦੇ ਮੋਬਾਈਲ ਨੰਬਰ ਉੱਤੇ ਪਹੁੰਚ ਜਾਂਦਾ ਹੈ।"
+   ],
+   [
+    "ਜੇ ਮੈਂ ਗਲਤ ਨੰਬਰ ਦਰਜ ਕਰ ਦਿਆਂ ਤਾਂ ਕੀ ਹੋਵੇਗਾ?",
+    "ਕ੍ਰੈਡਿਟ ਤੁਹਾਡੇ ਦਰਜ ਕੀਤੇ ਨੰਬਰ ਉੱਤੇ ਤੁਰੰਤ ਭੇਜ ਦਿੱਤਾ ਜਾਂਦਾ ਹੈ ਅਤੇ ਡਿਲੀਵਰੀ ਤੋਂ ਬਾਅਦ ਵਾਪਸ ਨਹੀਂ ਲਿਆ ਜਾ ਸਕਦਾ, ਇਸ ਲਈ ਭੁਗਤਾਨ ਤੋਂ ਪਹਿਲਾਂ ਨੰਬਰ ਜਾਂਚ ਲਓ। ਜੇ ਟਾਪ ਅੱਪ ਅਸਫਲ ਹੋ ਜਾਵੇ ਅਤੇ ਕ੍ਰੈਡਿਟ ਨਾ ਪਹੁੰਚੇ, ਤਾਂ support@integri.app ਉੱਤੇ ਸਾਡੇ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।"
+   ],
+   [
+    "{country} ਵਿੱਚ ਕਿਹੜੇ ਆਪਰੇਟਰ ਉਪਲਬਧ ਹਨ?",
+    "ਤੁਸੀਂ {country} ਵਿੱਚ {operators} ਟਾਪ ਅੱਪ ਕਰ ਸਕਦੇ ਹੋ।"
+   ],
+   [
+    "{country} ਲਈ ਟਾਪ ਅੱਪ ਦੀ ਕੀਮਤ ਕਿੰਨੀ ਹੈ?",
+    "ਭੁਗਤਾਨ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਅੰਤਿਮ ਕੀਮਤ ਸਾਫ਼ ਦਿਖਾਈ ਜਾਂਦੀ ਹੈ।"
+   ]
+  ],
+  "gd": [
+   [
+    "Ciamar a chuireas mi creideas gu {country} bho thall thairis?",
+    "Tagh an t-suim, cuir a-steach an àireamh ann an {country} agus do phost-d, agus pàigh le cairt, Apple Pay no Google Pay. Ruigidh an creideas an àireamh sa bhad."
+   ],
+   [
+    "A bheil feum agam an aplacaid a luchdadh a-nuas?",
+    "Chan eil, faodaidh tu creideas a chur dìreach bhon duilleag seo. Tha an aplacaid roghainneil ma tha thu airson àireamhan a shàbhaladh agus creideas a chur a-rithist gu furasta."
+   ],
+   [
+    "Dè cho fada ’s a bheir e dhan chreideas ruighinn?",
+    "Ruigidh an creideas sa bhad às dèidh dearbhadh a’ phàighidh, agus faodaidh tu sùil a chumail air staid an òrduigh ann an eachdraidh na h-aplacaid."
+   ],
+   [
+    "Dè na dòighean pàighidh a tha ri fhaighinn?",
+    "Cairt banca no cairt creideis le 3D Secure, Apple Pay, Google Pay agus dòighean eile a thèid a shealltainn airson do dhùthcha aig àm pàighidh."
+   ],
+   [
+    "Cò às a b’ urrainn dhomh creideas a chur?",
+    "Bho àite sam bith san t-saoghal. Ruigidh an creideas an àireamh fòn-làimhe ann an {country}."
+   ],
+   [
+    "Dè ma chuireas mi a-steach àireamh ceàrr?",
+    "Thèid an creideas a chur sa bhad chun na h-àireimh a chuir thu a-steach agus chan gabh a thoirt air ais às dèidh lìbhrigeadh, mar sin thoir sùil air an àireamh mus pàigh thu. Ma dh’fhàillig an creideas agus nach ruig e, cuir fios thugainn aig support@integri.app."
+   ],
+   [
+    "Dè na gnìomhaichean a tha ri fhaighinn ann an {country}?",
+    "Faodaidh tu creideas a chur gu {operators} ann an {country}."
+   ],
+   [
+    "Dè na chosgas creideas a chur gu {country}?",
+    "Thèid am prìs deireannach a shealltainn gu soilleir mus pàigh thu."
+   ]
+  ],
+  "sn": [
+   [
+    "Ndinotumira sei credit ku{country} ndiri kunze kwenyika?",
+    "Sarudza mari, isa nhamba yeku{country} neemail yako, ubhadhare nekadhi, Apple Pay kana Google Pay. Credit inosvika pakarepo panhamba."
+   ],
+   [
+    "Ndinofanira kudhawunirodha app here?",
+    "Kwete, unogona kuwedzera credit zvakananga paiyi peji. App haimanikidzwi, iripo kana uchida kuchengeta nhamba uye kudzokorora zviri nyore."
+   ],
+   [
+    "Credit inotora nguva yakareba sei kusvika?",
+    "Credit inosvika pakarepo kubhadhara kwangosimbiswa, uye unogona kutevera mamiriro eodha mune nhoroondo yeapp."
+   ],
+   [
+    "Nzira dzekubhadhara dziripo ndedzipi?",
+    "Kadhi yebhanga kana yechikwereti ne3D Secure, Apple Pay, Google Pay nedzimwe nzira dzinoratidzwa kunyika yako panguva yekubhadhara."
+   ],
+   [
+    "Ndinogona kuwedzera credit ndichibva kupi?",
+    "Kubva kupi zvako pasi pose. Credit inosvika panhamba yefoni iri ku{country}."
+   ],
+   [
+    "Ndikaisa nhamba isiri iyo zvinoitwa sei?",
+    "Credit inotumirwa pakarepo kunhamba yawaisa uye haigoni kudzoserwa kana yaendeswa, saka tarisa nhamba usati wabhadhara. Kana kuwedzera credit kukakundikana uye credit isina kusvika, titaurire pa support@integri.app."
+   ],
+   [
+    "Ndekambani dzefoni dzipi dziripo ku{country}?",
+    "Unogona kuwedzera credit ye{operators} ku{country}."
+   ],
+   [
+    "Kuwedzera credit ku{country} kunodhura marii?",
+    "Mutengo wekupedzisira unoratidzwa zvakajeka usati wabhadhara."
+   ]
+  ],
+  "sd": [
+   [
+    "مان ٻاهران {country} ڏانهن ٽاپ اپ ڪيئن موڪليان؟",
+    "رقم چونڊيو، {country} جو نمبر ۽ پنهنجو اي ميل داخل ڪريو، ۽ ڪارڊ، Apple Pay يا Google Pay سان ادائيگي ڪريو. ڪريڊٽ نمبر تي فوري پهچي ٿو."
+   ],
+   [
+    "ڇا مون کي ايپ ڊائون لوڊ ڪرڻ جي ضرورت آهي؟",
+    "نه، توهان سڌو هن صفحي تان ٽاپ اپ ڪري سگهو ٿا. ايپ اختياري آهي، جيڪڏهن توهان نمبر محفوظ ڪرڻ ۽ ٽاپ اپ آساني سان ورجائڻ چاهيو."
+   ],
+   [
+    "ڪريڊٽ پهچڻ ۾ ڪيترو وقت لڳندو آهي؟",
+    "ادائيگي جي تصديق ٿيڻ کانپوءِ ڪريڊٽ فوري پهچي ٿو، ۽ توهان ايپ جي تاريخ ۾ آرڊر جي حالت ڏسي سگهو ٿا."
+   ],
+   [
+    "ادائيگي جا ڪهڙا طريقا دستياب آهن؟",
+    "3D Secure سان بئنڪ يا ڪريڊٽ ڪارڊ، Apple Pay، Google Pay ۽ ٻيا طريقا جيڪي ادائيگي وقت توهان جي ملڪ لاءِ ڏيکاريا وڃن ٿا."
+   ],
+   [
+    "مان ڪٿان ٽاپ اپ ڪري سگهان ٿو؟",
+    "دنيا ۾ ڪٿانهن به. ڪريڊٽ {country} ۾ موبائل نمبر تي پهچي ٿو."
+   ],
+   [
+    "جيڪڏهن مان غلط نمبر داخل ڪريان ته ڇا ٿيندو؟",
+    "ڪريڊٽ توهان جي داخل ڪيل نمبر ڏانهن فوري موڪليو وڃي ٿو ۽ ترسيل کانپوءِ واپس نٿو ٿي سگهي، تنهنڪري ادائيگي کان اڳ نمبر چڪاسي وٺو. جيڪڏهن ٽاپ اپ ناڪام ٿئي ۽ ڪريڊٽ نه پهچي ته support@integri.app تي اسان سان رابطو ڪريو."
+   ],
+   [
+    "{country} ۾ ڪهڙا آپريٽر دستياب آهن؟",
+    "توهان {country} ۾ {operators} ٽاپ اپ ڪري سگهو ٿا."
+   ],
+   [
+    "{country} ڏانهن ٽاپ اپ جي قيمت ڪيتري آهي؟",
+    "حتمي قيمت ادائيگي کان اڳ واضح طور ڏيکاري وڃي ٿي."
+   ]
+  ],
+  "si": [
+   [
+    "විදේශයේ සිට {country} වෙත රීලෝඩ් එකක් එවන්නේ කෙසේද?",
+    "මුදල තෝරන්න, {country} හි අංකය සහ ඔබේ ඊමේල් ලිපිනය ඇතුළත් කර, කාඩ්පත, Apple Pay හෝ Google Pay මගින් ගෙවන්න. ක්‍රෙඩිට් අංකයට ක්ෂණිකව ලැබේ."
+   ],
+   [
+    "මට යෙදුම බාගත කිරීම අවශ්‍යද?",
+    "නැහැ, ඔබට මෙම පිටුවෙන්ම කෙලින්ම රීලෝඩ් කළ හැක. අංක සුරකින්නට සහ රීලෝඩ් පහසුවෙන් නැවත කරන්නට අවශ්‍ය නම් පමණක් යෙදුම භාවිත කරන්න."
+   ],
+   [
+    "ක්‍රෙඩිට් ලැබීමට කොපමණ කාලයක් ගතවේද?",
+    "ගෙවීම තහවුරු වූ පසු ක්‍රෙඩිට් ක්ෂණිකව ලැබෙන අතර, ඇණවුමේ තත්ත්වය යෙදුමේ ඉතිහාසයෙන් බලාගත හැක."
+   ],
+   [
+    "ගෙවීම් ක්‍රම මොනවාද?",
+    "3D Secure සහිත බැංකු හෝ ක්‍රෙඩිට් කාඩ්පත, Apple Pay, Google Pay සහ ගෙවීමේදී ඔබේ රටට පෙන්වන වෙනත් ක්‍රම."
+   ],
+   [
+    "මට කොහේ සිට රීලෝඩ් කළ හැකිද?",
+    "ලෝකයේ ඕනෑම තැනක සිට. ක්‍රෙඩිට් {country} හි ජංගම අංකයට ලැබේ."
+   ],
+   [
+    "මා වැරදි අංකයක් ඇතුළත් කළොත් කුමක් වේද?",
+    "ක්‍රෙඩිට් ඔබ ඇතුළත් කළ අංකයට ක්ෂණිකව යවන අතර, ලැබුණු පසු එය ආපසු ලබාගත නොහැක. එබැවින් ගෙවීමට පෙර අංකය පරීක්ෂා කරන්න. රීලෝඩ් එක අසාර්ථක වී ක්‍රෙඩිට් නොලැබුණේ නම්, support@integri.app හරහා අපව අමතන්න."
+   ],
+   [
+    "{country} හි ඇති ජාල මොනවාද?",
+    "ඔබට {country} හි {operators} රීලෝඩ් කළ හැක."
+   ],
+   [
+    "{country} වෙත රීලෝඩ් එකකට කොපමණ ගාස්තුවක්ද?",
+    "අවසාන මිල ඔබ ගෙවීමට පෙර පැහැදිලිව පෙන්වනු ලැබේ."
+   ]
+  ],
+  "sk": [
+   [
+    "Ako pošlem dobitie do krajiny {country} zo zahraničia?",
+    "Vyberte sumu, zadajte číslo v krajine {country} a svoj e mail a zaplaťte kartou, cez Apple Pay alebo Google Pay. Kredit príde na číslo okamžite."
+   ],
+   [
+    "Musím si stiahnuť aplikáciu?",
+    "Nie, dobiť môžete priamo na tejto stránke. Aplikácia je voliteľná, ak si chcete ukladať čísla a jednoducho opakovať dobitia."
+   ],
+   [
+    "Ako dlho kredit prichádza?",
+    "Kredit príde okamžite po potvrdení platby a stav objednávky môžete sledovať v histórii v aplikácii."
+   ],
+   [
+    "Aké spôsoby platby sú dostupné?",
+    "Bankomatová alebo kreditná karta s 3D Secure, Apple Pay, Google Pay a ďalšie spôsoby, ktoré sa pri platbe zobrazia pre vašu krajinu."
+   ],
+   [
+    "Odkiaľ môžem dobíjať?",
+    "Odkiaľkoľvek na svete. Kredit príde na mobilné číslo v krajine {country}."
+   ],
+   [
+    "Čo ak zadám nesprávne číslo?",
+    "Kredit sa odošle okamžite na číslo, ktoré ste zadali, a po doručení ho nemožno získať späť, preto číslo pred platbou skontrolujte. Ak dobitie zlyhá a kredit nepríde, napíšte nám na support@integri.app."
+   ],
+   [
+    "Ktorí operátori sú dostupní v krajine {country}?",
+    "V krajine {country} môžete dobiť: {operators}."
+   ],
+   [
+    "Koľko stojí dobitie v krajine {country}?",
+    "Konečná cena sa jasne zobrazí pred platbou."
+   ]
+  ],
+  "sl": [
+   [
+    "Kako pošljem dopolnitev v državo {country} iz tujine?",
+    "Izberite znesek, vnesite številko v državi {country} in svoj e-naslov ter plačajte s kartico, z Apple Pay ali Google Pay. Kredit prispe na številko takoj."
+   ],
+   [
+    "Ali moram prenesti aplikacijo?",
+    "Ne, dopolnite lahko neposredno na tej strani. Aplikacija je neobvezna, če želite shranjevati številke in preprosto ponavljati dopolnitve."
+   ],
+   [
+    "Kako dolgo traja, da kredit prispe?",
+    "Kredit prispe takoj po potrditvi plačila, stanje naročila pa lahko spremljate v zgodovini v aplikaciji."
+   ],
+   [
+    "Kateri načini plačila so na voljo?",
+    "Bančna ali kreditna kartica s 3D Secure, Apple Pay, Google Pay in drugi načini, ki se ob plačilu prikažejo za vašo državo."
+   ],
+   [
+    "Od kod lahko dopolnim?",
+    "Od koderkoli na svetu. Kredit prispe na mobilno številko v državi {country}."
+   ],
+   [
+    "Kaj če vnesem napačno številko?",
+    "Kredit se takoj pošlje na številko, ki ste jo vnesli, po dostavi pa ga ni mogoče povrniti, zato številko pred plačilom preverite. Če dopolnitev ne uspe in kredit ne prispe, nam pišite na support@integri.app."
+   ],
+   [
+    "Kateri operaterji so na voljo v državi {country}?",
+    "V državi {country} lahko dopolnite: {operators}."
+   ],
+   [
+    "Koliko stane dopolnitev v državi {country}?",
+    "Končna cena je jasno prikazana pred plačilom."
+   ]
+  ],
+  "st": [
+   [
+    "Nka romella top up {country} joang ke le kantle ho naha?",
+    "Khetha chelete, kenya nomoro ea {country} le email ea hau, ebe u lefa ka karete, Apple Pay kapa Google Pay. Airtime e fihla hanghang nomorong eo."
+   ],
+   [
+    "Na ke hloka ho download app?",
+    "Che, u ka eketsa airtime ka kotloloho leqepheng lena. App ha e qobelloe haeba u batla ho boloka linomoro le ho pheta li-top up habonolo."
+   ],
+   [
+    "Airtime e nka nako e kae ho fihla?",
+    "Airtime e fihla hanghang kamora hore tefo e netefatsoe, mme u ka latela boemo ba taelo nalaneng ea app."
+   ],
+   [
+    "Ke mekhoa efe ea tefo e fumanehang?",
+    "Karete ea banka kapa ea mokoloto e nang le 3D Secure, Apple Pay, Google Pay le mekhoa e meng e bontšitsoeng naheng ea hau ha u lefa."
+   ],
+   [
+    "Nka eketsa airtime ke le kae?",
+    "Kae kapa kae lefatšeng. Airtime e fihla nomorong ea mohala {country}."
+   ],
+   [
+    "Ho thoe'ng haeba ke kenya nomoro e fosahetseng?",
+    "Airtime e rometsoe hanghang nomorong eo u e kentseng mme e ke ke ea khutlisoa kamora ho fihla, ka hona sheba nomoro pele u lefa. Haeba top up e hloleha mme airtime e sa fihle, ikopanye le rona ho support@integri.app."
+   ],
+   [
+    "Ke likhamphani life tsa mohala tse fumanehang {country}?",
+    "U ka eketsa airtime ea {operators} {country}."
+   ],
+   [
+    "Top up ea {country} e ja bokae?",
+    "Theko ea ho qetela e bontšoa ka ho hlaka pele u lefa."
+   ]
+  ],
+  "su": [
+   [
+    "Kumaha cara ngirim pulsa ka {country} ti luar nagri?",
+    "Pilih jumlah, lebetkeun nomer di {country} jeung surélék anjeun, tuluy bayar maké kartu, Apple Pay atawa Google Pay. Pulsa langsung nepi ka nomer."
+   ],
+   [
+    "Naha kuring kudu ngunduh aplikasi?",
+    "Henteu, anjeun bisa isi pulsa langsung ti kaca ieu. Aplikasi téh opsional lamun hayang nyimpen nomer jeung ngulang isi pulsa kalawan gampang."
+   ],
+   [
+    "Sabaraha lila pulsa nepi?",
+    "Pulsa langsung nepi sanggeus pamayaran dikonfirmasi, jeung anjeun bisa nuturkeun status pesenan dina riwayat aplikasi."
+   ],
+   [
+    "Cara pamayaran naon waé anu sadia?",
+    "Kartu bank atawa kiridit maké 3D Secure, Apple Pay, Google Pay jeung cara séjén anu dipidangkeun pikeun nagara anjeun nalika mayar."
+   ],
+   [
+    "Kuring bisa isi pulsa ti mana waé?",
+    "Ti mana waé di dunya. Pulsa nepi ka nomer hp di {country}."
+   ],
+   [
+    "Kumaha lamun kuring salah ngasupkeun nomer?",
+    "Pulsa langsung dikirim ka nomer anu anjeun lebetkeun jeung teu bisa dibalikeun sanggeus nepi, jadi pariksa nomerna saacan mayar. Lamun isi pulsa gagal jeung pulsa teu nepi, hubungi kami di support@integri.app."
+   ],
+   [
+    "Operator naon waé anu aya di {country}?",
+    "Anjeun bisa isi pulsa {operators} di {country}."
+   ],
+   [
+    "Sabaraha biaya isi pulsa ka {country}?",
+    "Harga ahir dipidangkeun jelas saacan anjeun mayar."
+   ]
+  ],
+  "sw": [
+   [
+    "Ninawezaje kutuma salio {country} nikiwa nje ya nchi?",
+    "Chagua kiasi, weka namba ya {country} na barua pepe yako, kisha lipa kwa kadi, Apple Pay au Google Pay. Salio linafika papo hapo kwenye namba."
+   ],
+   [
+    "Je, ni lazima nipakue programu?",
+    "Hapana, unaweza kuweka salio moja kwa moja kupitia ukurasa huu. Programu ni hiari ukitaka kuhifadhi namba na kurudia kuweka salio kwa urahisi."
+   ],
+   [
+    "Salio huchukua muda gani kufika?",
+    "Salio linafika papo hapo baada ya malipo kuthibitishwa, na unaweza kufuatilia hali ya oda kwenye historia ya programu."
+   ],
+   [
+    "Ni njia gani za malipo zinapatikana?",
+    "Kadi ya benki au ya mkopo yenye 3D Secure, Apple Pay, Google Pay na njia nyingine zinazoonyeshwa kwa nchi yako wakati wa malipo."
+   ],
+   [
+    "Naweza kuweka salio nikiwa wapi?",
+    "Popote duniani. Salio linafika kwenye namba ya simu ya {country}."
+   ],
+   [
+    "Itakuwaje nikiweka namba isiyo sahihi?",
+    "Salio hutumwa papo hapo kwa namba uliyoweka na haliwezi kurejeshwa baada ya kufika, kwa hiyo hakikisha namba kabla ya kulipa. Ikiwa kuweka salio kutashindikana na salio lisifike, wasiliana nasi kupitia support@integri.app."
+   ],
+   [
+    "Ni mitandao gani inapatikana {country}?",
+    "Unaweza kuweka salio la {operators} nchini {country}."
+   ],
+   [
+    "Gharama ya kuweka salio {country} ni kiasi gani?",
+    "Bei ya mwisho huonyeshwa wazi kabla ya kulipa."
+   ]
+  ],
+  "tg": [
+   [
+    "Чӣ тавр аз хориҷа ба {country} маблағ фиристам?",
+    "Маблағро интихоб кунед, рақами {country} ва почтаи электронии худро ворид кунед ва бо корт, Apple Pay ё Google Pay пардохт кунед. Маблағ фавран ба рақам мерасад."
+   ],
+   [
+    "Оё ман бояд барномаро боргирӣ кунам?",
+    "Не, шумо метавонед аз худи ҳамин саҳифа ҳисобро пур кунед. Барнома ихтиёрист, агар хоҳед рақамҳоро нигоҳ доред ва пур карданро ба осонӣ такрор кунед."
+   ],
+   [
+    "Маблағ чӣ қадар вақт мерасад?",
+    "Маблағ баъд аз тасдиқи пардохт фавран мерасад ва шумо метавонед ҳолати фармоишро дар таърихи барнома пайгирӣ кунед."
+   ],
+   [
+    "Кадом усулҳои пардохт дастрасанд?",
+    "Корти бонкӣ ё кредитӣ бо 3D Secure, Apple Pay, Google Pay ва усулҳои дигаре, ки ҳангоми пардохт барои кишвари шумо нишон дода мешаванд."
+   ],
+   [
+    "Аз куҷо пур карда метавонам?",
+    "Аз ҳар ҷои ҷаҳон. Маблағ ба рақами мобилӣ дар {country} мерасад."
+   ],
+   [
+    "Агар рақами нодурустро ворид кунам, чӣ мешавад?",
+    "Маблағ фавран ба рақами воридкардаи шумо фиристода мешавад ва баъд аз расонидан баргардонида намешавад, бинобар ин пеш аз пардохт рақамро санҷед. Агар пур кардан иҷро нашавад ва маблағ нарасад, бо мо ба support@integri.app муроҷиат кунед."
+   ],
+   [
+    "Дар {country} кадом операторҳо дастрасанд?",
+    "Шумо метавонед дар {country} ҳисоби {operators}-ро пур кунед."
+   ],
+   [
+    "Пур кардани ҳисоб дар {country} чӣ қадар арзиш дорад?",
+    "Нархи ниҳоӣ пеш аз пардохт ба таври возеҳ нишон дода мешавад."
+   ]
+  ],
+  "ta": [
+   [
+    "வெளிநாட்டிலிருந்து {country} நாட்டுக்கு டாப் அப் அனுப்புவது எப்படி?",
+    "தொகையைத் தேர்ந்தெடுத்து, {country} நாட்டின் எண்ணையும் உங்கள் மின்னஞ்சலையும் உள்ளிட்டு, கார்டு, Apple Pay அல்லது Google Pay மூலம் செலுத்துங்கள். கிரெடிட் அந்த எண்ணுக்கு உடனடியாக வந்து சேரும்."
+   ],
+   [
+    "செயலியைப் பதிவிறக்க வேண்டுமா?",
+    "இல்லை, இந்தப் பக்கத்திலிருந்தே நேரடியாக டாப் அப் செய்யலாம். எண்களைச் சேமிக்கவும் டாப் அப்பை எளிதாக மீண்டும் செய்யவும் விரும்பினால் மட்டும் செயலி தேவை."
+   ],
+   [
+    "கிரெடிட் வந்து சேர எவ்வளவு நேரம் ஆகும்?",
+    "கட்டணம் உறுதிசெய்யப்பட்டவுடன் கிரெடிட் உடனடியாக வந்து சேரும், ஆர்டரின் நிலையை செயலியின் வரலாற்றில் பின்தொடரலாம்."
+   ],
+   [
+    "என்னென்ன கட்டண முறைகள் உள்ளன?",
+    "3D Secure உடன் வங்கி அல்லது கிரெடிட் கார்டு, Apple Pay, Google Pay மற்றும் உங்கள் நாட்டுக்காக கட்டணத்தின்போது காட்டப்படும் பிற முறைகள்."
+   ],
+   [
+    "எங்கிருந்து டாப் அப் செய்யலாம்?",
+    "உலகில் எங்கிருந்தும். கிரெடிட் {country} நாட்டில் உள்ள மொபைல் எண்ணுக்கு வந்து சேரும்."
+   ],
+   [
+    "தவறான எண்ணை உள்ளிட்டால் என்ன ஆகும்?",
+    "நீங்கள் உள்ளிட்ட எண்ணுக்கு கிரெடிட் உடனடியாக அனுப்பப்படும், விநியோகத்துக்குப் பிறகு அதை மீட்க முடியாது, எனவே செலுத்தும் முன் எண்ணைச் சரிபார்க்கவும். டாப் அப் தோல்வியடைந்து கிரெடிட் வரவில்லை என்றால் support@integri.app இல் எங்களைத் தொடர்புகொள்ளவும்."
+   ],
+   [
+    "{country} நாட்டில் எந்த நிறுவனங்கள் கிடைக்கின்றன?",
+    "{country} நாட்டில் {operators} க்கு டாப் அப் செய்யலாம்."
+   ],
+   [
+    "{country} நாட்டுக்கு டாப் அப் செய்ய எவ்வளவு செலவாகும்?",
+    "இறுதி விலை நீங்கள் செலுத்தும் முன் தெளிவாகக் காட்டப்படும்."
+   ]
+  ],
+  "te": [
+   [
+    "విదేశాల నుండి {country} కు టాప్ అప్ ఎలా పంపాలి?",
+    "మొత్తాన్ని ఎంచుకోండి, {country} లోని నంబర్ మరియు మీ ఇమెయిల్ నమోదు చేసి, కార్డ్, Apple Pay లేదా Google Pay తో చెల్లించండి. క్రెడిట్ నంబర్‌కు తక్షణమే చేరుతుంది."
+   ],
+   [
+    "నేను యాప్‌ను డౌన్‌లోడ్ చేసుకోవాలా?",
+    "అవసరం లేదు, ఈ పేజీ నుండే నేరుగా టాప్ అప్ చేయవచ్చు. నంబర్లను సేవ్ చేసి టాప్ అప్‌లను సులభంగా మళ్లీ చేయాలనుకుంటే యాప్ ఐచ్ఛికం."
+   ],
+   [
+    "క్రెడిట్ చేరడానికి ఎంత సమయం పడుతుంది?",
+    "చెల్లింపు నిర్ధారణ అయిన వెంటనే క్రెడిట్ చేరుతుంది, ఆర్డర్ స్థితిని యాప్ హిస్టరీలో చూడవచ్చు."
+   ],
+   [
+    "ఏ చెల్లింపు పద్ధతులు అందుబాటులో ఉన్నాయి?",
+    "3D Secure తో బ్యాంక్ లేదా క్రెడిట్ కార్డ్, Apple Pay, Google Pay మరియు చెల్లింపు సమయంలో మీ దేశానికి చూపించే ఇతర పద్ధతులు."
+   ],
+   [
+    "నేను ఎక్కడి నుండి టాప్ అప్ చేయవచ్చు?",
+    "ప్రపంచంలో ఎక్కడి నుండైనా చేయవచ్చు. క్రెడిట్ {country} లోని మొబైల్ నంబర్‌కు చేరుతుంది."
+   ],
+   [
+    "తప్పు నంబర్ నమోదు చేస్తే ఏమవుతుంది?",
+    "మీరు నమోదు చేసిన నంబర్‌కు క్రెడిట్ తక్షణమే పంపబడుతుంది, డెలివరీ తర్వాత దాన్ని తిరిగి పొందలేము, కాబట్టి చెల్లించే ముందు నంబర్‌ను సరిచూసుకోండి. టాప్ అప్ విఫలమై క్రెడిట్ చేరకపోతే, support@integri.app లో మమ్మల్ని సంప్రదించండి."
+   ],
+   [
+    "{country} లో ఏ ఆపరేటర్లు అందుబాటులో ఉన్నారు?",
+    "మీరు {country} లో {operators} టాప్ అప్ చేయవచ్చు."
+   ],
+   [
+    "{country} కు టాప్ అప్ ఖరీదు ఎంత?",
+    "మీరు చెల్లించే ముందు తుది ధర స్పష్టంగా చూపబడుతుంది."
+   ]
+  ],
+  "th": [
+   [
+    "ฉันจะส่งเงินเติมไปยัง{country}จากต่างประเทศได้อย่างไร",
+    "เลือกจำนวนเงิน กรอกเบอร์ใน{country}และอีเมลของคุณ แล้วชำระด้วยบัตร Apple Pay หรือ Google Pay เครดิตจะเข้าเบอร์ทันที"
+   ],
+   [
+    "ฉันต้องดาวน์โหลดแอปไหม",
+    "ไม่จำเป็น คุณเติมเงินได้โดยตรงจากหน้านี้ แอปเป็นทางเลือกหากคุณต้องการบันทึกเบอร์และเติมเงินซ้ำได้ง่าย"
+   ],
+   [
+    "เครดิตใช้เวลานานเท่าไรจึงจะเข้า",
+    "เครดิตจะเข้าทันทีหลังยืนยันการชำระเงิน และคุณสามารถติดตามสถานะคำสั่งซื้อได้ในประวัติของแอป"
+   ],
+   [
+    "มีวิธีชำระเงินอะไรบ้าง",
+    "บัตรธนาคารหรือบัตรเครดิตด้วย 3D Secure, Apple Pay, Google Pay และวิธีอื่นที่แสดงสำหรับประเทศของคุณตอนชำระเงิน"
+   ],
+   [
+    "ฉันเติมเงินจากที่ไหนได้บ้าง",
+    "จากที่ใดก็ได้ในโลก เครดิตจะเข้าเบอร์มือถือใน{country}"
+   ],
+   [
+    "ถ้าฉันกรอกเบอร์ผิดจะเกิดอะไรขึ้น",
+    "เครดิตจะถูกส่งไปยังเบอร์ที่คุณกรอกทันทีและไม่สามารถเรียกคืนได้หลังจัดส่ง ดังนั้นกรุณาตรวจสอบเบอร์ก่อนชำระเงิน หากการเติมเงินล้มเหลวและเครดิตไม่เข้า กรุณาติดต่อเราที่ support@integri.app"
+   ],
+   [
+    "{country}มีผู้ให้บริการรายใดบ้าง",
+    "คุณเติมเงิน {operators} ใน{country}ได้"
+   ],
+   [
+    "การเติมเงินไป{country}มีค่าใช้จ่ายเท่าไร",
+    "ราคาสุดท้ายจะแสดงอย่างชัดเจนก่อนที่คุณจะชำระเงิน"
+   ]
+  ],
+  "tk": [
+   [
+    "Daşary ýurtdan {country} ýurduna balansy nädip iberýärin?",
+    "Mukdary saýlaň, {country} ýurdundaky belgini we e-poçtaňyzy giriziň, kart, Apple Pay ýa-da Google Pay bilen töläň. Balans belgä derrew gelip ýetýär."
+   ],
+   [
+    "Programmany ýüklemeli mi?",
+    "Ýok, şu sahypadan gönüden-göni doldurup bilersiňiz. Belgileri saklamak we dolduryşy aňsatlyk bilen gaýtalamak isleseňiz, programma hökmany däl."
+   ],
+   [
+    "Balansyň gelip ýetmegi näçe wagt alýar?",
+    "Töleg tassyklanandan soň balans derrew gelip ýetýär, sargydyň ýagdaýyny bolsa programmanyň taryhynda yzarlap bilersiňiz."
+   ],
+   [
+    "Haýsy töleg usullary elýeterli?",
+    "3D Secure bilen bank ýa-da kredit karty, Apple Pay, Google Pay we töleg wagtynda ýurduňyz üçin görkezilýän beýleki usullar."
+   ],
+   [
+    "Nirden doldurup bilerin?",
+    "Dünýäniň islendik ýerinden. Balans {country} ýurdundaky telefon belgisine gelip ýetýär."
+   ],
+   [
+    "Nädogry belgi girizsem nädýärin?",
+    "Balans girizen belgiňize derrew iberilýär we eltilenden soň yzyna gaýtaryp bolmaýar, şonuň üçin tölemezden öň belgini barlaň. Eger dolduryş şowsuz bolsa we balans gelmese, support@integri.app arkaly biz bilen habarlaşyň."
+   ],
+   [
+    "{country} ýurdunda haýsy operatorlar elýeterli?",
+    "{country} ýurdunda {operators} balansyny doldurup bilersiňiz."
+   ],
+   [
+    "{country} ýurduna dolduryş näçeräk durýar?",
+    "Soňky baha tölemezden öň aýdyň görkezilýär."
+   ]
+  ],
+  "ug": [
+   [
+    "چەتئەلدىن {country} غا قانداق بالانس ئەۋەتىمەن؟",
+    "سومما تاللاڭ، {country} دىكى نومۇر ۋە ئېلخېتىڭىزنى كىرگۈزۈڭ، ھەمدە كارتا، Apple Pay ياكى Google Pay بىلەن تۆلەڭ. بالانس نومۇرغا دەرھال يېتىپ بارىدۇ."
+   ],
+   [
+    "ئەپنى چۈشۈرۈشىم كېرەكمۇ؟",
+    "ياق، بۇ بەتتىن بىۋاسىتە تولدۇرالايسىز. نومۇرلارنى ساقلاپ، تولدۇرۇشنى ئاسانلا تەكرارلىماقچى بولسىڭىز ئەپ ئىختىيارىي."
+   ],
+   [
+    "بالانس قانچىلىك ۋاقىتتا يېتىپ بارىدۇ؟",
+    "تۆلەم جەزملەشكەندىن كېيىن بالانس دەرھال يېتىپ بارىدۇ، زاكازنىڭ ھالىتىنى ئەپنىڭ تارىخىدىن كۆرەلەيسىز."
+   ],
+   [
+    "قايسى تۆلەم ئۇسۇللىرى بار؟",
+    "3D Secure لىق بانكا ياكى ئىناۋەت كارتىسى، Apple Pay، Google Pay ۋە تۆلەش چېغىدا دۆلىتىڭىز ئۈچۈن كۆرسىتىلىدىغان باشقا ئۇسۇللار."
+   ],
+   [
+    "قەيەردىن تولدۇرالايمەن؟",
+    "دۇنيانىڭ ھەر قانداق جايىدىن. بالانس {country} دىكى يانفون نومۇرىغا يېتىپ بارىدۇ."
+   ],
+   [
+    "خاتا نومۇر كىرگۈزۈپ قويسام قانداق قىلىمەن؟",
+    "بالانس سىز كىرگۈزگەن نومۇرغا دەرھال ئەۋەتىلىدۇ ھەمدە يەتكۈزۈلگەندىن كېيىن قايتۇرۇۋالغىلى بولمايدۇ، شۇڭا تۆلەشتىن بۇرۇن نومۇرنى تەكشۈرۈڭ. ئەگەر تولدۇرۇش مەغلۇپ بولۇپ بالانس يەتمىسە، support@integri.app ئارقىلىق بىز بىلەن ئالاقىلىشىڭ."
+   ],
+   [
+    "{country} دا قايسى مەشغۇلاتچىلار بار؟",
+    "سىز {country} دا {operators} نى تولدۇرالايسىز."
+   ],
+   [
+    "{country} غا تولدۇرۇشقا قانچە پۇل كېتىدۇ؟",
+    "ئاخىرقى باھا تۆلەشتىن بۇرۇن ئايدىڭ كۆرسىتىلىدۇ."
+   ]
+  ],
+  "uz": [
+   [
+    "Xorijdan {country}ga hisobni qanday to'ldiraman?",
+    "Summani tanlang, {country}dagi raqam va elektron pochtangizni kiriting, so'ng karta, Apple Pay yoki Google Pay orqali to'lang. Mablag' raqamga bir zumda yetib boradi."
+   ],
+   [
+    "Ilovani yuklab olishim kerakmi?",
+    "Yo'q, hisobni to'g'ridan-to'g'ri shu sahifadan to'ldirishingiz mumkin. Raqamlarni saqlash va to'ldirishni oson takrorlash uchun ilova ixtiyoriy."
+   ],
+   [
+    "Mablag' yetib borishi qancha vaqt oladi?",
+    "Mablag' to'lov tasdiqlangandan so'ng bir zumda yetib boradi va buyurtma holatini ilova tarixida kuzatishingiz mumkin."
+   ],
+   [
+    "Qaysi to'lov usullari mavjud?",
+    "3D Secure bilan bank yoki kredit kartasi, Apple Pay, Google Pay va to'lov paytida davlatingiz uchun ko'rsatiladigan boshqa usullar."
+   ],
+   [
+    "Qayerdan hisobni to'ldirishim mumkin?",
+    "Dunyoning istalgan joyidan. Mablag' {country}dagi mobil raqamga yetib boradi."
+   ],
+   [
+    "Noto'g'ri raqam kiritsam nima bo'ladi?",
+    "Mablag' siz kiritgan raqamga bir zumda yuboriladi va yetkazilgandan keyin qaytarib bo'lmaydi, shuning uchun to'lashdan oldin raqamni tekshiring. Agar to'ldirish amalga oshmasa va mablag' yetib bormasa, support@integri.app orqali biz bilan bog'laning."
+   ],
+   [
+    "{country}da qaysi operatorlar mavjud?",
+    "Siz {country}da {operators} hisobini to'ldirishingiz mumkin."
+   ],
+   [
+    "{country}ga hisobni to'ldirish qancha turadi?",
+    "Yakuniy narx to'lashdan oldin aniq ko'rsatiladi."
+   ]
+  ],
+  "vi": [
+   [
+    "Làm sao để nạp tiền cho số điện thoại tại {country} từ nước ngoài?",
+    "Chọn số tiền, nhập số điện thoại tại {country} và email của bạn, rồi thanh toán bằng thẻ, Apple Pay hoặc Google Pay. Tiền sẽ vào số điện thoại ngay lập tức."
+   ],
+   [
+    "Tôi có cần tải ứng dụng không?",
+    "Không, bạn có thể nạp tiền trực tiếp từ trang này. Ứng dụng là tùy chọn nếu bạn muốn lưu số điện thoại và dễ dàng nạp lại."
+   ],
+   [
+    "Tiền mất bao lâu để đến nơi?",
+    "Tiền đến ngay lập tức sau khi thanh toán được xác nhận, và bạn có thể theo dõi trạng thái đơn hàng trong lịch sử của ứng dụng."
+   ],
+   [
+    "Có những phương thức thanh toán nào?",
+    "Thẻ ngân hàng hoặc thẻ tín dụng với 3D Secure, Apple Pay, Google Pay và các phương thức khác được hiển thị cho quốc gia của bạn khi thanh toán."
+   ],
+   [
+    "Tôi có thể nạp tiền từ đâu?",
+    "Từ bất kỳ nơi nào trên thế giới. Tiền sẽ vào số điện thoại tại {country}."
+   ],
+   [
+    "Nếu tôi nhập sai số thì sao?",
+    "Tiền được gửi ngay lập tức đến số bạn đã nhập và không thể thu hồi sau khi giao, vì vậy hãy kiểm tra số trước khi thanh toán. Nếu việc nạp tiền thất bại và tiền không đến, hãy liên hệ chúng tôi tại support@integri.app."
+   ],
+   [
+    "Có những nhà mạng nào tại {country}?",
+    "Bạn có thể nạp tiền cho {operators} tại {country}."
+   ],
+   [
+    "Nạp tiền cho {country} tốn bao nhiêu?",
+    "Giá cuối cùng được hiển thị rõ ràng trước khi bạn thanh toán."
+   ]
+  ],
+  "cy": [
+   [
+    "Sut mae anfon credyd i {country} o dramor?",
+    "Dewiswch y swm, rhowch y rhif yn {country} a'ch e-bost, a thalwch â cherdyn, Apple Pay neu Google Pay. Mae'r credyd yn cyrraedd y rhif ar unwaith."
+   ],
+   [
+    "Oes angen i mi lawrlwytho'r ap?",
+    "Nac oes, gallwch ychwanegu credyd yn uniongyrchol o'r dudalen hon. Mae'r ap yn ddewisol os ydych am gadw rhifau ac ailadrodd taliadau'n hawdd."
+   ],
+   [
+    "Pa mor hir mae'r credyd yn ei gymryd i gyrraedd?",
+    "Mae'r credyd yn cyrraedd ar unwaith ar ôl cadarnhau'r taliad, a gallwch ddilyn statws yr archeb yn hanes yr ap."
+   ],
+   [
+    "Pa ddulliau talu sydd ar gael?",
+    "Cerdyn banc neu gredyd gyda 3D Secure, Apple Pay, Google Pay a dulliau eraill a ddangosir ar gyfer eich gwlad wrth dalu."
+   ],
+   [
+    "O ble alla i ychwanegu credyd?",
+    "O unrhyw le yn y byd. Mae'r credyd yn cyrraedd y rhif ffôn symudol yn {country}."
+   ],
+   [
+    "Beth os byddaf yn rhoi rhif anghywir?",
+    "Anfonir y credyd ar unwaith at y rhif a roesoch ac ni ellir ei adfer ar ôl ei ddanfon, felly gwiriwch y rhif cyn talu. Os bydd y taliad yn methu ac na fydd y credyd yn cyrraedd, cysylltwch â ni yn support@integri.app."
+   ],
+   [
+    "Pa weithredwyr sydd ar gael yn {country}?",
+    "Gallwch ychwanegu credyd at {operators} yn {country}."
+   ],
+   [
+    "Faint mae'n ei gostio i ychwanegu credyd yn {country}?",
+    "Dangosir y pris terfynol yn glir cyn i chi dalu."
+   ]
+  ],
+  "fy": [
+   [
+    "Hoe stjoer ik in opwurdearring nei {country} fan bûtenlân?",
+    "Kies it bedrach, folje it nûmer yn {country} en dyn e-mail yn, en betelje mei pinpas, Apple Pay of Google Pay. It tegoed komt daliks oan op it nûmer."
+   ],
+   [
+    "Moat ik de app downloade?",
+    "Nee, do kinst direkt fan dizze side opwurdearje. De app is opsjoneel as do nûmers bewarje wolst en opwurdearrings maklik werhelje wolst."
+   ],
+   [
+    "Hoe lang duorret it foardat it tegoed oankomt?",
+    "It tegoed komt daliks oan nei befêstiging fan de betelling, en do kinst de status fan de bestelling folgje yn de skiednis fan de app."
+   ],
+   [
+    "Hokker betelmetoaden binne der beskikber?",
+    "Bankpas of kredytkaart mei 3D Secure, Apple Pay, Google Pay en oare metoaden dy't by it betellen foar dyn lân toand wurde."
+   ],
+   [
+    "Fan wêr út kin ik opwurdearje?",
+    "Fan oeral yn de wrâld. It tegoed komt oan op it mobile nûmer yn {country}."
+   ],
+   [
+    "Wat as ik in ferkeard nûmer ynfier?",
+    "It tegoed wurdt daliks stjoerd nei it nûmer dat do ynfierd hast en kin nei levering net weromhelle wurde, kontrolearje it nûmer dus foardat do betellest. As de opwurdearring mislearret en it tegoed net oankomt, nim dan kontakt mei ús op fia support@integri.app."
+   ],
+   [
+    "Hokker operators binne der beskikber yn {country}?",
+    "Do kinst {operators} opwurdearje yn {country}."
+   ],
+   [
+    "Hoefolle kostet in opwurdearring nei {country}?",
+    "De einpriis wurdt dúdlik toand foardat do betellest."
+   ]
+  ],
+  "xh": [
+   [
+    "Ndithumela njani ukutshaja e-{country} ndiphesheya?",
+    "Khetha imali, faka inombolo ye-{country} kunye ne-imeyile yakho, uze uhlawule ngekhadi, Apple Pay okanye Google Pay. Ikhredithi ifika kwangoko kunombolo."
+   ],
+   [
+    "Ndifuna ukulayisha i-app?",
+    "Hayi, unokutshaja ngqo kweli phepha. I-app ayinyanzelekanga, isebenza ukuba ufuna ukugcina iinombolo kwaye uphinde utshaje ngokulula."
+   ],
+   [
+    "Ikhredithi ithatha ixesha elingakanani ukufika?",
+    "Ikhredithi ifika kwangoko emva kokuqinisekiswa kwentlawulo, kwaye unokulandela imeko ye-odolo kwimbali ye-app."
+   ],
+   [
+    "Zeziphi iindlela zokuhlawula ezikhoyo?",
+    "Ikhadi lasebhankini okanye lekhredithi nge-3D Secure, Apple Pay, Google Pay kunye nezinye iindlela ezibonakalayo kwilizwe lakho xa uhlawula."
+   ],
+   [
+    "Ndingatshaja ndisuka phi?",
+    "Naphi na emhlabeni. Ikhredithi ifika kunombolo yomnxeba e-{country}."
+   ],
+   [
+    "Kuthekani ukuba ndifake inombolo engalunganga?",
+    "Ikhredithi ithunyelwa kwangoko kunombolo oyifakileyo kwaye ayinakubuyiswa emva kokuhanjiswa, ngoko jonga inombolo phambi kokuhlawula. Ukuba ukutshaja akuphumeleli kwaye ikhredithi ayifiki, qhagamshelana nathi ku-support@integri.app."
+   ],
+   [
+    "Zeziphi iinkampani zomnxeba ezikhoyo e-{country}?",
+    "Unokutshaja {operators} e-{country}."
+   ],
+   [
+    "Ixabiso lokutshaja e-{country} liyintoni?",
+    "Ixabiso lokugqibela libonakaliswa ngokucacileyo phambi kokuba uhlawule."
+   ]
+  ],
+  "yo": [
+   [
+    "Báwo ni mo ṣe lè fi kírẹ́dítì ránṣẹ́ sí {country} láti ilẹ̀ òkèèrè?",
+    "Yan iye owó, tẹ nọ́mbà ní {country} àti ímeèlì rẹ, kí o sì sanwó pẹ̀lú kádì, Apple Pay tàbí Google Pay. Kírẹ́dítì máa dé sórí nọ́mbà náà lẹ́sẹ̀kẹsẹ̀."
+   ],
+   [
+    "Ṣé mo nílò láti gba ìṣàfilọ́lẹ̀ náà?",
+    "Rárá, o lè fi kírẹ́dítì sórí fóònù taara láti ojú ìwé yìí. Ìṣàfilọ́lẹ̀ náà jẹ́ àṣàyàn tí o bá fẹ́ fi àwọn nọ́mbà pamọ́ kí o sì tún ìfikún kírẹ́dítì ṣe pẹ̀lú ìrọ̀rùn."
+   ],
+   [
+    "Ìgbà wo ni kírẹ́dítì máa gbà láti dé?",
+    "Kírẹ́dítì máa dé lẹ́sẹ̀kẹsẹ̀ lẹ́yìn tí a bá jẹ́rìí sí ìsanwó, o sì lè tẹ̀lé ipò ìbéèrè náà nínú ìtàn ìṣàfilọ́lẹ̀ náà."
+   ],
+   [
+    "Àwọn ọ̀nà ìsanwó wo ni ó wà?",
+    "Kádì báǹkì tàbí kádì kírẹ́dítì pẹ̀lú 3D Secure, Apple Pay, Google Pay àti àwọn ọ̀nà mìíràn tí a fihàn fún orílẹ̀ èdè rẹ nígbà ìsanwó."
+   ],
+   [
+    "Ibo ni mo ti lè fi kírẹ́dítì ránṣẹ́?",
+    "Láti ibikíbi láyé. Kírẹ́dítì máa dé sórí nọ́mbà fóònù ní {country}."
+   ],
+   [
+    "Kí ni yóò ṣẹlẹ̀ tí mo bá tẹ nọ́mbà tí kò tọ́?",
+    "A máa fi kírẹ́dítì ránṣẹ́ lẹ́sẹ̀kẹsẹ̀ sí nọ́mbà tí o tẹ, a kò sì lè gbà á padà lẹ́yìn ìfiránṣẹ́, nítorí náà ṣàyẹ̀wò nọ́mbà náà kí o tó sanwó. Bí ìfikún kírẹ́dítì bá kùnà tí kírẹ́dítì kò sì dé, kàn sí wa ní support@integri.app."
+   ],
+   [
+    "Àwọn ilé iṣẹ́ nẹ́tíwọ́ọ̀kì wo ló wà ní {country}?",
+    "O lè fi kírẹ́dítì sórí {operators} ní {country}."
+   ],
+   [
+    "Èló ni ìfikún kírẹ́dítì sí {country} jẹ́?",
+    "A máa fi owó ìkẹyìn hàn kedere kí o tó sanwó."
+   ]
+  ],
+  "zu": [
+   [
+    "Ngithumela kanjani ukugcwalisa ezweni elithi {country} ngisuka phesheya?",
+    "Khetha inani, faka inombolo yezweni elithi {country} kanye ne-imeyili yakho, bese ukhokha ngekhadi, nge-Apple Pay noma nge-Google Pay. Ikhredithi ifika ngokushesha enombolweni."
+   ],
+   [
+    "Ingabe kudingeka ngilande uhlelo lokusebenza?",
+    "Cha, ungagcwalisa ngqo kuleli khasi. Uhlelo lokusebenza alubophezelekile uma ufuna ukugcina izinombolo futhi uphinde ukugcwalisa kalula."
+   ],
+   [
+    "Ikhredithi ithatha isikhathi esingakanani ukufika?",
+    "Ikhredithi ifika ngokushesha ngemva kokuqinisekiswa kwenkokhelo, futhi ungalandelela isimo se-oda emlandweni wohlelo lokusebenza."
+   ],
+   [
+    "Yimaphi amasu okukhokha atholakalayo?",
+    "Ikhadi lasebhange noma lesikweletu ne-3D Secure, i-Apple Pay, i-Google Pay namanye amasu aboniswa izwe lakho ngesikhathi sokukhokha."
+   ],
+   [
+    "Ngingagcwalisa ngisuka kuphi?",
+    "Usuka noma ikuphi emhlabeni. Ikhredithi ifika enombolweni yefoni ezweni elithi {country}."
+   ],
+   [
+    "Kuthiwani uma ngifaka inombolo engalungile?",
+    "Ikhredithi ithunyelwa ngokushesha enombolweni oyifakile futhi ayikwazi ukubuyiswa ngemva kokulethwa, ngakho hlola inombolo ngaphambi kokukhokha. Uma ukugcwalisa kuhluleka futhi ikhredithi ingafiki, xhumana nathi ku-support@integri.app."
+   ],
+   [
+    "Yiziphi izinkampani zenethiwekhi ezitholakalayo ezweni elithi {country}?",
+    "Ungagcwalisa lezi ezweni elithi {country}: {operators}."
+   ],
+   [
+    "Kubiza malini ukugcwalisa ezweni elithi {country}?",
+    "Intengo yokugcina iboniswa ngokucacile ngaphambi kokuba ukhokhe."
    ]
   ]
  },

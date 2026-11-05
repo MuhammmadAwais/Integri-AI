@@ -3,6 +3,7 @@ import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react-swc'
 import tailwindcss from '@tailwindcss/vite'
 import type { IncomingMessage, ServerResponse } from 'http'
+import type { ViteDevServer } from 'vite'
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { extname, join, normalize, resolve } from 'node:path'
 
@@ -186,9 +187,69 @@ function devRepoProxyPlugin() {
   };
 }
 
+/**
+ * The mobile top-up shop's page texts (src/features/topup/strings.json and
+ * faq.json) cover 100+ languages, about 650 KB, and a visitor needs one. This
+ * exposes them as modules so each language becomes its own small chunk:
+ *
+ *   virtual:topup-i18n         language codes, language names, operator names, and a loader per language
+ *   virtual:topup-lang/<code>  that language's texts + FAQ + its country-specific FAQ answers
+ *
+ * The two JSON files stay the single source: scripts/refresh-topup-data.mjs,
+ * the importers and the ssrPreview function (via data.json) read them as before.
+ * Used through src/features/topup/i18n.ts.
+ */
+function topupI18nPlugin() {
+  const stringsFile = resolve(__dirname, 'src/features/topup/strings.json')
+  const faqFile = resolve(__dirname, 'src/features/topup/faq.json')
+  const META = '\0virtual:topup-i18n'
+  const LANG = '\0virtual:topup-lang/'
+  const read = (file: string) => JSON.parse(readFileSync(file, 'utf8'))
+  return {
+    name: 'topup-i18n',
+    resolveId(id: string) {
+      if (id === 'virtual:topup-i18n' || id.startsWith('virtual:topup-lang/')) return '\0' + id
+    },
+    load(this: { addWatchFile(file: string): void }, id: string) {
+      if (id !== META && !id.startsWith(LANG)) return
+      this.addWatchFile(stringsFile)
+      this.addWatchFile(faqFile)
+      const strings: Record<string, Record<string, string>> = read(stringsFile)
+      const faq = read(faqFile)
+      const codes = Object.keys(strings)
+      if (id === META) {
+        const names: Record<string, string> = {}
+        for (const code of codes) names[code] = strings[code].langName
+        const loaders = codes.map((code) => `${JSON.stringify(code)}: () => import(${JSON.stringify('virtual:topup-lang/' + code)})`)
+        return [
+          `export const TOPUP_LANGS = ${JSON.stringify(codes)};`,
+          `export const LANG_NAMES = ${JSON.stringify(names)};`,
+          `export const OPERATORS = ${JSON.stringify(faq.operators)};`,
+          `export const loaders = { ${loaders.join(', ')} };`,
+        ].join('\n')
+      }
+      const lang = id.slice(LANG.length)
+      if (!strings[lang]) throw new Error(`topup-i18n: no texts for language "${lang}"`)
+      // Country-specific FAQ answers for this language only: { ISO: { faq7_a: "..." } }
+      const overrides: Record<string, Record<string, string>> = {}
+      for (const iso of Object.keys(faq.overrides)) if (faq.overrides[iso][lang]) overrides[iso] = faq.overrides[iso][lang]
+      return `export default ${JSON.stringify({ t: strings[lang], faqTitle: faq.faqTitle[lang], faqs: faq.faqs[lang], overrides })};`
+    },
+    // Dev: editing either JSON file reloads the page with the new texts.
+    handleHotUpdate({ file, server }: { file: string; server: ViteDevServer }) {
+      if (file !== stringsFile && file !== faqFile) return
+      for (const mod of server.moduleGraph.idToModuleMap.values()) {
+        if (typeof mod.id === 'string' && (mod.id === META || mod.id.startsWith(LANG))) server.moduleGraph.invalidateModule(mod)
+      }
+      server.ws.send({ type: 'full-reload' })
+      return []
+    },
+  }
+}
+
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [devLandingPlugin(), react(), tailwindcss(), devRepoProxyPlugin()],
+  plugins: [devLandingPlugin(), react(), tailwindcss(), devRepoProxyPlugin(), topupI18nPlugin()],
   test: {
     environment: 'jsdom',
   },
